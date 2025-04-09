@@ -10,7 +10,7 @@ class DialogService {
     BuildContext context, {
     required String title,
     required String message,
-    List<CLEntity>? entity,
+    List<ViewerEntityMixin>? entity,
   }) async =>
       showDialog<bool?>(
         context: context,
@@ -22,7 +22,7 @@ class DialogService {
             children: [
               if (entity != null && entity.isNotEmpty)
                 switch (entity.first) {
-                  final CLMedia _ => SizedBox.square(
+                  final StoreEntity e when !e.isCollection => SizedBox.square(
                       dimension: 100,
                       child: CLMediaCollage.byMatrixSize(
                         entity.length,
@@ -30,13 +30,13 @@ class DialogService {
                         vCount: 3,
                         itemBuilder: (context, index) {
                           return MediaThumbnail(
-                            media: entity[index] as CLMedia,
+                            media: entity[index] as StoreEntity,
                           );
                         },
                         whenNopreview: const Center(),
                       ),
                     ),
-                  _ => throw UnimplementedError()
+                  _ => Container()
                 },
               Text(
                 message,
@@ -63,46 +63,37 @@ class DialogService {
         ),
       );
 
-  static Future<bool?> deleteCollection(
+  static Future<bool?> deleteEntity(
     BuildContext context, {
-    required Collection collection,
+    required StoreEntity entity,
   }) async =>
       template(
         context,
         title: 'Confirm Delete',
-        message: 'Are you sure you want to delete '
-            '"${collection.label}" and its content?',
-        entity: [collection],
+        message: entity.isCollection
+            ? 'Are you sure you want to delete '
+                '"${entity.data.label}" and its content?'
+            : 'Are you sure you want to delete '
+                'this ${entity.data.mediaType}?',
+        entity: [entity],
       );
 
-  static Future<bool?> deleteMedia(
+  static Future<bool?> deleteMultipleEntities(
     BuildContext context, {
-    required CLMedia media,
-  }) async =>
-      template(
-        context,
-        title: 'Confirm Delete',
-        message: 'Are you sure you want to delete '
-            'this ${media.type.name}?',
-        entity: [media],
-      );
-
-  static Future<bool?> deleteMediaMultiple(
-    BuildContext context, {
-    required List<CLMedia> media,
+    required List<StoreEntity> media,
   }) async {
     if (media.isEmpty) {
       return false;
     }
 
     if (media.length == 1) {
-      return DialogService.deleteMedia(
+      return DialogService.deleteEntity(
         context,
-        media: media[0],
+        entity: media[0],
       );
     } else {
       final String msg;
-    
+
       msg = 'Are you sure you want to delete ${media.length} items?';
       return template(
         context,
@@ -115,18 +106,18 @@ class DialogService {
 
   static Future<bool?> permanentlyDeleteMedia(
     BuildContext context, {
-    required CLMedia media,
+    required StoreEntity media,
   }) async =>
       template(
         context,
         title: 'Confirm Delete',
         message: 'Are you sure you want to PERMANENTLY delete '
-            'this ${media.type.name}?',
+            'this ${media.data.mediaType}?',
       );
 
   static Future<bool?> permanentlyDeleteMediaMultiple(
     BuildContext context, {
-    required List<CLMedia> media,
+    required List<StoreEntity> media,
   }) async {
     if (media.isEmpty) {
       return false;
@@ -151,18 +142,18 @@ class DialogService {
 
   static Future<bool?> restoreMedia(
     BuildContext context, {
-    required CLMedia media,
+    required StoreEntity media,
   }) async =>
       template(
         context,
         title: 'Confirm Restore',
         message: 'Are you sure you want to restore '
-            'this ${media.type.name}?',
+            'this ${media.data.type}?',
       );
 
   static Future<bool?> restoreMediaMultiple(
     BuildContext context, {
-    required List<CLMedia> media,
+    required List<StoreEntity> media,
   }) async {
     if (media.isEmpty) {
       return false;
@@ -182,7 +173,7 @@ class DialogService {
 
   static Future<bool?> replaceMedia(
     BuildContext context, {
-    required CLMedia media,
+    required StoreEntity media,
   }) async =>
       template(
         context,
@@ -191,7 +182,7 @@ class DialogService {
       );
   static Future<bool?> cloneAndReplaceMedia(
     BuildContext context, {
-    required CLMedia media,
+    required StoreEntity media,
   }) async =>
       template(
         context,
@@ -201,7 +192,7 @@ class DialogService {
       );
   static Future<bool?> deleteNote(
     BuildContext context, {
-    required CLMedia note,
+    required StoreEntity note,
   }) async =>
       template(
         context,

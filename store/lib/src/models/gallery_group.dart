@@ -1,6 +1,6 @@
 import 'package:meta/meta.dart';
 
-import 'cl_entities.dart';
+import 'viewer_entity_mixin.dart';
 
 @immutable
 class GalleryGroup<T> {
@@ -81,8 +81,8 @@ extension ExtListGalleryGroupMutableBool<bool>
 }
 
 @immutable
-class GalleryGroupCLEntity<T extends CLEntity> {
-  const GalleryGroupCLEntity(
+class GalleryGroupStoreEntity<T extends ViewerEntityMixin> {
+  const GalleryGroupStoreEntity(
     this.items, {
     required this.chunkIdentifier,
     required this.groupIdentifier,
@@ -93,11 +93,11 @@ class GalleryGroupCLEntity<T extends CLEntity> {
   final String? label;
   final List<T> items;
 
-  Set<int?> get getEntityIds => items.map((e) => e.entityId).toSet();
+  Set<int?> get getEntityIds => items.map((e) => e.id).toSet();
 }
 
-extension GalleryGroupCLEntityListQuery<T extends CLEntity>
-    on List<GalleryGroupCLEntity<T>> {
+extension GalleryGroupStoreEntityListQuery<T extends ViewerEntityMixin>
+    on List<GalleryGroupStoreEntity<T>> {
   Set<int?> get getEntityIds => expand((item) => item.getEntityIds).toSet();
   Set<T> get getEntities => expand((item) => item.items).toSet();
 

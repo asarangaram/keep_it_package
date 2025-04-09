@@ -4,18 +4,18 @@ import 'package:store/store.dart';
 import '../models/selector.dart';
 
 class SelectorNotifier extends StateNotifier<CLSelector> {
-  SelectorNotifier(List<CLEntity> entities)
+  SelectorNotifier(List<ViewerEntityMixin> entities)
       : super(CLSelector(entities: entities));
 
-  void select(List<CLEntity> candidates) {
+  void select(List<ViewerEntityMixin> candidates) {
     state = state.select(candidates);
   }
 
-  void deselect(List<CLEntity> candidates) {
+  void deselect(List<ViewerEntityMixin> candidates) {
     state = state.deselect(candidates);
   }
 
-  void toggle(List<CLEntity> candidates) {
+  void toggle(List<ViewerEntityMixin> candidates) {
     if (state.isSelected(candidates) == SelectionStatus.selectedNone) {
       select(candidates);
     } else {

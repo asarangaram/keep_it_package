@@ -15,12 +15,14 @@ import '../../media_view_service/preview/media_preview_service.dart';
 
 class MediaMetadataEditor extends StatelessWidget {
   factory MediaMetadataEditor({
+    required String storeIdentity,
     required int mediaId,
-    required void Function(CLMedia media) onSubmit,
+    required void Function(StoreEntity media) onSubmit,
     required void Function() onCancel,
     Key? key,
   }) {
     return MediaMetadataEditor._(
+      storeIdentity: storeIdentity,
       mediaId: mediaId,
       onSubmit: onSubmit,
       onCancel: onCancel,
@@ -29,12 +31,14 @@ class MediaMetadataEditor extends StatelessWidget {
     );
   }
   factory MediaMetadataEditor.dialog({
+    required String storeIdentity,
     required int mediaId,
-    required void Function(CLMedia media) onSubmit,
+    required void Function(StoreEntity media) onSubmit,
     required void Function() onCancel,
     Key? key,
   }) {
     return MediaMetadataEditor._(
+      storeIdentity: storeIdentity,
       mediaId: mediaId,
       onSubmit: onSubmit,
       onCancel: onCancel,
@@ -43,6 +47,7 @@ class MediaMetadataEditor extends StatelessWidget {
     );
   }
   const MediaMetadataEditor._({
+    required this.storeIdentity,
     required this.mediaId,
     required this.isDialog,
     required this.onSubmit,
@@ -50,20 +55,22 @@ class MediaMetadataEditor extends StatelessWidget {
     super.key,
   });
 
+  final String storeIdentity;
   final int mediaId;
 
-  final void Function(CLMedia media) onSubmit;
+  final void Function(StoreEntity media) onSubmit;
   final void Function() onCancel;
   final bool isDialog;
 
-  static Future<CLMedia?> openSheet(
+  static Future<StoreEntity?> openSheet(
     BuildContext context,
     WidgetRef ref, {
-    required CLMedia media,
+    required StoreEntity media,
   }) async {
-    return showShadSheet<CLMedia>(
+    return showShadSheet<StoreEntity>(
       context: context,
       builder: (BuildContext context) => MediaMetadataEditor.dialog(
+        storeIdentity: media.store.store.identity,
         mediaId: media.id!,
         onSubmit: (media) {
           PageManager.of(context).pop(media);
@@ -94,6 +101,7 @@ class MediaMetadataEditor extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: GetMedia(
+        storeIdentity: storeIdentity,
         id: mediaId,
         errorBuilder: errorBuilder,
         loadingBuilder: () => loading(context, 'GetCollection'),
@@ -106,9 +114,10 @@ class MediaMetadataEditor extends StatelessWidget {
             }
           }
           return GetCollection(
-            id: media.collectionId,
+            storeIdentity: storeIdentity,
+            id: media.parentId,
             errorBuilder: errorBuilder,
-            loadingBuilder: () => loading(context, 'GetCollectionMultiple'),
+            loadingBuilder: () => loading(context, 'GetCollection'),
             builder: (collection) {
               return StatefulMediaEditor(
                 media: media,
@@ -131,9 +140,9 @@ class StatefulMediaEditor extends StatefulWidget {
     super.key,
   });
 
-  final CLMedia media;
+  final StoreEntity media;
 
-  final void Function(CLMedia media) onSubmit;
+  final void Function(StoreEntity media) onSubmit;
   final void Function() onCancel;
 
   @override
@@ -150,8 +159,8 @@ class _StatefulMediaEditorState extends State<StatefulMediaEditor> {
   void initState() {
     nameController = TextEditingController();
     refController = TextEditingController();
-    nameController.text = widget.media.name;
-    refController.text = widget.media.ref ?? '';
+    nameController.text = widget.media.data.label ?? '';
+    refController.text = widget.media.data.description ?? '';
     super.initState();
   }
 
@@ -177,7 +186,7 @@ class _StatefulMediaEditorState extends State<StatefulMediaEditor> {
       child: ShadSheet(
         draggable: true,
         title: Text(
-          'Edit Media "${widget.media.name.capitalizeFirstLetter()}"',
+          'Edit Media "${widget.media.data.label?.capitalizeFirstLetter() ?? widget.media.id}"',
         ),
         description: const Text(
           'Change the label and add/update description here',
@@ -190,14 +199,16 @@ class _StatefulMediaEditorState extends State<StatefulMediaEditor> {
                 formValue = formKey.currentState!.value;
                 final name = formValue['name'] as String;
                 final ref = formValue['ref'] as String?;
-                final updated = widget.media.updateContent(
-                  isEdited: true,
-                  name: () => name,
-                  ref: () => ref == null
-                      ? null
-                      : ref.isEmpty
-                          ? null
-                          : ref,
+                final updated = StoreEntity(
+                  entity: widget.media.data.updateContent(
+                    label: () => name,
+                    description: () => ref == null
+                        ? null
+                        : ref.isEmpty
+                            ? null
+                            : ref,
+                  ),
+                  store: widget.media.store,
                 );
                 widget.onSubmit(updated);
               }
@@ -227,7 +238,7 @@ class _StatefulMediaEditorState extends State<StatefulMediaEditor> {
                       placeholder: const Text('Enter media name'),
                       validator: (value) => validateName(
                         newLabel: value,
-                        existingLabel: widget.media.name,
+                        existingLabel: widget.media.data.label,
                       ),
                       showCursor: true,
                       inputFormatters: [
@@ -252,7 +263,8 @@ class _StatefulMediaEditorState extends State<StatefulMediaEditor> {
                         child: const Icon(LucideIcons.delete),
                       ),
                     ),
-                    if (kDebugMode) MapInfo(widget.media.toMapForDisplay()),
+                    if (kDebugMode)
+                      MapInfo(widget.media.data.toMapForDisplay()),
                     if (formValue.isNotEmpty)
                       Padding(
                         padding: const EdgeInsets.only(top: 24, left: 12),

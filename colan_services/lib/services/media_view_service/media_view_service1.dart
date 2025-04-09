@@ -5,14 +5,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/keep_it_state.dart';
 import 'package:store/store.dart';
 
-import '../notes_service/notes_service.dart';
-
 import 'widgets/media_page_view.dart';
 import 'widgets/media_view.dart';
 
 class MediaViewService1 extends StatelessWidget {
   factory MediaViewService1({
-    required CLMedia media,
+    required StoreEntity media,
     required String parentIdentifier,
     required Widget Function(Object, StackTrace) errorBuilder,
     required Widget Function() loadingBuilder,
@@ -28,10 +26,10 @@ class MediaViewService1 extends StatelessWidget {
       loadingBuilder: loadingBuilder,
     );
   }
-  
+
   factory MediaViewService1.pageView({
     required int initialMediaIndex,
-    required List<CLMedia> media,
+    required List<StoreEntity> media,
     required String parentIdentifier,
     required Widget Function(Object, StackTrace) errorBuilder,
     required Widget Function() loadingBuilder,
@@ -57,7 +55,7 @@ class MediaViewService1 extends StatelessWidget {
     this.loadingBuilder,
   });
 
-  final List<CLMedia> media;
+  final List<StoreEntity> media;
   final int initialMediaIndex;
   final String parentIdentifier;
   final bool isPreview;
@@ -110,7 +108,7 @@ class MediaViewService0 extends ConsumerStatefulWidget {
     super.key,
   });
 
-  final List<CLMedia> media;
+  final List<StoreEntity> media;
   final int initialMediaIndex;
   final String parentIdentifier;
   final Widget Function(Object, StackTrace) errorBuilder;
@@ -178,9 +176,6 @@ class MediaViewService0State extends ConsumerState<MediaViewService0> {
                       ref.read(showControlsProvider.notifier).hideNotes();
                     }
                   },
-                  child: NotesService(
-                    media: widget.media[0],
-                  ),
                 ),
             ],
           )

@@ -1,35 +1,49 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "name": "keep_it",
-            "cwd": "keep_it",
-            "request": "launch",
-            "type": "dart"
-        },
-        {
-            "name": "keep_it (profile mode)",
-            "cwd": "keep_it",
-            "request": "launch",
-            "type": "dart",
-            "flutterMode": "profile"
-        },
-        {
-            "name": "keep_it (release mode)",
-            "cwd": "keep_it",
-            "request": "launch",
-            "type": "dart",
-            "flutterMode": "release"
-        },
-        {
-            "name": "Backup Files",
-            "type": "dart",
-            "request": "launch",
-            "program": "${workspaceFolder}/colan_services/test/test_backup_files.dart",
-            "console": "terminal"
-        }
-    ]
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "keep_it",
+      "cwd": "keep_it",
+      "request": "launch",
+      "type": "dart"
+    },
+    {
+      "name": "keep_it (profile mode)",
+      "cwd": "keep_it",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "profile"
+    },
+    {
+      "name": "keep_it (release mode)",
+      "cwd": "keep_it",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "release"
+    },
+
+    {
+      "name": "cl_media_info_extractor",
+      "cwd": "cl_media_info_extractor/example",
+      "request": "launch",
+      "type": "dart"
+    },
+    {
+      "name": "cl_media_info_extractor (profile mode)",
+      "cwd": "cl_media_info_extractor/example",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "profile"
+    },
+    {
+      "name": "cl_media_info_extractor (release mode)",
+      "cwd": "cl_media_info_extractor/example",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "release"
+    }
+  ]
 }

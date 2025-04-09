@@ -19,34 +19,29 @@ class CollectionView extends ConsumerWidget {
     super.key,
   });
   final ViewIdentifier viewIdentifier;
-  final Collection collection;
-  final List<CLMedia> containingMedia;
+  final StoreEntity collection;
+  final List<StoreEntity> containingMedia;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     MediaQuery.of(context);
-    final borderColor = collection.hasServerUID
-        ? collection.haveItOffline
-            ? Colors.blue
-            : Colors.green
-        : ShadTheme.of(context).colorScheme.foreground;
+    final borderColor = ShadTheme.of(context).colorScheme.foreground;
 
     return GetFilters(
       identifier: viewIdentifier.parentID,
       builder: (filters) {
         return GetAvailableMediaByCollectionId(
-          collectionId: collection.id,
+          storeIdentity: collection.store.store.identity,
+          parentId: collection.id,
           errorBuilder: (_, __) =>
               throw UnimplementedError('GetMediaByCollectionId'),
           loadingBuilder: () =>
               CLLoader.hide(debugMessage: 'GetMediaByCollectionId'),
           builder: (allMedia) {
             return FolderItem(
-              name: collection.label,
+              name: collection.data.label!,
               borderColor: borderColor,
-              avatarAsset: (collection.serverUID == null)
-                  ? 'assets/icon/not_on_server.png'
-                  : 'assets/icon/cloud_on_lan_128px_color.png',
+              avatarAsset: 'assets/icon/not_on_server.png',
               counter: (filters.isActive || filters.isTextFilterActive)
                   ? AnimatedSwitcher(
                       duration: const Duration(milliseconds: 300),
@@ -69,7 +64,7 @@ class CollectionView extends ConsumerWidget {
                                 .colorScheme
                                 .mutedForeground,
                             child: Text(
-                              '${containingMedia.length}/${allMedia.entries.length} matches',
+                              '${containingMedia.length}/${allMedia.length} matches',
                             ),
                           ),
                         ),
@@ -85,7 +80,7 @@ class CollectionView extends ConsumerWidget {
                 ),
                 whenNopreview: Center(
                   child: CLText.veryLarge(
-                    collection.label.characters.first,
+                    collection.data.label!.characters.first,
                   ),
                 ),
               ),

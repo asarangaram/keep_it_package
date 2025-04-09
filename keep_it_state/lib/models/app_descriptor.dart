@@ -1,8 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'cl_media_candidate.dart';
 import 'cl_route_descriptor.dart';
-import 'cl_shared_media.dart';
 
 typedef CLAppInitializer = Future<bool> Function(Ref ref);
 typedef CLTransitionBuilder = Widget Function(

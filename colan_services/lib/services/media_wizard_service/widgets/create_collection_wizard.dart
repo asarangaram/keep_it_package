@@ -16,9 +16,9 @@ class CreateCollectionWizard extends StatefulWidget {
   });
   final bool fixedHeight;
   final void Function({
-    required Collection collection,
+    required StoreEntity collection,
   }) onDone;
-  final bool Function(Collection collection)? isValidSuggestion;
+  final bool Function(StoreEntity collection)? isValidSuggestion;
 
   @override
   State<StatefulWidget> createState() => PickCollectionState();
@@ -26,7 +26,7 @@ class CreateCollectionWizard extends StatefulWidget {
 
 class PickCollectionState extends State<CreateCollectionWizard> {
   bool onEditLabel = true;
-  Collection? collection;
+  StoreEntity? collection;
 
   late bool hasDescription;
 
@@ -51,10 +51,8 @@ class PickCollectionState extends State<CreateCollectionWizard> {
         collection: collection,
         isValidSuggestion: widget.isValidSuggestion,
         onDone: (collection) {
-          if (collection.id != null) {
-            widget.onDone(collection: collection);
-            hasDescription = true;
-          }
+          widget.onDone(collection: collection);
+          hasDescription = true;
           setState(() {
             onEditLabel = false;
             this.collection = collection;
@@ -65,7 +63,7 @@ class PickCollectionState extends State<CreateCollectionWizard> {
       child = Column(
         children: [
           LabelViewer(
-            label: 'Collection: ${collection!.label}',
+            label: 'Collection: ${collection!.data.label}',
             icon: clIcons.editCollectionLabel,
             onTap: () {
               setState(() {

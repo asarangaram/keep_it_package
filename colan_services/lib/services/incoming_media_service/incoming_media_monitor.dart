@@ -1,8 +1,9 @@
+import 'package:cl_media_tools/cl_media_tools.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:keep_it_state/keep_it_state.dart';
-import 'package:path/path.dart' as path_handler;
+
 import 'package:store/store.dart';
 
 class IncomingMediaMonitor extends ConsumerWidget {
@@ -25,7 +26,7 @@ class IncomingMediaMonitor extends ConsumerWidget {
   static Future<bool> onPickFiles(
     BuildContext context,
     WidgetRef ref, {
-    Collection? collection,
+    StoreEntity? collection,
   }) async {
     final picker = ImagePicker();
     final pickedFileList = await picker.pickMultipleMedia();
@@ -33,11 +34,7 @@ class IncomingMediaMonitor extends ConsumerWidget {
     if (pickedFileList.isNotEmpty) {
       final items = pickedFileList
           .map(
-            (xfile) => CLMediaBase(
-              name: xfile.path,
-              type: CLMediaType.file,
-              fExt: path_handler.extension(xfile.path),
-            ),
+            (xfile) => CLMediaUnknown(xfile.path),
           )
           .toList();
       final sharedMedia = CLMediaFileGroup(

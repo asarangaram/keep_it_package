@@ -1,3 +1,4 @@
+import 'package:cl_media_tools/cl_media_tools.dart';
 import 'package:cl_media_viewers_flutter/cl_media_viewers_flutter.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
@@ -12,7 +13,7 @@ import 'media_controls.dart';
 
 class MediaView extends StatelessWidget {
   factory MediaView({
-    required CLMedia media,
+    required StoreEntity media,
     required String parentIdentifier,
     required bool autoStart,
     required bool autoPlay,
@@ -36,7 +37,7 @@ class MediaView extends StatelessWidget {
     );
   }
   factory MediaView.preview(
-    CLMedia media, {
+    StoreEntity media, {
     required String parentIdentifier,
   }) {
     return MediaView._(
@@ -60,7 +61,7 @@ class MediaView extends StatelessWidget {
     this.errorBuilder,
     this.loadingBuilder,
   });
-  final CLMedia media;
+  final StoreEntity media;
 
   final String parentIdentifier;
 
@@ -112,7 +113,7 @@ class MediaView0 extends ConsumerWidget {
     this.onLockPage,
     super.key,
   });
-  final CLMedia media;
+  final StoreEntity media;
 
   final String parentIdentifier;
 
@@ -125,80 +126,54 @@ class MediaView0 extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final showControl = ref.watch(showControlsProvider);
-    return GetStoreUpdater(
-      errorBuilder: errorBuilder,
-      loadingBuilder: loadingBuilder,
-      builder: (theStore) {
-        return GetMediaUri(
-          errorBuilder: errorBuilder,
-          loadingBuilder: loadingBuilder,
-          id: media.id!,
-          builder: (mediaUri) {
-            /* log(
-              'id: ${media.id!} ${media.md5String} ',
-              name: 'MediaView0 | build',
-            ); */
-            return GestureDetector(
-              behavior: HitTestBehavior.translucent,
-              onTap: () =>
-                  ref.read(showControlsProvider.notifier).toggleControls(),
-              child: Stack(
-                children: [
-                  const MediaBackground(),
-                  Positioned.fill(
-                    child: Hero(
-                      tag: '$parentIdentifier /item/${media.id}',
-                      child: SafeArea(
-                        top: showControl.showNotes,
-                        bottom: showControl.showNotes,
-                        left: showControl.showNotes,
-                        right: showControl.showNotes,
-                        child: switch (media.type) {
-                          CLMediaType.image => ImageViewer.guesture(
-                              uri: mediaUri!,
-                              onLockPage: onLockPage,
-                              isLocked: isLocked,
-                            ),
-                          CLMediaType.video => VideoPlayer(
-                              uri: mediaUri!,
-                              autoStart: autoStart,
-                              autoPlay: autoPlay,
-                              onLockPage: onLockPage,
-                              isLocked: isLocked,
-                              placeHolder: GetPreviewUri(
-                                errorBuilder: BrokenImage.show,
-                                loadingBuilder: () => CLLoader.widget(
-                                  debugMessage: 'GetPreviewUri',
-                                ),
-                                id: media.id!,
-                                builder: (previewUri) {
-                                  return ImageViewer.basic(
-                                    uri: previewUri,
-                                  );
-                                },
-                              ),
-                              errorBuilder: BrokenImage.show,
-                              loadingBuilder: () => CLLoader.widget(
-                                debugMessage: 'VideoPlayer',
-                              ),
-                            ),
-                          CLMediaType.text => const BrokenImage(),
-                          CLMediaType.url => const BrokenImage(),
-                          CLMediaType.audio => const BrokenImage(),
-                          CLMediaType.file => const BrokenImage(),
-                        },
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onTap: () => ref.read(showControlsProvider.notifier).toggleControls(),
+      child: Stack(
+        children: [
+          const MediaBackground(),
+          Positioned.fill(
+            child: Hero(
+              tag: '$parentIdentifier /item/${media.id}',
+              child: SafeArea(
+                top: showControl.showNotes,
+                bottom: showControl.showNotes,
+                left: showControl.showNotes,
+                right: showControl.showNotes,
+                child: switch (media.data.mediaType) {
+                  CLMediaType.image => ImageViewer.guesture(
+                      uri: media.mediaUri!,
+                      onLockPage: onLockPage,
+                      isLocked: isLocked,
+                    ),
+                  CLMediaType.video => VideoPlayer(
+                      uri: media.mediaUri!,
+                      autoStart: autoStart,
+                      autoPlay: autoPlay,
+                      onLockPage: onLockPage,
+                      isLocked: isLocked,
+                      placeHolder: ImageViewer.basic(
+                        uri: media.previewUri!, // FIXME
+                      ),
+                      errorBuilder: BrokenImage.show,
+                      loadingBuilder: () => CLLoader.widget(
+                        debugMessage: 'VideoPlayer',
                       ),
                     ),
-                  ),
-                  MediaControls(
-                    media: media,
-                  ),
-                ],
+                  CLMediaType.text => const BrokenImage(),
+                  CLMediaType.audio => const BrokenImage(),
+                  CLMediaType.file => const BrokenImage(),
+                  CLMediaType.uri => const BrokenImage(),
+                  CLMediaType.unknown => const BrokenImage(),
+                },
               ),
-            );
-          },
-        );
-      },
+            ),
+          ),
+          MediaControls(
+            media: media,
+          ),
+        ],
+      ),
     );
   }
 }

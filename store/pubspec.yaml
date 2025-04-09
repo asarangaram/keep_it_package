@@ -2,15 +2,19 @@ name: store
 description: A starting point for Dart libraries or applications.
 version: 1.0.0
 # repository: https://github.com/my_org/my_repo
-
+publish_to: none
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: ">=3.0.0 <4.0.0"
 
 # Add regular dependencies here.
 dependencies:
+  cl_media_tools:
+    path: ../cl_media_tools
   collection: ^1.19.0
   crypto: ^3.0.4
+  heif_converter: ^1.0.1
   http: ^1.2.2
+  image: ^4.5.4
   intl: ^0.19.0
   logger: ^2.4.0
   meta: ^1.12.0 # this version 1.12.0 is required for flutter_test

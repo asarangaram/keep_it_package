@@ -1,14 +1,13 @@
 import 'dart:async';
 
+import 'package:cl_media_tools/cl_media_tools.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/extensions/ext_list.dart';
 
-import 'package:path/path.dart' as path_handler;
 import 'package:share_handler/share_handler.dart';
-import 'package:store/store.dart';
 
-import '../models/cl_shared_media.dart';
+import '../models/cl_media_candidate.dart';
 import '../models/platform_support.dart';
 import '../models/universal_media_source.dart';
 
@@ -47,36 +46,20 @@ class IncomingMediaNotifier extends StateNotifier<List<CLMediaFileGroup>> {
     };
   }
 
-  void receiveSharedMedia(SharedMedia? media) {
+  void receiveSharedMedia(SharedMedia? media) async {
     if (media == null) return;
     final attachements = [
-      /* 
-        not supported yet
       if (media.content != null && media.content!.isNotEmpty)
-        if (media.content!.isURL())
-          CLMediaBase(name: media.content!, type: CLMediaType.url, fExt: '.url')
+        if (CLMediaContent.isURL(media.content!))
+          CLMediaURI(Uri.parse(media.content!))
         else
-          CLMediaBase(
-            name: 'text:${media.content!}',
-            type: CLMediaType.text,
-            fExt: '.txt',
-          ), */
+          CLMediaText(media.content!),
       if (media.imageFilePath != null)
-        CLMediaBase(
-          name: media.imageFilePath!,
-          type: CLMediaType.image,
-          fExt: path_handler.extension(media.imageFilePath!),
+        CLMediaUnknown(
+          media.imageFilePath!,
         ),
       if (media.attachments != null)
-        ...media.attachments!.where((e) => e != null).map(
-          (e) {
-            return CLMediaBase(
-              name: e!.path,
-              type: toCLMediaType(e.type),
-              fExt: path_handler.extension(e.path),
-            );
-          },
-        ),
+        ...media.attachments!.map((e) => CLMediaUnknown(e!.path)),
     ];
 
     if (attachements.isNotEmpty) {
@@ -98,7 +81,9 @@ class IncomingMediaNotifier extends StateNotifier<List<CLMediaFileGroup>> {
     if (media != null) {
       if (ColanPlatformSupport.isMobilePlatform && media.isNotEmpty) {
         for (final item in media.entries) {
-          item.deleteFile();
+          if (item is CLMediaFile) {
+            item.deleteFile();
+          }
         }
       }
       state = state.removeFirstItem();

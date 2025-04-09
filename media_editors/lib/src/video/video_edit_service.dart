@@ -1,11 +1,9 @@
 import 'dart:io';
 
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
-import 'package:ffmpeg_kit_flutter/return_code.dart';
+
 import 'package:flutter/material.dart';
 
-import '../extensions/ext_file.dart';
 import 'widgets/video_trimmer.dart';
 
 class VideoEditor extends StatefulWidget {
@@ -99,7 +97,8 @@ class _AudioMuterState extends State<AudioMuter> {
                 });
 
                 if (outFile == null) {
-                  final videoWithoutAudio = await widget.onCreateNewFile();
+                  throw UnimplementedError('ffmpeg removed from project');
+                  /* final videoWithoutAudio = await widget.onCreateNewFile();
                   await File(videoWithoutAudio).deleteIfExists();
                   final session = await FFmpegKit.execute(
                     '-i ${widget.inFile} '
@@ -109,7 +108,7 @@ class _AudioMuterState extends State<AudioMuter> {
                   final returnCode = await session.getReturnCode();
                   if (ReturnCode.isSuccess(returnCode)) {
                     widget.onDone(videoWithoutAudio);
-                  }
+                  } */
                   /* {
                         final output = await session.getOutput();
                         print(output);

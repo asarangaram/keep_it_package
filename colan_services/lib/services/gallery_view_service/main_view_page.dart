@@ -12,8 +12,10 @@ import 'widgets/when_error.dart';
 
 class GalleryViewService extends StatelessWidget {
   const GalleryViewService({
+    required this.storeIdentity,
     super.key,
   });
+  final String storeIdentity;
 
   @override
   Widget build(BuildContext context) {
@@ -27,18 +29,20 @@ class GalleryViewService extends StatelessWidget {
         body: OnSwipe(
           child: SafeArea(
             bottom: false,
-            child: GetStoreUpdater(
+            child: GetStore(
+              storeIdentity: storeIdentity,
               errorBuilder: errorBuilder,
               loadingBuilder: () => CLLoader.widget(
                 debugMessage: 'GetStore',
               ),
               builder: (theStore) {
                 return GetAvailableMediaByActiveCollectionId(
+                  storeIdentity: storeIdentity,
                   loadingBuilder: () => CLLoader.widget(
                     debugMessage: 'GetAvailableMediaByCollectionId',
                   ),
                   errorBuilder: errorBuilder,
-                  builder: (clmedias) => AnimatedSwitcher(
+                  builder: (entities) => AnimatedSwitcher(
                     duration: const Duration(milliseconds: 300),
                     switchInCurve: Curves.easeInOut,
                     switchOutCurve: Curves.easeInOut,
@@ -49,7 +53,7 @@ class GalleryViewService extends StatelessWidget {
                         FadeTransition(opacity: animation, child: child),
                     child: KeepItMainGrid(
                       parentIdentifier: parentIdentifier,
-                      clmedias: clmedias,
+                      entities: entities,
                       theStore: theStore,
                       loadingBuilder: () => CLLoader.widget(
                         debugMessage: 'KeepItMainGrid',
@@ -73,13 +77,13 @@ class OnSwipe extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final collectionId = ref.watch(activeCollectionProvider);
+    final parentId = ref.watch(activeCollectionProvider);
     return GestureDetector(
       onHorizontalDragEnd: (DragEndDetails details) {
         if (details.primaryVelocity == null) return;
         // pop on Swipe
         if (details.primaryVelocity! > 0) {
-          if (collectionId != null) {
+          if (parentId != null) {
             ref.read(activeCollectionProvider.notifier).state = null;
           }
         }

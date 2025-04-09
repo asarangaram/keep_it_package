@@ -20,39 +20,36 @@ class ViewModifierBuilder extends StatelessWidget {
     super.key,
   });
   final ViewIdentifier viewIdentifier;
-  final List<CLEntity> entities;
+  final List<ViewerEntityMixin> entities;
 
   final Widget Function(
     BuildContext,
-    CLEntity, {
-    required CLEntity? Function(CLEntity entity)? onGetParent,
-    required List<CLEntity>? Function(CLEntity entity)? onGetChildren,
-  }) itemBuilder;
+    ViewerEntityMixin,
+  ) itemBuilder;
 
-  final CLContextMenu Function(BuildContext, List<CLEntity>)? contextMenuOf;
-  final void Function(List<CLEntity>)? onSelectionChanged;
+  final CLContextMenu Function(BuildContext, List<ViewerEntityMixin>)?
+      contextMenuOf;
+  final void Function(List<ViewerEntityMixin>)? onSelectionChanged;
   final bool filtersDisabled;
   final List<Widget> Function(
     BuildContext context,
-    List<GalleryGroupCLEntity<CLEntity>> galleryMap,
+    List<GalleryGroupStoreEntity<ViewerEntityMixin>> galleryMap,
   ) bannersBuilder;
   final Widget Function({
     required ViewIdentifier viewIdentifier,
-    required List<CLEntity> incoming,
+    required List<ViewerEntityMixin> incoming,
     required Widget Function(
       BuildContext,
-      CLEntity, {
-      required CLEntity? Function(CLEntity entity)? onGetParent,
-      required List<CLEntity>? Function(CLEntity entity)? onGetChildren,
-    }) itemBuilder,
+      ViewerEntityMixin,
+    ) itemBuilder,
     required Widget? Function(
       BuildContext context,
-      List<GalleryGroupCLEntity<CLEntity>> galleryMap,
-      GalleryGroupCLEntity<CLEntity> gallery,
+      List<GalleryGroupStoreEntity<ViewerEntityMixin>> galleryMap,
+      GalleryGroupStoreEntity<ViewerEntityMixin> gallery,
     ) labelBuilder,
     required List<Widget> Function(
       BuildContext context,
-      List<GalleryGroupCLEntity<CLEntity>> galleryMap,
+      List<GalleryGroupStoreEntity<ViewerEntityMixin>> galleryMap,
     ) bannersBuilder,
     required Widget Function(
       BuildContext, {
@@ -93,10 +90,10 @@ class ViewModifierBuilder extends StatelessWidget {
               bannersBuilder: bannersBuilder,
               disabled: filtersDisabled,
               builder: (
-                List<CLEntity> filterred, {
+                List<ViewerEntityMixin> filterred, {
                 required List<Widget> Function(
                   BuildContext,
-                  List<GalleryGroupCLEntity<CLEntity>>,
+                  List<GalleryGroupStoreEntity<ViewerEntityMixin>>,
                 ) bannersBuilder,
               }) {
                 return builder(

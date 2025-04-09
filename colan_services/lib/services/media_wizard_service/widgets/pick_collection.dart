@@ -13,20 +13,19 @@ class PickCollection extends StatelessWidget {
     super.key,
     this.isValidSuggestion,
   });
-  final Collection? collection;
-  final void Function(Collection) onDone;
-  final bool Function(Collection collection)? isValidSuggestion;
+  final StoreEntity? collection;
+  final void Function(StoreEntity) onDone;
+  final bool Function(StoreEntity collection)? isValidSuggestion;
 
   @override
   Widget build(BuildContext context) {
-    return GetCollectionMultiple(
+    return GetAllVisibleCollection(
       errorBuilder: (_, __) {
         throw UnimplementedError('errorBuilder');
       },
       loadingBuilder: () => CLLoader.widget(
-        debugMessage: 'GetCollectionMultiple',
+        debugMessage: 'GetAllVisibleCollection',
       ),
-      query: DBQueries.collectionsVisible,
       builder: (collections) {
         return CLWizardFormField(
           actionMenu: (context, onTap) => CLMenuItem(
@@ -37,18 +36,22 @@ class PickCollection extends StatelessWidget {
           descriptor: CLFormSelectSingleDescriptors(
             title: 'Collection',
             label: 'Select Collection',
-            labelBuilder: (e) =>
-                '${(e as Collection).label} ${e.hasServerUID ? '*' : ''}',
-            descriptionBuilder: (e) => (e as Collection).description,
+            labelBuilder: (e) => (e as StoreEntity).data.label!,
+            descriptionBuilder: (e) => (e as StoreEntity).data.description,
             suggestionsAvailable: [
               if (isValidSuggestion != null)
-                ...collections.entries.where((e) => isValidSuggestion!(e))
+                ...collections.where((e) => isValidSuggestion!(e))
               else
-                ...collections.entries,
+                ...collections,
             ],
             initialValues: collection,
             onSelectSuggestion: (item) async => item,
-            onCreateByLabel: (label) async => Collection.byLabel(label),
+            onCreateByLabel: (label) async {
+              throw UnimplementedError('Need a store create function here ');
+              /* return StoreEntity.collection(
+                label: label,
+              ); */
+            },
             onValidate: (value) {
               if (value == null) {
                 return "can't be empty";
@@ -61,7 +64,7 @@ class PickCollection extends StatelessWidget {
           ),
           onSubmit: (CLFormFieldResult result) async {
             final collection = (result as CLFormSelectSingleResult)
-                .selectedEntitry as Collection;
+                .selectedEntitry as StoreEntity;
 
             onDone(collection);
           },
@@ -78,8 +81,8 @@ class PickCollectionWizard extends StatelessWidget {
     super.key,
   });
 
-  final Collection? collection;
-  final void Function(Collection p1) onDone;
+  final StoreEntity? collection;
+  final void Function(StoreEntity p1) onDone;
 
   @override
   Widget build(BuildContext context) {
@@ -92,13 +95,17 @@ class PickCollectionWizard extends StatelessWidget {
       descriptor: CLFormSelectSingleDescriptors(
         title: 'Collection',
         label: 'Select Collection',
-        labelBuilder: (e) =>
-            '${(e as Collection).label} ${e.hasServerUID ? '*' : ''}',
-        descriptionBuilder: (e) => (e as Collection).description,
+        labelBuilder: (e) => (e as StoreEntity).data.label!,
+        descriptionBuilder: (e) => (e as StoreEntity).data.description,
         suggestionsAvailable: const [],
         initialValues: collection,
         onSelectSuggestion: (item) async => item,
-        onCreateByLabel: (label) async => Collection.byLabel(label),
+        onCreateByLabel: (label) async {
+          throw UnimplementedError('Need a store create function here ');
+          /* return StoreEntity.collection(
+                label: label,
+              ); */
+        },
         onValidate: (value) {
           if (value == null) {
             return "can't be empty";
@@ -111,7 +118,7 @@ class PickCollectionWizard extends StatelessWidget {
       ),
       onSubmit: (CLFormFieldResult result) async {
         final collection =
-            (result as CLFormSelectSingleResult).selectedEntitry as Collection;
+            (result as CLFormSelectSingleResult).selectedEntitry as StoreEntity;
 
         onDone(collection);
       },

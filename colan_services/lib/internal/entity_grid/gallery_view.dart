@@ -1,11 +1,10 @@
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:keep_it_state/keep_it_state.dart';
-import 'package:store/store.dart' show CLEntity, GalleryGroupCLEntity;
+import 'package:store/store.dart'
+    show GalleryGroupStoreEntity, ViewerEntityMixin;
 
 import 'widgets/gallery_view.dart';
-
-
 
 class EntityGridView extends StatelessWidget {
   const EntityGridView({
@@ -23,24 +22,19 @@ class EntityGridView extends StatelessWidget {
   });
   final ViewIdentifier viewIdentifier;
   final int columns;
-  final List<CLEntity> incoming;
+  final List<ViewerEntityMixin> incoming;
 
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
-  final Widget Function(
-    BuildContext,
-    CLEntity, {
-    required CLEntity? Function(CLEntity entity)? onGetParent,
-    required List<CLEntity>? Function(CLEntity entity)? onGetChildren,
-  }) itemBuilder;
+  final Widget Function(BuildContext, ViewerEntityMixin) itemBuilder;
   final Widget? Function(
     BuildContext context,
-    List<GalleryGroupCLEntity<CLEntity>> galleryMap,
-    GalleryGroupCLEntity<CLEntity> gallery,
+    List<GalleryGroupStoreEntity<ViewerEntityMixin>> galleryMap,
+    GalleryGroupStoreEntity<ViewerEntityMixin> gallery,
   ) labelBuilder;
   final List<Widget> Function(
     BuildContext context,
-    List<GalleryGroupCLEntity<CLEntity>> galleryMap,
+    List<GalleryGroupStoreEntity<ViewerEntityMixin>> galleryMap,
   ) bannersBuilder;
   final Widget Function(
     BuildContext, {
@@ -59,23 +53,15 @@ class EntityGridView extends StatelessWidget {
       columns: columns,
       viewableAsCollection: viewableAsCollection,
       builder: (
-        tabs /* columns */, {
-        required CLEntity? Function(CLEntity entity)? onGetParent,
-        required List<CLEntity>? Function(CLEntity entity)? onGetChildren,
-      }) {
+        tabs,
+        /* columns */
+      ) {
         return RawCLEntityGalleryView(
           viewIdentifier: viewIdentifier,
           tabs: tabs,
           bannersBuilder: bannersBuilder,
           labelBuilder: labelBuilder,
-          itemBuilder: (context, item) {
-            return itemBuilder(
-              context,
-              item,
-              onGetParent: onGetParent,
-              onGetChildren: onGetChildren,
-            );
-          },
+          itemBuilder: itemBuilder,
           columns: columns,
           draggableMenuBuilder: draggableMenuBuilder,
         );

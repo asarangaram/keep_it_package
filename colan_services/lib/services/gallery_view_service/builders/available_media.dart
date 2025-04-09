@@ -10,37 +10,32 @@ class GetAvailableMediaByCollectionId extends ConsumerWidget {
     required this.builder,
     required this.errorBuilder,
     required this.loadingBuilder,
+    required this.storeIdentity,
     super.key,
-    this.collectionId,
+    this.parentId,
   });
-  final int? collectionId;
-  final Widget Function(CLMedias items) builder;
+  final int? parentId;
+  final Widget Function(List<StoreEntity> items) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
+  final String storeIdentity;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final canSync =
-        ref.watch(serverProvider.select((server) => server.canSync));
+    if (parentId == null) {
+      return GetAllMedia(
+        storeIdentity: storeIdentity,
+        errorBuilder: errorBuilder,
+        loadingBuilder: loadingBuilder,
+        builder: builder,
+      );
+    }
     return GetMediaByCollectionId(
+      storeIdentity: storeIdentity,
       errorBuilder: errorBuilder,
       loadingBuilder: loadingBuilder,
-      collectionId: collectionId,
-      builder: (items) {
-        CLMedias available;
-        if (!canSync) {
-          available = CLMedias(
-            items.entries
-                .where(
-                  (c) => c.isCached,
-                )
-                .toList(),
-          );
-        } else {
-          available = items;
-        }
-        return builder(available);
-      },
+      parentId: parentId!,
+      builder: builder,
     );
   }
 }
@@ -50,20 +45,23 @@ class GetAvailableMediaByActiveCollectionId extends ConsumerWidget {
     required this.builder,
     required this.errorBuilder,
     required this.loadingBuilder,
+    required this.storeIdentity,
     super.key,
   });
-  final Widget Function(CLMedias items) builder;
+  final Widget Function(List<StoreEntity> items) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
+  final String storeIdentity;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final collectionId = ref.watch(activeCollectionProvider);
+    final parent = ref.watch(activeCollectionProvider);
 
     return GetAvailableMediaByCollectionId(
+      storeIdentity: storeIdentity,
       errorBuilder: errorBuilder,
       loadingBuilder: loadingBuilder,
-      collectionId: collectionId,
+      parentId: parent?.id,
       builder: builder,
     );
   }

@@ -1,24 +1,9 @@
-
+import 'package:cl_media_tools/cl_media_tools.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:store/store.dart';
 
 import 'universal_media_source.dart';
-
-@immutable
-class CLMediaFileGroup {
-  const CLMediaFileGroup({
-    required this.entries,
-    required this.type,
-    this.collection,
-  });
-  final List<CLMediaBase> entries;
-  final Collection? collection;
-  final UniversalMediaSource? type;
-
-  bool get isEmpty => entries.isEmpty;
-  bool get isNotEmpty => entries.isNotEmpty;
-}
 
 @immutable
 class CLSharedMedia {
@@ -27,8 +12,8 @@ class CLSharedMedia {
     this.collection,
     this.type,
   });
-  final List<CLMedia> entries;
-  final Collection? collection;
+  final List<StoreEntity> entries;
+  final StoreEntity? collection;
   final UniversalMediaSource? type;
 
   bool get isEmpty => entries.isEmpty;
@@ -39,8 +24,8 @@ class CLSharedMedia {
       'CLSharedMedia(entries: $entries, collection: $collection, type: $type)';
 
   CLSharedMedia copyWith({
-    List<CLMedia>? entries,
-    Collection? collection,
+    List<StoreEntity>? entries,
+    StoreEntity? collection,
     UniversalMediaSource? type,
   }) {
     return CLSharedMedia(
@@ -50,50 +35,49 @@ class CLSharedMedia {
     );
   }
 
-  Iterable<CLMedia> get _stored => entries.where((e) => e.id != null);
-  Iterable<CLMedia> get _targetMismatch => _stored
-      .where((e) => e.collectionId != collection?.id && !(e.isHidden ?? false));
+  Iterable<StoreEntity> get _stored => entries.where((e) => e.id != null);
+  Iterable<StoreEntity> get _targetMismatch =>
+      _stored.where((e) => e.parentId != collection?.id && !(e.data.isHidden));
 
-  List<CLMedia> get targetMismatch => _targetMismatch.toList();
-  List<CLMedia> get stored => _stored.toList();
+  List<StoreEntity> get targetMismatch => _targetMismatch.toList();
+  List<StoreEntity> get stored => _stored.toList();
 
   bool get hasTargetMismatchedItems => _targetMismatch.isNotEmpty;
 
   CLSharedMedia mergeMismatch() {
-    final items = entries.map(
-      (e) => e.updateContent(
-        isEdited: true,
-        isDeleted: () => false,
-        collectionId: () => collection?.id,
-      ),
-    );
+    final items = entries.map((e) => StoreEntity(
+        entity: e.data.updateContent(
+          isDeleted: false,
+          parentId: () => collection?.id,
+        ),
+        store: e.store));
     return copyWith(entries: items.toList());
   }
 
   CLSharedMedia? removeMismatch() {
     final items = entries.where(
-      (e) => e.collectionId == collection?.id || (e.isHidden ?? false),
+      (e) => e.parentId == collection?.id || (e.data.isHidden),
     );
     if (items.isEmpty) return null;
 
     return copyWith(entries: items.toList());
   }
 
-  CLSharedMedia? remove(CLMedia itemToRemove) {
+  CLSharedMedia? remove(StoreEntity itemToRemove) {
     final items = entries.where((e) => e != itemToRemove);
     if (items.isEmpty) return null;
 
     return copyWith(entries: items.toList());
   }
 
-  List<CLMedia> itemsByType(CLMediaType type) =>
-      entries.where((e) => e.type == type).toList();
+  List<StoreEntity> itemsByType(CLMediaType type) =>
+      entries.where((e) => e.data.mediaType == type).toList();
 
-  List<CLMedia> get videos => itemsByType(CLMediaType.video);
-  List<CLMedia> get images => itemsByType(CLMediaType.image);
+  List<StoreEntity> get videos => itemsByType(CLMediaType.video);
+  List<StoreEntity> get images => itemsByType(CLMediaType.image);
 
   List<CLMediaType> get contentTypes =>
-      Set<CLMediaType>.from(entries.map((e) => e.type)).toList();
+      Set<CLMediaType>.from(entries.map((e) => e.data.type)).toList();
 
   @override
   bool operator ==(covariant CLSharedMedia other) {

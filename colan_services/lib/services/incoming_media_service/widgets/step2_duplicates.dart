@@ -64,20 +64,19 @@ class _DuplicatePageStatefulState extends State<DuplicatePageStateful> {
         message: 'Should not have seen this.',
       );
     }
-    return GetCollectionMultiple(
-      query: DBQueries.collectionsVisible,
+    return GetAllCollections(
       errorBuilder: (_, __) {
         throw UnimplementedError('errorBuilder');
       },
       loadingBuilder: () => CLLoader.widget(
-        debugMessage: 'GetCollectionMultiple',
+        debugMessage: 'GetAllCollection',
       ),
       builder: (collections) {
-        final newCollection = collections.entries
+        final newCollection = collections
             .where((e) => e.id == widget.incomingMedia.collection?.id)
             .firstOrNull;
-        final collectionLablel = newCollection?.label != null
-            ? '"${newCollection?.label}"'
+        final collectionLablel = newCollection?.data.label != null
+            ? '"${newCollection?.data.label}"'
             : 'a new collection';
         return Padding(
           padding: const EdgeInsets.all(8),
@@ -116,7 +115,7 @@ class _DuplicatePageStatefulState extends State<DuplicatePageStateful> {
               children: [
                 Flexible(
                   child: ExistInDifferentCollection(
-                    collections: collections.entries,
+                    collections: collections,
                     parentIdentifier: widget.parentIdentifier,
                     media: currentMedia,
                     onRemove: (m) {
@@ -151,8 +150,8 @@ class ExistInDifferentCollection extends StatelessWidget {
 
   final CLSharedMedia media;
   final String parentIdentifier;
-  final List<Collection> collections;
-  final void Function(CLMedia media) onRemove;
+  final List<StoreEntity> collections;
+  final void Function(StoreEntity media) onRemove;
 
   @override
   Widget build(BuildContext context) {
@@ -183,22 +182,21 @@ class ExistInDifferentCollection extends StatelessWidget {
               itemCount: duplicates.length,
               itemBuilder: (BuildContext ctx, index) {
                 final m = duplicates[index];
-                final currCollection = collections
-                    .where((e) => e.id == m.collectionId)
-                    .firstOrNull;
+                final currCollection =
+                    collections.where((e) => e.id == m.parentId).firstOrNull;
                 final String currCollectionLabel;
 
-                if (m.isDeleted ?? false) {
+                if (m.data.isDeleted) {
                   currCollectionLabel = 'Deleted Items';
                 } else {
                   currCollectionLabel =
-                      currCollection?.label ?? 'somethig wrong';
+                      currCollection?.data.label ?? 'somethig wrong';
                 }
 
                 return SizedBox(
                   height: 80,
                   child: Dismissible(
-                    key: Key(m.md5String!),
+                    key: Key(m.data.md5!),
                     direction: DismissDirection.endToStart,
                     onDismissed: (direction) {
                       onRemove(m);

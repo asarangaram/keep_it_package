@@ -1,3 +1,4 @@
+import 'package:cl_media_tools/cl_media_tools.dart';
 import 'package:content_store/search_filters/models/filters.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/keep_it_state.dart';
@@ -8,7 +9,7 @@ import '../models/filter/ddmmyyyy_filter.dart';
 import '../models/filter/enum_filter.dart';
 import '../models/filter/string_filter.dart';
 
-class MediaFiltersNotifier extends StateNotifier<SearchFilters<CLMedia>> {
+class MediaFiltersNotifier extends StateNotifier<SearchFilters<StoreEntity>> {
   MediaFiltersNotifier()
       : super(
           SearchFilters(
@@ -22,7 +23,7 @@ class MediaFiltersNotifier extends StateNotifier<SearchFilters<CLMedia>> {
   void enableEdit() => state = state.enableEdit();
   void disableEdit() => state = state.disableEdit();
 
-  void updateFilter(CLFilter<CLMedia> filter, String key, dynamic value) =>
+  void updateFilter(CLFilter<StoreEntity> filter, String key, dynamic value) =>
       state = state.updateFilter(filter.name, key, value);
 
   void updateDefautTextSearchFilter(
@@ -44,64 +45,60 @@ class MediaFiltersNotifier extends StateNotifier<SearchFilters<CLMedia>> {
     return state.filters?.map((e) => e.name).toList() ?? [];
   }
 
-  Map<String, CLFilter<CLMedia>> get unusedFiltersMap => Map.fromEntries(
+  Map<String, CLFilter<StoreEntity>> get unusedFiltersMap => Map.fromEntries(
         allFiltersMap.entries
             .where((entry) => !availableFilters.contains(entry.key)),
       );
 
-  List<CLFilter<CLMedia>> get unusedFilters => List.from(
+  List<CLFilter<StoreEntity>> get unusedFilters => List.from(
         allFilters.where((e) => !availableFilters.contains(e.name)),
       );
 }
 
 final mediaFiltersProvider = StateNotifierProvider.family<MediaFiltersNotifier,
-    SearchFilters<CLMedia>, String>((ref, identifier) {
+    SearchFilters<StoreEntity>, String>((ref, identifier) {
   return MediaFiltersNotifier();
 });
 
-final List<CLFilter<CLMedia>> allFilters = List.unmodifiable([
-  EnumFilter<CLMedia, CLMediaType>(
+final List<CLFilter<StoreEntity>> allFilters = List.unmodifiable([
+  EnumFilter<StoreEntity, CLMediaType>(
     name: 'Search By MediaType',
     labels: {
       for (var e in [CLMediaType.image, CLMediaType.video]) e: e.name,
     },
-    fieldSelector: (media) => media.type,
+    fieldSelector: (media) => media.data.mediaType,
     enabled: true,
   ),
-  EnumFilter<CLMedia, MediaAvailability>(
+  EnumFilter<StoreEntity, MediaAvailability>(
     name: 'Search By Location',
     labels: {
       for (var e in MediaAvailability.values) e: e.name,
     },
     fieldSelector: (media) {
-      if (media.hasServerUID && media.isMediaCached) {
-        return MediaAvailability.synced;
-      } else if (media.hasServerUID) {
-        return MediaAvailability.coLan;
-      }
       return MediaAvailability.local;
     },
     enabled: true,
   ),
-  DDMMYYYYFilter<CLMedia>(
+  DDMMYYYYFilter<StoreEntity>(
     name: 'Search by Date',
-    fieldSelector: (media) => media.createdDate,
+    fieldSelector: (media) => media.data.addedDate,
     enabled: false,
   ),
 ]);
 
-Map<String, CLFilter<CLMedia>> get allFiltersMap =>
+Map<String, CLFilter<StoreEntity>> get allFiltersMap =>
     Map.unmodifiable({for (final e in allFilters) e.name: e});
 
-final StringFilter<CLMedia> textSearchFilter = StringFilter(
+final StringFilter<StoreEntity> textSearchFilter = StringFilter(
   name: 'TextSearch',
-  fieldSelector: (media) => [media.name, media.ref].join(' ').toLowerCase(),
+  fieldSelector: (media) =>
+      [media.data.label, media.data.description].join(' ').toLowerCase(),
   query: '',
   enabled: true,
 );
 
-final filterredMediaProvider = StateProvider.family<List<CLMedia>,
-    MapEntry<ViewIdentifier, List<CLMedia>>>((ref, mediaMap) {
+final filterredMediaProvider = StateProvider.family<List<StoreEntity>,
+    MapEntry<ViewIdentifier, List<StoreEntity>>>((ref, mediaMap) {
   final mediaFilters = ref.watch(mediaFiltersProvider(mediaMap.key.parentID));
   return mediaFilters.apply(mediaMap.value);
 });

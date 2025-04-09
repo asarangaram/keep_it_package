@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:cl_camera/cl_camera.dart';
+import 'package:cl_media_tools/cl_media_tools.dart';
+
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
@@ -17,17 +19,20 @@ import 'widgets/preview.dart';
 
 class CLCameraService extends ConsumerWidget {
   const CLCameraService({
-    required this.collectionId,
+    required this.parentId,
+    this.storeIdentity = 'local',
     super.key,
   });
 
-  final int? collectionId;
+  final String storeIdentity;
+  final int? parentId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return FullscreenLayout(
       useSafeArea: false,
-      child: GetStoreUpdater(
+      child: GetStore(
+        storeIdentity: storeIdentity,
         errorBuilder: (_, __) {
           throw UnimplementedError('errorBuilder');
         },
@@ -36,7 +41,8 @@ class CLCameraService extends ConsumerWidget {
         ),
         builder: (theStore) {
           return GetCollection(
-            id: collectionId,
+            storeIdentity: storeIdentity,
+            id: parentId,
             errorBuilder: (_, __) {
               throw UnimplementedError('errorBuilder');
             },
@@ -48,11 +54,17 @@ class CLCameraService extends ConsumerWidget {
                 parentIdentifier: 'CLCameraService',
                 onCancel: () => PageManager.of(context).pop(),
                 onNewMedia: (path, {required isVideo}) async {
-                  return theStore.mediaUpdater.create(
-                    path,
-                    type: isVideo ? CLMediaType.video : CLMediaType.image,
-                    collectionId: () => collection?.id,
-                  );
+                  final mediaFile = await CLMediaFile.fromPath(path);
+
+                  if (mediaFile != null) {
+                    return theStore.createMedia(
+                      mediaFile: mediaFile,
+                      parentId: parentId,
+                      label: () => p.basenameWithoutExtension(mediaFile.path),
+                      description: () => 'captured with Camera',
+                    );
+                  }
+                  return null;
                 },
                 onDone: (mediaList) async {
                   await MediaWizardService.openWizard(
@@ -89,8 +101,9 @@ class CLCameraService0 extends ConsumerWidget {
   });
   final String parentIdentifier;
   final VoidCallback? onCancel;
-  final Future<void> Function(List<CLMedia> mediaList) onDone;
-  final Future<CLMedia?> Function(String, {required bool isVideo}) onNewMedia;
+  final Future<void> Function(List<StoreEntity> mediaList) onDone;
+  final Future<StoreEntity?> Function(String, {required bool isVideo})
+      onNewMedia;
 
   final void Function(String message, {required dynamic error})? onError;
   static Future<bool> invokeWithSufficientPermission(

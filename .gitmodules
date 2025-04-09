@@ -4,3 +4,6 @@
 [submodule "cl_media_viewers_flutter"]
 	path = cl_media_viewers_flutter
 	url = https://github.com/asarangaram/cl_media_viewers_flutter.git
+[submodule "cl_media_tools"]
+	path = cl_media_tools
+	url = git@github.com:asarangaram/cl_media_tools.git

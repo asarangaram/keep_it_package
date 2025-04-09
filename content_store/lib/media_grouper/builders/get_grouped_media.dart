@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/keep_it_state.dart';
 import 'package:store/store.dart'
-    show CLEntity, CLMedia, Collection, GalleryGroupCLEntity;
+    show GalleryGroupStoreEntity, StoreEntity, ViewerEntityMixin;
 
-import '../../db_service/builders/w3_get_collection.dart';
-
+import '../../src/stores/builders/w3_get_collection.dart';
 import '../models/labeled_entity_groups.dart';
 import '../providers/media_grouper.dart';
 import 'get_sorted_entities.dart';
@@ -23,33 +22,28 @@ class GetGroupedMedia extends ConsumerWidget {
   });
   final ViewIdentifier viewIdentifier;
   final int columns;
-  final List<CLEntity> incoming;
+  final List<ViewerEntityMixin> incoming;
 
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
-  final Widget Function(
-    List<LabelledEntityGroups> galleryMap, {
-    required CLEntity? Function(CLEntity entity)? onGetParent,
-    required List<CLEntity>? Function(CLEntity entity)? onGetChildren,
-  }) builder;
+  final Widget Function(List<LabelledEntityGroups> galleryMap) builder;
   final bool viewableAsCollection;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     incoming.sort(
-      (a, b) => (a as CLMedia)
-          .name
-          .toLowerCase()
-          .compareTo((b as CLMedia).name.toLowerCase()),
+      (a, b) => ((a as StoreEntity).data.label?.toLowerCase() ?? '')
+          .compareTo((b as StoreEntity).data.label?.toLowerCase() ?? ''),
     );
     final ids = incoming
-        .map((e) => (e as CLMedia).collectionId)
+        .map((e) => (e as StoreEntity).parentId)
         .where((e) => e != null)
         .map((e) => e!)
         .toSet()
         .toList();
 
     return GetCollectionsByIdList(
+      storeIdentity: 'NONE', //FIXME
       ids: ids,
       loadingBuilder: loadingBuilder,
       errorBuilder: errorBuilder,
@@ -91,20 +85,7 @@ class GetGroupedMedia extends ConsumerWidget {
               ),
             );
 
-            return builder(
-              result,
-              onGetParent: (entity) => switch (entity) {
-                CLMedia _ =>
-                  collections.where((e) => e.id == entity.collectionId).first,
-                _ => null
-              },
-              onGetChildren: (entity) => switch (entity) {
-                Collection _ => incoming
-                    .where((e) => (e as CLMedia).collectionId == entity.id)
-                    .toList(),
-                _ => null
-              },
-            );
+            return builder(result);
           },
         );
       },
@@ -113,8 +94,8 @@ class GetGroupedMedia extends ConsumerWidget {
 }
 
 final groupedMediaProvider = StateProvider.family<
-    List<GalleryGroupCLEntity<CLEntity>>,
-    MapEntry<TabIdentifier, List<CLEntity>>>((ref, mapEntry) {
+    List<GalleryGroupStoreEntity<ViewerEntityMixin>>,
+    MapEntry<TabIdentifier, List<ViewerEntityMixin>>>((ref, mapEntry) {
   final groupBy = ref.watch(groupMethodProvider(mapEntry.key.tabId));
 
   return groupBy.getGrouped(mapEntry.value);

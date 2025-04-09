@@ -20,7 +20,7 @@ class WizardPreview extends ConsumerStatefulWidget {
     super.key,
   });
   final UniversalMediaSource type;
-  final void Function(List<CLMedia>)? onSelectionChanged;
+  final void Function(List<StoreEntity>)? onSelectionChanged;
   final bool freezeView;
 
   final ViewIdentifier viewIdentifier;
@@ -29,11 +29,11 @@ class WizardPreview extends ConsumerStatefulWidget {
 }
 
 class _WizardPreviewState extends ConsumerState<WizardPreview> {
-  CLMedia? previewItem;
+  StoreEntity? previewItem;
 
   UniversalMediaSource get type => widget.type;
   bool get freezeView => widget.freezeView;
-  void Function(List<CLMedia>)? get onSelectionChanged =>
+  void Function(List<StoreEntity>)? get onSelectionChanged =>
       widget.onSelectionChanged;
 
   @override
@@ -48,7 +48,7 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
 
     Widget errorBuilder(Object e, StackTrace st) =>
         CLErrorView(errorMessage: e.toString());
-    return CLEntityGalleryView(
+    return CLGalleryView(
       viewIdentifier: widget.viewIdentifier,
       emptyWidget: const CLText.large('Nothing to show here'),
       entities: media0.entries,
@@ -65,16 +65,12 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
       contextMenuBuilder: (context, list) => CLContextMenu.empty(),
       onSelectionChanged: onSelectionChanged == null
           ? null
-          : (items) =>
-              onSelectionChanged?.call(items.map((e) => e as CLMedia).toList()),
-      itemBuilder: (
-        context,
-        item, {
-        required CLEntity? Function(CLEntity entity)? onGetParent,
-        required List<CLEntity>? Function(CLEntity entity)? onGetChildren,
-      }) {
+          : (items) => onSelectionChanged
+              ?.call(items.map((e) => e as StoreEntity).toList()),
+      itemBuilder: (context, item) {
         return GetCollection(
-          id: (item as CLMedia).collectionId,
+          storeIdentity: (item as StoreEntity).store.store.identity,
+          id: item.parentId,
           loadingBuilder: () => CLLoader.widget(debugMessage: 'GetCollection'),
           errorBuilder: (p0, p1) =>
               const Center(child: Text('GetCollection Error')),

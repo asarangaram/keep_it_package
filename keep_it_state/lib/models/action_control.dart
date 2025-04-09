@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
+import 'package:cl_media_tools/cl_media_tools.dart';
 import 'package:flutter/material.dart';
 import 'package:store/store.dart';
 
@@ -145,16 +146,10 @@ class ActionControl {
   }
 
   static ActionControl onGetCollectionActionControl(
-    Collection collection,
+    StoreEntity collection,
     bool hasOnlineService, {
-    List<CLEntity>? Function(CLEntity entity)? onGetChildren,
+    List<ViewerEntityMixin>? Function(ViewerEntityMixin entity)? onGetChildren,
   }) {
-    final media = onGetChildren?.call(collection) ?? [];
-    final canSync = hasOnlineService;
-    final haveItOffline = collection.haveItOffline;
-
-    final canDownload = canSync && collection.hasServerUID && !haveItOffline;
-    final canUpload = canSync && !collection.hasServerUID;
     return ActionControl(
         allowEdit: true,
         allowDelete: true,
@@ -162,50 +157,37 @@ class ActionControl {
         allowShare: false,
         allowPin: false,
         allowDuplicateMedia: false,
-        allowDeleteLocalCopy: canSync &&
-            collection.hasServerUID &&
-            haveItOffline &&
-            (media.any((e) => (e as CLMedia).isMediaCached)),
-        allowDownload: canDownload,
-        allowUpload: canUpload,
-        allowDeleteServerCopy: canSync && collection.hasServerUID);
+        allowDeleteLocalCopy: true,
+        allowDownload: false,
+        allowUpload: false,
+        allowDeleteServerCopy: false);
   }
 
   static ActionControl onGetMediaActionControl(
-      CLMedia media, Collection parentCollection, bool hasOnlineService) {
-    final canSync = hasOnlineService;
-    final canDeleteLocalCopy = canSync &&
-        parentCollection.haveItOffline &&
-        media.hasServerUID &&
-        media.isMediaCached;
-    final haveItOffline = switch (media.haveItOffline) {
-      null => parentCollection.haveItOffline,
-      true => true,
-      false => parentCollection.haveItOffline
-    };
-    final canDownload =
-        canSync && media.hasServerUID && !media.isMediaCached && haveItOffline;
+      StoreEntity media, StoreEntity parentCollection, bool hasOnlineService) {
+    final canDeleteLocalCopy = false;
 
-    final editSupported = switch (media.type) {
+    final editSupported = switch (media.data.mediaType) {
       CLMediaType.text => false,
       CLMediaType.image => true,
       CLMediaType.video => ColanPlatformSupport.isMobilePlatform,
-      CLMediaType.url => false,
+      CLMediaType.uri => false,
       CLMediaType.audio => false,
       CLMediaType.file => false,
+      CLMediaType.unknown => false,
     };
 
     return ActionControl(
-        allowEdit: editSupported && media.isMediaLocallyAvailable,
-        allowDelete: true,
-        allowMove: true,
-        allowShare: media.isMediaLocallyAvailable,
-        allowPin: ColanPlatformSupport.isMobilePlatform &&
-            media.isMediaLocallyAvailable,
-        allowDuplicateMedia: true,
-        allowDeleteLocalCopy: canDeleteLocalCopy,
-        allowDownload: canDownload,
-        allowUpload: canSync,
-        allowDeleteServerCopy: canSync && media.hasServerUID);
+      allowEdit: editSupported,
+      allowDelete: true,
+      allowMove: true,
+      allowShare: true,
+      allowPin: ColanPlatformSupport.isMobilePlatform,
+      allowDuplicateMedia: true,
+      allowDeleteLocalCopy: canDeleteLocalCopy,
+      allowDownload: false,
+      allowUpload: false,
+      allowDeleteServerCopy: false,
+    );
   }
 }

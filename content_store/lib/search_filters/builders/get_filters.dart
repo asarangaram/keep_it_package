@@ -12,7 +12,7 @@ class GetFilters extends ConsumerWidget {
     super.key,
   });
   final String identifier;
-  final Widget Function(SearchFilters<CLMedia> filters) builder;
+  final Widget Function(SearchFilters<StoreEntity> filters) builder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

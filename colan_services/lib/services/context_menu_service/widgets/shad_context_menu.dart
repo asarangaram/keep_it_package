@@ -73,25 +73,6 @@ class CLBasicContextMenu extends StatelessWidget {
             );
           },
         ),
-        if (contextMenu!.onlineActions.any((e) => e.onTap != null)) ...[
-          const Divider(height: 8),
-          for (final item in contextMenu!.onlineActions)
-            if (item.onTap != null)
-              ShadContextMenuItem(
-                leading: SizedBox.square(
-                  dimension: 16,
-                  child: Center(child: Icon(item.icon)),
-                ),
-                textStyle: textStyle.copyWith(
-                  color: item.isDestructive
-                      ? ShadTheme.of(context).colorScheme.destructive
-                      : null,
-                ),
-                enabled: item.onTap != null,
-                onPressed: item.onTap,
-                child: Text(item.title),
-              ),
-        ],
         const Divider(
           height: 8,
         ),

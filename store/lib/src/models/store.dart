@@ -1,161 +1,65 @@
+import 'package:cl_media_tools/cl_media_tools.dart';
+import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 
-import '../extensions/ext_list.dart';
-import 'cl_media.dart';
-import 'collection.dart';
+import 'cl_entity.dart';
 
-enum DBQueries {
-  // Fetch the complete table!
-  collections,
-  medias,
-
-  collectionById,
-  collectionByLabel,
-
-  collectionsVisible,
-  collectionsVisibleNotDeleted,
-  collectionsExcludeEmpty,
-  collectionsEmpty,
-  collectionByIdList,
-  collectionOnDevice,
-  collectionsToSync,
-
-  mediaById,
-  mediaByServerUID,
-  mediaAll,
-  mediaAllIncludingAux,
-  mediaByCollectionId,
-  mediaByPath,
-  mediaByMD5,
-  mediaPinned,
-  mediaStaled,
-  mediaDeleted,
-  mediaByIdList,
-  mediaByNoteID,
-  mediaDownloadPending,
-  previewDownloadPending,
-
-  notesAll,
-  notesByMediaId,
-  notesOrphan,
-
-  // Raw values
-  serverUIDAll,
-  mediaOnDevice,
-
-  localMediaAll,
-}
-
-abstract class StoreQuery<T> {
-  const StoreQuery();
-}
-
-abstract class StoreReader {
-  Future<T?> read<T>(StoreQuery<T> query);
-  Future<List<T?>> readMultiple<T>(StoreQuery<T> query);
-  StoreQuery<T> getQuery<T>(DBQueries query, {List<Object?>? parameters});
-
-  Future<T?> get<T>(DBQueries query, {List<Object?>? parameters}) async {
-    final q = getQuery(query, parameters: parameters) as StoreQuery<T>;
-    return read(q);
-  }
-
-  Future<List<T>> getMultiple<T>(
-    DBQueries query, {
-    List<Object?>? parameters,
-  }) async {
-    final q = getQuery(query, parameters: parameters) as StoreQuery<T>;
-    return (await readMultiple<T>(q)).nonNullableList;
-  }
-
-  Future<List<Collection>> get collectionsToSync async =>
-      getMultiple(DBQueries.collectionsToSync);
-
-  Future<List<Collection>> get collectionOnDevice async =>
-      getMultiple(DBQueries.collectionOnDevice);
-
-  Future<List<CLMedia>> get mediaOnDevice async =>
-      getMultiple(DBQueries.mediaOnDevice);
-
-  Future<Collection?> getCollectionByID(int id) async =>
-      get<Collection>(DBQueries.collectionById, parameters: [id]);
-
-  Future<Collection?> getCollectionByLabel(String label) async =>
-      get(DBQueries.collectionByLabel, parameters: [label]);
-
-  Future<Collection?> getCollectionById(int id) async =>
-      get(DBQueries.collectionById, parameters: [id]);
-
-  Future<CLMedia?> getMediaByID(int id) async =>
-      get(DBQueries.mediaById, parameters: [id]);
-
-  Future<List<Collection>> getCollectionsByIDList(List<int> idList) async =>
-      getMultiple(
-        DBQueries.collectionByIdList,
-        parameters: ['(${idList.join(', ')})'],
-      );
-
-  Future<List<CLMedia>> getMediasByIDList(List<int> idList) async =>
-      getMultiple(
-        DBQueries.mediaByIdList,
-        parameters: ['(${idList.join(', ')})'],
-      );
-
-  Future<List<CLMedia>> getMediaByCollectionId(int collectionId) async =>
-      getMultiple(
-        DBQueries.mediaByCollectionId,
-        parameters: [collectionId],
-      );
-
-  Future<List<CLMedia>> getNotesByMediaId(int mediaId) async =>
-      getMultiple(DBQueries.notesByMediaId, parameters: [mediaId]);
-
-  Future<List<CLMedia>?> getMediaByNoteId(int noteId) async =>
-      getMultiple(DBQueries.mediaByNoteID, parameters: [noteId]);
-
-  Future<List<Collection>?> getCollectionAll() async =>
-      getMultiple(DBQueries.collectionsVisibleNotDeleted);
-
-  Future<List<CLMedia>> getMediaAll() async => getMultiple(DBQueries.mediaAll);
-
-  Future<List<CLMedia>> getNotesAll() async => getMultiple(DBQueries.notesAll);
-
-  Future<CLMedia?> getMediaByServerUID(int serverUID) async => get(
-        DBQueries.mediaByServerUID,
-        parameters: [serverUID],
-      );
-
-  Future<CLMedia?> getMediaById(int id) async => get(
-        DBQueries.mediaById,
-        parameters: [id],
-      );
-
-  Future<CLMedia?> getMediaByMD5String(String md5String) async => get(
-        DBQueries.mediaByMD5,
-        parameters: [md5String],
-      );
-}
+class NotNullValues {}
 
 @immutable
-abstract class Store {
-  const Store(this.reader);
-  final StoreReader reader;
+class StoreQuery<T> {
+  const StoreQuery(this.storeIdentity, this.map);
+  final String? storeIdentity;
+  final Map<String, dynamic> map;
 
-  /// upsertCollection - introduce NULL return
-  Future<Collection> upsertCollection(Collection collection);
-  Future<CLMedia?> upsertMedia(CLMedia media, {List<CLMedia>? parents});
-  //Future<CLMedia?> upsertNote(CLMedia note, List<CLMedia> mediaList);
+  @override
+  bool operator ==(covariant StoreQuery<T> other) {
+    if (identical(this, other)) return true;
+    final mapEquals = const DeepCollectionEquality().equals;
 
-  Future<CLMedia?> updateMediaFromMap(
-    Map<String, dynamic> map,
-  );
+    return other.storeIdentity == storeIdentity && mapEquals(other.map, map);
+  }
 
-  Future<void> deleteCollection(Collection collection);
-  Future<void> deleteMedia(CLMedia media);
+  @override
+  int get hashCode => storeIdentity.hashCode ^ map.hashCode;
 
-  void reloadStore();
+  StoreQuery<T> copyWith({
+    String? storeIdentity,
+    Map<String, dynamic>? map,
+  }) {
+    return StoreQuery<T>(
+      storeIdentity ?? this.storeIdentity,
+      map ?? this.map,
+    );
+  }
 
-  Stream<List<T?>> storeReaderStream<T>(StoreQuery<T> storeQuery);
+  @override
+  String toString() => 'StoreQuery(storeIdentity: $storeIdentity, map: $map)';
+}
 
-  void dispose();
+abstract class EntityTable {
+  Future<CLEntity?> upsert<CLEntity>(
+    CLEntity item, {
+    CLMediaFile? content,
+  });
+
+  Future<void> delete<CLEntity>(CLEntity item);
+  Future<CLEntity?> get<CLEntity>([covariant StoreQuery<CLEntity>? query]);
+  Future<List<CLEntity>> getAll<CLEntity>([
+    covariant StoreQuery<CLEntity>? query,
+  ]);
+}
+
+class Shortcuts {
+  static StoreQuery<CLEntity> mediaQuery(String storeIdentity, CLEntity media) {
+    return StoreQuery<CLEntity>(storeIdentity, {
+      if (media.id != null)
+        'id': media.id
+      else if (media.isCollection)
+        'label': media.label
+      else
+        'md5': media.md5,
+      'isCollection': media.isCollection,
+    });
+  }
 }

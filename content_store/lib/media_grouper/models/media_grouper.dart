@@ -50,7 +50,9 @@ class GroupBy implements ViewModifier {
   @override
   String get name => 'Group By';
 
-  List<GalleryGroupCLEntity<CLEntity>> getGrouped(List<CLEntity> entities) {
+  List<GalleryGroupStoreEntity<ViewerEntityMixin>> getGrouped(
+    List<ViewerEntityMixin> entities,
+  ) {
     return switch (method) {
       GroupTypes.none => entities.group(columns),
       GroupTypes.byOriginalDate => entities.groupByTime(columns),

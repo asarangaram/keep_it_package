@@ -14,16 +14,16 @@ extension IndexExtonList<T> on List<T> {
   }
 }
 
-extension Filter on List<CLMedia> {
-  Map<String, List<CLMedia>> filterByDate() {
-    final filterredMedia = <String, List<CLMedia>>{};
-    final noDate = <CLMedia>[];
+extension Filter on List<CLEntity> {
+  Map<String, List<CLEntity>> filterByDate() {
+    final filterredMedia = <String, List<CLEntity>>{};
+    final noDate = <CLEntity>[];
     for (final entry in this) {
       final String formattedDate;
-      if (entry.originalDate != null) {
-        formattedDate = entry.originalDate!.toDisplayFormat(dataOnly: true);
+      if (entry.createDate != null) {
+        formattedDate = entry.createDate!.toDisplayFormat(dataOnly: true);
       } else {
-        formattedDate = '${entry.createdDate.toDisplayFormat(dataOnly: true)} '
+        formattedDate = '${entry.addedDate.toDisplayFormat(dataOnly: true)} '
             '(upload date)';
       }
       if (!filterredMedia.containsKey(formattedDate)) {
@@ -38,15 +38,15 @@ extension Filter on List<CLMedia> {
     return filterredMedia;
   }
 
-  List<GalleryGroupCLEntity<CLMedia>> groupByDate() {
-    final galleryGroups = <GalleryGroupCLEntity<CLMedia>>[];
+  List<GalleryGroupStoreEntity<CLEntity>> groupByDate() {
+    final galleryGroups = <GalleryGroupStoreEntity<CLEntity>>[];
     for (final entry in filterByDate().entries) {
       if (entry.value.length > 20) {
         final groups = entry.value.convertTo2D(20);
 
         for (final (index, group) in groups.indexed) {
           galleryGroups.add(
-            GalleryGroupCLEntity(
+            GalleryGroupStoreEntity(
               group,
               label: (index == 0) ? entry.key : null,
               groupIdentifier: entry.key,
@@ -56,7 +56,7 @@ extension Filter on List<CLMedia> {
         }
       } else {
         galleryGroups.add(
-          GalleryGroupCLEntity(
+          GalleryGroupStoreEntity(
             entry.value,
             label: entry.key,
             groupIdentifier: entry.key,

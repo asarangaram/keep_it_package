@@ -1,6 +1,4 @@
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:content_store/content_store.dart';
-import 'package:content_store/extensions/ext_cldirectories.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/keep_it_state.dart';
@@ -26,10 +24,6 @@ class CLContextMenu {
     required this.onShare,
     required this.onPin,
     required this.onDelete,
-    required this.onDeleteLocalCopy,
-    required this.onKeepOffline,
-    required this.onUpload,
-    required this.onDeleteServerCopy,
     required this.infoMap,
   });
   factory CLContextMenu.empty() {
@@ -51,10 +45,6 @@ class CLContextMenu {
     Future<bool?> Function()? onShare,
     Future<bool?> Function()? onPin,
     Future<bool?> Function()? onDelete,
-    Future<bool?> Function()? onDeleteLocalCopy,
-    Future<bool?> Function()? onKeepOffline,
-    Future<bool?> Function()? onUpload,
-    Future<bool?> Function()? onDeleteServerCopy,
   }) {
     return CLContextMenu(
       name: name,
@@ -91,46 +81,21 @@ class CLContextMenu {
         isDestructive: true,
         tooltip: 'Moves to Recycle bin. Can recover as per Recycle Policy',
       ),
-      onDeleteLocalCopy: CLMenuItem(
-        title: 'Remove downloads',
-        icon: Icons.download_done_sharp,
-        onTap: onDeleteLocalCopy,
-      ),
-      onKeepOffline: CLMenuItem(
-        title: 'Download',
-        icon: Icons.download_sharp,
-        onTap: onKeepOffline,
-      ),
-      onUpload:
-          CLMenuItem(title: 'Upload', icon: Icons.upload, onTap: onUpload),
-      onDeleteServerCopy: CLMenuItem(
-        title: 'Remove From Server',
-        icon: Icons.remove,
-        onTap: onDeleteServerCopy,
-        isDestructive: true,
-        tooltip:
-            'Delete from Server. Local copy is retained. Use if this is accidentally uploaded',
-      ),
       infoMap: infoMap,
     );
   }
   factory CLContextMenu.ofCollection(
     BuildContext context,
     WidgetRef ref, {
-    required Collection collection,
+    required StoreEntity collection,
     required bool hasOnlineService,
-    required StoreUpdater theStore,
     ValueGetter<Future<bool?> Function()?>? onEdit,
     ValueGetter<Future<bool?> Function()?>? onEditInfo,
     ValueGetter<Future<bool?> Function()?>? onMove,
     ValueGetter<Future<bool?> Function()?>? onShare,
     ValueGetter<Future<bool?> Function()?>? onPin,
     ValueGetter<Future<bool?> Function()?>? onDelete,
-    ValueGetter<Future<bool?> Function()?>? onDeleteLocalCopy,
-    ValueGetter<Future<bool?> Function()?>? onKeepOffline,
-    ValueGetter<Future<bool?> Function()?>? onUpload,
-    ValueGetter<Future<bool?> Function()?>? onDeleteServerCopy,
-    List<CLEntity>? Function(CLEntity entity)? onGetChildren,
+    List<ViewerEntityMixin>? Function(ViewerEntityMixin entity)? onGetChildren,
   }) {
     /// Basic Actions
     final onEditInfo0 = onEditInfo != null
@@ -142,7 +107,7 @@ class CLContextMenu {
               collection: collection,
             );
             if (updated != null && context.mounted) {
-              await theStore.collectionUpdater.update(updated, isEdited: true);
+              await updated.dbSave();
             }
 
             return true;
@@ -157,134 +122,66 @@ class CLContextMenu {
     final onDelete0 = onDelete != null
         ? onDelete()
         : () async {
-            final confirmed = await DialogService.deleteCollection(
+            final confirmed = await DialogService.deleteEntity(
                   context,
-                  collection: collection,
+                  entity: collection,
                 ) ??
                 false;
-            if (!confirmed) return confirmed;
-            if (context.mounted) {
-              return theStore.collectionUpdater.delete(collection.id!);
+
+            if (context.mounted && confirmed) {
+              await collection.delete();
+              return true;
             }
             return false;
           };
-    final onDeleteLocalCopy0 = onDeleteLocalCopy != null
-        ? onDeleteLocalCopy()
-        : () async {
-            if (collection.haveItOffline && collection.hasServerUID) {
-              final serverNotifier = ref.read(serverProvider.notifier);
-              final theStore = await serverNotifier.storeUpdater;
 
-              await theStore.collectionUpdater
-                  .upsert(collection.copyWith(haveItOffline: false));
-              final media = await theStore.store.reader
-                  .getMediaByCollectionId(collection.id!);
-              for (final m in media) {
-                await theStore.mediaUpdater
-                    .deleteLocalCopy(m, haveItOffline: () => null);
-              }
-              serverNotifier.instantSync();
-              theStore.store.reloadStore();
-            }
-            return true;
-          };
-    // Online Actions
-    final onKeepOffline0 = onKeepOffline != null
-        ? onKeepOffline()
-        : () async {
-            if (!collection.haveItOffline && collection.hasServerUID) {
-              final serverNotifier = ref.read(serverProvider.notifier);
-              final updater = await serverNotifier.storeUpdater;
-
-              await updater.collectionUpdater
-                  .upsert(collection.copyWith(haveItOffline: true));
-              final media = await updater.store.reader
-                  .getMediaByCollectionId(collection.id!);
-              for (final m in media) {
-                await updater.mediaUpdater.update(
-                  m,
-                  haveItOffline: () => null,
-                  isEdited: false,
-                );
-              }
-              updater.store.reloadStore();
-              serverNotifier.instantSync();
-            }
-            return true;
-          };
-    final onUpload0 = onUpload != null
-        ? onUpload()
-        : () async {
-            await theStore.collectionUpdater.upsert(
-              collection.copyWith(serverUID: () => -1, isEdited: true),
-            );
-            ref.read(serverProvider.notifier).instantSync();
-
-            return true;
-          };
-    final onDeleteServerCopy0 = onDeleteServerCopy?.call();
     final ac = ActionControl.onGetCollectionActionControl(
       collection,
       hasOnlineService,
       onGetChildren: onGetChildren,
     );
     return CLContextMenu.template(
-      name: collection.label,
-      logoImageAsset: collection.serverUID == null
-          ? 'assets/icon/not_on_server.png'
-          : 'assets/icon/cloud_on_lan_128px_color.png',
+      name: collection.data.label!,
+      logoImageAsset: 'assets/icon/not_on_server.png',
       onEdit: ac.onEdit(onEdit0),
       onEditInfo: ac.onEdit(onEditInfo0),
       onMove: ac.onMove(onMove0),
       onShare: ac.onShare(onShare0),
       onPin: ac.onPin(onPin0),
-      onKeepOffline: ac.onKeepOffline(onKeepOffline0),
-      onUpload: ac.onUpload(onUpload0),
       onDelete: ac.onDelete(onDelete0),
-      onDeleteLocalCopy: ac.onDeleteLocalCopy(onDeleteLocalCopy0),
-      onDeleteServerCopy: ac.onDeleteServerCopy(onDeleteServerCopy0),
-      infoMap: collection.toMapForDisplay(),
+      infoMap: collection.data.toMapForDisplay(),
       isPinned: false,
     );
   }
   factory CLContextMenu.ofMedia(
     BuildContext context,
     WidgetRef ref, {
-    required CLMedia media,
-    required Collection parentCollection,
+    required StoreEntity media,
+    required StoreEntity parentCollection,
     required bool hasOnlineService,
-    required StoreUpdater theStore,
-    ValueGetter<Future<bool?> Function()?>? onEdit,
-    ValueGetter<Future<bool?> Function()?>? onEditInfo,
     ValueGetter<Future<bool?> Function()?>? onMove,
     ValueGetter<Future<bool?> Function()?>? onShare,
-    ValueGetter<Future<bool?> Function()?>? onPin,
     ValueGetter<Future<bool?> Function()?>? onDelete,
-    ValueGetter<Future<bool?> Function()?>? onDeleteLocalCopy,
-    ValueGetter<Future<bool?> Function()?>? onKeepOffline,
-    ValueGetter<Future<bool?> Function()?>? onUpload,
-    ValueGetter<Future<bool?> Function()?>? onDeleteServerCopy,
   }) {
-    final onEdit0 = onEdit != null
-        ? onEdit()
-        : () async {
-            await PageManager.of(context).openEditor(media);
-            return true;
-          };
-    final onEditInfo0 = onEditInfo != null
-        ? onEditInfo()
-        : () async {
-            final updated = await MediaMetadataEditor.openSheet(
-              context,
-              ref,
-              media: media,
-            );
-            if (updated != null && context.mounted) {
-              await theStore.mediaUpdater.update(updated, isEdited: true);
-            }
+    Future<bool> onEdit0() async {
+      await PageManager.of(context).openEditor(media);
+      return true;
+    }
 
-            return true;
-          };
+    Future<bool> onEditInfo0() async {
+      final updated = await MediaMetadataEditor.openSheet(
+        context,
+        ref,
+        media: media,
+      );
+      if (updated != null && context.mounted) {
+        await updated.dbSave();
+        return true;
+      }
+
+      return false;
+    }
+
     final onMove0 = onMove != null
         ? onMove()
         : () => MediaWizardService.openWizard(
@@ -296,49 +193,27 @@ class CLContextMenu {
               ),
             );
 
-    final onShare0 = onShare != null
-        ? onShare()
-        : () => theStore.mediaUpdater.share(context, [media]);
+    final onShare0 =
+        onShare != null ? onShare() : () => share(context, [media]);
     final onDelete0 = onDelete != null
         ? onDelete()
         : () async {
-            final confirmed = await DialogService.deleteMedia(
+            final confirmed = await DialogService.deleteEntity(
                   context,
-                  media: media,
+                  entity: media,
                 ) ??
                 false;
             if (!confirmed) return confirmed;
-            if (context.mounted) {
-              return theStore.mediaUpdater.delete(media.id!);
+            if (confirmed && context.mounted) {
+              await media.delete();
             }
-            return null;
+            return false;
           };
 
-    final onPin0 = onPin != null
-        ? onPin()
-        : () async => theStore.mediaUpdater.pinToggleMultiple(
-              {media.id},
-              onGetPath: (media) {
-                if (media.isMediaLocallyAvailable) {
-                  return theStore.directories.getMediaAbsolutePath(media);
-                }
-
-                return null;
-              },
-            );
-
-    final onDeleteLocalCopy0 = onDeleteLocalCopy != null
-        ? onDeleteLocalCopy()
-        : () async =>
-            ref.read(serverProvider.notifier).onDeleteMediaLocalCopy(media);
-    final onKeepOffline0 = onKeepOffline != null
-        ? onKeepOffline()
-        : () async =>
-            ref.read(serverProvider.notifier).onKeepMediaOffline(media);
-
-    final onUpload0 = onUpload != null ? onUpload() : null;
-    final onDeleteServerCopy0 =
-        onDeleteServerCopy != null ? onDeleteServerCopy() : null;
+    Future<bool> onPin0() async {
+      await media.onPin();
+      return true;
+    }
 
     final ac = ActionControl.onGetMediaActionControl(
       media,
@@ -346,105 +221,76 @@ class CLContextMenu {
       hasOnlineService,
     );
     return CLContextMenu.template(
-      name: media.name,
-      logoImageAsset: media.serverUID == null
-          ? 'assets/icon/not_on_server.png'
-          : 'assets/icon/cloud_on_lan_128px_color.png',
+      name: media.data.label ?? 'Unnamed',
+      logoImageAsset: 'assets/icon/not_on_server.png',
       onEdit: ac.onEdit(onEdit0),
       onEditInfo: ac.onEdit(onEditInfo0),
       onMove: ac.onMove(onMove0),
       onShare: ac.onShare(onShare0),
       onPin: ac.onPin(onPin0),
       onDelete: ac.onDelete(onDelete0),
-      onDeleteLocalCopy: ac.onDeleteLocalCopy(onDeleteLocalCopy0),
-      onKeepOffline: ac.onKeepOffline(onKeepOffline0),
-      onUpload: ac.onUpload(onUpload0),
-      onDeleteServerCopy: ac.onDeleteServerCopy(onDeleteServerCopy0),
-      infoMap: media.toMapForDisplay(),
-      isPinned: media.pin != null,
+      infoMap: media.data.toMapForDisplay(),
+      isPinned: media.data.pin != null,
     );
   }
   factory CLContextMenu.ofMultipleMedia(
     BuildContext context,
     WidgetRef ref, {
-    required List<CLMedia> items,
+    required List<StoreEntity> items,
     // ignore: avoid_unused_constructor_parameters For now, not required
     required bool hasOnlineService,
-    required StoreUpdater theStore,
     ValueGetter<Future<bool?> Function()?>? onEdit,
     ValueGetter<Future<bool?> Function()?>? onEditInfo,
     ValueGetter<Future<bool?> Function()?>? onMove,
     ValueGetter<Future<bool?> Function()?>? onShare,
     ValueGetter<Future<bool?> Function()?>? onPin,
     ValueGetter<Future<bool?> Function()?>? onDelete,
-    ValueGetter<Future<bool?> Function()?>? onDeleteLocalCopy,
-    ValueGetter<Future<bool?> Function()?>? onKeepOffline,
-    ValueGetter<Future<bool?> Function()?>? onUpload,
-    ValueGetter<Future<bool?> Function()?>? onDeleteServerCopy,
   }) {
     final onEdit0 = onEdit?.call();
     final onEditInfo0 = onEditInfo?.call();
-    final onMove0 = onMove != null
-        ? onMove()
-        : () => MediaWizardService.openWizard(
-              context,
-              ref,
-              CLSharedMedia(
-                entries: items,
-                type: UniversalMediaSource.move,
-              ),
-            );
-    final onShare0 = onShare != null
-        ? onShare()
-        : () => theStore.mediaUpdater.share(context, items);
-    final onPin0 = onPin != null
-        ? onPin()
-        : () => theStore.mediaUpdater.pinToggleMultiple(
-              items.map((e) => e.id).toSet(),
-              onGetPath: (media) {
-                throw UnimplementedError(
-                  'onGetPath not yet implemented',
-                );
-              },
-            );
-    final onDelete0 = onDelete != null
-        ? onDelete()
-        : () async {
-            final confirmed = await DialogService.deleteMediaMultiple(
-                  context,
-                  media: items,
-                ) ??
-                false;
-            if (!confirmed) return confirmed;
-            if (context.mounted) {
-              return theStore.mediaUpdater.deleteMultiple(
-                {...items.map((e) => e.id!)},
-              );
-            }
-            return null;
-          };
-    final onDeleteLocalCopy0 =
-        onDeleteLocalCopy != null ? onDeleteLocalCopy() : null;
-    final onKeepOffline0 = onKeepOffline != null ? onKeepOffline() : null;
-    final onUpload0 = onUpload != null ? onUpload() : null;
-    final onDeleteServerCopy0 =
-        onDeleteServerCopy != null ? onDeleteServerCopy() : null;
+    Future<bool?> onMove0() => MediaWizardService.openWizard(
+          context,
+          ref,
+          CLSharedMedia(
+            entries: items,
+            type: UniversalMediaSource.move,
+          ),
+        );
+    Future<bool?> onShare0() => share(context, items);
+    Future<bool> onPin0() async {
+      for (final item in items) {
+        await item.onPin();
+      }
+      return true;
+    }
+
+    Future<bool> onDelete0() async {
+      final confirmed = await DialogService.deleteMultipleEntities(
+            context,
+            media: items,
+          ) ??
+          false;
+      if (!confirmed) return confirmed;
+      if (context.mounted) {
+        for (final item in items) {
+          await item.delete();
+        }
+        return true;
+      }
+      return false;
+    }
 
     return CLContextMenu.template(
       name: 'Multiple Media',
       logoImageAsset: 'assets/icon/not_on_server.png',
-      onEdit: onEdit0,
-      onEditInfo: onEditInfo0,
-      onMove: onMove0,
-      onShare: onShare0,
-      onPin: onPin0,
-      onDelete: onDelete0,
-      onDeleteLocalCopy: onDeleteLocalCopy0,
-      onKeepOffline: onKeepOffline0,
-      onUpload: onUpload0,
-      onDeleteServerCopy: onDeleteServerCopy0,
+      onEdit: onEdit != null ? onEdit() : onEdit0,
+      onEditInfo: onEditInfo != null ? onEditInfo() : onEditInfo0,
+      onMove: onMove != null ? onMove() : onMove0,
+      onShare: onShare != null ? onShare() : onShare0,
+      onPin: onPin != null ? onPin() : onPin0,
+      onDelete: onDelete != null ? onDelete() : onDelete0,
       infoMap: const {},
-      isPinned: items.any((media) => media.pin != null),
+      isPinned: items.any((media) => media.data.pin != null),
     );
   }
   final String name;
@@ -455,10 +301,7 @@ class CLContextMenu {
   final CLMenuItem onShare;
   final CLMenuItem onPin;
   final CLMenuItem onDelete;
-  final CLMenuItem onDeleteLocalCopy;
-  final CLMenuItem onKeepOffline;
-  final CLMenuItem onUpload;
-  final CLMenuItem onDeleteServerCopy;
+
   final Map<String, dynamic> infoMap;
 
   List<CLMenuItem> get actions => [
@@ -468,10 +311,6 @@ class CLContextMenu {
         onShare,
         onPin,
         onDelete,
-        onDeleteLocalCopy,
-        onKeepOffline,
-        onUpload,
-        onDeleteServerCopy,
       ].where((e) => e.onTap != null).toList();
 
   List<CLMenuItem> get basicActions => [
@@ -482,15 +321,8 @@ class CLContextMenu {
         onPin,
       ];
 
-  List<CLMenuItem> get onlineActions => [
-        onKeepOffline,
-        onUpload,
-      ];
-
   List<CLMenuItem> get destructiveActions => [
         onDelete,
-        onDeleteLocalCopy,
-        onDeleteServerCopy,
       ];
 
   DraggableMenuBuilderType? draggableMenuBuilder(
@@ -499,7 +331,7 @@ class CLContextMenu {
   ) {
     if (actions.isNotEmpty) {
       return (context, {required parentKey}) {
-        return ActionsDraggableMenu<CLEntity>(
+        return ActionsDraggableMenu<ViewerEntityMixin>(
           parentKey: parentKey,
           tagPrefix: 'Selection',
           menuItems: actions.insertOnDone(onDone),
@@ -513,24 +345,48 @@ class CLContextMenu {
   static CLContextMenu entitiesContextMenuBuilder(
     BuildContext context,
     WidgetRef ref,
-    List<CLEntity> entities,
-    StoreUpdater theStore,
+    List<ViewerEntityMixin> entities,
+    CLStore theStore,
   ) {
+    // FIXME
     return switch (entities) {
-      final List<CLEntity> e when e.every((e) => e is CLMedia) => () {
+      final List<ViewerEntityMixin> e
+          when e.every(
+            (e) => e is StoreEntity && e.data.isCollection == false,
+          ) =>
+        () {
           return CLContextMenu.ofMultipleMedia(
             context,
             ref,
-            items: e.map((e) => e as CLMedia).toList(),
+            items: e.map((e) => e as StoreEntity).toList(),
             hasOnlineService: true,
-            theStore: theStore,
           );
         }(),
-      final List<CLEntity> e when e.every((e) => e is Collection) => () {
+      final List<ViewerEntityMixin> e
+          when e.every(
+            (e) => e is StoreEntity && e.data.isCollection == true,
+          ) =>
+        () {
           return CLContextMenu.empty();
         }(),
       _ => throw UnimplementedError('Mix of items not supported yet')
     };
+  }
+
+  static Future<bool?> share(
+    BuildContext context,
+    List<StoreEntity> media,
+  ) {
+    throw UnimplementedError();
+    /* final files = media.where((e)=>e.isCollection ==false)
+        .map(directories.getMediaAbsolutePath)
+        .where((e) => File(e).existsSync());
+    final box = context.findRenderObject() as RenderBox?;
+    return ShareManager.onShareFiles(
+      context,
+      files.toList(),
+      sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
+    ); */
   }
 }
 

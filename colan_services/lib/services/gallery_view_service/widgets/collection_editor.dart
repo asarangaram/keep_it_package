@@ -11,13 +11,15 @@ import 'package:store/store.dart';
 
 class CollectionEditor extends StatefulWidget {
   factory CollectionEditor({
-    required int collectionId,
-    required void Function(Collection collection) onSubmit,
+    required String storeIdentity,
+    required int? id,
+    required void Function(StoreEntity collection) onSubmit,
     required void Function() onCancel,
     Key? key,
   }) {
     return CollectionEditor._(
-      collectionId: collectionId,
+      storeIdentity: storeIdentity,
+      id: id,
       onSubmit: onSubmit,
       onCancel: onCancel,
       isDialog: false,
@@ -25,13 +27,15 @@ class CollectionEditor extends StatefulWidget {
     );
   }
   factory CollectionEditor.dialog({
-    required int collectionId,
-    required void Function(Collection collection) onSubmit,
+    required String storeIdentity,
+    required int id,
+    required void Function(StoreEntity collection) onSubmit,
     required void Function() onCancel,
     Key? key,
   }) {
     return CollectionEditor._(
-      collectionId: collectionId,
+      storeIdentity: storeIdentity,
+      id: id,
       onSubmit: onSubmit,
       onCancel: onCancel,
       isDialog: true,
@@ -39,31 +43,34 @@ class CollectionEditor extends StatefulWidget {
     );
   }
   const CollectionEditor._({
-    required this.collectionId,
+    required this.storeIdentity,
+    required this.id,
     required this.isDialog,
     required this.onSubmit,
     required this.onCancel,
     super.key,
   });
 
-  final int collectionId;
+  final String storeIdentity;
+  final int? id;
 
-  final void Function(Collection collection) onSubmit;
+  final void Function(StoreEntity collection) onSubmit;
   final void Function() onCancel;
   final bool isDialog;
 
   @override
   State<CollectionEditor> createState() => _CollectionEditorState();
 
-  static Future<Collection?> openSheet(
+  static Future<StoreEntity?> openSheet(
     BuildContext context,
     WidgetRef ref, {
-    required Collection collection,
+    required StoreEntity collection,
   }) async {
-    return showShadSheet<Collection>(
+    return showShadSheet<StoreEntity>(
       context: context,
       builder: (BuildContext context) => CollectionEditor.dialog(
-        collectionId: collection.id!,
+        storeIdentity: collection.store.store.identity,
+        id: collection.id!,
         onSubmit: (collection) {
           PageManager.of(context).pop(collection);
         },
@@ -100,7 +107,8 @@ class _CollectionEditorState extends State<CollectionEditor> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: GetCollection(
-        id: widget.collectionId,
+        storeIdentity: widget.storeIdentity,
+        id: widget.id,
         errorBuilder: errorBuilder,
         loadingBuilder: () => loading('GetCollection'),
         builder: (collection) {
@@ -111,11 +119,11 @@ class _CollectionEditorState extends State<CollectionEditor> {
               return errorBuilder(e, st);
             }
           }
-          return GetCollectionMultiple(
-            query: DBQueries.collections,
+          return GetAllCollections(
+            storeIdentity: widget.storeIdentity,
             errorBuilder: errorBuilder,
-            loadingBuilder: () => loading('GetCollectionMultiple'),
-            builder: (collections) {
+            loadingBuilder: () => loading('GetAllCollection'),
+            builder: (allCollections) {
               return Padding(
                 padding: EdgeInsets.only(
                   bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -123,7 +131,7 @@ class _CollectionEditorState extends State<CollectionEditor> {
                 child: ShadSheet(
                   draggable: true,
                   title: Text(
-                    'Edit Collection "${collection.label.capitalizeFirstLetter()}"',
+                    'Edit Collection "${collection.data.label!.capitalizeFirstLetter()}"',
                   ),
                   description: const Text(
                     'Change the label and add/update description here',
@@ -131,20 +139,23 @@ class _CollectionEditorState extends State<CollectionEditor> {
                   actions: [
                     ShadButton(
                       child: const Text('Save changes'),
-                      onPressed: () {
+                      onPressed: () async {
                         if (formKey.currentState!.saveAndValidate()) {
                           formValue = formKey.currentState!.value;
                           final label = formValue['label'] as String;
                           final desc = formValue['description'] as String?;
-                          final updated = collection.copyWith(
-                            label: label,
+                          final updated = await collection.updateWith(
+                            label: () => label,
                             description: () => desc == null
                                 ? null
                                 : desc.isEmpty
                                     ? null
                                     : desc,
                           );
-                          widget.onSubmit(updated);
+                          if (updated != null) {
+                            widget.onSubmit(updated);
+                          }
+                          throw Exception('update failed');
                         }
                       },
                     ),
@@ -159,12 +170,12 @@ class _CollectionEditorState extends State<CollectionEditor> {
                           id: 'label',
                           // prefix: const Icon(LucideIcons.tag),
                           label: const Text(' Collection Name'),
-                          initialValue: collection.label,
+                          initialValue: collection.data.label,
                           placeholder: const Text('Enter collection name'),
                           validator: (value) => validateName(
                             newLabel: value,
-                            existingLabel: collection.label,
-                            collections: collections.entries,
+                            existingLabel: collection.data.label,
+                            collections: allCollections,
                           ),
                           showCursor: true,
                           inputFormatters: [
@@ -175,7 +186,7 @@ class _CollectionEditorState extends State<CollectionEditor> {
                           id: 'description',
                           // prefix: const Icon(LucideIcons.tag),
                           label: const Text(' About'),
-                          initialValue: collection.description,
+                          initialValue: collection.data.description,
                           placeholder:
                               const Text('Describe about this collection'),
                           maxLines: 4,
@@ -211,7 +222,7 @@ class _CollectionEditorState extends State<CollectionEditor> {
   String? validateName({
     required String? newLabel,
     required String? existingLabel,
-    required List<Collection> collections,
+    required List<StoreEntity> collections,
   }) {
     final newLabel0 = newLabel?.trim();
 
@@ -226,7 +237,7 @@ class _CollectionEditorState extends State<CollectionEditor> {
         return null;
       }
       if (collections
-          .map((e) => e.label.trim().toLowerCase())
+          .map((e) => e.data.label!.trim().toLowerCase())
           .contains(newLabel0.toLowerCase())) {
         return '$newLabel0 already exists';
       }

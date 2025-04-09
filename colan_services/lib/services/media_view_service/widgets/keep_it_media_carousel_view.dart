@@ -13,54 +13,53 @@ import '../media_view_service1.dart';
 class KeepItMediaCorouselView extends ConsumerWidget {
   const KeepItMediaCorouselView({
     required this.parentIdentifier,
-    required this.clmedias,
-    required this.theStore,
+    required this.entities,
     required this.loadingBuilder,
     required this.errorBuilder,
     this.initialMediaIndex = 0,
     super.key,
   });
   final String parentIdentifier;
-  final CLMedias clmedias;
+  final List<StoreEntity> entities;
   final Widget Function() loadingBuilder;
   final Widget Function(Object, StackTrace) errorBuilder;
-  final StoreUpdater theStore;
+
   final int initialMediaIndex;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final collectionId = ref.watch(activeCollectionProvider);
+    final parentId = ref.watch(activeCollectionProvider);
     final viewIdentifier = ViewIdentifier(
       parentID: parentIdentifier,
-      viewId: collectionId.toString(),
+      viewId: parentId.toString(),
     );
 
-    if (clmedias.isEmpty) {
+    if (entities.isEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         PageManager.of(context).pop();
       });
     }
-    return clmedias.isEmpty
+    return entities.isEmpty
         ? const WhenEmpty()
         : GetSortedEntity(
-            entities: clmedias.entries,
+            entities: entities,
             builder: (sorted) {
               return GetFilterredMedia(
                 viewIdentifier: viewIdentifier,
                 incoming: sorted,
                 bannersBuilder: (context, _) => [],
                 builder: (
-                  List<CLEntity> filterred, {
+                  List<ViewerEntityMixin> filterred, {
                   required List<Widget> Function(
                     BuildContext,
-                    List<GalleryGroupCLEntity<CLEntity>>,
+                    List<GalleryGroupStoreEntity<ViewerEntityMixin>>,
                   ) bannersBuilder,
                 }) {
                   return MediaViewService1.pageView(
-                    media: filterred.map((e) => e as CLMedia).toList(),
+                    media: filterred.map((e) => e as StoreEntity).toList(),
                     parentIdentifier: viewIdentifier.toString(),
-                    initialMediaIndex: filterred
-                        .indexWhere((e) => e.entityId == initialMediaIndex),
+                    initialMediaIndex:
+                        filterred.indexWhere((e) => e.id == initialMediaIndex),
                     errorBuilder: errorBuilder,
                     loadingBuilder: () => CLLoader.widget(
                       debugMessage: 'MediaViewService.pageView',
@@ -72,19 +71,3 @@ class KeepItMediaCorouselView extends ConsumerWidget {
           );
   }
 }
-/* 
-itemBuilder: (
-              context,
-              item, {
-              required CLEntity? Function(CLEntity entity)? onGetParent,
-              required List<CLEntity>? Function(CLEntity entity)? onGetChildren,
-            }) =>
-                EntityPreview(
-              viewIdentifier: viewIdentifier,
-              item: item,
-              theStore: theStore,
-              onGetChildren: onGetChildren,
-              onGetParent: onGetParent,
-            ),
-
-*/

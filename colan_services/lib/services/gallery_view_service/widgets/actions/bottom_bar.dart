@@ -15,10 +15,11 @@ class KeepItBottomBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final id = ref.watch(activeCollectionProvider);
+    final parent = ref.watch(activeCollectionProvider);
 
     return GetCollection(
-      id: id,
+      storeIdentity: 'NONE', // FIXME
+      id: parent?.id,
       errorBuilder: (_, __) => const SizedBox.shrink(),
       loadingBuilder: () => CLLoader.hide(
         debugMessage: 'GetCollection',
@@ -34,15 +35,6 @@ class KeepItBottomBar extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              const Expanded(
-                child: Padding(
-                  padding: EdgeInsets.only(left: 8),
-                  child: Align(
-                    alignment: Alignment.bottomLeft,
-                    child: ServerSpeedDial(),
-                  ),
-                ),
-              ),
               Expanded(
                 child: Center(
                   child: ShadButton.secondary(
@@ -73,7 +65,7 @@ class KeepItBottomBar extends ConsumerWidget {
                             ),
                             onPressed: () {
                               PageManager.of(context).openCamera(
-                                collectionId: collection?.id,
+                                parentId: collection?.id,
                               );
                             },
                           ),

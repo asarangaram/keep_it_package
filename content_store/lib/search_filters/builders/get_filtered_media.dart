@@ -16,27 +16,29 @@ class GetFilterredMedia extends ConsumerWidget {
     this.disabled = false,
   });
   final Widget Function(
-    List<CLEntity> filterred, {
+    List<ViewerEntityMixin> filterred, {
     required List<Widget> Function(
       BuildContext,
-      List<GalleryGroupCLEntity<CLEntity>>,
+      List<GalleryGroupStoreEntity<ViewerEntityMixin>>,
     ) bannersBuilder,
   }) builder;
 
-  final List<CLEntity> incoming;
+  final List<ViewerEntityMixin> incoming;
   final List<Widget> Function(
     BuildContext,
-    List<GalleryGroupCLEntity<CLEntity>>,
+    List<GalleryGroupStoreEntity<ViewerEntityMixin>>,
   ) bannersBuilder;
   final bool disabled;
   final ViewIdentifier viewIdentifier;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (incoming.first.runtimeType == Collection || disabled) {
+    if ((incoming.first.runtimeType == StoreEntity &&
+            (incoming.first as StoreEntity).isCollection) ||
+        disabled) {
       return builder(incoming, bannersBuilder: (context, galleryMap) => []);
     }
-    final medias = incoming.map((e) => e as CLMedia).toList();
+    final medias = incoming.map((e) => e as StoreEntity).toList();
     final filterred =
         ref.watch(filterredMediaProvider(MapEntry(viewIdentifier, medias)));
 

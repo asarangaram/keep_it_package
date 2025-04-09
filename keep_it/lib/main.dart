@@ -20,7 +20,9 @@ class KeepItApp implements AppDescriptor {
   List<CLRouteDescriptor> get screens => [
         CLRouteDescriptor(
           name: '',
-          builder: (context, parameters) => const GalleryViewService(),
+          builder: (context, parameters) => const GalleryViewService(
+            storeIdentity: 'local',
+          ),
         ),
         CLRouteDescriptor(
           name: 'settings',
@@ -29,13 +31,13 @@ class KeepItApp implements AppDescriptor {
         CLRouteDescriptor(
           name: 'camera',
           builder: (context, parameters) {
-            final int? collectionId;
-            if (parameters.keys.contains('collectionId')) {
-              collectionId = int.parse(parameters['collectionId']!);
+            final int? parentId;
+            if (parameters.keys.contains('parentId')) {
+              parentId = int.parse(parameters['parentId']!);
             } else {
-              collectionId = null;
+              parentId = null;
             }
-            return CLCameraService(collectionId: collectionId);
+            return CLCameraService(parentId: parentId);
           },
         ),
         CLRouteDescriptor(
@@ -55,6 +57,7 @@ class KeepItApp implements AppDescriptor {
             }
 
             return MediaEditService(
+              storeIdentity: 'local',
               mediaId: mediaId,
               canDuplicateMedia: canDuplicateMedia,
             );
@@ -64,21 +67,22 @@ class KeepItApp implements AppDescriptor {
           name: 'media',
           builder: (context, parameters) {
             final String parentIdentifier;
-            final int? collectionId;
+            final int? parentId;
 
             if (!parameters.containsKey('parentIdentifier')) {
               parentIdentifier = 'unknown';
             } else {
               parentIdentifier = parameters['parentIdentifier']!;
             }
-            if (!parameters.containsKey('collectionId')) {
-              collectionId = null;
+            if (!parameters.containsKey('parentId')) {
+              parentId = null;
             } else {
-              collectionId = int.parse(parameters['collectionId']!);
+              parentId = int.parse(parameters['parentId']!);
             }
 
             return MediaViewService(
-              collectionId: collectionId,
+              storeIdentity: 'local',
+              parentId: parentId,
               id: int.parse(parameters['id']!),
               parentIdentifier: parentIdentifier,
             );

@@ -4,11 +4,12 @@ version: 0.0.1
 # repository: https://github.com/my_org/my_repo
 publish_to: none
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: ">=3.0.0 <4.0.0"
 
 # Add regular dependencies here.
 dependencies:
-  background_downloader: ^8.9.4
+  cl_media_tools:
+    path: ../cl_media_tools
   collection: ^1.19.0
   http: ^1.2.2
   meta: ^1.12.0
@@ -26,4 +27,3 @@ dev_dependencies:
   lints: ^3.0.0
   test: ^1.24.0
   very_good_analysis: ^7.0.0
-
