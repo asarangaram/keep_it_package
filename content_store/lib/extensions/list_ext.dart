@@ -49,3 +49,14 @@ extension CompareExtOnList<T> on List<T> {
 
   bool isDifferent(List<T> other) => isSame(other);
 }
+
+extension Reshape<T> on List<T> {
+  List<List<T>> convertTo2D(int innerDimension) {
+    final pages = <List<T>>[];
+    for (var i = 0; i < length; i += innerDimension) {
+      final end = (i + innerDimension < length) ? i + innerDimension : length;
+      pages.add(sublist(i, end));
+    }
+    return pages;
+  }
+}

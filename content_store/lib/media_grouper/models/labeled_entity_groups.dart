@@ -2,6 +2,8 @@ import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 import 'package:store/store.dart';
 
+import 'gallery_group.dart';
+
 @immutable
 class LabelledEntityGroups {
   const LabelledEntityGroups({

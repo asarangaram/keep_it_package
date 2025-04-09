@@ -4,6 +4,7 @@ import 'package:keep_it_state/keep_it_state.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
+import '../../media_grouper/models/gallery_group.dart';
 import '../providers/media_filters.dart';
 
 class GetFilterredMedia extends ConsumerWidget {
