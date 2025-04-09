@@ -1,4 +1,4 @@
-import 'package:cl_media_info_extractor/cl_media_info_extractor.dart';
+import 'package:cl_media_tools/cl_media_tools.dart';
 import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 

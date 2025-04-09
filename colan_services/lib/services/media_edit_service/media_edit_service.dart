@@ -1,4 +1,4 @@
-import 'package:cl_media_info_extractor/cl_media_info_extractor.dart';
+import 'package:cl_media_tools/cl_media_tools.dart';
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';

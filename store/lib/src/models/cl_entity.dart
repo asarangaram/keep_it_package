@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:cl_media_info_extractor/cl_media_info_extractor.dart';
+import 'package:cl_media_tools/cl_media_tools.dart';
 import 'package:meta/meta.dart';
 
 import 'data_types.dart';

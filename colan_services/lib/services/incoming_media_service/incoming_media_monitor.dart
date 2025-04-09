@@ -1,4 +1,4 @@
-import 'package:cl_media_info_extractor/cl_media_info_extractor.dart';
+import 'package:cl_media_tools/cl_media_tools.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';

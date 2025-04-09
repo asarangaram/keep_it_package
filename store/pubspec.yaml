@@ -8,8 +8,8 @@ environment:
 
 # Add regular dependencies here.
 dependencies:
-  cl_media_info_extractor:
-    path: ../cl_media_info_extractor
+  cl_media_tools:
+    path: ../cl_media_tools
   collection: ^1.19.0
   crypto: ^3.0.4
   heif_converter: ^1.0.1

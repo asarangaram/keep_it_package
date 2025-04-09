@@ -9,8 +9,8 @@ environment:
 
 dependencies:
   background_downloader: ^8.9.4
-  cl_media_info_extractor:
-    path: ../cl_media_info_extractor
+  cl_media_tools:
+    path: ../cl_media_tools
   colan_widgets:
     path: ../colan_widgets
   collection: ^1.19.0
