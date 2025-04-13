@@ -1,10 +1,10 @@
 import 'dart:math';
 
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:keep_it_state/keep_it_state.dart';
-import 'package:percent_indicator/percent_indicator.dart';
 
-import '../basics/cl_text.dart';
+import 'package:percent_indicator/percent_indicator.dart';
+import 'package:store/store.dart';
 
 class StreamProgressView extends StatelessWidget {
   const StreamProgressView({

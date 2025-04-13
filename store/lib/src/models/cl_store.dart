@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:cl_media_tools/cl_media_tools.dart';
 import 'package:meta/meta.dart';
 
 import 'cl_entity.dart';
 import 'data_types.dart';
 import 'entity_store.dart';
+import 'progress.dart';
 import 'store_entity.dart';
 import 'store_query.dart';
 
@@ -337,6 +340,115 @@ class CLStore {
       ),
       store: this,
       path: mediaFile?.path,
+    );
+  }
+
+  Stream<Progress> getValidMediaFiles({
+    required List<CLMediaContent> contentList,
+    required StoreEntity? collection,
+    void Function({
+      required List<StoreEntity> existingEntities,
+      required List<StoreEntity> newEntities,
+      required List<CLMediaContent> invalidContent,
+    })? onDone,
+  }) async* {
+    int parentId;
+    if (collection != null) {
+      yield Progress(
+        currentItem: 'Creating collection " ${collection.data.label}"',
+        fractCompleted: 0,
+      );
+      final collectionInDB = await (await createCollection(
+        label: collection.data.label!,
+        description: () => collection.data.description,
+        parentId:
+            collection.parentId == null ? null : () => collection.parentId,
+      ))
+          ?.dbSave();
+
+      /// A valid collection must have been created
+      if (collectionInDB == null || collectionInDB.id == null) {
+        throw Exception(
+          'failed to create collection with label ${collection.data.label}',
+        );
+      }
+      if (!collectionInDB.isCollection) {
+        throw Exception('Parent entity must be a collection.');
+      }
+      parentId = collectionInDB.id!;
+    } else {
+      StoreEntity? defaultParent;
+      final tempParent = await createCollection(label: tempCollectionName);
+      if (tempParent != null) {
+        defaultParent = await tempParent.dbSave();
+      }
+
+      if (defaultParent == null || defaultParent.id == null) {
+        throw Exception('missing parent; unable to create default collection');
+      }
+      if (!defaultParent.isCollection) {
+        throw Exception('Parent entity must be a collection.');
+      }
+      parentId = defaultParent.id!;
+    }
+
+    final existingEntities = <StoreEntity>[];
+    final newEntities = <StoreEntity>[];
+    final invalidContent = <CLMediaContent>[];
+
+    for (final (i, mediaFile) in contentList.indexed) {
+      await Future<void>.delayed(const Duration(milliseconds: 1));
+      yield Progress(
+        currentItem: 'processing "${mediaFile.identity}"',
+        fractCompleted: (i + 1) / contentList.length,
+      );
+
+      final item = switch (mediaFile) {
+        (final CLMediaFile e) => e,
+        (final CLMediaURI e) =>
+          await e.toMediaFile(downloadDirectory: Directory(tempFilePath)),
+        (final CLMediaUnknown e) => await CLMediaFile.fromPath(e.path),
+        _ => null
+      };
+
+      if (item != null) {
+        Future<bool> processSupportedMediaContent() async {
+          if ([CLMediaType.image, CLMediaType.video].contains(item.type)) {
+            final mediaInDB = await get(
+              EntityQuery(null, {'md5': item.md5, 'isCollection': 1}),
+            );
+            if (mediaInDB != null) {
+              existingEntities.add(mediaInDB);
+              return true;
+            } else {
+              final newEntity = await createMedia(
+                mediaFile: item,
+                parentId: parentId,
+              );
+              if (newEntity != null) {
+                newEntities.add(newEntity);
+                return true;
+              }
+            }
+          }
+          return false;
+        }
+
+        if (await processSupportedMediaContent() == false) {
+          invalidContent.add(mediaFile);
+        }
+      } else {
+        invalidContent.add(mediaFile);
+      }
+    }
+    yield const Progress(
+      currentItem: 'processed all files',
+      fractCompleted: 1,
+    );
+    onDone?.call(
+      existingEntities: existingEntities,
+      newEntities: newEntities,
+      invalidContent: invalidContent,
     );
   }
 

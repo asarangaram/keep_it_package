@@ -111,6 +111,7 @@ class KeepItApp implements AppDescriptor {
         required void Function({required bool result}) onDiscard,
       }) =>
           IncomingMediaService(
+            storeIdentity: 'local',
             parentIdentifier: 'IncomingMediaService',
             incomingMedia: incomingMedia,
             onDiscard: onDiscard,

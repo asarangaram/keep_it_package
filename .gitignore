@@ -13,3 +13,4 @@ keep_it/integration_test/ApplicationSupportPath/backgroundDownloaderDatabase/**
 experiment/**
 colan_services/devtools_options.yaml
 **/*.tn.jpg
+cl_gallery_view/**

@@ -1,3 +1,5 @@
+import 'package:cl_media_tools/cl_media_tools.dart';
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/keep_it_state.dart';
@@ -15,16 +17,22 @@ class IncomingMediaService extends StatelessWidget {
     required this.incomingMedia,
     required this.parentIdentifier,
     required this.onDiscard,
+    required this.storeIdentity,
     super.key,
   });
   final CLMediaFileGroup incomingMedia;
   final String parentIdentifier;
   final void Function({required bool result}) onDiscard;
+  final String storeIdentity;
 
   @override
   Widget build(BuildContext context) {
     return FullscreenLayout(
       child: IncomingMediaHandler0(
+        storeIdentity: storeIdentity,
+        errorBuilder: (e, st) => CLErrorView(errorMessage: e.toString()),
+        loadingBuilder: () =>
+            CLLoader.widget(debugMessage: 'IncomingMediaService'),
         incomingMedia: incomingMedia,
         parentIdentifier: parentIdentifier,
         onDiscard: onDiscard,
@@ -38,12 +46,17 @@ class IncomingMediaHandler0 extends ConsumerStatefulWidget {
     required this.parentIdentifier,
     required this.incomingMedia,
     required this.onDiscard,
+    required this.storeIdentity,
+    required this.errorBuilder,
+    required this.loadingBuilder,
     super.key,
   });
   final CLMediaFileGroup incomingMedia;
   final String parentIdentifier;
   final void Function({required bool result}) onDiscard;
-
+  final String storeIdentity;
+  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function() loadingBuilder;
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
       _IncomingMediaHandler0State();
@@ -70,6 +83,9 @@ class _IncomingMediaHandler0State extends ConsumerState<IncomingMediaHandler0> {
           ? const Center(child: CircularProgressIndicator())
           : (duplicateCandidates == null)
               ? AnalysePage(
+                  storeIdentity: widget.storeIdentity,
+                  errorBuilder: widget.errorBuilder,
+                  loadingBuilder: widget.loadingBuilder,
                   incomingMedia: widget.incomingMedia,
                   onDone: segretated,
                   onCancel: () => onDiscard(result: false),
@@ -108,22 +124,23 @@ class _IncomingMediaHandler0State extends ConsumerState<IncomingMediaHandler0> {
   }
 
   Future<void> segretated({
-    required List<StoreEntity> existingItems,
-    required List<StoreEntity> newItems,
+    required List<StoreEntity> existingEntities,
+    required List<StoreEntity> newEntities,
+    required List<CLMediaContent> invalidContent,
   }) async {
     final duplicateCandidates0 = CLSharedMedia(
-      entries: existingItems,
+      entries: existingEntities,
       collection: widget.incomingMedia.collection,
       type: widget.incomingMedia.type,
     );
     if (duplicateCandidates0.targetMismatch.isNotEmpty) {
       duplicateCandidates = duplicateCandidates0;
-      newCandidates = newItems;
+      newCandidates = newEntities;
       setState(() {});
     } else {
       await onSave(
         mg: CLSharedMedia(
-          entries: newItems,
+          entries: newEntities,
           collection: widget.incomingMedia.collection,
           type: widget.incomingMedia.type,
         ),
