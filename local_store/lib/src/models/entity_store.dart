@@ -58,8 +58,23 @@ class LocalSQLiteEntityStore extends EntityStore
 
   String? absoluteMediaPath(CLEntity media) =>
       media.path == null ? null : '$mediaPath/${media.path}';
+
   String? absolutePreviewPath(CLEntity media) =>
       media.previewPath == null ? null : '$previewPath/${media.previewPath}';
+
+  @override
+  Uri? mediaUri(CLEntity media) {
+    final filePath = absoluteMediaPath(media);
+    if (filePath == null) return null;
+    return Uri.file(filePath);
+  }
+
+  @override
+  Uri? previewUri(CLEntity media) {
+    final filePath = absolutePreviewPath(media);
+    if (filePath == null) return null;
+    return Uri.file(filePath);
+  }
 
   Future<bool> createMediaFiles(CLEntity media, String path) async {
     final mediaPath = absoluteMediaPath(media);
@@ -101,7 +116,7 @@ class LocalSQLiteEntityStore extends EntityStore
     String? path,
   }) async {
     CLEntity? prev;
-    CLEntity? updated;
+    CLEntity updated;
 
     final String? currentMediaPath;
     final String? prevMediaPath;
@@ -122,7 +137,7 @@ class LocalSQLiteEntityStore extends EntityStore
           throw Exception('path expected as media changed');
         }
         if (curr.isSame(prev)) {
-          // nothing to update!, avoid date change and send prevous
+          // nothing to update!, avoid date change and send previous
           return prev;
         } else if (curr.isContentSame(prev)) {
           updated = curr.copyWith(
@@ -134,23 +149,23 @@ class LocalSQLiteEntityStore extends EntityStore
           updated = curr;
         }
       }
-      currentMediaPath = absoluteMediaPath(curr);
+      currentMediaPath = absoluteMediaPath(updated);
       prevMediaPath = prev == null ? null : absoluteMediaPath(prev);
     } catch (e) {
       return prev;
     }
 
     Future<CLEntity?> cb(SqliteWriteContext tx) async {
-      final entityFromDB = await dbUpsert(tx, agent, curr);
+      final entityFromDB = await dbUpsert(tx, agent, updated);
       if (entityFromDB == null) throw Exception('failed to update DB');
       if (currentMediaPath != null &&
           prevMediaPath != currentMediaPath &&
           path != null) {
-        await createMediaFiles(curr, path);
+        await createMediaFiles(updated, path);
       }
       // generate preview here
 
-      return updated;
+      return entityFromDB;
     }
 
     try {
@@ -165,7 +180,7 @@ class LocalSQLiteEntityStore extends EntityStore
       }
     } catch (e) {
       if (currentMediaPath != null && prevMediaPath != currentMediaPath) {
-        await deleteMediaFiles(curr);
+        await deleteMediaFiles(updated);
       }
     }
     return prev;

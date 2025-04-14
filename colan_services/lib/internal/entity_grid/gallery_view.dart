@@ -16,10 +16,12 @@ class EntityGridView extends StatelessWidget {
     required this.itemBuilder,
     required this.labelBuilder,
     required this.bannersBuilder,
+    required this.storeIdentity,
     super.key,
     this.draggableMenuBuilder,
   });
   final ViewIdentifier viewIdentifier;
+  final String storeIdentity;
   final int columns;
   final List<ViewerEntityMixin> incoming;
 
@@ -45,6 +47,7 @@ class EntityGridView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetGroupedMedia(
+      storeIdentity: storeIdentity,
       viewIdentifier: viewIdentifier,
       errorBuilder: errorBuilder,
       loadingBuilder: loadingBuilder,

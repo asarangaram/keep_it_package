@@ -11,9 +11,11 @@ import '../basic_page_service/widgets/page_manager.dart';
 class MediaWizardService extends ConsumerWidget {
   const MediaWizardService({
     required this.type,
+    required this.storeIdentity,
     super.key,
   });
   final UniversalMediaSource type;
+  final String storeIdentity;
 
   static Future<bool?> openWizard(
     BuildContext context,
@@ -70,6 +72,7 @@ class MediaWizardService extends ConsumerWidget {
           parentID: 'MediaWizardService',
           viewId: type.name,
         ),
+        storeIdentity: storeIdentity,
         media: media,
         type: type,
         galleryMap: galleryMap,

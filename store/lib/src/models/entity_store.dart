@@ -16,4 +16,7 @@ abstract class EntityStore {
   });
 
   Future<bool> delete(CLEntity item);
+
+  Uri? mediaUri(CLEntity media);
+  Uri? previewUri(CLEntity media);
 }

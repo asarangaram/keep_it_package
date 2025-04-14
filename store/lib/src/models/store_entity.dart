@@ -152,9 +152,9 @@ class StoreEntity implements ViewerEntityMixin {
   int? get parentId => data.parentId;
 
   @override
-  Uri? get mediaUri => throw UnimplementedError();
+  Uri? get mediaUri => store.store.mediaUri(data);
   @override
-  Uri? get previewUri => throw UnimplementedError();
+  Uri? get previewUri => store.store.previewUri(data);
 
   @override
   String toString() => 'StoreEntity(entity: $data, store: $store, path: $path)';

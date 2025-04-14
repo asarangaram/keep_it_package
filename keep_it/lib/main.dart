@@ -37,7 +37,10 @@ class KeepItApp implements AppDescriptor {
             } else {
               parentId = null;
             }
-            return CLCameraService(parentId: parentId);
+            return CLCameraService(
+              parentId: parentId,
+              storeIdentity: 'local',
+            );
           },
         ),
         CLRouteDescriptor(
@@ -99,7 +102,10 @@ class KeepItApp implements AppDescriptor {
             } else {
               type = UniversalMediaSource.unclassified;
             }
-            return MediaWizardService(type: type);
+            return MediaWizardService(
+              type: type,
+              storeIdentity: 'local',
+            );
           },
         ),
       ];

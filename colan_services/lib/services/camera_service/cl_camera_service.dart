@@ -20,7 +20,7 @@ import 'widgets/preview.dart';
 class CLCameraService extends ConsumerWidget {
   const CLCameraService({
     required this.parentId,
-    this.storeIdentity = 'local',
+    required this.storeIdentity,
     super.key,
   });
 

@@ -17,6 +17,7 @@ class WizardPreview extends ConsumerStatefulWidget {
     required this.type,
     required this.onSelectionChanged,
     required this.freezeView,
+    required this.storeIdentity,
     super.key,
   });
   final UniversalMediaSource type;
@@ -24,6 +25,7 @@ class WizardPreview extends ConsumerStatefulWidget {
   final bool freezeView;
 
   final ViewIdentifier viewIdentifier;
+  final String storeIdentity;
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _WizardPreviewState();
 }
@@ -50,6 +52,7 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
         CLErrorView(errorMessage: e.toString());
     return CLGalleryView(
       viewIdentifier: widget.viewIdentifier,
+      storeIdentity: widget.storeIdentity,
       emptyWidget: const CLText.large('Nothing to show here'),
       entities: media0.entries,
       columns: 3,

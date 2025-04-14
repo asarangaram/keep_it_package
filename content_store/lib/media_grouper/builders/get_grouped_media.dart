@@ -18,11 +18,13 @@ class GetGroupedMedia extends ConsumerWidget {
     required this.errorBuilder,
     required this.loadingBuilder,
     required this.viewableAsCollection,
+    required this.storeIdentity,
     super.key,
   });
   final ViewIdentifier viewIdentifier;
   final int columns;
   final List<ViewerEntityMixin> incoming;
+  final String storeIdentity;
 
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
@@ -43,7 +45,7 @@ class GetGroupedMedia extends ConsumerWidget {
         .toList();
 
     return GetCollectionsByIdList(
-      storeIdentity: 'NONE', //FIXME
+      storeIdentity: storeIdentity,
       ids: ids,
       loadingBuilder: loadingBuilder,
       errorBuilder: errorBuilder,

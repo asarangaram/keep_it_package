@@ -10,9 +10,11 @@ final entitiesProvider = StreamProvider.family<List<StoreEntity>, EntityQuery>(
     (ref, dbQuery) async* {
   final identity = dbQuery.storeIdentity;
   Future<List<StoreEntity>> Function() getentities;
-
-  if (identity == null) {
-    final store = await ref.watch(storeProvider(identity!).future);
+  if (identity != 'local') {
+    throw Exception('Unknown store!');
+  }
+  if (identity != null) {
+    final store = await ref.watch(storeProvider(identity).future);
 
     getentities = () async {
       return store.getAll(dbQuery);
@@ -35,10 +37,11 @@ final entitiesProvider = StreamProvider.family<List<StoreEntity>, EntityQuery>(
   final controller = StreamController<List<StoreEntity>>();
   ref.listen(reloadProvider, (prev, curr) async {
     if (prev != curr) {
-      controller.add(await getentities());
+      final items = await getentities();
+      controller.add(items);
     }
   });
-
-  yield await getentities();
+  final items = await getentities();
+  yield items;
   yield* controller.stream;
 });

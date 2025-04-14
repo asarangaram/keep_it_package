@@ -10,15 +10,17 @@ import '../../providers/active_collection.dart';
 
 class KeepItBottomBar extends ConsumerWidget {
   const KeepItBottomBar({
+    required this.storeIdentity,
     super.key,
   });
+  final String storeIdentity;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final parent = ref.watch(activeCollectionProvider);
 
     return GetCollection(
-      storeIdentity: 'NONE', // FIXME
+      storeIdentity: storeIdentity,
       id: parent?.id,
       errorBuilder: (_, __) => const SizedBox.shrink(),
       loadingBuilder: () => CLLoader.hide(

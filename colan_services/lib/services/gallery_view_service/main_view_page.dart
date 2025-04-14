@@ -53,6 +53,7 @@ class GalleryViewService extends StatelessWidget {
                         FadeTransition(opacity: animation, child: child),
                     child: KeepItMainGrid(
                       parentIdentifier: parentIdentifier,
+                      storeIdentity: storeIdentity,
                       entities: entities,
                       theStore: theStore,
                       loadingBuilder: () => CLLoader.widget(

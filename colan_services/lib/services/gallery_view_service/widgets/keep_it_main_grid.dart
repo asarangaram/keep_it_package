@@ -21,6 +21,7 @@ class KeepItMainGrid extends ConsumerWidget {
     required this.theStore,
     required this.loadingBuilder,
     required this.errorBuilder,
+    required this.storeIdentity,
     super.key,
   });
   final String parentIdentifier;
@@ -28,6 +29,7 @@ class KeepItMainGrid extends ConsumerWidget {
   final Widget Function() loadingBuilder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final CLStore theStore;
+  final String storeIdentity;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -87,6 +89,7 @@ class KeepItMainGrid extends ConsumerWidget {
                     }) {
                       return EntityGridView(
                         viewIdentifier: viewIdentifier,
+                        storeIdentity: storeIdentity,
                         errorBuilder: errorBuilder,
                         loadingBuilder: loadingBuilder,
                         incoming: incoming,
@@ -102,7 +105,9 @@ class KeepItMainGrid extends ConsumerWidget {
           ),
         ),
         if (MediaQuery.of(context).viewInsets.bottom == 0)
-          const KeepItBottomBar(),
+          KeepItBottomBar(
+            storeIdentity: storeIdentity,
+          ),
       ],
     );
   }

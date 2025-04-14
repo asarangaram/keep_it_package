@@ -32,12 +32,12 @@ class CLEntity {
   factory CLEntity.fromMap(Map<String, dynamic> map) {
     return CLEntity(
       id: map['id'] != null ? map['id'] as int : null,
-      isCollection: (map['isCollection'] ?? false) as bool,
+      isCollection: (map['isCollection'] ?? 0) != 0,
       addedDate:
           DateTime.fromMillisecondsSinceEpoch((map['addedDate'] ?? 0) as int),
       updatedDate:
           DateTime.fromMillisecondsSinceEpoch((map['updatedDate'] ?? 0) as int),
-      isDeleted: (map['isDeleted'] ?? false) as bool,
+      isDeleted: (map['isDeleted'] ?? 0) != 0,
       label: map['label'] != null ? map['label'] as String : null,
       description:
           map['description'] != null ? map['description'] as String : null,
@@ -53,7 +53,7 @@ class CLEntity {
       height: map['height'] != null ? map['height'] as int : null,
       width: map['width'] != null ? map['width'] as int : null,
       duration: map['duration'] != null ? map['duration'] as double : null,
-      isHidden: (map['isHidden'] ?? false) as bool,
+      isHidden: (map['isHidden'] ?? 0) != 0,
       pin: map['pin'] != null ? map['pin'] as String : null,
     );
   }
