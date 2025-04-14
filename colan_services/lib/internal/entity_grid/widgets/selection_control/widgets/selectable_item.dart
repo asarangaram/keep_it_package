@@ -24,7 +24,7 @@ class SelectableItem extends StatelessWidget {
           );
     return Stack(
       children: [
-        child,
+        Positioned.fill(child: child),
         Positioned.fill(
           child: GestureDetector(
             onTap: onTap,
