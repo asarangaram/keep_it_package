@@ -14,7 +14,7 @@ class GetCollection extends ConsumerWidget {
     super.key,
   });
   final Widget Function(StoreEntity? collections) builder;
-  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function(String errorMsg) errorBuilder;
   final Widget Function() loadingBuilder;
   final String storeIdentity;
   final int? id;
@@ -47,7 +47,7 @@ class GetCollectionsByIdList extends ConsumerWidget {
     super.key,
   });
   final Widget Function(List<StoreEntity> collections) builder;
-  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function(String errorMsg) errorBuilder;
   final Widget Function() loadingBuilder;
   final String storeIdentity;
   final List<int> ids;
@@ -76,7 +76,7 @@ class GetAllCollections extends ConsumerWidget {
     super.key,
   });
   final Widget Function(List<StoreEntity> collections) builder;
-  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function(String errorMsg) errorBuilder;
   final Widget Function() loadingBuilder;
   final String? storeIdentity;
 
@@ -102,7 +102,7 @@ class GetRootCollections extends ConsumerWidget {
     super.key,
   });
   final Widget Function(List<StoreEntity> collections) builder;
-  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function(String errorMsg) errorBuilder;
   final Widget Function() loadingBuilder;
   final String? storeIdentity;
 
@@ -131,7 +131,7 @@ class GetAllVisibleCollection extends ConsumerWidget {
     super.key,
   });
   final Widget Function(List<StoreEntity> collections) builder;
-  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function(String errorMsg) errorBuilder;
   final Widget Function() loadingBuilder;
   final String? storeIdentity;
 

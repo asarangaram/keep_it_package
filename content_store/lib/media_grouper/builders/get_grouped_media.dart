@@ -24,7 +24,7 @@ class GetGroupedMedia extends ConsumerWidget {
   final int columns;
   final List<ViewerEntityMixin> incoming;
 
-  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function(String errorMsg) errorBuilder;
   final Widget Function() loadingBuilder;
   final Widget Function(List<LabelledEntityGroups> galleryMap) builder;
   final bool viewableAsCollection;

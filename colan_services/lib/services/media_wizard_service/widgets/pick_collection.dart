@@ -20,7 +20,7 @@ class PickCollection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetAllVisibleCollection(
-      errorBuilder: (_, __) {
+      errorBuilder: (_) {
         throw UnimplementedError('errorBuilder');
       },
       loadingBuilder: () => CLLoader.widget(

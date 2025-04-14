@@ -46,8 +46,7 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
       return const SizedBox.expand();
     }
 
-    Widget errorBuilder(Object e, StackTrace st) =>
-        CLErrorView(errorMessage: e.toString());
+    Widget errorBuilder(String errorMsg) => CLErrorView(errorMessage: errorMsg);
     return CLGalleryView(
       viewIdentifier: widget.viewIdentifier,
       emptyWidget: const CLText.large('Nothing to show here'),
@@ -69,11 +68,10 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
               ?.call(items.map((e) => e as StoreEntity).toList()),
       itemBuilder: (context, item) {
         return GetCollection(
-          storeIdentity: (item as StoreEntity).store.store.identity,
+          storeIdentity: (item as StoreEntity).store.store!.identity,
           id: item.parentId,
           loadingBuilder: () => CLLoader.widget(debugMessage: 'GetCollection'),
-          errorBuilder: (p0, p1) =>
-              const Center(child: Text('GetCollection Error')),
+          errorBuilder: (_) => const Center(child: Text('GetCollection Error')),
           builder: (parentCollection) {
             return MediaThumbnail(
               media: item,

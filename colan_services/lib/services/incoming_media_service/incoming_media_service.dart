@@ -30,7 +30,7 @@ class IncomingMediaService extends StatelessWidget {
     return FullscreenLayout(
       child: IncomingMediaHandler0(
         storeIdentity: storeIdentity,
-        errorBuilder: (e, st) => CLErrorView(errorMessage: e.toString()),
+        errorBuilder: (errorMsg) => CLErrorView(errorMessage: errorMsg),
         loadingBuilder: () =>
             CLLoader.widget(debugMessage: 'IncomingMediaService'),
         incomingMedia: incomingMedia,
@@ -55,7 +55,7 @@ class IncomingMediaHandler0 extends ConsumerStatefulWidget {
   final String parentIdentifier;
   final void Function({required bool result}) onDiscard;
   final String storeIdentity;
-  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function(String errorMsg) errorBuilder;
   final Widget Function() loadingBuilder;
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>

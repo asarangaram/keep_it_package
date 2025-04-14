@@ -30,16 +30,16 @@ class EntityPreview extends ConsumerWidget {
     final entity = item as StoreEntity; // FIXME
 
     return GetCollection(
-      storeIdentity: (item as StoreEntity).store.store.identity,
+      storeIdentity: (item as StoreEntity).store.store!.identity,
       id: (item as StoreEntity).id,
       loadingBuilder: GreyShimmer.new,
-      errorBuilder: (e, st) => const BrokenImage(),
+      errorBuilder: (_) => const BrokenImage(),
       builder: (parent) {
         return GetMediaByCollectionId(
-          storeIdentity: (item as StoreEntity).store.store.identity,
+          storeIdentity: (item as StoreEntity).store.store!.identity,
           parentId: (item as StoreEntity).id!,
           loadingBuilder: GreyShimmer.new,
-          errorBuilder: (e, st) => const BrokenImage(),
+          errorBuilder: (_) => const BrokenImage(),
           builder: (children) {
             if (parent == null && (item as StoreEntity).isCollection == false) {
               throw Exception(

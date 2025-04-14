@@ -17,7 +17,7 @@ class MediaView extends StatelessWidget {
     required String parentIdentifier,
     required bool autoStart,
     required bool autoPlay,
-    required Widget Function(Object, StackTrace) errorBuilder,
+    required Widget Function(String errorMsg) errorBuilder,
     required Widget Function() loadingBuilder,
     bool isLocked = false,
     void Function({required bool lock})? onLockPage,
@@ -70,7 +70,7 @@ class MediaView extends StatelessWidget {
   final bool isLocked;
   final void Function({required bool lock})? onLockPage;
   final bool isPreview;
-  final Widget Function(Object, StackTrace)? errorBuilder;
+  final Widget Function(String errorMsg)? errorBuilder;
   final Widget Function()? loadingBuilder;
   @override
   Widget build(BuildContext context) {
@@ -121,7 +121,7 @@ class MediaView0 extends ConsumerWidget {
   final bool autoPlay;
   final bool isLocked;
   final void Function({required bool lock})? onLockPage;
-  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function(String errorMsg) errorBuilder;
   final Widget Function() loadingBuilder;
   @override
   Widget build(BuildContext context, WidgetRef ref) {

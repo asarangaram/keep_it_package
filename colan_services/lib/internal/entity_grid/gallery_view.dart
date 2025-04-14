@@ -23,7 +23,7 @@ class EntityGridView extends StatelessWidget {
   final int columns;
   final List<ViewerEntityMixin> incoming;
 
-  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function(String errorMsg) errorBuilder;
   final Widget Function() loadingBuilder;
   final Widget Function(BuildContext, ViewerEntityMixin) itemBuilder;
   final Widget? Function(

@@ -12,7 +12,7 @@ class MediaViewService1 extends StatelessWidget {
   factory MediaViewService1({
     required StoreEntity media,
     required String parentIdentifier,
-    required Widget Function(Object, StackTrace) errorBuilder,
+    required Widget Function(String errorMsg) errorBuilder,
     required Widget Function() loadingBuilder,
     Key? key,
   }) {
@@ -31,7 +31,7 @@ class MediaViewService1 extends StatelessWidget {
     required int initialMediaIndex,
     required List<StoreEntity> media,
     required String parentIdentifier,
-    required Widget Function(Object, StackTrace) errorBuilder,
+    required Widget Function(String errorMsg) errorBuilder,
     required Widget Function() loadingBuilder,
     Key? key,
   }) {
@@ -59,7 +59,7 @@ class MediaViewService1 extends StatelessWidget {
   final int initialMediaIndex;
   final String parentIdentifier;
   final bool isPreview;
-  final Widget Function(Object, StackTrace)? errorBuilder;
+  final Widget Function(String errorMsg)? errorBuilder;
   final Widget Function()? loadingBuilder;
   @override
   Widget build(BuildContext context) {
@@ -111,7 +111,7 @@ class MediaViewService0 extends ConsumerStatefulWidget {
   final List<StoreEntity> media;
   final int initialMediaIndex;
   final String parentIdentifier;
-  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function(String errorMsg) errorBuilder;
   final Widget Function() loadingBuilder;
 
   @override

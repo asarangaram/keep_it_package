@@ -33,7 +33,7 @@ class CLCameraService extends ConsumerWidget {
       useSafeArea: false,
       child: GetStore(
         storeIdentity: storeIdentity,
-        errorBuilder: (_, __) {
+        errorBuilder: (_) {
           throw UnimplementedError('errorBuilder');
         },
         loadingBuilder: () => CLLoader.widget(
@@ -43,7 +43,7 @@ class CLCameraService extends ConsumerWidget {
           return GetCollection(
             storeIdentity: storeIdentity,
             id: parentId,
-            errorBuilder: (_, __) {
+            errorBuilder: (_) {
               throw UnimplementedError('errorBuilder');
             },
             loadingBuilder: () => CLLoader.widget(

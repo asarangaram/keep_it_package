@@ -26,7 +26,7 @@ class CLGalleryView extends StatelessWidget {
   final ViewIdentifier viewIdentifier;
   final List<ViewerEntityMixin> entities;
   final Widget Function() loadingBuilder;
-  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function(String errorMsg) errorBuilder;
   final Widget Function(BuildContext, ViewerEntityMixin) itemBuilder;
   final int columns;
 

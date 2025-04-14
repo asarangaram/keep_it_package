@@ -32,7 +32,7 @@ class GetMedia extends ConsumerWidget {
     super.key,
   });
   final Widget Function(StoreEntity? media) builder;
-  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function(String errorMsg) errorBuilder;
   final Widget Function() loadingBuilder;
   final String storeIdentity;
   final int id;
@@ -61,7 +61,7 @@ class GetAllMedia extends ConsumerWidget {
     super.key,
   });
   final Widget Function(List<StoreEntity> collections) builder;
-  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function(String errorMsg) errorBuilder;
   final Widget Function() loadingBuilder;
   final String? storeIdentity;
 
@@ -88,7 +88,7 @@ class GetMediaByCollectionId extends ConsumerWidget {
     super.key,
   });
   final Widget Function(List<StoreEntity> items) builder;
-  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function(String errorMsg) errorBuilder;
   final Widget Function() loadingBuilder;
   final String storeIdentity;
   final int parentId;
@@ -119,7 +119,7 @@ class GetMediaMultipleByIds extends ConsumerWidget {
     super.key,
   });
   final Widget Function(List<StoreEntity> items) builder;
-  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function(String errorMsg) errorBuilder;
   final Widget Function() loadingBuilder;
   final String storeIdentity;
   final List<int> ids;
@@ -148,7 +148,7 @@ class GetPinnedMedia extends ConsumerWidget {
     super.key,
   });
   final Widget Function(List<StoreEntity> items) builder;
-  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function(String errorMsg) errorBuilder;
   final Widget Function() loadingBuilder;
   final String? storeIdentity;
 
@@ -173,7 +173,7 @@ class GetStaleMedia extends ConsumerWidget {
     super.key,
   });
   final Widget Function(List<StoreEntity> items) builder;
-  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function(String errorMsg) errorBuilder;
   final Widget Function() loadingBuilder;
   final String? storeIdentity;
 
@@ -198,7 +198,7 @@ class GetDeletedMedia extends ConsumerWidget {
     super.key,
   });
   final Widget Function(List<StoreEntity> items) builder;
-  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function(String errorMsg) errorBuilder;
   final Widget Function() loadingBuilder;
   final String? storeIdentity;
 

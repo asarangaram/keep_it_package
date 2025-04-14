@@ -19,8 +19,8 @@ class GalleryViewService extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget errorBuilder(Object e, StackTrace st) => WhenError(
-          errorMessage: e.toString(),
+    Widget errorBuilder(String errorMsg) => WhenError(
+          errorMessage: errorMsg,
         );
     const parentIdentifier = 'KeepItMainGrid';
 

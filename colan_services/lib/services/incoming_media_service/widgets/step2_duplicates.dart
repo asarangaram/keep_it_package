@@ -65,7 +65,7 @@ class _DuplicatePageStatefulState extends State<DuplicatePageStateful> {
       );
     }
     return GetAllCollections(
-      errorBuilder: (_, __) {
+      errorBuilder: (_) {
         throw UnimplementedError('errorBuilder');
       },
       loadingBuilder: () => CLLoader.widget(

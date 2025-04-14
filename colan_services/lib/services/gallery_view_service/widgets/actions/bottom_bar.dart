@@ -20,7 +20,7 @@ class KeepItBottomBar extends ConsumerWidget {
     return GetCollection(
       storeIdentity: 'NONE', // FIXME
       id: parent?.id,
-      errorBuilder: (_, __) => const SizedBox.shrink(),
+      errorBuilder: (_) => const SizedBox.shrink(),
       loadingBuilder: () => CLLoader.hide(
         debugMessage: 'GetCollection',
       ),

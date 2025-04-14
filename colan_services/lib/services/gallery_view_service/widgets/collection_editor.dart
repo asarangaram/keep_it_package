@@ -69,7 +69,7 @@ class CollectionEditor extends StatefulWidget {
     return showShadSheet<StoreEntity>(
       context: context,
       builder: (BuildContext context) => CollectionEditor.dialog(
-        storeIdentity: collection.store.store.identity,
+        storeIdentity: collection.store.store!.identity,
         id: collection.id!,
         onSubmit: (collection) {
           PageManager.of(context).pop(collection);
@@ -96,7 +96,7 @@ class _CollectionEditorState extends State<CollectionEditor> {
           ),
         ),
       );
-  Widget errorBuilder(Object e, StackTrace st) {
+  Widget errorBuilder(String errorMsg) {
     throw UnimplementedError('errorBuilder');
   }
 
@@ -113,11 +113,7 @@ class _CollectionEditorState extends State<CollectionEditor> {
         loadingBuilder: () => loading('GetCollection'),
         builder: (collection) {
           if (collection == null) {
-            try {
-              throw Exception("Collection can't be null");
-            } catch (e, st) {
-              return errorBuilder(e, st);
-            }
+            return errorBuilder("Collection can't be null");
           }
           return GetAllCollections(
             storeIdentity: widget.storeIdentity,

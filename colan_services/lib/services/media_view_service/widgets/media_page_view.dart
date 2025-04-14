@@ -23,7 +23,7 @@ class MediaPageView extends ConsumerStatefulWidget {
   final int startIndex;
   final bool isLocked;
   final void Function({required bool lock})? onLockPage;
-  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function(String errorMsg) errorBuilder;
   final Widget Function() loadingBuilder;
   @override
   ConsumerState<MediaPageView> createState() => MediaPageViewState();

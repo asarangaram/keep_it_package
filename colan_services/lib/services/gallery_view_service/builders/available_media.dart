@@ -16,7 +16,7 @@ class GetAvailableMediaByCollectionId extends ConsumerWidget {
   });
   final int? parentId;
   final Widget Function(List<StoreEntity> items) builder;
-  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function(String errorMsg) errorBuilder;
   final Widget Function() loadingBuilder;
   final String storeIdentity;
 
@@ -49,7 +49,7 @@ class GetAvailableMediaByActiveCollectionId extends ConsumerWidget {
     super.key,
   });
   final Widget Function(List<StoreEntity> items) builder;
-  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function(String errorMsg) errorBuilder;
   final Widget Function() loadingBuilder;
   final String storeIdentity;
 

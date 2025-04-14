@@ -13,7 +13,7 @@ class StaleMediaIndicatorService extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GetStaleMedia(
-      errorBuilder: (p0, p1) => const SizedBox.shrink(),
+      errorBuilder: (_) => const SizedBox.shrink(),
       loadingBuilder: () => CLLoader.widget(
         debugMessage: 'GetStaleMedia',
       ),

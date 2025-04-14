@@ -23,7 +23,7 @@ class SettingsService extends ConsumerWidget {
       ),
       popupActionItems: const [],
       child: GetDeletedMedia(
-        errorBuilder: (_, __) {
+        errorBuilder: (_) {
           throw UnimplementedError('errorBuilder');
         },
         loadingBuilder: () => CLLoader.widget(

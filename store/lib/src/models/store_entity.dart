@@ -127,15 +127,14 @@ class StoreEntity implements ViewerEntityMixin {
   }
 
   Future<StoreEntity?> getParent() async {
-    final entity =
-        await store.get(EntityQuery(store.store.identity, {'id': parentId}));
+    final entity = await store.get(EntityQuery(null, {'id': parentId}));
     return entity;
   }
 
   Future<List<StoreEntity>?> getChildren() async {
     if (!data.isCollection) return null;
-    final entities = await store
-        .getAll(EntityQuery(store.store.identity, {'parentId': parentId}));
+    final entities =
+        await store.getAll(EntityQuery(null, {'parentId': parentId}));
     return entities;
   }
 

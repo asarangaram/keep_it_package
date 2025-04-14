@@ -22,7 +22,7 @@ class KeepItMediaCorouselView extends ConsumerWidget {
   final String parentIdentifier;
   final List<StoreEntity> entities;
   final Widget Function() loadingBuilder;
-  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function(String errorMsg) errorBuilder;
 
   final int initialMediaIndex;
 

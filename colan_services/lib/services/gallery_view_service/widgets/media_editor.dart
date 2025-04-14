@@ -70,7 +70,7 @@ class MediaMetadataEditor extends StatelessWidget {
     return showShadSheet<StoreEntity>(
       context: context,
       builder: (BuildContext context) => MediaMetadataEditor.dialog(
-        storeIdentity: media.store.store.identity,
+        storeIdentity: media.store.store!.identity,
         mediaId: media.id!,
         onSubmit: (media) {
           PageManager.of(context).pop(media);
@@ -92,7 +92,7 @@ class MediaMetadataEditor extends StatelessWidget {
           ),
         ),
       );
-  Widget errorBuilder(Object e, StackTrace st) {
+  Widget errorBuilder(String errorMsg) {
     throw UnimplementedError('errorBuilder');
   }
 
@@ -107,11 +107,7 @@ class MediaMetadataEditor extends StatelessWidget {
         loadingBuilder: () => loading(context, 'GetCollection'),
         builder: (media) {
           if (media == null) {
-            try {
-              throw Exception("Media can't be null");
-            } catch (e, st) {
-              return errorBuilder(e, st);
-            }
+            return errorBuilder("Media can't be null");
           }
           return GetCollection(
             storeIdentity: storeIdentity,

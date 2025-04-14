@@ -30,7 +30,7 @@ class MediaEditService extends ConsumerWidget {
           : GetMedia(
               storeIdentity: storeIdentity,
               id: mediaId!,
-              errorBuilder: (_, __) {
+              errorBuilder: (_) {
                 throw UnimplementedError('errorBuilder');
               },
               loadingBuilder: () => CLLoader.widget(
@@ -43,7 +43,7 @@ class MediaEditService extends ConsumerWidget {
 
                 return GetStore(
                   storeIdentity: storeIdentity,
-                  errorBuilder: (_, __) {
+                  errorBuilder: (_) {
                     throw UnimplementedError('errorBuilder');
                   },
                   loadingBuilder: () => CLLoader.widget(

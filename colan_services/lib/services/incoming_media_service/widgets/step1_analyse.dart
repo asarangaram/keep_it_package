@@ -26,7 +26,7 @@ class AnalysePage extends StatelessWidget {
   })? onDone;
   final void Function() onCancel;
   final String storeIdentity;
-  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function(String errorMsg) errorBuilder;
   final Widget Function() loadingBuilder;
 
   @override
