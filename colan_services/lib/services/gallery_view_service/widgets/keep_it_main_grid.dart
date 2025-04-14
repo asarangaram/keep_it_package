@@ -64,7 +64,9 @@ class KeepItMainGrid extends ConsumerWidget {
                     bannersBuilder: (context, _) {
                       return [
                         if (parentId == null)
-                          const StaleMediaIndicatorService(),
+                          StaleMediaIndicatorService(
+                            storeIdentity: storeIdentity,
+                          ),
                       ];
                     },
                     contextMenuOf: (context, entities) =>

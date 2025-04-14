@@ -169,6 +169,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
 
   Widget getCollection({required List<StoreEntity> currEntities}) {
     return CreateCollectionWizard(
+      storeIdentity: widget.storeIdentity,
       isValidSuggestion: (collection) {
         return !collection.data.isDeleted;
       },
@@ -344,8 +345,19 @@ class KeepWithProgress extends StatelessWidget {
       required List<StoreEntity> mediaMultiple,
     }) onDone,
   }) async* {
-    yield const Progress(fractCompleted: 0, currentItem: '');
-
-    throw UnimplementedError();
+    final updatedItems = <StoreEntity>[];
+    for (final (i, item) in items.indexed) {
+      yield Progress(fractCompleted: (i + 1) / items.length, currentItem: '');
+      final updated = await (await item.updateWith(
+        parentId: () => newParent.parentId,
+      ))
+          ?.dbSave();
+      if (updated == null) {
+        throw Exception('Failed to update item ${item.id}');
+      }
+      updatedItems.add(updated);
+    }
+    yield const Progress(fractCompleted: 1, currentItem: 'All items are moved');
+    await onDone(mediaMultiple: updatedItems);
   }
 }

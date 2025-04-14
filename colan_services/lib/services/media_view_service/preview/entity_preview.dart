@@ -31,7 +31,7 @@ class EntityPreview extends ConsumerWidget {
 
     return GetCollection(
       storeIdentity: (item as StoreEntity).store.store.identity,
-      id: (item as StoreEntity).id,
+      id: (item as StoreEntity).parentId,
       loadingBuilder: GreyShimmer.new,
       errorBuilder: (e, st) => const BrokenImage(),
       builder: (parent) {

@@ -7,8 +7,10 @@ import 'package:keep_it_state/keep_it_state.dart';
 
 class SettingsService extends ConsumerWidget {
   const SettingsService({
+    required this.storeIdentity,
     super.key,
   });
+  final String storeIdentity;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -23,6 +25,7 @@ class SettingsService extends ConsumerWidget {
       ),
       popupActionItems: const [],
       child: GetDeletedMedia(
+        storeIdentity: storeIdentity,
         errorBuilder: (_, __) {
           throw UnimplementedError('errorBuilder');
         },

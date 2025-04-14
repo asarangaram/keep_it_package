@@ -114,7 +114,7 @@ class CLEntity {
     final addedDate = DateTime.now();
     final updatedDate = addedDate;
     return CLEntity(
-      isCollection: true,
+      isCollection: false,
       addedDate: addedDate,
       updatedDate: updatedDate,
       isDeleted: isDeleted,
@@ -403,6 +403,6 @@ class CLEntity {
         other.duration == duration;
   }
 
-  String? get path => isCollection ? null : '$mimeType/$md5.$extension';
+  String? get path => isCollection ? null : '$mimeType/$md5$extension';
   String? get previewPath => isCollection ? null : '$path.tn.jpg';
 }

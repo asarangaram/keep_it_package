@@ -91,6 +91,7 @@ class _IncomingMediaHandler0State extends ConsumerState<IncomingMediaHandler0> {
                   onCancel: () => onDiscard(result: false),
                 )
               : DuplicatePage(
+                  storeIdentity: widget.storeIdentity,
                   incomingMedia: duplicateCandidates!,
                   parentIdentifier: widget.parentIdentifier,
                   onDone: ({required CLSharedMedia? mg}) {

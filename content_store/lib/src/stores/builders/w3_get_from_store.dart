@@ -19,6 +19,9 @@ class GetFromStore extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    if (query.storeIdentity != 'local') {
+      throw Exception('Unknown store!');
+    }
     final dataAsync = ref.watch(entitiesProvider(query));
     return dataAsync.when(
       error: errorBuilder,

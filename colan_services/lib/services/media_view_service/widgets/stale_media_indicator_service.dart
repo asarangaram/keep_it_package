@@ -7,12 +7,15 @@ import 'package:keep_it_state/keep_it_state.dart';
 
 class StaleMediaIndicatorService extends ConsumerWidget {
   const StaleMediaIndicatorService({
+    required this.storeIdentity,
     super.key,
   });
+  final String storeIdentity;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GetStaleMedia(
+      storeIdentity: storeIdentity,
       errorBuilder: (p0, p1) => const SizedBox.shrink(),
       loadingBuilder: () => CLLoader.widget(
         debugMessage: 'GetStaleMedia',

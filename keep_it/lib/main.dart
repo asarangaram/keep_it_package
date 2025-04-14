@@ -26,7 +26,9 @@ class KeepItApp implements AppDescriptor {
         ),
         CLRouteDescriptor(
           name: 'settings',
-          builder: (context, parameters) => const SettingsService(),
+          builder: (context, parameters) => const SettingsService(
+            storeIdentity: 'local',
+          ),
         ),
         CLRouteDescriptor(
           name: 'camera',

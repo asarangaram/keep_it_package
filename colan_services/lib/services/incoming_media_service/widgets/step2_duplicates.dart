@@ -13,16 +13,19 @@ class DuplicatePage extends StatelessWidget {
     required this.parentIdentifier,
     required this.onDone,
     required this.onCancel,
+    required this.storeIdentity,
     super.key,
   });
   final CLSharedMedia incomingMedia;
   final String parentIdentifier;
   final void Function({required CLSharedMedia? mg}) onDone;
   final void Function() onCancel;
+  final String storeIdentity;
 
   @override
   Widget build(BuildContext context) {
     return DuplicatePageStateful(
+      storeIdentity: storeIdentity,
       incomingMedia: incomingMedia,
       parentIdentifier: parentIdentifier,
       onDone: onDone,
@@ -37,12 +40,14 @@ class DuplicatePageStateful extends StatefulWidget {
     required this.parentIdentifier,
     required this.onDone,
     required this.onCancel,
+    required this.storeIdentity,
     super.key,
   });
   final CLSharedMedia incomingMedia;
   final String parentIdentifier;
   final void Function({required CLSharedMedia? mg}) onDone;
   final void Function() onCancel;
+  final String storeIdentity;
 
   @override
   State<StatefulWidget> createState() => _DuplicatePageStatefulState();
@@ -65,6 +70,7 @@ class _DuplicatePageStatefulState extends State<DuplicatePageStateful> {
       );
     }
     return GetAllCollections(
+      storeIdentity: widget.storeIdentity,
       errorBuilder: (_, __) {
         throw UnimplementedError('errorBuilder');
       },

@@ -72,13 +72,13 @@ class GetAllCollections extends ConsumerWidget {
     required this.builder,
     required this.errorBuilder,
     required this.loadingBuilder,
-    this.storeIdentity,
+    required this.storeIdentity,
     super.key,
   });
   final Widget Function(List<StoreEntity> collections) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
-  final String? storeIdentity;
+  final String storeIdentity;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -98,13 +98,13 @@ class GetRootCollections extends ConsumerWidget {
     required this.builder,
     required this.errorBuilder,
     required this.loadingBuilder,
-    this.storeIdentity,
+    required this.storeIdentity,
     super.key,
   });
   final Widget Function(List<StoreEntity> collections) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
-  final String? storeIdentity;
+  final String storeIdentity;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -127,13 +127,13 @@ class GetAllVisibleCollection extends ConsumerWidget {
     required this.builder,
     required this.errorBuilder,
     required this.loadingBuilder,
-    this.storeIdentity,
+    required this.storeIdentity,
     super.key,
   });
   final Widget Function(List<StoreEntity> collections) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
-  final String? storeIdentity;
+  final String storeIdentity;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

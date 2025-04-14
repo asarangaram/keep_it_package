@@ -84,7 +84,7 @@ class LocalSQLiteEntityStore extends EntityStore
       final f = File(mediaPath);
       final dirPath = p.dirname(f.path);
       Directory(dirPath).createSync(recursive: true);
-      f.copySync(mediaPath);
+      File(path).copySync(mediaPath);
 
       await FfmpegUtils.generatePreview(
         mediaPath,

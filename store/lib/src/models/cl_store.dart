@@ -428,8 +428,11 @@ class CLStore {
                   parentId: parentId,
                 );
                 if (newEntity != null) {
-                  newEntities.add(newEntity);
-                  return true;
+                  final saved = await newEntity.dbSave(item.path);
+                  if (saved != null) {
+                    newEntities.add(newEntity);
+                    return true;
+                  }
                 }
               }
             }

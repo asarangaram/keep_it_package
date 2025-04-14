@@ -10,16 +10,19 @@ class PickCollection extends StatelessWidget {
   const PickCollection({
     required this.collection,
     required this.onDone,
+    required this.storeIdentity,
     super.key,
     this.isValidSuggestion,
   });
   final StoreEntity? collection;
   final void Function(StoreEntity) onDone;
   final bool Function(StoreEntity collection)? isValidSuggestion;
+  final String storeIdentity;
 
   @override
   Widget build(BuildContext context) {
     return GetAllVisibleCollection(
+      storeIdentity: storeIdentity,
       errorBuilder: (_, __) {
         throw UnimplementedError('errorBuilder');
       },
