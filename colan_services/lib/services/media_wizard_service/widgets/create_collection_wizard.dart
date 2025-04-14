@@ -54,8 +54,11 @@ class PickCollectionState extends State<CreateCollectionWizard> {
         collection: collection,
         isValidSuggestion: widget.isValidSuggestion,
         onDone: (collection) {
-          widget.onDone(collection: collection);
-          hasDescription = true;
+          if (collection.id != null) {
+            widget.onDone(collection: collection);
+          }
+
+          hasDescription = collection.id != null;
           setState(() {
             onEditLabel = false;
             this.collection = collection;

@@ -39,35 +39,33 @@ class KeepItMediaCorouselView extends ConsumerWidget {
         PageManager.of(context).pop();
       });
     }
-    return entities.isEmpty
-        ? const WhenEmpty()
-        : GetSortedEntity(
-            entities: entities,
-            builder: (sorted) {
-              return GetFilterredMedia(
-                viewIdentifier: viewIdentifier,
-                incoming: sorted,
-                bannersBuilder: (context, _) => [],
-                builder: (
-                  List<ViewerEntityMixin> filterred, {
-                  required List<Widget> Function(
-                    BuildContext,
-                    List<GalleryGroupStoreEntity<ViewerEntityMixin>>,
-                  ) bannersBuilder,
-                }) {
-                  return MediaViewService1.pageView(
-                    media: filterred.map((e) => e as StoreEntity).toList(),
-                    parentIdentifier: viewIdentifier.toString(),
-                    initialMediaIndex:
-                        filterred.indexWhere((e) => e.id == initialMediaIndex),
-                    errorBuilder: errorBuilder,
-                    loadingBuilder: () => CLLoader.widget(
-                      debugMessage: 'MediaViewService.pageView',
-                    ),
-                  );
-                },
-              );
-            },
-          );
+    return GetSortedEntity(
+      entities: entities,
+      builder: (sorted) {
+        return GetFilterredMedia(
+          viewIdentifier: viewIdentifier,
+          incoming: sorted,
+          bannersBuilder: (context, _) => [],
+          builder: (
+            List<ViewerEntityMixin> filterred, {
+            required List<Widget> Function(
+              BuildContext,
+              List<GalleryGroupStoreEntity<ViewerEntityMixin>>,
+            ) bannersBuilder,
+          }) {
+            return MediaViewService1.pageView(
+              media: filterred.map((e) => e as StoreEntity).toList(),
+              parentIdentifier: viewIdentifier.toString(),
+              initialMediaIndex:
+                  filterred.indexWhere((e) => e.id == initialMediaIndex),
+              errorBuilder: errorBuilder,
+              loadingBuilder: () => CLLoader.widget(
+                debugMessage: 'MediaViewService.pageView',
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 }

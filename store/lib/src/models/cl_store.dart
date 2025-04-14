@@ -316,7 +316,7 @@ class CLStore {
       }
       if (parentIdValue != null) {
         final parent =
-            await store.get(EntityQuery(null, {'parentId': parentIdValue}));
+            await store.get(EntityQuery(null, {'id': parentIdValue}));
         if (parent == null) {
           throw Exception('Parent entity does not exist.');
         }
@@ -433,7 +433,7 @@ class CLStore {
           Future<bool> processSupportedMediaContent() async {
             if ([CLMediaType.image, CLMediaType.video].contains(item.type)) {
               final mediaInDB = await get(
-                EntityQuery(null, {'md5': item.md5, 'isCollection': 1}),
+                EntityQuery(null, {'md5': item.md5, 'isCollection': 0}),
               );
               if (mediaInDB != null) {
                 existingEntities.add(mediaInDB);

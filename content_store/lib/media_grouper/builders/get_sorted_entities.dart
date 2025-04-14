@@ -12,6 +12,10 @@ class GetSortedEntity extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (entities.isEmpty) {
+      return builder(entities);
+    }
+
     final List<ViewerEntityMixin> sorted;
     if (entities.every((e) => e is StoreEntity)) {
       sorted = List<ViewerEntityMixin>.from(entities)

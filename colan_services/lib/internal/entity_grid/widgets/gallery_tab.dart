@@ -1,3 +1,4 @@
+import 'package:colan_services/services/gallery_view_service/widgets/when_empty.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -60,34 +61,37 @@ class CLEntityGalleryTabState extends ConsumerState<CLEntityGalleryTab> {
     return Column(
       children: [
         ...widget.bannersBuilder(context, galleryGroups),
-        Flexible(
-          child: ListView.builder(
-            controller: _scrollController,
-            physics: const AlwaysScrollableScrollPhysics(),
-            itemCount: galleryGroups.length + 1,
-            itemBuilder: (BuildContext context, int groupIndex) {
-              if (groupIndex == galleryGroups.length) {
-                return SizedBox(
-                  height: MediaQuery.of(context).viewPadding.bottom + 80,
-                );
-              }
-              final gallery = galleryGroups[groupIndex];
-              return CLGrid<ViewerEntityMixin>(
-                itemCount: gallery.items.length,
-                columns: widget.columns,
-                itemBuilder: (context, itemIndex) {
-                  final itemWidget = widget.itemBuilder(
-                    context,
-                    gallery.items[itemIndex],
+        if (galleryGroups.isEmpty)
+          const Flexible(child: WhenEmpty())
+        else
+          Flexible(
+            child: ListView.builder(
+              controller: _scrollController,
+              physics: const AlwaysScrollableScrollPhysics(),
+              itemCount: galleryGroups.length + 1,
+              itemBuilder: (BuildContext context, int groupIndex) {
+                if (groupIndex == galleryGroups.length) {
+                  return SizedBox(
+                    height: MediaQuery.of(context).viewPadding.bottom + 80,
                   );
+                }
+                final gallery = galleryGroups[groupIndex];
+                return CLGrid<ViewerEntityMixin>(
+                  itemCount: gallery.items.length,
+                  columns: widget.columns,
+                  itemBuilder: (context, itemIndex) {
+                    final itemWidget = widget.itemBuilder(
+                      context,
+                      gallery.items[itemIndex],
+                    );
 
-                  return itemWidget;
-                },
-                header: widget.labelBuilder(context, galleryGroups, gallery),
-              );
-            },
+                    return itemWidget;
+                  },
+                  header: widget.labelBuilder(context, galleryGroups, gallery),
+                );
+              },
+            ),
           ),
-        ),
       ],
     );
   }

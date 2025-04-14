@@ -36,10 +36,10 @@ class EditCollectionDescription extends StatelessWidget {
 
         final updated =
             await collection.updateWith(description: () => description);
-        if (updated != null) {
-          onDone(updated);
+        if (updated == null) {
+          throw Exception('update Failed');
         }
-        throw Exception('update Failed');
+        onDone(updated);
       },
     );
   }

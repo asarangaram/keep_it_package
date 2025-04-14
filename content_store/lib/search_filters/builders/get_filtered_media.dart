@@ -34,38 +34,45 @@ class GetFilterredMedia extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if ((incoming.first.runtimeType == StoreEntity &&
-            (incoming.first as StoreEntity).isCollection) ||
-        disabled) {
-      return builder(incoming, bannersBuilder: (context, galleryMap) => []);
-    }
-    final medias = incoming.map((e) => e as StoreEntity).toList();
-    final filterred =
-        ref.watch(filterredMediaProvider(MapEntry(viewIdentifier, medias)));
+    final List<StoreEntity> filterred;
+    final List<Widget> banners;
+    if (incoming.isEmpty) {
+      filterred = [];
+      banners = [];
+    } else {
+      if ((incoming.first.runtimeType == StoreEntity &&
+              (incoming.first as StoreEntity).isCollection) ||
+          disabled) {
+        return builder(incoming, bannersBuilder: (context, galleryMap) => []);
+      }
+      final medias = incoming.map((e) => e as StoreEntity).toList();
+      filterred =
+          ref.watch(filterredMediaProvider(MapEntry(viewIdentifier, medias)));
 
-    final topMsg = (filterred.length < incoming.length)
-        ? ' ${filterred.length} out of '
-            '${incoming.length} matches'
-        : null;
-    final banners = [
-      if (topMsg != null)
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 2),
-          child: Container(
-            color: ShadTheme.of(context).colorScheme.mutedForeground,
+      final topMsg = (filterred.length < incoming.length)
+          ? ' ${filterred.length} out of '
+              '${incoming.length} matches'
+          : null;
+      banners = [
+        if (topMsg != null)
+          Padding(
             padding: const EdgeInsets.symmetric(vertical: 2),
-            child: Center(
-              child: Text(
-                topMsg,
-                style: ShadTheme.of(context)
-                    .textTheme
-                    .small
-                    .copyWith(color: ShadTheme.of(context).colorScheme.muted),
+            child: Container(
+              color: ShadTheme.of(context).colorScheme.mutedForeground,
+              padding: const EdgeInsets.symmetric(vertical: 2),
+              child: Center(
+                child: Text(
+                  topMsg,
+                  style: ShadTheme.of(context)
+                      .textTheme
+                      .small
+                      .copyWith(color: ShadTheme.of(context).colorScheme.muted),
+                ),
               ),
             ),
           ),
-        ),
-    ];
+      ];
+    }
 
     return builder(
       filterred,

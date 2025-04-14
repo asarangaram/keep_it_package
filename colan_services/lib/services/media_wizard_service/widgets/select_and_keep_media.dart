@@ -345,11 +345,17 @@ class KeepWithProgress extends StatelessWidget {
       required List<StoreEntity> mediaMultiple,
     }) onDone,
   }) async* {
+    final parentCollection = await newParent.dbSave();
+    if (parentCollection == null || parentCollection.id == null) {
+      throw Exception('failed to save parent collection');
+    }
+
     final updatedItems = <StoreEntity>[];
     for (final (i, item) in items.indexed) {
       yield Progress(fractCompleted: (i + 1) / items.length, currentItem: '');
       final updated = await (await item.updateWith(
-        parentId: () => newParent.parentId,
+        parentId: () => parentCollection.id!,
+        isHidden: () => false,
       ))
           ?.dbSave();
       if (updated == null) {

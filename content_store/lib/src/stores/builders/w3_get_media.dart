@@ -39,7 +39,10 @@ class GetMedia extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final q = EntityQuery(storeIdentity, {'id': id, 'isCollection': 1});
+    final q = EntityQuery(storeIdentity, {
+      'id': id,
+      'isCollection': 0,
+    });
     return GetFromStore(
       query: q,
       errorBuilder: errorBuilder,
@@ -67,7 +70,11 @@ class GetAllMedia extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final q = EntityQuery(storeIdentity, const {'isCollection': 0});
+    final q = EntityQuery(storeIdentity, const {
+      'isCollection': 0,
+      'isHidden': 0,
+      'isDeleted': 0,
+    });
 
     return GetFromStore(
       query: q,
@@ -97,7 +104,7 @@ class GetMediaByCollectionId extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final query = EntityQuery(
       storeIdentity,
-      {'isCollection': false, 'parentId': parentId},
+      {'isCollection': 0, 'parentId': parentId},
     );
 
     return GetFromStore(
@@ -154,12 +161,18 @@ class GetPinnedMedia extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final q = EntityQuery(storeIdentity, const {'pin': NotNullValues});
+    final q = EntityQuery(
+      storeIdentity,
+      const {'pin': NotNullValues, 'isCollection': 0},
+    );
     return GetFromStore(
       query: q,
       errorBuilder: errorBuilder,
       loadingBuilder: loadingBuilder,
-      builder: builder,
+      builder: (entities) {
+        print('found ${entities.length} items in hidden');
+        return builder(entities);
+      },
     );
   }
 }
@@ -179,7 +192,8 @@ class GetStaleMedia extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final q = EntityQuery(storeIdentity, const {'isHidden': 1});
+    final q =
+        EntityQuery(storeIdentity, const {'isHidden': 1, 'isCollection': 0});
     return GetFromStore(
       query: q,
       errorBuilder: errorBuilder,
@@ -204,7 +218,8 @@ class GetDeletedMedia extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final q = EntityQuery(storeIdentity, const {'isDeleted': 1});
+    final q =
+        EntityQuery(storeIdentity, const {'isDeleted': 1, 'isCollection': 0});
     return GetFromStore(
       query: q,
       errorBuilder: errorBuilder,

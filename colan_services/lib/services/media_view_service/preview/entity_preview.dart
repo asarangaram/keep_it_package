@@ -27,7 +27,7 @@ class EntityPreview extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final entity = item as StoreEntity; // FIXME
+    final entity = item as StoreEntity;
 
     return GetCollection(
       storeIdentity: (item as StoreEntity).store.store.identity,

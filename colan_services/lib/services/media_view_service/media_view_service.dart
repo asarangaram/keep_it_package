@@ -44,17 +44,15 @@ class MediaViewService extends StatelessWidget {
               Animation<double> animation,
             ) =>
                 FadeTransition(opacity: animation, child: child),
-            child: entities.isEmpty
-                ? const WhenEmpty()
-                : KeepItMediaCorouselView(
-                    parentIdentifier: parentIdentifier,
-                    entities: entities,
-                    initialMediaIndex: id,
-                    loadingBuilder: () => CLLoader.widget(
-                      debugMessage: 'KeepItMainGrid',
-                    ),
-                    errorBuilder: errorBuilder,
-                  ),
+            child: KeepItMediaCorouselView(
+              parentIdentifier: parentIdentifier,
+              entities: entities,
+              initialMediaIndex: id,
+              loadingBuilder: () => CLLoader.widget(
+                debugMessage: 'KeepItMainGrid',
+              ),
+              errorBuilder: errorBuilder,
+            ),
           ),
         ),
       ),

@@ -54,56 +54,54 @@ class KeepItMainGrid extends ConsumerWidget {
           child: RefreshIndicator(
             onRefresh: /* isSelectionMode ? null : */
                 () async => ref.read(reloadProvider.notifier).reload(),
-            child: entities.isEmpty
-                ? const WhenEmpty()
-                : ViewModifierBuilder(
-                    viewIdentifier: viewIdentifier,
-                    entities: entities,
-                    filtersDisabled: false,
-                    onSelectionChanged: null,
-                    bannersBuilder: (context, _) {
-                      return [
-                        if (parentId == null)
-                          StaleMediaIndicatorService(
-                            storeIdentity: storeIdentity,
-                          ),
-                      ];
-                    },
-                    contextMenuOf: (context, entities) =>
-                        CLContextMenu.entitiesContextMenuBuilder(
-                      context,
-                      ref,
-                      entities,
-                      theStore,
+            child: ViewModifierBuilder(
+              viewIdentifier: viewIdentifier,
+              entities: entities,
+              filtersDisabled: false,
+              onSelectionChanged: null,
+              bannersBuilder: (context, _) {
+                return [
+                  if (parentId == null)
+                    StaleMediaIndicatorService(
+                      storeIdentity: storeIdentity,
                     ),
-                    itemBuilder: (context, item) => EntityPreview(
-                      viewIdentifier: viewIdentifier,
-                      item: item,
-                      theStore: theStore,
-                    ),
-                    builder: ({
-                      required incoming,
-                      required itemBuilder,
-                      required labelBuilder,
-                      required viewIdentifier,
-                      required bannersBuilder,
-                      required draggableMenuBuilder,
-                    }) {
-                      return EntityGridView(
-                        viewIdentifier: viewIdentifier,
-                        storeIdentity: storeIdentity,
-                        errorBuilder: errorBuilder,
-                        loadingBuilder: loadingBuilder,
-                        incoming: incoming,
-                        columns: 3,
-                        viewableAsCollection: parentId == null,
-                        itemBuilder: itemBuilder,
-                        labelBuilder: labelBuilder,
-                        bannersBuilder: bannersBuilder,
-                        draggableMenuBuilder: draggableMenuBuilder,
-                      );
-                    },
-                  ),
+                ];
+              },
+              contextMenuOf: (context, entities) =>
+                  CLContextMenu.entitiesContextMenuBuilder(
+                context,
+                ref,
+                entities,
+                theStore,
+              ),
+              itemBuilder: (context, item) => EntityPreview(
+                viewIdentifier: viewIdentifier,
+                item: item,
+                theStore: theStore,
+              ),
+              builder: ({
+                required incoming,
+                required itemBuilder,
+                required labelBuilder,
+                required viewIdentifier,
+                required bannersBuilder,
+                required draggableMenuBuilder,
+              }) {
+                return EntityGridView(
+                  viewIdentifier: viewIdentifier,
+                  storeIdentity: storeIdentity,
+                  errorBuilder: errorBuilder,
+                  loadingBuilder: loadingBuilder,
+                  incoming: incoming,
+                  columns: 3,
+                  viewableAsCollection: parentId == null,
+                  itemBuilder: itemBuilder,
+                  labelBuilder: labelBuilder,
+                  bannersBuilder: bannersBuilder,
+                  draggableMenuBuilder: draggableMenuBuilder,
+                );
+              },
+            ),
           ),
         ),
         if (MediaQuery.of(context).viewInsets.bottom == 0)
