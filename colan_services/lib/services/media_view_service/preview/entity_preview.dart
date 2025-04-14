@@ -17,117 +17,113 @@ class EntityPreview extends ConsumerWidget {
   const EntityPreview({
     required this.viewIdentifier,
     required this.item,
-    required this.theStore,
     super.key,
   });
   final ViewIdentifier viewIdentifier;
   final ViewerEntityMixin item;
 
-  final CLStore theStore;
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final entity = item as StoreEntity;
 
-    return GetCollection(
-      storeIdentity: (item as StoreEntity).store.store.identity,
-      id: (item as StoreEntity).parentId,
-      loadingBuilder: GreyShimmer.new,
-      errorBuilder: (e, st) => const BrokenImage(),
-      builder: (parent) {
-        return GetMediaByCollectionId(
+    return switch (item.isCollection) {
+      true => Padding(
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            children: [
+              Flexible(
+                child: GetMediaByCollectionId(
+                  storeIdentity: (item as StoreEntity).store.store.identity,
+                  parentId: (item as StoreEntity).id!,
+                  loadingBuilder: GreyShimmer.new,
+                  errorBuilder: (e, st) => const BrokenImage(),
+                  builder: (children) {
+                    return CLBasicContextMenu(
+                      viewIdentifier: viewIdentifier,
+                      onTap: () async {
+                        ref
+                            .read(
+                              activeCollectionProvider.notifier,
+                            )
+                            .state = entity;
+                        return null;
+                      },
+                      contextMenu: CLContextMenu.ofCollection(
+                        context,
+                        ref,
+                        collection: entity,
+                        hasOnlineService: false,
+                      ),
+                      child: CollectionView.preview(
+                        entity,
+                        viewIdentifier: viewIdentifier,
+                        containingMedia: children.map((e) => e).toList(),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: Center(
+                      child: Text(
+                        entity.data.label!.capitalizeFirstLetter(),
+                        style: const TextStyle(fontSize: 14),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                  EntityMetaData(
+                    contextMenu: CLContextMenu.ofCollection(
+                      context,
+                      ref,
+                      collection: entity,
+                      hasOnlineService: false,
+                    ),
+                    child: const Icon(LucideIcons.ellipsis),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      false => GetCollection(
           storeIdentity: (item as StoreEntity).store.store.identity,
-          parentId: (item as StoreEntity).id!,
+          id: (item as StoreEntity).parentId,
           loadingBuilder: GreyShimmer.new,
           errorBuilder: (e, st) => const BrokenImage(),
-          builder: (children) {
-            if (parent == null && (item as StoreEntity).isCollection == false) {
+          builder: (parent) {
+            if (parent == null) {
               throw Exception(
                 'Failed to get collection of media ${(item as StoreEntity).id}',
               );
             }
-
-            return switch (item.isCollection) {
-              true => Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: Column(
-                    children: [
-                      Flexible(
-                        child: CLBasicContextMenu(
-                          viewIdentifier: viewIdentifier,
-                          onTap: () async {
-                            ref
-                                .read(
-                                  activeCollectionProvider.notifier,
-                                )
-                                .state = entity;
-                            return null;
-                          },
-                          contextMenu: CLContextMenu.ofCollection(
-                            context,
-                            ref,
-                            collection: entity,
-                            hasOnlineService: false,
-                          ),
-                          child: CollectionView.preview(
-                            entity,
-                            viewIdentifier: viewIdentifier,
-                            containingMedia: children.map((e) => e).toList(),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Center(
-                              child: Text(
-                                entity.data.label!.capitalizeFirstLetter(),
-                                style: const TextStyle(fontSize: 14),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ),
-                          EntityMetaData(
-                            contextMenu: CLContextMenu.ofCollection(
-                              context,
-                              ref,
-                              collection: entity,
-                              hasOnlineService: false,
-                            ),
-                            child: const Icon(LucideIcons.ellipsis),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              false => CLBasicContextMenu(
-                  viewIdentifier: viewIdentifier,
-                  onTap: () async {
-                    await PageManager.of(context).openMedia(
-                      entity.data.id!,
-                      parentId: entity.data.parentId,
-                      parentIdentifier: viewIdentifier.parentID,
-                    );
-                    return true;
-                  },
-                  contextMenu: CLContextMenu.ofMedia(
-                    context,
-                    ref,
-                    media: entity,
-                    parentCollection: parent!,
-                    hasOnlineService: false,
-                  ),
-                  child: MediaPreviewWithOverlays(
-                    media: entity,
-                    parentIdentifier: viewIdentifier.toString(),
-                  ),
-                ),
-            };
+            return CLBasicContextMenu(
+              viewIdentifier: viewIdentifier,
+              onTap: () async {
+                await PageManager.of(context).openMedia(
+                  entity.data.id!,
+                  parentId: entity.data.parentId,
+                  parentIdentifier: viewIdentifier.parentID,
+                );
+                return true;
+              },
+              contextMenu: CLContextMenu.ofMedia(
+                context,
+                ref,
+                media: entity,
+                parentCollection: parent,
+                hasOnlineService: false,
+              ),
+              child: MediaPreviewWithOverlays(
+                media: entity,
+                parentIdentifier: viewIdentifier.toString(),
+              ),
+            );
           },
-        );
-      },
-    );
+        ),
+    };
   }
 }

@@ -1,5 +1,4 @@
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -29,41 +28,31 @@ class GalleryViewService extends StatelessWidget {
         body: OnSwipe(
           child: SafeArea(
             bottom: false,
-            child: GetStore(
+            child: GetAvailableMediaByActiveCollectionId(
               storeIdentity: storeIdentity,
-              errorBuilder: errorBuilder,
               loadingBuilder: () => CLLoader.widget(
-                debugMessage: 'GetStore',
+                debugMessage: 'GetAvailableMediaByCollectionId',
               ),
-              builder: (theStore) {
-                return GetAvailableMediaByActiveCollectionId(
+              errorBuilder: errorBuilder,
+              builder: (entities) => AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                switchInCurve: Curves.easeInOut,
+                switchOutCurve: Curves.easeInOut,
+                transitionBuilder: (
+                  Widget child,
+                  Animation<double> animation,
+                ) =>
+                    FadeTransition(opacity: animation, child: child),
+                child: KeepItMainGrid(
+                  parentIdentifier: parentIdentifier,
                   storeIdentity: storeIdentity,
+                  entities: entities,
                   loadingBuilder: () => CLLoader.widget(
-                    debugMessage: 'GetAvailableMediaByCollectionId',
+                    debugMessage: 'KeepItMainGrid',
                   ),
                   errorBuilder: errorBuilder,
-                  builder: (entities) => AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 300),
-                    switchInCurve: Curves.easeInOut,
-                    switchOutCurve: Curves.easeInOut,
-                    transitionBuilder: (
-                      Widget child,
-                      Animation<double> animation,
-                    ) =>
-                        FadeTransition(opacity: animation, child: child),
-                    child: KeepItMainGrid(
-                      parentIdentifier: parentIdentifier,
-                      storeIdentity: storeIdentity,
-                      entities: entities,
-                      theStore: theStore,
-                      loadingBuilder: () => CLLoader.widget(
-                        debugMessage: 'KeepItMainGrid',
-                      ),
-                      errorBuilder: errorBuilder,
-                    ),
-                  ),
-                );
-              },
+                ),
+              ),
             ),
           ),
         ),

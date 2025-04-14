@@ -1,6 +1,5 @@
 import 'package:colan_services/services/media_view_service/preview/media_preview_service.dart';
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/keep_it_state.dart';
@@ -71,17 +70,10 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
           : (items) => onSelectionChanged
               ?.call(items.map((e) => e as StoreEntity).toList()),
       itemBuilder: (context, item) {
-        return GetCollection(
-          storeIdentity: (item as StoreEntity).store.store.identity,
-          id: item.parentId,
-          loadingBuilder: () => CLLoader.widget(debugMessage: 'GetCollection'),
-          errorBuilder: (p0, p1) =>
-              const Center(child: Text('GetCollection Error')),
-          builder: (parentCollection) {
-            return MediaThumbnail(
-              media: item,
+        return MediaThumbnail(
+          media: item as StoreEntity,
 
-              /** onTap: () async {
+          /** onTap: () async {
                 await PageManager.of(context).openEditor(
                   item,
                   canDuplicateMedia: false,
@@ -104,8 +96,6 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
                   );
                 }
               }, */
-            );
-          },
         );
       },
     );

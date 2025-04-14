@@ -15,12 +15,10 @@ class KeepItTopBar extends ConsumerWidget {
   const KeepItTopBar({
     required this.parentIdentifier,
     required this.entities,
-    required this.theStore,
     super.key,
   });
   final String parentIdentifier;
   final List<StoreEntity> entities;
-  final CLStore theStore;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

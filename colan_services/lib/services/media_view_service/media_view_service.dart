@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 
 import '../../internal/fullscreen_layout.dart';
 import '../gallery_view_service/builders/available_media.dart';
-import '../gallery_view_service/widgets/when_empty.dart';
 import '../gallery_view_service/widgets/when_error.dart';
 
 import 'widgets/keep_it_media_carousel_view.dart';

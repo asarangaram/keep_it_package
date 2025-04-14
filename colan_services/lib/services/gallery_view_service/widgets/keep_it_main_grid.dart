@@ -12,13 +12,11 @@ import '../providers/active_collection.dart';
 import 'actions/bottom_bar.dart';
 import 'actions/top_bar.dart';
 import 'view_modifier_builder.dart';
-import 'when_empty.dart';
 
 class KeepItMainGrid extends ConsumerWidget {
   const KeepItMainGrid({
     required this.parentIdentifier,
     required this.entities,
-    required this.theStore,
     required this.loadingBuilder,
     required this.errorBuilder,
     required this.storeIdentity,
@@ -28,7 +26,7 @@ class KeepItMainGrid extends ConsumerWidget {
   final List<StoreEntity> entities;
   final Widget Function() loadingBuilder;
   final Widget Function(Object, StackTrace) errorBuilder;
-  final CLStore theStore;
+
   final String storeIdentity;
 
   @override
@@ -48,7 +46,6 @@ class KeepItMainGrid extends ConsumerWidget {
         KeepItTopBar(
           parentIdentifier: parentIdentifier,
           entities: entities,
-          theStore: theStore,
         ),
         Expanded(
           child: RefreshIndicator(
@@ -72,12 +69,10 @@ class KeepItMainGrid extends ConsumerWidget {
                 context,
                 ref,
                 entities,
-                theStore,
               ),
               itemBuilder: (context, item) => EntityPreview(
                 viewIdentifier: viewIdentifier,
                 item: item,
-                theStore: theStore,
               ),
               builder: ({
                 required incoming,

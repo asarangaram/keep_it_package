@@ -7,7 +7,6 @@ import 'package:keep_it_state/keep_it_state.dart';
 import 'package:store/store.dart';
 
 import '../../gallery_view_service/providers/active_collection.dart';
-import '../../gallery_view_service/widgets/when_empty.dart';
 import '../media_view_service1.dart';
 
 class KeepItMediaCorouselView extends ConsumerWidget {

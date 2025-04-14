@@ -169,10 +169,7 @@ class GetPinnedMedia extends ConsumerWidget {
       query: q,
       errorBuilder: errorBuilder,
       loadingBuilder: loadingBuilder,
-      builder: (entities) {
-        print('found ${entities.length} items in hidden');
-        return builder(entities);
-      },
+      builder: builder,
     );
   }
 }

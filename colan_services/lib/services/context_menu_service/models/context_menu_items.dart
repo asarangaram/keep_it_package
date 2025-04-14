@@ -346,7 +346,6 @@ class CLContextMenu {
     BuildContext context,
     WidgetRef ref,
     List<ViewerEntityMixin> entities,
-    CLStore theStore,
   ) {
     // FIXME
     return switch (entities) {
