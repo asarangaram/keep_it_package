@@ -112,7 +112,7 @@ class CLStore {
         return StoreEntity(entity: collectionInDB, store: this);
       } else {
         return updateCollection(
-          collectionInDB.id!,
+          collectionInDB,
           description: description,
           parentId: parentId,
           strategy: strategy,
@@ -149,7 +149,9 @@ class CLStore {
       if (parent == null) {
         final tempParent = await createCollection(label: tempCollectionName);
         if (tempParent != null) {
-          parent = (await tempParent.dbSave())?.data;
+          parent = (await (await tempParent.updateWith(isHidden: () => true))
+                  ?.dbSave())
+              ?.data;
         }
       }
       if (parent == null || parent.id == null) {
@@ -168,7 +170,7 @@ class CLStore {
         return StoreEntity(entity: mediaInDB, store: this);
       } else {
         return updateMedia(
-          mediaInDB.id!,
+          mediaInDB,
           label: label,
           description: description,
           parentId: () => parentId0,
@@ -199,7 +201,7 @@ class CLStore {
   }
 
   Future<StoreEntity?> updateCollection(
-    int entityId, {
+    CLEntity entity, {
     ValueGetter<String?>? label,
     ValueGetter<String?>? description,
     ValueGetter<int?>? parentId,
@@ -213,12 +215,19 @@ class CLStore {
       );
     }
 
-    final entity = await store.get(EntityQuery(null, {'id': entityId}));
-
-    if (entity == null) {
-      throw Exception('entities do not exist.');
+    if (entity.id != null) {
+      final entityInDB = await store.get(EntityQuery(null, {'id': entity.id}));
+      if (entityInDB == null) {
+        throw Exception('entity with id ${entity.id} not found');
+      }
+      if (!entityInDB.isCollection) {
+        throw Exception('entity found, but it is not collection');
+      }
     }
-    if (entity.isCollection) {}
+    if (!entity.isCollection) {
+      throw Exception('Entity must be collections.');
+    }
+
     if (parentId != null) {
       final parentIdValue = parentId.call();
       if (parentIdValue != null && parentIdValue <= 0) {
@@ -264,7 +273,7 @@ class CLStore {
   }
 
   Future<StoreEntity?> updateMedia(
-    int entityId, {
+    CLEntity entity, {
     CLMediaFile? mediaFile,
     ValueGetter<String?>? label,
     ValueGetter<String?>? description,
@@ -280,14 +289,19 @@ class CLStore {
       );
     }
 
-    final entity = await store.get(EntityQuery(null, {'id': entityId}));
-
-    if (entity == null) {
-      throw Exception('entities do not exist.');
+    if (entity.id != null) {
+      final entityInDB = await store.get(EntityQuery(null, {'id': entity.id}));
+      if (entityInDB == null) {
+        throw Exception('entity with id ${entity.id} not found');
+      }
+      if (entityInDB.isCollection) {
+        throw Exception('entity found, but it is not media');
+      }
     }
+
     if (entity.isCollection) {
       throw Exception(
-        'All entities must be collections. One or more entities are not collections.',
+        'Entities must be media.',
       );
     }
     if (parentId != null) {
@@ -384,7 +398,9 @@ class CLStore {
         StoreEntity? defaultParent;
         final tempParent = await createCollection(label: tempCollectionName);
         if (tempParent != null) {
-          defaultParent = await tempParent.dbSave();
+          defaultParent =
+              await (await tempParent.updateWith(isHidden: () => true))
+                  ?.dbSave();
         }
 
         if (defaultParent == null || defaultParent.id == null) {

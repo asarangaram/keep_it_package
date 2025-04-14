@@ -156,7 +156,16 @@ class LocalSQLiteEntityStore extends EntityStore
     }
 
     Future<CLEntity?> cb(SqliteWriteContext tx) async {
-      final entityFromDB = await dbUpsert(tx, agent, updated);
+      final parent =
+          await dbGet(tx, agent, EntityQuery(null, {'id': updated.parentId}));
+
+      final entityFromDB = await dbUpsert(
+        tx,
+        agent,
+        updated.copyWith(
+          isHidden: updated.isHidden || (parent?.isHidden ?? false),
+        ),
+      );
       if (entityFromDB == null) throw Exception('failed to update DB');
       if (currentMediaPath != null &&
           prevMediaPath != currentMediaPath &&

@@ -40,13 +40,10 @@ class StoreEntity implements ViewerEntityMixin {
     UpdateStrategy? strategy,
     bool autoSave = false,
   }) async {
-    if (data.id == null) {
-      throw Exception("id can't be null");
-    }
     StoreEntity? updated;
     if (data.isCollection) {
       updated = await store.updateCollection(
-        data.id!,
+        data,
         label: label,
         description: description,
         parentId: parentId,
@@ -56,7 +53,7 @@ class StoreEntity implements ViewerEntityMixin {
       );
     } else {
       updated = await store.updateMedia(
-        data.id!,
+        data,
         mediaFile: mediaFile,
         label: label,
         description: description,
@@ -85,7 +82,7 @@ class StoreEntity implements ViewerEntityMixin {
     bool autoSave = false,
   }) async {
     final updated = await store.updateMedia(
-      data.id!,
+      data,
       mediaFile: mediaFile,
       label: label,
       description: description,

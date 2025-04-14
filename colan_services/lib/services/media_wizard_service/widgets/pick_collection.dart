@@ -21,7 +21,7 @@ class PickCollection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetAllVisibleCollection(
+    return GetStore(
       storeIdentity: storeIdentity,
       errorBuilder: (_, __) {
         throw UnimplementedError('errorBuilder');
@@ -29,47 +29,55 @@ class PickCollection extends StatelessWidget {
       loadingBuilder: () => CLLoader.widget(
         debugMessage: 'GetAllVisibleCollection',
       ),
-      builder: (collections) {
-        return CLWizardFormField(
-          actionMenu: (context, onTap) => CLMenuItem(
-            icon: clIcons.next,
-            title: 'Next',
-            onTap: onTap,
+      builder: (theStore) {
+        return GetAllVisibleCollection(
+          storeIdentity: storeIdentity,
+          errorBuilder: (_, __) {
+            throw UnimplementedError('errorBuilder');
+          },
+          loadingBuilder: () => CLLoader.widget(
+            debugMessage: 'GetAllVisibleCollection',
           ),
-          descriptor: CLFormSelectSingleDescriptors(
-            title: 'Collection',
-            label: 'Select Collection',
-            labelBuilder: (e) => (e as StoreEntity).data.label!,
-            descriptionBuilder: (e) => (e as StoreEntity).data.description,
-            suggestionsAvailable: [
-              if (isValidSuggestion != null)
-                ...collections.where((e) => isValidSuggestion!(e))
-              else
-                ...collections,
-            ],
-            initialValues: collection,
-            onSelectSuggestion: (item) async => item,
-            onCreateByLabel: (label) async {
-              throw UnimplementedError('Need a store create function here ');
-              /* return StoreEntity.collection(
-                label: label,
-              ); */
-            },
-            onValidate: (value) {
-              if (value == null) {
-                return "can't be empty";
-              }
-              /* if ((value as Collection).label.length > 20) {
-                return "length can't exceed 20 characters";
-              } */
-              return null;
-            },
-          ),
-          onSubmit: (CLFormFieldResult result) async {
-            final collection = (result as CLFormSelectSingleResult)
-                .selectedEntitry as StoreEntity;
+          builder: (collections) {
+            return CLWizardFormField(
+              actionMenu: (context, onTap) => CLMenuItem(
+                icon: clIcons.next,
+                title: 'Next',
+                onTap: onTap,
+              ),
+              descriptor: CLFormSelectSingleDescriptors(
+                title: 'Collection',
+                label: 'Select Collection',
+                labelBuilder: (e) => (e as StoreEntity).data.label!,
+                descriptionBuilder: (e) => (e as StoreEntity).data.description,
+                suggestionsAvailable: [
+                  if (isValidSuggestion != null)
+                    ...collections.where((e) => isValidSuggestion!(e))
+                  else
+                    ...collections,
+                ],
+                initialValues: collection,
+                onSelectSuggestion: (item) async => item,
+                onCreateByLabel: (label) async {
+                  return theStore.createCollection(label: label);
+                },
+                onValidate: (value) {
+                  if (value == null) {
+                    return "can't be empty";
+                  }
+                  /* if ((value as Collection).label.length > 20) {
+                    return "length can't exceed 20 characters";
+                  } */
+                  return null;
+                },
+              ),
+              onSubmit: (CLFormFieldResult result) async {
+                final collection = (result as CLFormSelectSingleResult)
+                    .selectedEntitry as StoreEntity;
 
-            onDone(collection);
+                onDone(collection);
+              },
+            );
           },
         );
       },
