@@ -9,8 +9,8 @@ import '../../models/viewer_entity_mixin.dart';
 import '../providers/tap_state.dart';
 import 'gallery_tab.dart';
 
-class RawCLEntityGalleryView extends ConsumerStatefulWidget {
-  const RawCLEntityGalleryView({
+class CLGalleryGridView extends ConsumerStatefulWidget {
+  const CLGalleryGridView({
     required this.viewIdentifier,
     required this.tabs,
     required this.itemBuilder,
@@ -46,8 +46,7 @@ class RawCLEntityGalleryView extends ConsumerStatefulWidget {
       _RawCLEntityGalleryViewState();
 }
 
-class _RawCLEntityGalleryViewState
-    extends ConsumerState<RawCLEntityGalleryView> {
+class _RawCLEntityGalleryViewState extends ConsumerState<CLGalleryGridView> {
   final GlobalKey parentKey = GlobalKey();
   @override
   Widget build(BuildContext context) {

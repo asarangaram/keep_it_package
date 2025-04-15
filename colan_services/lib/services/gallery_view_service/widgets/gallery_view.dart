@@ -55,7 +55,7 @@ class EntityGridView extends StatelessWidget {
         tabs,
         /* columns */
       ) {
-        return RawCLEntityGalleryView(
+        return CLGalleryGridView(
           viewIdentifier: viewIdentifier,
           tabs: tabs,
           bannersBuilder: bannersBuilder,

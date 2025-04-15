@@ -1,4 +1,4 @@
-export 'src/entity_grid/widgets/gallery_view.dart' show RawCLEntityGalleryView;
+export 'src/entity_grid/widgets/gallery_view.dart' show CLGalleryGridView;
 
 export 'src/models/tab_identifier.dart' show TabIdentifier, ViewIdentifier;
 export 'src/models/viewer_entity_mixin.dart'
