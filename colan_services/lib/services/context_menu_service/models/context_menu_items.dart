@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/keep_it_state.dart';
@@ -376,16 +379,17 @@ class CLContextMenu {
     BuildContext context,
     List<StoreEntity> media,
   ) {
-    throw UnimplementedError();
-    /* final files = media.where((e)=>e.isCollection ==false)
-        .map(directories.getMediaAbsolutePath)
+    final files = media
+        .where((e) => e.mediaUri != null)
+        .map((e) => e.mediaUri!.toFilePath())
         .where((e) => File(e).existsSync());
+
     final box = context.findRenderObject() as RenderBox?;
     return ShareManager.onShareFiles(
       context,
       files.toList(),
       sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
-    ); */
+    );
   }
 }
 
