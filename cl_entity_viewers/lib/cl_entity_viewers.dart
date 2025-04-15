@@ -14,3 +14,12 @@ export 'src/entity/models/action_control.dart' show ActionControl;
 ///
 export 'src/gallery_grid_view/providers/tap_state.dart' show currTabProvider;
 export 'src/entity/models/labeled_entity_groups.dart' show ViewerEntityGroups;
+export 'src/view_modifiers/merged/builders/get_view_modifiers.dart'
+    show GetViewModifiers;
+export 'src/view_modifiers/media_grouper/widgets/group_by_view.dart'
+    show GroupByView;
+export 'src/view_modifiers/media_grouper/models/media_grouper.dart'
+    show GroupBy;
+export 'src/view_modifiers/media_grouper/models/gallery_group.dart'
+    show EntityGrouper;
+export 'src/view_modifiers/merged/models/view_modifier.dart' show ViewModifier;

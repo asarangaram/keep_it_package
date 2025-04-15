@@ -4,6 +4,7 @@ import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 
 import '../../context_menu_service/models/context_menu_items.dart';
+import '../../media_view_service/widgets/get_sorted_entities.dart';
 
 class ViewModifierBuilder extends StatelessWidget {
   const ViewModifierBuilder({

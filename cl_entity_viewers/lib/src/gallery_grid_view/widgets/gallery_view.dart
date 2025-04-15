@@ -6,6 +6,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import '../../entity/models/labeled_entity_groups.dart';
 import '../../entity/models/viewer_entity_mixin.dart';
 
+import '../../view_modifiers/media_grouper/providers/grouped_media_provider.dart';
 import '../models/tab_identifier.dart';
 import '../providers/tap_state.dart';
 import 'gallery_tab.dart';
@@ -13,7 +14,7 @@ import 'gallery_tab.dart';
 class CLGalleryGridView extends ConsumerStatefulWidget {
   const CLGalleryGridView({
     required this.viewIdentifier,
-    required this.tabs,
+    required this.incoming,
     required this.itemBuilder,
     required this.labelBuilder,
     required this.bannersBuilder,
@@ -23,7 +24,7 @@ class CLGalleryGridView extends ConsumerStatefulWidget {
     required this.whenEmpty,
   });
   final ViewIdentifier viewIdentifier;
-  final List<ViewerEntityGroups> tabs;
+  final Map<String, List<ViewerEntityMixin>> incoming;
 
   final Widget Function(BuildContext context, ViewerEntityMixin item)
       itemBuilder;
@@ -54,7 +55,20 @@ class _RawCLEntityGalleryViewState extends ConsumerState<CLGalleryGridView> {
   final GlobalKey parentKey = GlobalKey();
   @override
   Widget build(BuildContext context) {
-    final tabs = widget.tabs;
+    final tabs = [
+      for (final entries in widget.incoming.entries)
+        ViewerEntityGroups(
+          name: entries.key,
+          galleryGroups: ref.watch(
+            groupedMediaProvider(
+              MapEntry(
+                TabIdentifier(view: widget.viewIdentifier, tabId: entries.key),
+                entries.value,
+              ),
+            ),
+          ),
+        )
+    ];
     final viewIdentifier = widget.viewIdentifier;
     final itemBuilder = widget.itemBuilder;
     final labelBuilder = widget.labelBuilder;

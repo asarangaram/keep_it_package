@@ -1,7 +1,7 @@
-import 'package:cl_entity_viewers/cl_entity_viewers.dart';
-import 'package:content_store/extensions/ext_datetime.dart';
-import 'package:content_store/extensions/list_ext.dart';
 import 'package:flutter/foundation.dart';
+import '../../../entity/models/viewer_entity_mixin.dart';
+import '../extensions/ext_datetime.dart';
+import '../extensions/list_ext.dart';
 
 extension EntityGrouper on List<ViewerEntityMixin> {
   Map<String, List<ViewerEntityMixin>> filterByDate() {

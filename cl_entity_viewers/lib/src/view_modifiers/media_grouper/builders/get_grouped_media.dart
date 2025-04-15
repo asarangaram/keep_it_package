@@ -1,4 +1,4 @@
-import 'package:cl_entity_viewers/cl_entity_viewers.dart';
+/* import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -95,10 +95,5 @@ class GetGroupedMedia extends ConsumerWidget {
   }
 }
 
-final groupedMediaProvider = StateProvider.family<
-    List<ViewerEntityGroup<ViewerEntityMixin>>,
-    MapEntry<TabIdentifier, List<ViewerEntityMixin>>>((ref, mapEntry) {
-  final groupBy = ref.watch(groupMethodProvider(mapEntry.key.tabId));
 
-  return groupBy.getGrouped(mapEntry.value);
-});
+ */

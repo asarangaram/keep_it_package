@@ -1,7 +1,7 @@
-import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../gallery_grid_view/models/tab_identifier.dart';
 import '../models/view_modifier.dart';
 import '../providers/view_modifiers.dart';
 

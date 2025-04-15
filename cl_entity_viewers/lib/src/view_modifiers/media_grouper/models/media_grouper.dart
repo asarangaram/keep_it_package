@@ -1,7 +1,7 @@
-import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:flutter/foundation.dart';
 
-import '../../view_modifiers/models/view_modifier.dart';
+import '../../../entity/models/viewer_entity_mixin.dart';
+import '../../merged/models/view_modifier.dart';
 import 'gallery_group.dart';
 
 enum GroupTypes {

@@ -1,6 +1,6 @@
 import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:colan_services/services/gallery_view_service/widgets/when_empty.dart';
-import 'package:content_store/content_store.dart';
+
 import 'package:flutter/material.dart';
 
 class EntityGridView extends StatelessWidget {
@@ -44,29 +44,15 @@ class EntityGridView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetGroupedMedia(
-      storeIdentity: storeIdentity,
+    return CLGalleryGridView(
       viewIdentifier: viewIdentifier,
-      errorBuilder: errorBuilder,
-      loadingBuilder: loadingBuilder,
-      incoming: incoming,
+      incoming: {'Media': incoming},
+      bannersBuilder: bannersBuilder,
+      labelBuilder: labelBuilder,
+      itemBuilder: itemBuilder,
       columns: columns,
-      viewableAsCollection: viewableAsCollection,
-      builder: (
-        tabs,
-        /* columns */
-      ) {
-        return CLGalleryGridView(
-          viewIdentifier: viewIdentifier,
-          tabs: tabs,
-          bannersBuilder: bannersBuilder,
-          labelBuilder: labelBuilder,
-          itemBuilder: itemBuilder,
-          columns: columns,
-          draggableMenuBuilder: draggableMenuBuilder,
-          whenEmpty: const WhenEmpty(),
-        );
-      },
+      draggableMenuBuilder: draggableMenuBuilder,
+      whenEmpty: const WhenEmpty(),
     );
   }
 }
