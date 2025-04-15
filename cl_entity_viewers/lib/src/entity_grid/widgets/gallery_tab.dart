@@ -15,6 +15,7 @@ class CLEntityGalleryTab extends ConsumerStatefulWidget {
     required this.labelBuilder,
     required this.bannersBuilder,
     required this.columns,
+    required this.whenEmpty,
     super.key,
   });
   final TabIdentifier tabIdentifier;
@@ -32,6 +33,7 @@ class CLEntityGalleryTab extends ConsumerStatefulWidget {
     BuildContext,
     List<ViewerEntityGroup<ViewerEntityMixin>>,
   ) bannersBuilder;
+  final Widget whenEmpty;
 
   @override
   ConsumerState<CLEntityGalleryTab> createState() => CLEntityGalleryTabState();
@@ -61,8 +63,7 @@ class CLEntityGalleryTabState extends ConsumerState<CLEntityGalleryTab> {
       children: [
         ...widget.bannersBuilder(context, galleryGroups),
         if (galleryGroups.isEmpty)
-          throw Exception("WhenEmpty should come here")
-        //const Flexible(child: throw Exce)
+          Flexible(child: widget.whenEmpty)
         else
           Flexible(
             child: ListView.builder(

@@ -19,6 +19,7 @@ class CLGalleryGridView extends ConsumerStatefulWidget {
     required this.columns,
     super.key,
     this.draggableMenuBuilder,
+    required this.whenEmpty,
   });
   final ViewIdentifier viewIdentifier;
   final List<ViewerEntityGroups> tabs;
@@ -40,6 +41,8 @@ class CLGalleryGridView extends ConsumerStatefulWidget {
     BuildContext context, {
     required GlobalKey<State<StatefulWidget>> parentKey,
   })? draggableMenuBuilder;
+
+  final Widget whenEmpty;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -67,6 +70,7 @@ class _RawCLEntityGalleryViewState extends ConsumerState<CLGalleryGridView> {
         labelBuilder: labelBuilder,
         bannersBuilder: bannersBuilder,
         columns: columns,
+        whenEmpty: widget.whenEmpty,
       );
     } else {
       final laskKnownTabName = ref.watch(currTabProvider(viewIdentifier));
@@ -112,6 +116,7 @@ class _RawCLEntityGalleryViewState extends ConsumerState<CLGalleryGridView> {
               labelBuilder: labelBuilder,
               bannersBuilder: bannersBuilder,
               columns: columns,
+              whenEmpty: widget.whenEmpty,
             ),
           ),
         ],

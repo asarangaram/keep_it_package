@@ -1,4 +1,5 @@
 import 'package:cl_entity_viewers/cl_entity_viewers.dart';
+import 'package:colan_services/services/gallery_view_service/widgets/when_empty.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 
@@ -63,6 +64,7 @@ class EntityGridView extends StatelessWidget {
           itemBuilder: itemBuilder,
           columns: columns,
           draggableMenuBuilder: draggableMenuBuilder,
+          whenEmpty: const WhenEmpty(),
         );
       },
     );
