@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:cl_media_tools/cl_media_tools.dart';
@@ -101,14 +102,21 @@ class MediaThumbnail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (media.mediaUri == null) {
+    if (media.previewUri == null) {
       return const BrokenImage();
     }
-    return ImageViewer.basic(
-      uri: media.mediaUri!,
-      fit: BoxFit.cover,
-      overlays: overlays,
-    );
+    if (!File(media.mediaUri!.toFilePath()).existsSync()) {
+      return const BrokenImage();
+    }
+    try {
+      return ImageViewer.basic(
+        uri: media.previewUri!,
+        fit: BoxFit.cover,
+        overlays: overlays,
+      );
+    } catch (e) {
+      return const BrokenImage();
+    }
   }
 }
 
