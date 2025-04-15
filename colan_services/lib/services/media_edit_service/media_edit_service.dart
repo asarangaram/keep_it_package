@@ -64,8 +64,8 @@ class MediaEditService extends ConsumerWidget {
                       },
                       onSave: (file, {required overwrite}) async {
                         final mediaFile = await CLMediaFile.fromPath(file);
-                        if (mediaFile != null) {
-                          throw Exception('failed proces $file');
+                        if (mediaFile == null) {
+                          throw Exception('failed process $file');
                         }
                         var resultMedia = media;
 
@@ -76,12 +76,10 @@ class MediaEditService extends ConsumerWidget {
                               ) ??
                               false;
                           if (confirmed && context.mounted) {
-                            if (mediaFile != null) {
-                              resultMedia = await media.updateWith(
-                                    mediaFile: mediaFile,
-                                  ) ??
-                                  media;
-                            }
+                            resultMedia = await media.updateWith(
+                                  mediaFile: mediaFile,
+                                ) ??
+                                media;
                           }
                         } else if (context.mounted) {
                           final confirmed =
@@ -92,7 +90,7 @@ class MediaEditService extends ConsumerWidget {
                                   false;
                           if (confirmed && context.mounted) {
                             resultMedia = await media.cloneWith(
-                                  mediaFile: mediaFile!,
+                                  mediaFile: mediaFile,
                                 ) ??
                                 media;
                           } else {
