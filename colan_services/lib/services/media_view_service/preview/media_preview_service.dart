@@ -12,13 +12,11 @@ class MediaPreviewWithOverlays extends StatelessWidget {
   const MediaPreviewWithOverlays({
     required this.media,
     required this.parentIdentifier,
-    this.isMediaWaitingForDownload = false,
     super.key,
   });
 
   final StoreEntity media;
   final String parentIdentifier;
-  final bool isMediaWaitingForDownload;
 
   @override
   Widget build(BuildContext context) {
