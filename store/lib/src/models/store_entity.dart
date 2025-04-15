@@ -1,10 +1,10 @@
+import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:cl_media_tools/cl_media_tools.dart';
 import 'package:meta/meta.dart';
 import 'package:store/src/models/cl_store.dart';
 
 import 'cl_entity.dart';
 import 'data_types.dart';
-import 'viewer_entity_mixin.dart';
 
 @immutable
 class StoreEntity implements ViewerEntityMixin {

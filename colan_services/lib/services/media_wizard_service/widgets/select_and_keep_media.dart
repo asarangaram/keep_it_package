@@ -1,3 +1,4 @@
+import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 
@@ -6,8 +7,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/keep_it_state.dart';
 import 'package:store/store.dart';
 
-import '../../../internal/entity_grid/builders/get_selection_mode.dart';
-import '../../../internal/entity_grid/widgets/selection_control/selection_control.dart';
 import '../../basic_page_service/widgets/dialogs.dart';
 import '../../basic_page_service/widgets/page_manager.dart';
 import '../../context_menu_service/models/wizard_menu_items.dart';
@@ -28,7 +27,7 @@ class SelectAndKeepMedia extends ConsumerStatefulWidget {
   final ViewIdentifier viewIdentifier;
   final String storeIdentity;
 
-  final List<GalleryGroupStoreEntity<ViewerEntityMixin>> galleryMap;
+  final List<ViewerEntityGroup<ViewerEntityMixin>> galleryMap;
 
   @override
   ConsumerState<SelectAndKeepMedia> createState() => SelectAndKeepMediaState();

@@ -1,16 +1,17 @@
+import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:keep_it_state/keep_it_state.dart';
+
 import 'package:store/store.dart';
 
-import '../../../internal/entity_grid/gallery_view.dart';
 import '../../context_menu_service/models/context_menu_items.dart';
 import '../../media_view_service/preview/entity_preview.dart';
 import '../../media_view_service/widgets/stale_media_indicator_service.dart';
 import '../providers/active_collection.dart';
 import 'actions/bottom_bar.dart';
 import 'actions/top_bar.dart';
+import 'gallery_view.dart';
 import 'view_modifier_builder.dart';
 
 class KeepItMainGrid extends ConsumerWidget {
@@ -65,7 +66,7 @@ class KeepItMainGrid extends ConsumerWidget {
                 ];
               },
               contextMenuOf: (context, entities) =>
-                  CLContextMenu.entitiesContextMenuBuilder(
+                  EntityContextMenu.entitiesContextMenuBuilder(
                 context,
                 ref,
                 entities,

@@ -1,4 +1,3 @@
-export 'internal/entity_grid/gallery_view.dart';
 export 'services/app_start_service/app_start_service.dart' show AppStartService;
 export 'services/basic_page_service/basic_page_service.dart'
     show BasicPageService;

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:keep_it_state/keep_it_state.dart';
 
 import '../../basics/cl_button.dart';
 import '../../basics/cl_text.dart';
+import '../../models/cl_menu_item.dart';
 import '../../theme/state/cl_theme.dart';
 
 class WizardDialog extends StatelessWidget {

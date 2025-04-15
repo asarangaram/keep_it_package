@@ -1,9 +1,9 @@
+import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:keep_it_state/keep_it_state.dart';
+
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../../internal/entity_grid/builders/get_selection_mode.dart';
 import '../models/context_menu_items.dart';
 
 class CLBasicContextMenu extends StatelessWidget {
@@ -17,7 +17,7 @@ class CLBasicContextMenu extends StatelessWidget {
   final ViewIdentifier viewIdentifier;
   final Widget child;
   final Future<bool?> Function()? onTap;
-  final CLContextMenu? contextMenu;
+  final EntityContextMenu? contextMenu;
 
   @override
   Widget build(BuildContext context) {

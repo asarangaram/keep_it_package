@@ -4,12 +4,8 @@ library;
 export 'media_grouper/builders/get_grouped_media.dart';
 export 'media_grouper/builders/get_media_groupers.dart';
 export 'media_grouper/builders/get_sorted_entities.dart';
-export 'media_grouper/models/gallery_group.dart'
-    show
-        EntityGrouper,
-        GalleryGroupStoreEntity,
-        GalleryGroupStoreEntityListQuery;
-export 'media_grouper/models/labeled_entity_groups.dart';
+export 'media_grouper/models/gallery_group.dart' show EntityGrouper;
+
 export 'media_grouper/models/media_grouper.dart';
 export 'media_grouper/widgets/group_by_view.dart';
 export 'search_filters/builders/get_filtered_media.dart';

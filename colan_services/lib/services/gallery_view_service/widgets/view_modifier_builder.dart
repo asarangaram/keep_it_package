@@ -1,10 +1,8 @@
+import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
-import 'package:keep_it_state/keep_it_state.dart';
-import 'package:store/store.dart';
 
-import '../../../internal/entity_grid/widgets/selection_control/selection_control.dart';
 import '../../context_menu_service/models/context_menu_items.dart';
 
 class ViewModifierBuilder extends StatelessWidget {
@@ -27,13 +25,13 @@ class ViewModifierBuilder extends StatelessWidget {
     ViewerEntityMixin,
   ) itemBuilder;
 
-  final CLContextMenu Function(BuildContext, List<ViewerEntityMixin>)?
+  final EntityContextMenu Function(BuildContext, List<ViewerEntityMixin>)?
       contextMenuOf;
   final void Function(List<ViewerEntityMixin>)? onSelectionChanged;
   final bool filtersDisabled;
   final List<Widget> Function(
     BuildContext context,
-    List<GalleryGroupStoreEntity<ViewerEntityMixin>> galleryMap,
+    List<ViewerEntityGroup<ViewerEntityMixin>> galleryMap,
   ) bannersBuilder;
   final Widget Function({
     required ViewIdentifier viewIdentifier,
@@ -44,12 +42,12 @@ class ViewModifierBuilder extends StatelessWidget {
     ) itemBuilder,
     required Widget? Function(
       BuildContext context,
-      List<GalleryGroupStoreEntity<ViewerEntityMixin>> galleryMap,
-      GalleryGroupStoreEntity<ViewerEntityMixin> gallery,
+      List<ViewerEntityGroup<ViewerEntityMixin>> galleryMap,
+      ViewerEntityGroup<ViewerEntityMixin> gallery,
     ) labelBuilder,
     required List<Widget> Function(
       BuildContext context,
-      List<GalleryGroupStoreEntity<ViewerEntityMixin>> galleryMap,
+      List<ViewerEntityGroup<ViewerEntityMixin>> galleryMap,
     ) bannersBuilder,
     required Widget Function(
       BuildContext, {
@@ -93,7 +91,7 @@ class ViewModifierBuilder extends StatelessWidget {
                 List<ViewerEntityMixin> filterred, {
                 required List<Widget> Function(
                   BuildContext,
-                  List<GalleryGroupStoreEntity<ViewerEntityMixin>>,
+                  List<ViewerEntityGroup<ViewerEntityMixin>>,
                 ) bannersBuilder,
               }) {
                 return builder(

@@ -1,5 +1,5 @@
+import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:flutter/foundation.dart';
-import 'package:store/store.dart';
 
 import '../../view_modifiers/models/view_modifier.dart';
 import 'gallery_group.dart';
@@ -51,7 +51,7 @@ class GroupBy implements ViewModifier {
   @override
   String get name => 'Group By';
 
-  List<GalleryGroupStoreEntity<ViewerEntityMixin>> getGrouped(
+  List<ViewerEntityGroup<ViewerEntityMixin>> getGrouped(
     List<ViewerEntityMixin> entities,
   ) {
     return switch (method) {

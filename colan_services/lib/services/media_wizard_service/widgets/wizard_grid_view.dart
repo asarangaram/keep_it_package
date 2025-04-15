@@ -1,10 +1,9 @@
-import 'package:content_store/content_store.dart';
-import 'package:flutter/material.dart';
-import 'package:keep_it_state/keep_it_state.dart';
-import 'package:store/store.dart';
+import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 
-import '../../../internal/entity_grid/gallery_view.dart';
+import 'package:flutter/material.dart';
+
 import '../../context_menu_service/models/context_menu_items.dart';
+import '../../gallery_view_service/widgets/gallery_view.dart';
 import '../../gallery_view_service/widgets/view_modifier_builder.dart';
 
 class CLGalleryView extends StatelessWidget {
@@ -33,14 +32,14 @@ class CLGalleryView extends StatelessWidget {
   final int columns;
 
   final Widget emptyWidget;
-  final CLContextMenu Function(BuildContext, List<ViewerEntityMixin>)
+  final EntityContextMenu Function(BuildContext, List<ViewerEntityMixin>)
       contextMenuBuilder;
   final void Function(List<ViewerEntityMixin>)? onSelectionChanged;
   final bool filterDisabled;
   final bool viewableAsCollection;
   final List<Widget> Function(
     BuildContext context,
-    List<GalleryGroupStoreEntity<ViewerEntityMixin>> galleryMap,
+    List<ViewerEntityGroup<ViewerEntityMixin>> galleryMap,
   ) bannersBuilder;
 
   @override

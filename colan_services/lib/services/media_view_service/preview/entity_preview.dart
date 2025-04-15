@@ -1,7 +1,8 @@
+import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:keep_it_state/keep_it_state.dart';
+
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
@@ -48,11 +49,10 @@ class EntityPreview extends ConsumerWidget {
                             .state = entity;
                         return null;
                       },
-                      contextMenu: CLContextMenu.ofCollection(
+                      contextMenu: EntityContextMenu.ofCollection(
                         context,
                         ref,
                         collection: entity,
-                        hasOnlineService: false,
                       ),
                       child: CollectionView.preview(
                         entity,
@@ -76,11 +76,10 @@ class EntityPreview extends ConsumerWidget {
                     ),
                   ),
                   EntityMetaData(
-                    contextMenu: CLContextMenu.ofCollection(
+                    contextMenu: EntityContextMenu.ofCollection(
                       context,
                       ref,
                       collection: entity,
-                      hasOnlineService: false,
                     ),
                     child: const Icon(LucideIcons.ellipsis),
                   ),
@@ -110,12 +109,11 @@ class EntityPreview extends ConsumerWidget {
                 );
                 return true;
               },
-              contextMenu: CLContextMenu.ofMedia(
+              contextMenu: EntityContextMenu.ofMedia(
                 context,
                 ref,
                 media: entity,
                 parentCollection: parent,
-                hasOnlineService: false,
               ),
               child: MediaPreviewWithOverlays(
                 media: entity,

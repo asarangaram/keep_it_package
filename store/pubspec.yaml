@@ -8,6 +8,9 @@ environment:
 
 # Add regular dependencies here.
 dependencies:
+  cl_entity_viewers:
+    path: ../cl_entity_viewers
+
   cl_media_tools:
     path: ../cl_media_tools
   collection: ^1.19.0

@@ -1,9 +1,10 @@
+import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:colan_services/services/basic_page_service/widgets/page_manager.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:keep_it_state/keep_it_state.dart';
+
 import 'package:store/store.dart';
 
 import '../../gallery_view_service/providers/active_collection.dart';
@@ -49,7 +50,7 @@ class KeepItMediaCorouselView extends ConsumerWidget {
             List<ViewerEntityMixin> filterred, {
             required List<Widget> Function(
               BuildContext,
-              List<GalleryGroupStoreEntity<ViewerEntityMixin>>,
+              List<ViewerEntityGroup<ViewerEntityMixin>>,
             ) bannersBuilder,
           }) {
             return MediaViewService1.pageView(

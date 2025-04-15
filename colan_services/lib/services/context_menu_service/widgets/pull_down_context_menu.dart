@@ -16,7 +16,7 @@ class PullDownContextMenu extends ConsumerWidget {
 
   final Widget child;
   final Future<bool?> Function()? onTap;
-  final CLContextMenu? contextMenu;
+  final EntityContextMenu? contextMenu;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -344,7 +344,7 @@ class EntityMetaData extends ConsumerWidget {
 
   final Widget child;
 
-  final CLContextMenu? contextMenu;
+  final EntityContextMenu? contextMenu;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

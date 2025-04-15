@@ -1,3 +1,4 @@
+import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:colan_services/colan_services.dart';
 import 'package:flutter/material.dart';
 import 'package:store/store.dart';

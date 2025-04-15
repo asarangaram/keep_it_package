@@ -1,11 +1,11 @@
+import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:keep_it_state/keep_it_state.dart';
-import 'package:store/store.dart' show StoreEntity, ViewerEntityMixin;
+
+import 'package:store/store.dart' show StoreEntity;
 
 import '../../src/stores/builders/w3_get_collection.dart';
-import '../models/gallery_group.dart';
-import '../models/labeled_entity_groups.dart';
+
 import '../providers/media_grouper.dart';
 import 'get_sorted_entities.dart';
 
@@ -28,7 +28,7 @@ class GetGroupedMedia extends ConsumerWidget {
 
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
-  final Widget Function(List<LabelledEntityGroups> galleryMap) builder;
+  final Widget Function(List<ViewerEntityGroups> galleryMap) builder;
   final bool viewableAsCollection;
 
   @override
@@ -53,11 +53,11 @@ class GetGroupedMedia extends ConsumerWidget {
         return GetSortedEntity(
           entities: collections,
           builder: (sortedCollections) {
-            final result = <LabelledEntityGroups>[];
+            final result = <ViewerEntityGroups>[];
 
             if (viewableAsCollection) {
               result.add(
-                LabelledEntityGroups(
+                ViewerEntityGroups(
                   name: 'Collections',
                   galleryGroups: ref.watch(
                     groupedMediaProvider(
@@ -74,7 +74,7 @@ class GetGroupedMedia extends ConsumerWidget {
               );
             }
             result.add(
-              LabelledEntityGroups(
+              ViewerEntityGroups(
                 name: 'Media',
                 galleryGroups: ref.watch(
                   groupedMediaProvider(
@@ -96,7 +96,7 @@ class GetGroupedMedia extends ConsumerWidget {
 }
 
 final groupedMediaProvider = StateProvider.family<
-    List<GalleryGroupStoreEntity<ViewerEntityMixin>>,
+    List<ViewerEntityGroup<ViewerEntityMixin>>,
     MapEntry<TabIdentifier, List<ViewerEntityMixin>>>((ref, mapEntry) {
   final groupBy = ref.watch(groupMethodProvider(mapEntry.key.tabId));
 

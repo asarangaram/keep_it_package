@@ -1,8 +1,7 @@
+import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:content_store/extensions/ext_datetime.dart';
 import 'package:content_store/extensions/list_ext.dart';
-import 'package:meta/meta.dart';
-
-import 'package:store/store.dart';
+import 'package:flutter/foundation.dart';
 
 extension EntityGrouper on List<ViewerEntityMixin> {
   Map<String, List<ViewerEntityMixin>> filterByDate() {
@@ -26,8 +25,8 @@ extension EntityGrouper on List<ViewerEntityMixin> {
     return filterredMedia;
   }
 
-  List<GalleryGroupStoreEntity<ViewerEntityMixin>> groupByTime(int columns) {
-    final galleryGroups = <GalleryGroupStoreEntity<ViewerEntityMixin>>[];
+  List<ViewerEntityGroup<ViewerEntityMixin>> groupByTime(int columns) {
+    final galleryGroups = <ViewerEntityGroup<ViewerEntityMixin>>[];
 
     for (final entry in filterByDate().entries) {
       if (entry.value.length > columns) {
@@ -35,7 +34,7 @@ extension EntityGrouper on List<ViewerEntityMixin> {
 
         for (final (index, group) in groups.indexed) {
           galleryGroups.add(
-            GalleryGroupStoreEntity(
+            ViewerEntityGroup(
               group,
               label: (index == 0) ? entry.key : null,
               groupIdentifier: entry.key,
@@ -45,7 +44,7 @@ extension EntityGrouper on List<ViewerEntityMixin> {
         }
       } else {
         galleryGroups.add(
-          GalleryGroupStoreEntity(
+          ViewerEntityGroup(
             entry.value,
             label: entry.key,
             groupIdentifier: entry.key,
@@ -57,12 +56,12 @@ extension EntityGrouper on List<ViewerEntityMixin> {
     return galleryGroups;
   }
 
-  List<GalleryGroupStoreEntity<ViewerEntityMixin>> group(int columns) {
-    final galleryGroups = <GalleryGroupStoreEntity<ViewerEntityMixin>>[];
+  List<ViewerEntityGroup<ViewerEntityMixin>> group(int columns) {
+    final galleryGroups = <ViewerEntityGroup<ViewerEntityMixin>>[];
 
     for (final rows in convertTo2D(columns)) {
       galleryGroups.add(
-        GalleryGroupStoreEntity(
+        ViewerEntityGroup(
           rows,
           label: null,
           groupIdentifier: 'StoreEntity',
@@ -150,36 +149,4 @@ extension ExtListGalleryGroupMutableBool<bool>
     }
     return items;
   }
-}
-
-@immutable
-class GalleryGroupStoreEntity<T extends ViewerEntityMixin> {
-  const GalleryGroupStoreEntity(
-    this.items, {
-    required this.chunkIdentifier,
-    required this.groupIdentifier,
-    required this.label,
-  });
-  final String chunkIdentifier;
-  final String groupIdentifier;
-  final String? label;
-  final List<T> items;
-
-  Set<int?> get getEntityIds => items.map((e) => e.id).toSet();
-}
-
-extension GalleryGroupStoreEntityListQuery<T extends ViewerEntityMixin>
-    on List<GalleryGroupStoreEntity<T>> {
-  Set<int?> get getEntityIds => expand((item) => item.getEntityIds).toSet();
-  Set<T> get getEntities => expand((item) => item.items).toSet();
-
-  Set<int?> getEntityIdsByGroup(String groupIdentifier) =>
-      where((e) => e.groupIdentifier == groupIdentifier)
-          .expand((item) => item.getEntityIds)
-          .toSet();
-
-  Set<T> getEntitiesByGroup(String groupIdentifier) =>
-      where((e) => e.groupIdentifier == groupIdentifier)
-          .expand((item) => item.items)
-          .toSet();
 }

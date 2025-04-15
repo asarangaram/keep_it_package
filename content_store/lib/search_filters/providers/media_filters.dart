@@ -1,7 +1,8 @@
+import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:cl_media_tools/cl_media_tools.dart';
 import 'package:content_store/search_filters/models/filters.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:keep_it_state/keep_it_state.dart';
+
 import 'package:store/store.dart';
 
 import '../models/filter/base_filter.dart';

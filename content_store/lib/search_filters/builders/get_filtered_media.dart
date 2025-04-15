@@ -1,10 +1,9 @@
+import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:keep_it_state/keep_it_state.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
-import '../../media_grouper/models/gallery_group.dart';
 import '../providers/media_filters.dart';
 
 class GetFilterredMedia extends ConsumerWidget {
@@ -20,14 +19,14 @@ class GetFilterredMedia extends ConsumerWidget {
     List<ViewerEntityMixin> filterred, {
     required List<Widget> Function(
       BuildContext,
-      List<GalleryGroupStoreEntity<ViewerEntityMixin>>,
+      List<ViewerEntityGroup<ViewerEntityMixin>>,
     ) bannersBuilder,
   }) builder;
 
   final List<ViewerEntityMixin> incoming;
   final List<Widget> Function(
     BuildContext,
-    List<GalleryGroupStoreEntity<ViewerEntityMixin>>,
+    List<ViewerEntityGroup<ViewerEntityMixin>>,
   ) bannersBuilder;
   final bool disabled;
   final ViewIdentifier viewIdentifier;

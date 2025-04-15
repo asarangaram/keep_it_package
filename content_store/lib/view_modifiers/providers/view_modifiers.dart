@@ -1,5 +1,5 @@
+import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:keep_it_state/keep_it_state.dart';
 
 import '../../media_grouper/providers/media_grouper.dart';
 import '../../search_filters/providers/media_filters.dart';

@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:cl_entity_viewers/cl_entity_viewers.dart';
+import 'package:cl_media_tools/cl_media_tools.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +11,6 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 
 import 'package:store/store.dart';
 
-import '../../../internal/draggable_menu/widgets/actions_draggable_menu.dart';
 import '../../basic_page_service/widgets/dialogs.dart';
 import '../../basic_page_service/widgets/page_manager.dart';
 import '../../gallery_view_service/widgets/collection_editor.dart';
@@ -17,8 +18,8 @@ import '../../gallery_view_service/widgets/media_editor.dart';
 import '../../media_wizard_service/media_wizard_service.dart';
 
 @immutable
-class CLContextMenu {
-  const CLContextMenu({
+class EntityContextMenu extends CLContextMenu {
+  const EntityContextMenu({
     required this.name,
     required this.logoImageAsset,
     required this.onEdit,
@@ -29,15 +30,15 @@ class CLContextMenu {
     required this.onDelete,
     required this.infoMap,
   });
-  factory CLContextMenu.empty() {
-    return CLContextMenu.template(
+  factory EntityContextMenu.empty() {
+    return EntityContextMenu.template(
       name: 'No Context Menu',
       logoImageAsset: '',
       infoMap: const {},
       isPinned: false,
     );
   }
-  factory CLContextMenu.template({
+  factory EntityContextMenu.template({
     required String name,
     required String logoImageAsset,
     required Map<String, dynamic> infoMap,
@@ -49,7 +50,7 @@ class CLContextMenu {
     Future<bool?> Function()? onPin,
     Future<bool?> Function()? onDelete,
   }) {
-    return CLContextMenu(
+    return EntityContextMenu(
       name: name,
       logoImageAsset: logoImageAsset,
       onEdit: CLMenuItem(
@@ -87,11 +88,10 @@ class CLContextMenu {
       infoMap: infoMap,
     );
   }
-  factory CLContextMenu.ofCollection(
+  factory EntityContextMenu.ofCollection(
     BuildContext context,
     WidgetRef ref, {
     required StoreEntity collection,
-    required bool hasOnlineService,
     ValueGetter<Future<bool?> Function()?>? onEdit,
     ValueGetter<Future<bool?> Function()?>? onEditInfo,
     ValueGetter<Future<bool?> Function()?>? onMove,
@@ -138,12 +138,11 @@ class CLContextMenu {
             return false;
           };
 
-    final ac = ActionControl.onGetCollectionActionControl(
+    final ac = onGetCollectionActionControl(
       collection,
-      hasOnlineService,
       onGetChildren: onGetChildren,
     );
-    return CLContextMenu.template(
+    return EntityContextMenu.template(
       name: collection.data.label!,
       logoImageAsset: 'assets/icon/not_on_server.png',
       onEdit: ac.onEdit(onEdit0),
@@ -156,12 +155,11 @@ class CLContextMenu {
       isPinned: false,
     );
   }
-  factory CLContextMenu.ofMedia(
+  factory EntityContextMenu.ofMedia(
     BuildContext context,
     WidgetRef ref, {
     required StoreEntity media,
     required StoreEntity parentCollection,
-    required bool hasOnlineService,
     ValueGetter<Future<bool?> Function()?>? onMove,
     ValueGetter<Future<bool?> Function()?>? onShare,
     ValueGetter<Future<bool?> Function()?>? onDelete,
@@ -218,12 +216,11 @@ class CLContextMenu {
       return true;
     }
 
-    final ac = ActionControl.onGetMediaActionControl(
+    final ac = onGetMediaActionControl(
       media,
       parentCollection,
-      hasOnlineService,
     );
-    return CLContextMenu.template(
+    return EntityContextMenu.template(
       name: media.data.label ?? 'Unnamed',
       logoImageAsset: 'assets/icon/not_on_server.png',
       onEdit: ac.onEdit(onEdit0),
@@ -236,7 +233,7 @@ class CLContextMenu {
       isPinned: media.data.pin != null,
     );
   }
-  factory CLContextMenu.ofMultipleMedia(
+  factory EntityContextMenu.ofMultipleMedia(
     BuildContext context,
     WidgetRef ref, {
     required List<StoreEntity> items,
@@ -283,7 +280,7 @@ class CLContextMenu {
       return false;
     }
 
-    return CLContextMenu.template(
+    return EntityContextMenu.template(
       name: 'Multiple Media',
       logoImageAsset: 'assets/icon/not_on_server.png',
       onEdit: onEdit != null ? onEdit() : onEdit0,
@@ -307,6 +304,7 @@ class CLContextMenu {
 
   final Map<String, dynamic> infoMap;
 
+  @override
   List<CLMenuItem> get actions => [
         onEdit,
         onEditInfo,
@@ -328,24 +326,7 @@ class CLContextMenu {
         onDelete,
       ];
 
-  DraggableMenuBuilderType? draggableMenuBuilder(
-    BuildContext context,
-    void Function() onDone,
-  ) {
-    if (actions.isNotEmpty) {
-      return (context, {required parentKey}) {
-        return ActionsDraggableMenu<ViewerEntityMixin>(
-          parentKey: parentKey,
-          tagPrefix: 'Selection',
-          menuItems: actions.insertOnDone(onDone),
-        );
-      };
-    }
-
-    return null;
-  }
-
-  static CLContextMenu entitiesContextMenuBuilder(
+  static EntityContextMenu entitiesContextMenuBuilder(
     BuildContext context,
     WidgetRef ref,
     List<ViewerEntityMixin> entities,
@@ -357,7 +338,7 @@ class CLContextMenu {
             (e) => e is StoreEntity && e.data.isCollection == false,
           ) =>
         () {
-          return CLContextMenu.ofMultipleMedia(
+          return EntityContextMenu.ofMultipleMedia(
             context,
             ref,
             items: e.map((e) => e as StoreEntity).toList(),
@@ -369,7 +350,7 @@ class CLContextMenu {
             (e) => e is StoreEntity && e.data.isCollection == true,
           ) =>
         () {
-          return CLContextMenu.empty();
+          return EntityContextMenu.empty();
         }(),
       _ => throw UnimplementedError('Mix of items not supported yet')
     };
@@ -389,6 +370,41 @@ class CLContextMenu {
       context,
       files.toList(),
       sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
+    );
+  }
+
+  static ActionControl onGetCollectionActionControl(
+    StoreEntity collection, {
+    List<ViewerEntityMixin>? Function(ViewerEntityMixin entity)? onGetChildren,
+  }) {
+    return const ActionControl(
+      allowEdit: true,
+      allowDelete: true,
+      allowDeleteLocalCopy: true,
+    );
+  }
+
+  static ActionControl onGetMediaActionControl(
+    StoreEntity media,
+    StoreEntity parentCollection,
+  ) {
+    final editSupported = switch (media.data.mediaType) {
+      CLMediaType.text => false,
+      CLMediaType.image => true,
+      CLMediaType.video => ColanPlatformSupport.isMobilePlatform,
+      CLMediaType.uri => false,
+      CLMediaType.audio => false,
+      CLMediaType.file => false,
+      CLMediaType.unknown => false,
+    };
+
+    return ActionControl(
+      allowEdit: editSupported,
+      allowDelete: true,
+      allowMove: true,
+      allowShare: true,
+      allowPin: ColanPlatformSupport.isMobilePlatform,
+      allowDuplicateMedia: true,
     );
   }
 }

@@ -1,3 +1,4 @@
+import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:colan_services/services/media_view_service/preview/media_preview_service.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
@@ -64,7 +65,7 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
         return [];
       },
       // Wizard don't use context menu
-      contextMenuBuilder: (context, list) => CLContextMenu.empty(),
+      contextMenuBuilder: (context, list) => EntityContextMenu.empty(),
       onSelectionChanged: onSelectionChanged == null
           ? null
           : (items) => onSelectionChanged
