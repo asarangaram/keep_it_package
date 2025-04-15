@@ -10,8 +10,12 @@ extension EntityGrouper on List<ViewerEntityMixin> {
     for (final entry in this) {
       final String formattedDate;
 
-      formattedDate = '${entry.sortDate.toDisplayFormat(dataOnly: true)} '
-          '(upload date)';
+      if (entry.createDate != null) {
+        formattedDate = entry.createDate!.toDisplayFormat(dataOnly: true);
+      } else {
+        formattedDate = '${entry.updatedDate.toDisplayFormat(dataOnly: true)} '
+            '(upload date)';
+      }
 
       if (!filterredMedia.containsKey(formattedDate)) {
         filterredMedia[formattedDate] = [];

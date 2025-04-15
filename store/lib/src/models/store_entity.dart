@@ -143,7 +143,9 @@ class StoreEntity implements ViewerEntityMixin {
   bool get isCollection => data.isCollection;
 
   @override
-  DateTime get sortDate => data.createDate ?? data.updatedDate;
+  DateTime? get createDate => data.createDate;
+  @override
+  DateTime get updatedDate => data.updatedDate;
 
   @override
   int? get parentId => data.parentId;

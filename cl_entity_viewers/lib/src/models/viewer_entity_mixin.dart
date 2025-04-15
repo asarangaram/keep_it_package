@@ -6,7 +6,8 @@ import 'gallery_group.dart'; */
 abstract class ViewerEntityMixin {
   int? get id;
   bool get isCollection;
-  DateTime get sortDate;
+  DateTime? get createDate;
+  DateTime get updatedDate;
   int? get parentId;
   Uri? get mediaUri;
   Uri? get previewUri;
