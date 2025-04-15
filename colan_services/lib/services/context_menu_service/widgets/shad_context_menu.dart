@@ -1,12 +1,13 @@
 import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../models/context_menu_items.dart';
 
-class CLBasicContextMenu extends StatelessWidget {
+class CLBasicContextMenu extends ConsumerWidget {
   const CLBasicContextMenu({
     required this.viewIdentifier,
     required this.child,
@@ -20,7 +21,7 @@ class CLBasicContextMenu extends StatelessWidget {
   final EntityContextMenu? contextMenu;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final textStyle = ShadTheme.of(context).textTheme.small;
     if (contextMenu == null) {
       return GestureDetector(
@@ -51,28 +52,7 @@ class CLBasicContextMenu extends StatelessWidget {
         const Divider(
           height: 8,
         ),
-        GetSelectionMode(
-          viewIdentifier: viewIdentifier,
-          builder: ({
-            required onUpdateSelectionmode,
-            required tabIdentifier,
-            required selectionMode,
-          }) {
-            return ShadContextMenuItem(
-              leading: SizedBox.square(
-                dimension: 16,
-                child: Center(
-                  child: Icon(
-                    selectionMode ? clIcons.selected : clIcons.deselected,
-                  ),
-                ),
-              ),
-              enabled: !selectionMode,
-              onPressed: () => onUpdateSelectionmode(enable: true),
-              child: const Text('Select'),
-            );
-          },
-        ),
+        SelectMenuItem(viewIdentifier: viewIdentifier),
         const Divider(
           height: 8,
         ),
@@ -112,6 +92,41 @@ class CLBasicContextMenu extends StatelessWidget {
         onTap: onTap,
         child: child,
       ),
+    );
+  }
+}
+
+class SelectMenuItem extends ConsumerWidget {
+  const SelectMenuItem({
+    required this.viewIdentifier,
+    super.key,
+  });
+
+  final ViewIdentifier viewIdentifier;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return GetSelectionMode(
+      viewIdentifier: viewIdentifier,
+      builder: ({
+        required void Function({required bool enable}) onUpdateSelectionmode,
+        required bool selectionMode,
+        required TabIdentifier tabIdentifier,
+      }) {
+        return ShadContextMenuItem(
+          leading: SizedBox.square(
+            dimension: 16,
+            child: Center(
+              child: Icon(
+                selectionMode ? clIcons.selected : clIcons.deselected,
+              ),
+            ),
+          ),
+          enabled: !selectionMode,
+          onPressed: () => onUpdateSelectionmode(enable: true),
+          child: const Text('Select'),
+        );
+      },
     );
   }
 }

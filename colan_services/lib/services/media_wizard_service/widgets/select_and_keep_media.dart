@@ -5,6 +5,7 @@ import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/keep_it_state.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
 import '../../basic_page_service/widgets/dialogs.dart';
@@ -364,5 +365,35 @@ class KeepWithProgress extends StatelessWidget {
     }
     yield const Progress(fractCompleted: 1, currentItem: 'All items are moved');
     await onDone(mediaMultiple: updatedItems);
+  }
+}
+
+class SelectionControlIcon extends ConsumerWidget {
+  const SelectionControlIcon({required this.viewIdentifier, super.key});
+
+  final ViewIdentifier viewIdentifier;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return GetSelectionMode(
+      viewIdentifier: viewIdentifier,
+      builder: ({
+        required void Function({required bool enable}) onUpdateSelectionmode,
+        required bool selectionMode,
+        required TabIdentifier tabIdentifier,
+      }) {
+        if (tabIdentifier.tabId != 'Media') {
+          return const SizedBox.shrink();
+        } else {
+          return ShadButton.ghost(
+            padding: const EdgeInsets.only(right: 8),
+            onPressed: () {
+              onUpdateSelectionmode(enable: !selectionMode);
+            },
+            child: const Icon(LucideIcons.listChecks),
+          );
+        }
+      },
+    );
   }
 }

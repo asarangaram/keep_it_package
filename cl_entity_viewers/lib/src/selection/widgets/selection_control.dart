@@ -4,16 +4,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../../models/cl_context_menu.dart';
+import '../../draggable_menu/providers/menu_position.dart';
+import '../../gallery_grid_view/models/tab_identifier.dart';
+import '../../models/cl_context_menu.dart';
 
-import '../../../models/selector.dart';
-import '../../../models/tab_identifier.dart';
-import '../../../models/viewer_entity_mixin.dart';
-import '../../builders/get_selection_control.dart';
-import '../../builders/get_selection_mode.dart';
-import 'widgets/selectable_item.dart';
-import 'widgets/selectable_label.dart';
-import 'widgets/selection_count.dart';
+import '../models/selector.dart';
+
+import '../../models/viewer_entity_mixin.dart';
+
+import '../providers/select_mode.dart';
+import '../providers/selector.dart';
+import '../../gallery_grid_view/providers/tap_state.dart';
+import 'selectable_item.dart';
+import 'selectable_label.dart';
+import 'selection_count.dart';
 
 class SelectionControl extends ConsumerWidget {
   const SelectionControl({
@@ -69,60 +73,39 @@ class SelectionControl extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return GetSelectionMode(
-      viewIdentifier: viewIdentifier,
-      builder: ({
-        required onUpdateSelectionmode,
-        required tabIdentifier,
-        required selectionMode,
-      }) {
-        if (!selectionMode) {
-          return builder(
-            items: incoming,
-            itemBuilder: itemBuilder,
-            labelBuilder: labelBuilder,
-            bannersBuilder: bannersBuilder,
-          );
-        }
-        return GetSelectionControl(
-          incoming: incoming,
-          onSelectionChanged: onSelectionChanged,
-          builder: (selector, {required onUpdateSelection}) {
-            return SelectionContol0(
-              tabIdentifier: tabIdentifier,
-              selector: selector,
-              builder: builder,
-              itemBuilder: itemBuilder,
-              labelBuilder: labelBuilder,
-              contextMenuOf: contextMenuOf,
-              onSelectionChanged: onSelectionChanged,
-              onUpdateSelection: onUpdateSelection,
-              onDone: () {
-                onUpdateSelectionmode(enable: !selectionMode);
-              },
-            );
-          },
-        );
-      },
+    final currentTab = ref.watch(currTabProvider(viewIdentifier));
+    final tabIdentifier =
+        TabIdentifier(view: viewIdentifier, tabId: currentTab);
+    return ProviderScope(
+      overrides: [
+        selectorProvider.overrideWith((ref) => SelectorNotifier(incoming)),
+        menuPositionNotifierProvider
+            .overrideWith((ref) => MenuPositionNotifier()),
+      ],
+      child: SelectionContol0(
+        tabIdentifier: tabIdentifier,
+        builder: builder,
+        itemBuilder: itemBuilder,
+        labelBuilder: labelBuilder,
+        contextMenuOf: contextMenuOf,
+        onSelectionChanged: onSelectionChanged,
+      ),
     );
   }
 }
 
-class SelectionContol0 extends StatelessWidget {
+class SelectionContol0 extends ConsumerWidget {
   const SelectionContol0({
     required this.tabIdentifier,
-    required this.selector,
     required this.builder,
     required this.itemBuilder,
     required this.labelBuilder,
     required this.contextMenuOf,
     required this.onSelectionChanged,
-    required this.onUpdateSelection,
-    required this.onDone,
     super.key,
   });
   final TabIdentifier tabIdentifier;
-  final CLSelector selector;
+
   final Widget Function(
     BuildContext,
     ViewerEntityMixin,
@@ -153,12 +136,13 @@ class SelectionContol0 extends StatelessWidget {
   final CLContextMenu Function(BuildContext, List<ViewerEntityMixin>)?
       contextMenuOf;
   final void Function(List<ViewerEntityMixin>)? onSelectionChanged;
-  final void Function(List<ViewerEntityMixin>? candidates, {bool? deselect})
-      onUpdateSelection;
-  final void Function() onDone;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final selector = ref.watch(selectorProvider);
+    ref.listen(selectorProvider, (prev, curr) {
+      onSelectionChanged?.call(curr.items.toList());
+    });
     final incoming = selector.entities;
 
     return builder(
@@ -167,72 +151,51 @@ class SelectionContol0 extends StatelessWidget {
         context,
         item,
       ) {
-        final itemWidget = itemBuilder(
-          context,
-          item,
-        );
-
         return SelectableItem(
-          isSelected:
-              selector.isSelected([item]) != SelectionStatus.selectedNone,
-          onTap: () {
-            onUpdateSelection([item]);
-          },
-          child: itemWidget,
+          tabIdentifier: tabIdentifier,
+          item: item,
+          itemBuilder: itemBuilder,
         );
       },
       labelBuilder: (context, galleryMap, gallery) {
-        final labelWidget = labelBuilder(context, galleryMap, gallery);
-        if (labelWidget == null) return const SizedBox.shrink();
-        final candidates =
-            galleryMap.getEntitiesByGroup(gallery.groupIdentifier).toList();
         return SelectableLabel(
-          selectionStatus: selector.isSelected(
-            candidates,
-          ),
-          onSelect: () {
-            onUpdateSelection(
-              candidates,
-            );
-          },
-          child: labelWidget,
+          labelBuilder: labelBuilder,
+          gallery: gallery,
+          galleryMap: galleryMap,
         );
       },
       bannersBuilder: (context, galleryMap) {
         return [
           SelectionBanner(
-            onClose: onDone,
+            tabIdentifier: tabIdentifier,
             selector: selector,
             galleryMap: galleryMap,
-            onUpdateSelection: onUpdateSelection,
           ),
         ];
       },
-      draggableMenuBuilder: selector.items.isNotEmpty
-          ? contextMenuOf
-              ?.call(context, selector.items.toList())
-              .draggableMenuBuilder(context, onDone)
+      draggableMenuBuilder: selector.items.isNotEmpty && contextMenuOf != null
+          ? contextMenuOf!(context, selector.items.toList())
+              .draggableMenuBuilder(context,
+                  ref.read(selectModeProvider(tabIdentifier).notifier).disable)
           : null,
     );
   }
 }
 
-class SelectionBanner extends StatelessWidget {
+class SelectionBanner extends ConsumerWidget {
   const SelectionBanner({
-    required this.onUpdateSelection,
     required this.selector,
-    required this.onClose,
+    required this.tabIdentifier,
     super.key,
     this.galleryMap = const [],
   });
   final CLSelector selector;
   final List<ViewerEntityGroup> galleryMap;
-  final void Function(List<ViewerEntityMixin>? candidates, {bool? deselect})
-      onUpdateSelection;
-  final VoidCallback? onClose;
+
+  final TabIdentifier tabIdentifier;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final allCount = selector.entities.length;
     final selectedInAllCount = selector.count;
     final currentItems = galleryMap.getEntities.toList();
@@ -246,7 +209,7 @@ class SelectionBanner extends StatelessWidget {
     return SelectionCountView(
       buttonLabel: selectionStatusOnVisible ? 'Select All' : 'Select None',
       onPressed: () {
-        onUpdateSelection(currentItems);
+        ref.read(selectorProvider.notifier).updateSelection(currentItems);
       },
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -270,7 +233,9 @@ class SelectionBanner extends StatelessWidget {
                       ),
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
-                          onUpdateSelection(selectedInVisible, deselect: true);
+                          ref.read(selectorProvider.notifier).updateSelection(
+                              selectedInVisible,
+                              deselect: true);
                         },
                     ),
                   ],
@@ -291,50 +256,24 @@ class SelectionBanner extends StatelessWidget {
                         decoration: TextDecoration.underline,
                       ),
                       recognizer: TapGestureRecognizer()
-                        ..onTap = () => onUpdateSelection(null),
+                        ..onTap = () => ref
+                            .read(selectorProvider.notifier)
+                            .updateSelection(null),
                     ),
                   ],
                 ),
               ),
-          ] else if (onClose != null)
+          ] else
             ShadButton.secondary(
-              onPressed: onClose,
+              onPressed: ref
+                  .read(selectModeProvider(tabIdentifier).notifier)
+                  .disable(),
               child: const Text(
                 'Done',
               ),
             ),
         ],
       ),
-    );
-  }
-}
-
-class SelectionControlIcon extends ConsumerWidget {
-  const SelectionControlIcon({required this.viewIdentifier, super.key});
-
-  final ViewIdentifier viewIdentifier;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return GetSelectionMode(
-      viewIdentifier: viewIdentifier,
-      builder: ({
-        required onUpdateSelectionmode,
-        required tabIdentifier,
-        required selectionMode,
-      }) {
-        if (tabIdentifier.tabId != 'Media') {
-          return const SizedBox.shrink();
-        } else {
-          return ShadButton.ghost(
-            padding: const EdgeInsets.only(right: 8),
-            onPressed: () {
-              onUpdateSelectionmode(enable: !selectionMode);
-            },
-            child: const Icon(LucideIcons.listChecks),
-          );
-        }
-      },
     );
   }
 }

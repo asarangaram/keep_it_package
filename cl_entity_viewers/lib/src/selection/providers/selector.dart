@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../models/selector.dart';
+import '../models/selector.dart';
 import '../../models/viewer_entity_mixin.dart';
 
 class SelectorNotifier extends StateNotifier<CLSelector> {
@@ -25,6 +25,18 @@ class SelectorNotifier extends StateNotifier<CLSelector> {
 
   void clear() {
     state = state.clear();
+  }
+
+  void updateSelection(candidates, {bool? deselect}) {
+    if (candidates == null) {
+      clear();
+    } else if (deselect == null) {
+      toggle(candidates);
+    } else if (deselect) {
+      this.deselect(candidates);
+    } else {
+      select(candidates);
+    }
   }
 }
 

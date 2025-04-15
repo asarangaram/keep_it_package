@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../models/tab_identifier.dart';
-import '../providers/tap_state.dart';
+import '../../gallery_grid_view/models/tab_identifier.dart';
+import '../../gallery_grid_view/providers/tap_state.dart';
+import '../providers/select_mode.dart';
 
 class GetSelectionMode extends ConsumerWidget {
   const GetSelectionMode({
@@ -26,7 +27,11 @@ class GetSelectionMode extends ConsumerWidget {
       selectionMode: selectionMode,
       tabIdentifier: tabIdentifier,
       onUpdateSelectionmode: ({required enable}) {
-        ref.read(selectModeProvider(tabIdentifier).notifier).state = enable;
+        if (enable) {
+          ref.read(selectModeProvider(tabIdentifier).notifier).enable();
+        } else {
+          ref.read(selectModeProvider(tabIdentifier).notifier).disable();
+        }
       },
     );
   }

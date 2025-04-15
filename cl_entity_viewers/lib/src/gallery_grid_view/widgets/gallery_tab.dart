@@ -2,9 +2,10 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/labeled_entity_groups.dart';
-import '../../models/tab_identifier.dart';
+import '../models/tab_identifier.dart';
 import '../../models/viewer_entity_mixin.dart';
-import '../providers/tap_state.dart';
+
+import '../providers/scroll_position.dart';
 import 'cl_grid.dart';
 
 class CLEntityGalleryTab extends ConsumerStatefulWidget {
