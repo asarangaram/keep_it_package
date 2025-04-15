@@ -38,6 +38,9 @@ class KeepItBottomBar extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Expanded(
+                child: Container(),
+              ),
+              Expanded(
                 child: Center(
                   child: ShadButton.secondary(
                     icon: Icon(
