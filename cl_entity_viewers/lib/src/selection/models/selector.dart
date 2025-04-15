@@ -1,7 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 
-import '../../models/viewer_entity_mixin.dart';
+import '../../entity/models/viewer_entity_mixin.dart';
 
 enum SelectionStatus { selectedNone, selectedPartial, selectedAll }
 
