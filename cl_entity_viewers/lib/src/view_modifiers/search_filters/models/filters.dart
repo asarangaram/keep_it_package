@@ -1,7 +1,7 @@
-import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 
+import '../../merged/models/view_modifier.dart';
 import 'filter/base_filter.dart';
 import 'filter/string_filter.dart';
 

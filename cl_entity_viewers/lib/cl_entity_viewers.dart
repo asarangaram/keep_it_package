@@ -23,3 +23,13 @@ export 'src/view_modifiers/media_grouper/models/media_grouper.dart'
 export 'src/view_modifiers/media_grouper/models/gallery_group.dart'
     show EntityGrouper;
 export 'src/view_modifiers/merged/models/view_modifier.dart' show ViewModifier;
+export 'src/view_modifiers/search_filters/builders/get_filtered_media.dart'
+    show GetFilterredMedia;
+export 'src/view_modifiers/search_filters/widgets/filters_view.dart'
+    show TextFilterBox;
+export 'src/view_modifiers/search_filters/builders/get_filters.dart'
+    show GetFilters;
+export 'src/view_modifiers/search_filters/models/filters.dart'
+    show SearchFilters;
+export 'src/view_modifiers/search_filters/widgets/filters_view.dart'
+    show FiltersView;

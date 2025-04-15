@@ -1,9 +1,10 @@
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:keep_it_state/keep_it_state.dart';
-import 'package:shadcn_ui/shadcn_ui.dart';
-import 'package:store/store.dart';
 
+import 'package:shadcn_ui/shadcn_ui.dart';
+
+import '../../../entity/models/viewer_entity_mixin.dart';
 import '../models/filter/base_filter.dart';
 import '../models/filter/string_filter.dart';
 import '../providers/media_filters.dart';
@@ -14,7 +15,7 @@ class TextFilterView extends ConsumerStatefulWidget {
     required this.parentIdentifier,
     super.key,
   });
-  final CLFilter<StoreEntity> filter;
+  final CLFilter<ViewerEntityMixin> filter;
   final String parentIdentifier;
 
   @override
@@ -30,7 +31,7 @@ class _TextFilterViewState extends ConsumerState<TextFilterView> {
       throw Exception('filter is not EnumFilter');
     }
     controller = TextEditingController(
-      text: (widget.filter as StringFilter<StoreEntity>).query,
+      text: (widget.filter as StringFilter<ViewerEntityMixin>).query,
     );
     controller.addListener(updateFilter);
     super.initState();

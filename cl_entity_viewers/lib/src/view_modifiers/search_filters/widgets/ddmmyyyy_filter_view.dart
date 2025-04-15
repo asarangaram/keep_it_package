@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
-import 'package:store/store.dart';
+
 import 'package:yet_another_date_picker/yet_another_date_picker.dart';
 
+import '../../../entity/models/viewer_entity_mixin.dart';
 import '../models/filter/base_filter.dart';
 import '../models/filter/ddmmyyyy_filter.dart';
 import '../providers/media_filters.dart';
@@ -14,13 +15,13 @@ class DDMMYYYYFilterViewRow extends ConsumerWidget {
     required this.identifier,
     super.key,
   });
-  final CLFilter<StoreEntity> filter;
+  final CLFilter<ViewerEntityMixin> filter;
   final String identifier;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final defaultDate = DateTime.now();
-    final filter = this.filter as DDMMYYYYFilter<StoreEntity>;
+    final filter = this.filter as DDMMYYYYFilter<ViewerEntityMixin>;
 
     return ShadCheckbox(
       value: filter.enabled,

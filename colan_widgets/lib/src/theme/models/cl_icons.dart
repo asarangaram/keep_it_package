@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:keep_it_state/keep_it_state.dart';
+
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+
+import '../../models/cl_scale_type.dart';
 
 extension IconOnIconData on IconData {
   Widget iconFormatted({

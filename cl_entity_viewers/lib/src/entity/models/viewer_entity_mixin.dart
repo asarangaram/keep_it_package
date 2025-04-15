@@ -3,6 +3,8 @@ import 'package:store/src/extensions/ext_list.dart';
 
 import 'gallery_group.dart'; */
 
+import 'package:cl_media_tools/cl_media_tools.dart';
+
 abstract class ViewerEntityMixin {
   int? get id;
   bool get isCollection;
@@ -11,6 +13,8 @@ abstract class ViewerEntityMixin {
   int? get parentId;
   Uri? get mediaUri;
   Uri? get previewUri;
+  String get searchableTexts;
+  CLMediaType get mediaType;
 }
 
 class ViewerEntityGroup<T extends ViewerEntityMixin> {

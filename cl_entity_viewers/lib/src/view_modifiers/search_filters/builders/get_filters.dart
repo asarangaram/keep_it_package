@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:store/store.dart';
 
+import '../../../entity/models/viewer_entity_mixin.dart';
 import '../models/filters.dart';
 import '../providers/media_filters.dart';
 
@@ -12,7 +12,7 @@ class GetFilters extends ConsumerWidget {
     super.key,
   });
   final String identifier;
-  final Widget Function(SearchFilters<StoreEntity> filters) builder;
+  final Widget Function(SearchFilters<ViewerEntityMixin> filters) builder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

@@ -1,9 +1,9 @@
-import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import '../../../gallery_grid_view/models/tab_identifier.dart';
 import '../models/media_grouper.dart';
 import '../providers/media_grouper.dart';
 

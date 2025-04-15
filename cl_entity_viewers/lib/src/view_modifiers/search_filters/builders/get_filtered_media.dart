@@ -1,9 +1,9 @@
-import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
-import 'package:store/store.dart';
 
+import '../../../entity/models/viewer_entity_mixin.dart';
+import '../../../gallery_grid_view/models/tab_identifier.dart';
 import '../providers/media_filters.dart';
 
 class GetFilterredMedia extends ConsumerWidget {
@@ -33,20 +33,14 @@ class GetFilterredMedia extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final List<StoreEntity> filterred;
+    final List<ViewerEntityMixin> filterred;
     final List<Widget> banners;
     if (incoming.isEmpty) {
       filterred = [];
       banners = [];
     } else {
-      if ((incoming.first.runtimeType == StoreEntity &&
-              (incoming.first as StoreEntity).isCollection) ||
-          disabled) {
-        return builder(incoming, bannersBuilder: (context, galleryMap) => []);
-      }
-      final medias = incoming.map((e) => e as StoreEntity).toList();
       filterred =
-          ref.watch(filterredMediaProvider(MapEntry(viewIdentifier, medias)));
+          ref.watch(filterredMediaProvider(MapEntry(viewIdentifier, incoming)));
 
       final topMsg = (filterred.length < incoming.length)
           ? ' ${filterred.length} out of '

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
-import 'package:store/store.dart';
 
+import '../../../entity/models/viewer_entity_mixin.dart';
 import '../models/filter/base_filter.dart';
 import '../providers/media_filters.dart';
 import 'ddmmyyyy_filter_view.dart';
@@ -32,7 +32,7 @@ class FiltersView extends ConsumerStatefulWidget {
     super.key,
     this.filters,
   });
-  final List<CLFilter<StoreEntity>>? filters;
+  final List<CLFilter<ViewerEntityMixin>>? filters;
   final String parentIdentifier;
 
   @override
