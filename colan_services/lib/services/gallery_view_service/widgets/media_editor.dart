@@ -152,15 +152,15 @@ class StatefulMediaEditor extends StatefulWidget {
 class _StatefulMediaEditorState extends State<StatefulMediaEditor> {
   final formKey = GlobalKey<ShadFormState>();
   Map<Object, dynamic> formValue = {};
-  late final TextEditingController nameController;
-  late final TextEditingController refController;
+  late final TextEditingController labelController;
+  late final TextEditingController descriptionController;
 
   @override
   void initState() {
-    nameController = TextEditingController();
-    refController = TextEditingController();
-    nameController.text = widget.media.data.label ?? '';
-    refController.text = widget.media.data.description ?? '';
+    labelController = TextEditingController();
+    descriptionController = TextEditingController();
+    labelController.text = widget.media.data.label ?? '';
+    descriptionController.text = widget.media.data.description ?? '';
     super.initState();
   }
 
@@ -171,8 +171,8 @@ class _StatefulMediaEditorState extends State<StatefulMediaEditor> {
 
   @override
   void dispose() {
-    nameController.dispose();
-    refController.dispose();
+    labelController.dispose();
+    descriptionController.dispose();
     super.dispose();
   }
 
@@ -197,20 +197,21 @@ class _StatefulMediaEditorState extends State<StatefulMediaEditor> {
             onPressed: () async {
               if (formKey.currentState!.saveAndValidate()) {
                 formValue = formKey.currentState!.value;
-                final name = formValue['name'] as String;
-                final ref = formValue['ref'] as String?;
-                final updated = await widget.media.updateWith(
+                final name = formValue['label'] as String;
+                final description = formValue['description'] as String?;
+                final updated = await (await widget.media.updateWith(
                   label: () => name,
-                  description: () => ref == null
+                  description: () => description == null
                       ? null
-                      : ref.isEmpty
+                      : description.isEmpty
                           ? null
-                          : ref,
-                );
-                if (updated != null) {
-                  widget.onSubmit(updated);
+                          : description,
+                ))
+                    ?.dbSave();
+                if (updated == null) {
+                  throw Exception('updated should not be null!');
                 }
-                throw Exception('updated should not be null!');
+                widget.onSubmit(updated);
               }
             },
           ),
@@ -230,8 +231,8 @@ class _StatefulMediaEditorState extends State<StatefulMediaEditor> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     ShadInputFormField(
-                      controller: nameController,
-                      id: 'name',
+                      controller: labelController,
+                      id: 'label',
                       // prefix: const Icon(LucideIcons.tag),
                       label: const Text(' Media Name'),
 
@@ -247,21 +248,23 @@ class _StatefulMediaEditorState extends State<StatefulMediaEditor> {
                         ),
                       ],
                       suffix: ShadButton.ghost(
-                        onPressed: nameController.clear,
+                        onPressed: labelController.clear,
                         child: const Icon(LucideIcons.delete),
                       ),
+                      padding: EdgeInsets.zero,
+                      inputPadding: const EdgeInsets.all(4),
                     ),
                     ShadInputFormField(
-                      id: 'ref',
+                      id: 'description',
                       // prefix: const Icon(LucideIcons.tag),
-                      label: const Text(' Reference'),
-                      controller: refController,
-                      placeholder: const Text('Reference Link'),
-                      validator: isValidUrl,
+                      label: const Text(' Description'),
+                      controller: descriptionController,
+                      placeholder: const Text('Write description'),
                       suffix: ShadButton.ghost(
-                        onPressed: refController.clear,
+                        onPressed: descriptionController.clear,
                         child: const Icon(LucideIcons.delete),
                       ),
+                      maxLines: 3,
                     ),
                     if (kDebugMode)
                       MapInfo(widget.media.data.toMapForDisplay()),
