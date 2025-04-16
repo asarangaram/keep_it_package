@@ -14,7 +14,10 @@ class StaleMediaIndicatorService extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return GetStaleMedia(
+    return GetEntities(
+      isHidden: true,
+      isCollection: false,
+      parentId: 0,
       storeIdentity: storeIdentity,
       errorBuilder: (p0, p1) => const SizedBox.shrink(),
       loadingBuilder: () => CLLoader.widget(
