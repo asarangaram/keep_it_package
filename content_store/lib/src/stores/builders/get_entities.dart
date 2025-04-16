@@ -28,7 +28,7 @@ class GetEntities extends ConsumerWidget {
       {
         'isHidden': 0,
         'isDeleted': 0,
-        if (parentId != null) 'parentId': parentId,
+        'parentId': parentId,
         if (isCollection != null) 'isCollection': isCollection! ? 1 : 0,
       },
     );
