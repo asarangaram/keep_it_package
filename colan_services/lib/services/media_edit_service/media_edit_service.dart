@@ -27,9 +27,9 @@ class MediaEditService extends ConsumerWidget {
       backgroundColor: CLTheme.of(context).colors.editorBackgroundColor,
       child: (mediaId == null)
           ? BasicPageService.nothingToShow(message: 'No Media Provided')
-          : GetMedia(
+          : GetEntity(
               storeIdentity: storeIdentity,
-              id: mediaId!,
+              id: mediaId,
               errorBuilder: (_, __) {
                 throw UnimplementedError('errorBuilder');
               },

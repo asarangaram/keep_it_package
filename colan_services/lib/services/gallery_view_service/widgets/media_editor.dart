@@ -100,7 +100,7 @@ class MediaMetadataEditor extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
-      child: GetMedia(
+      child: GetEntity(
         storeIdentity: storeIdentity,
         id: mediaId,
         errorBuilder: errorBuilder,
@@ -113,18 +113,10 @@ class MediaMetadataEditor extends StatelessWidget {
               return errorBuilder(e, st);
             }
           }
-          return GetCollection(
-            storeIdentity: storeIdentity,
-            id: media.parentId,
-            errorBuilder: errorBuilder,
-            loadingBuilder: () => loading(context, 'GetCollection'),
-            builder: (collection) {
-              return StatefulMediaEditor(
-                media: media,
-                onCancel: onCancel,
-                onSubmit: onSubmit,
-              );
-            },
+          return StatefulMediaEditor(
+            media: media,
+            onCancel: onCancel,
+            onSubmit: onSubmit,
           );
         },
       ),
