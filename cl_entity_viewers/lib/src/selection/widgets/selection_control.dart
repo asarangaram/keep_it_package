@@ -4,12 +4,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../draggable_menu/providers/menu_position.dart';
 import '../../entity/models/cl_context_menu.dart';
 import '../../entity/models/viewer_entity_mixin.dart';
 import '../../gallery_grid_view/models/tab_identifier.dart';
 import '../../gallery_grid_view/widgets/gallery_view.dart';
-import '../../view_modifiers/search_filters/builders/get_filtered_media.dart';
+
+import '../../view_modifiers/search_filters/providers/media_filters.dart';
 import '../models/selector.dart';
 
 import '../providers/select_mode.dart';
@@ -18,69 +18,11 @@ import 'selectable_item.dart';
 import 'selectable_label.dart';
 import 'selection_count.dart';
 
-class SelectionControl extends ConsumerWidget {
-  const SelectionControl(
-      {required this.tabIdentifier,
-      required this.incoming,
-      required this.itemBuilder,
-      required this.labelBuilder,
-      required this.bannersBuilder,
-      required this.contextMenuOf,
-      required this.onSelectionChanged,
-      super.key,
-      this.filtersDisabled = false,
-      required this.whenEmpty});
-  final TabIdentifier tabIdentifier;
-  final List<ViewerEntityMixin> incoming;
-  final Widget Function(
-    BuildContext,
-    ViewerEntityMixin,
-  ) itemBuilder;
-  final Widget? Function(
-    BuildContext context,
-    List<ViewerEntityGroup<ViewerEntityMixin>> galleryMap,
-    ViewerEntityGroup<ViewerEntityMixin> gallery,
-  ) labelBuilder;
-  final List<Widget> Function(
-    BuildContext context,
-    List<ViewerEntityGroup<ViewerEntityMixin>> galleryMap,
-  ) bannersBuilder;
-
-  final CLContextMenu Function(BuildContext, List<ViewerEntityMixin>)?
-      contextMenuOf;
-
-  final void Function(List<ViewerEntityMixin>)? onSelectionChanged;
-
-  final bool filtersDisabled;
-  final Widget whenEmpty;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return ProviderScope(
-      overrides: [
-        selectorProvider.overrideWith((ref) => SelectorNotifier(incoming)),
-        menuPositionNotifierProvider
-            .overrideWith((ref) => MenuPositionNotifier()),
-      ],
-      child: SelectionContol0(
-        tabIdentifier: tabIdentifier,
-        itemBuilder: itemBuilder,
-        labelBuilder: labelBuilder,
-        contextMenuOf: contextMenuOf,
-        onSelectionChanged: onSelectionChanged,
-        filtersDisabled: filtersDisabled,
-        whenEmpty: whenEmpty,
-      ),
-    );
-  }
-}
-
-class SelectionContol0 extends ConsumerWidget {
-  const SelectionContol0(
+class SelectionContol extends ConsumerWidget {
+  const SelectionContol(
       {required this.tabIdentifier,
       required this.itemBuilder,
-      required this.labelBuilder,
-      required this.contextMenuOf,
+      required this.contextMenuBuilder,
       required this.onSelectionChanged,
       super.key,
       required this.filtersDisabled,
@@ -93,14 +35,9 @@ class SelectionContol0 extends ConsumerWidget {
     BuildContext,
     ViewerEntityMixin,
   ) itemBuilder;
-  final Widget? Function(
-    BuildContext context,
-    List<ViewerEntityGroup<ViewerEntityMixin>> galleryMap,
-    ViewerEntityGroup<ViewerEntityMixin> gallery,
-  ) labelBuilder;
 
   final CLContextMenu Function(BuildContext, List<ViewerEntityMixin>)?
-      contextMenuOf;
+      contextMenuBuilder;
   final void Function(List<ViewerEntityMixin>)? onSelectionChanged;
 
   @override
@@ -111,61 +48,55 @@ class SelectionContol0 extends ConsumerWidget {
     });
     final incoming = selector.entities;
 
-    return GetFilterredMedia(
+    final filterred =
+        ref.watch(filterredMediaProvider(MapEntry(tabIdentifier, incoming)));
+    return CLGalleryGridView(
       tabIdentifier: tabIdentifier,
-      incoming: incoming,
+      incoming: filterred,
       bannersBuilder: (context, galleryMap) {
         return [
-          SelectionBanner(
-            tabIdentifier: tabIdentifier,
-            selector: selector,
-            galleryMap: galleryMap,
-          ),
+          if (incoming.isNotEmpty && filterred.length < incoming.length)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 2),
+              child: Container(
+                color: ShadTheme.of(context).colorScheme.mutedForeground,
+                padding: const EdgeInsets.symmetric(vertical: 2),
+                child: Center(
+                  child: Text(
+                    ' ${filterred.length} out of '
+                    '${incoming.length} matches',
+                    style: ShadTheme.of(context).textTheme.small.copyWith(
+                        color: ShadTheme.of(context).colorScheme.muted),
+                  ),
+                ),
+              ),
+            ),
+          if (incoming.isNotEmpty)
+            SelectionBanner(
+              tabIdentifier: tabIdentifier,
+              selector: selector,
+              galleryMap: galleryMap,
+            ),
         ];
       },
-      disabled: filtersDisabled,
-      builder: (
-        List<ViewerEntityMixin> filterred, {
-        required List<Widget> Function(
-          BuildContext,
-          List<ViewerEntityGroup<ViewerEntityMixin>>,
-        ) bannersBuilder,
-      }) {
-        return CLGalleryGridView(
-          tabIdentifier: tabIdentifier,
-          incoming: filterred,
-          bannersBuilder: bannersBuilder,
-          labelBuilder: (context, galleryMap, gallery) {
-            return SelectableLabel(
-              tabIdentifier: tabIdentifier,
-              labelBuilder: labelBuilder,
-              gallery: gallery,
-              galleryMap: galleryMap,
-            );
-          },
-          itemBuilder: (
-            context,
-            item,
-          ) {
-            return SelectableItem(
-              tabIdentifier: tabIdentifier,
-              item: item,
-              itemBuilder: itemBuilder,
-            );
-          },
-          columns: 3,
-          draggableMenuBuilder:
-              selector.items.isNotEmpty && contextMenuOf != null
-                  ? contextMenuOf!(context, selector.items.toList())
-                      .draggableMenuBuilder(
-                          context,
-                          ref
-                              .read(selectModeProvider(tabIdentifier).notifier)
-                              .disable)
-                  : null,
-          whenEmpty: whenEmpty,
-        );
-      },
+      labelBuilder: (context, galleryMap, gallery) => SelectableLabel(
+        tabIdentifier: tabIdentifier,
+        gallery: gallery,
+        galleryMap: galleryMap,
+      ),
+      itemBuilder: (context, item) => SelectableItem(
+        tabIdentifier: tabIdentifier,
+        item: item,
+        itemBuilder: itemBuilder,
+      ),
+      columns: 3,
+      draggableMenuBuilder: selector.items.isNotEmpty &&
+              contextMenuBuilder != null
+          ? contextMenuBuilder!(context, selector.items.toList())
+              .draggableMenuBuilder(context,
+                  ref.read(selectModeProvider(tabIdentifier).notifier).disable)
+          : null,
+      whenEmpty: whenEmpty,
     );
   }
 }

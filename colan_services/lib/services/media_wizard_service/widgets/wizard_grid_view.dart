@@ -48,7 +48,7 @@ class CLGalleryView extends StatelessWidget {
       tabIdentifier: TabIdentifier(view: viewIdentifier, tabId: 'Media'),
       incoming: entities,
       itemBuilder: itemBuilder,
-      contextMenuOf: contextMenuBuilder,
+      contextMenuBuilder: contextMenuBuilder,
       filtersDisabled: filterDisabled,
       onSelectionChanged: onSelectionChanged,
       bannersBuilder: bannersBuilder,

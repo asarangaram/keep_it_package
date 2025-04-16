@@ -66,7 +66,7 @@ class KeepItMainGrid extends ConsumerWidget {
                     ),
                 ];
               },
-              contextMenuOf: (context, entities) =>
+              contextMenuBuilder: (context, entities) =>
                   EntityContextMenu.entitiesContextMenuBuilder(
                 context,
                 ref,

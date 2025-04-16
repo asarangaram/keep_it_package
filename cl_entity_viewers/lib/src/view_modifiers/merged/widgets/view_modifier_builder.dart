@@ -1,9 +1,11 @@
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../draggable_menu/providers/menu_position.dart';
 import '../../../entity/models/cl_context_menu.dart';
 import '../../../entity/models/viewer_entity_mixin.dart';
 import '../../../gallery_grid_view/models/tab_identifier.dart';
+import '../../../selection/providers/selector.dart';
 import '../../../selection/widgets/selection_control.dart';
 
 class ViewModifierBuilder extends StatelessWidget {
@@ -12,7 +14,7 @@ class ViewModifierBuilder extends StatelessWidget {
       required this.incoming,
       required this.bannersBuilder,
       required this.itemBuilder,
-      required this.contextMenuOf,
+      required this.contextMenuBuilder,
       required this.filtersDisabled,
       required this.onSelectionChanged,
       super.key,
@@ -27,7 +29,7 @@ class ViewModifierBuilder extends StatelessWidget {
   ) itemBuilder;
 
   final CLContextMenu Function(BuildContext, List<ViewerEntityMixin>)?
-      contextMenuOf;
+      contextMenuBuilder;
   final void Function(List<ViewerEntityMixin>)? onSelectionChanged;
   final bool filtersDisabled;
   final List<Widget> Function(
@@ -38,23 +40,20 @@ class ViewModifierBuilder extends StatelessWidget {
   final Widget whenEmpty;
   @override
   Widget build(BuildContext context) {
-    return SelectionControl(
-      tabIdentifier: tabIdentifier,
-      contextMenuOf: contextMenuOf,
-      onSelectionChanged: onSelectionChanged,
-      incoming: incoming,
-      itemBuilder: itemBuilder,
-      labelBuilder: (context, galleryMap, gallery) {
-        return gallery.label == null
-            ? null
-            : CLText.large(
-                gallery.label!,
-                textAlign: TextAlign.start,
-              );
-      },
-      bannersBuilder: bannersBuilder,
-      filtersDisabled: filtersDisabled,
-      whenEmpty: whenEmpty,
+    return ProviderScope(
+      overrides: [
+        selectorProvider.overrideWith((ref) => SelectorNotifier(incoming)),
+        menuPositionNotifierProvider
+            .overrideWith((ref) => MenuPositionNotifier()),
+      ],
+      child: SelectionContol(
+        tabIdentifier: tabIdentifier,
+        itemBuilder: itemBuilder,
+        contextMenuBuilder: contextMenuBuilder,
+        onSelectionChanged: onSelectionChanged,
+        filtersDisabled: filtersDisabled,
+        whenEmpty: whenEmpty,
+      ),
     );
   }
 }

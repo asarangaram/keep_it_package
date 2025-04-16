@@ -13,23 +13,21 @@ class SelectableLabel extends ConsumerWidget {
   const SelectableLabel({
     required this.tabIdentifier,
     super.key,
-    required this.labelBuilder,
     required this.galleryMap,
     required this.gallery,
   });
   final TabIdentifier tabIdentifier;
   final List<ViewerEntityGroup<ViewerEntityMixin>> galleryMap;
   final ViewerEntityGroup<ViewerEntityMixin> gallery;
-  final Widget? Function(
-      BuildContext,
-      List<ViewerEntityGroup<ViewerEntityMixin>>,
-      ViewerEntityGroup<ViewerEntityMixin>) labelBuilder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final labelWidget = labelBuilder(context, galleryMap, gallery);
+    if (gallery.label == null) return const SizedBox.shrink();
+    final labelWidget = CLText.large(
+      gallery.label!,
+      textAlign: TextAlign.start,
+    );
 
-    if (labelWidget == null) return const SizedBox.shrink();
     final selectionMode = ref.watch(selectModeProvider(tabIdentifier));
     if (!selectionMode) {
       return labelWidget;
