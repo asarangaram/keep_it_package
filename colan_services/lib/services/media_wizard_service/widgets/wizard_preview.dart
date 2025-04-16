@@ -61,9 +61,7 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
         debugMessage: 'GalleryView',
       ),
       errorBuilder: errorBuilder,
-      bannersBuilder: (context, galleryMap) {
-        return [];
-      },
+
       // Wizard don't use context menu
       contextMenuBuilder: (context, list) => EntityContextMenu.empty(),
       onSelectionChanged: onSelectionChanged == null

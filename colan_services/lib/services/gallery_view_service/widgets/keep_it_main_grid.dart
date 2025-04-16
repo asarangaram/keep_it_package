@@ -52,30 +52,32 @@ class KeepItMainGrid extends ConsumerWidget {
           child: RefreshIndicator(
             onRefresh: /* isSelectionMode ? null : */
                 () async => ref.read(reloadProvider.notifier).reload(),
-            child: CLGalleryGridView(
-              viewIdentifier: viewIdentifier,
-              incoming: entities,
-              filtersDisabled: false,
-              onSelectionChanged: null,
-              bannersBuilder: (context, _) {
-                return [
-                  if (parentId == null)
-                    StaleMediaIndicatorService(
-                      storeIdentity: storeIdentity,
+            child: Column(
+              children: [
+                if (parentId == null)
+                  StaleMediaIndicatorService(
+                    storeIdentity: storeIdentity,
+                  ),
+                Expanded(
+                  child: CLGalleryGridView(
+                    viewIdentifier: viewIdentifier,
+                    incoming: entities,
+                    filtersDisabled: false,
+                    onSelectionChanged: null,
+                    contextMenuBuilder: (context, entities) =>
+                        EntityContextMenu.entitiesContextMenuBuilder(
+                      context,
+                      ref,
+                      entities,
                     ),
-                ];
-              },
-              contextMenuBuilder: (context, entities) =>
-                  EntityContextMenu.entitiesContextMenuBuilder(
-                context,
-                ref,
-                entities,
-              ),
-              itemBuilder: (context, item) => EntityPreview(
-                viewIdentifier: viewIdentifier,
-                item: item,
-              ),
-              whenEmpty: const WhenEmpty(),
+                    itemBuilder: (context, item) => EntityPreview(
+                      viewIdentifier: viewIdentifier,
+                      item: item,
+                    ),
+                    whenEmpty: const WhenEmpty(),
+                  ),
+                ),
+              ],
             ),
           ),
         ),

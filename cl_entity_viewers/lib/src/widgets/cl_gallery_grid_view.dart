@@ -12,7 +12,6 @@ class CLGalleryGridView extends StatelessWidget {
   const CLGalleryGridView(
       {required this.viewIdentifier,
       required this.incoming,
-      required this.bannersBuilder,
       required this.itemBuilder,
       required this.contextMenuBuilder,
       required this.filtersDisabled,
@@ -32,10 +31,6 @@ class CLGalleryGridView extends StatelessWidget {
       contextMenuBuilder;
   final void Function(List<ViewerEntityMixin>)? onSelectionChanged;
   final bool filtersDisabled;
-  final List<Widget> Function(
-    BuildContext context,
-    List<ViewerEntityGroup<ViewerEntityMixin>> galleryMap,
-  ) bannersBuilder;
 
   final Widget whenEmpty;
   @override

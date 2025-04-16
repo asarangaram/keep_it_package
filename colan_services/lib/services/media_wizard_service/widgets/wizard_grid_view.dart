@@ -13,7 +13,6 @@ class CLGalleryView extends StatelessWidget {
     required this.loadingBuilder,
     required this.errorBuilder,
     required this.itemBuilder,
-    required this.bannersBuilder,
     required this.columns,
     required this.emptyWidget,
     required this.contextMenuBuilder,
@@ -37,10 +36,6 @@ class CLGalleryView extends StatelessWidget {
   final void Function(List<ViewerEntityMixin>)? onSelectionChanged;
   final bool filterDisabled;
   final bool viewableAsCollection;
-  final List<Widget> Function(
-    BuildContext context,
-    List<ViewerEntityGroup<ViewerEntityMixin>> galleryMap,
-  ) bannersBuilder;
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +46,6 @@ class CLGalleryView extends StatelessWidget {
       contextMenuBuilder: contextMenuBuilder,
       filtersDisabled: filterDisabled,
       onSelectionChanged: onSelectionChanged,
-      bannersBuilder: bannersBuilder,
       whenEmpty: const WhenEmpty(),
     );
   }
