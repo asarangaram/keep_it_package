@@ -8,7 +8,7 @@ import 'media_grouper.dart';
 final groupedMediaProvider = StateProvider.family<
     List<ViewerEntityGroup<ViewerEntityMixin>>,
     MapEntry<TabIdentifier, List<ViewerEntityMixin>>>((ref, mapEntry) {
-  final groupBy = ref.watch(groupMethodProvider(mapEntry.key.tabId));
+  final groupBy = ref.watch(groupMethodProvider(mapEntry.key.view.parentID));
 
   return groupBy.getGrouped(mapEntry.value);
 });

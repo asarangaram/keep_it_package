@@ -11,7 +11,7 @@ final viewModifiersProvider =
   final items = [
     ref.watch(mediaFiltersProvider(tabIdentifier.view.parentID)),
     ref.watch(
-      groupMethodProvider(tabIdentifier.tabId),
+      groupMethodProvider(tabIdentifier.view.parentID),
     ),
   ];
   return items;

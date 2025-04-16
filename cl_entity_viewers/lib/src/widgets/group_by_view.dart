@@ -19,7 +19,7 @@ class GroupByView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currValue = ref.watch(
-      groupMethodProvider(tabIdentifier.tabId),
+      groupMethodProvider(tabIdentifier.view.parentID),
     );
 
     return ShadRadioGroup<GroupTypes>(
@@ -28,7 +28,7 @@ class GroupByView extends ConsumerWidget {
         if (v != null) {
           ref
               .read(
-                groupMethodProvider(tabIdentifier.tabId).notifier,
+                groupMethodProvider(tabIdentifier.view.parentID).notifier,
               )
               .state = currValue.copyWith(method: v);
         }

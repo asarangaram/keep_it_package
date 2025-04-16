@@ -45,7 +45,7 @@ class CLGalleryView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CLGalleryGridView(
-      tabIdentifier: TabIdentifier(view: viewIdentifier, tabId: 'Media'),
+      tabIdentifier: TabIdentifier.def(viewIdentifier),
       incoming: entities,
       itemBuilder: itemBuilder,
       contextMenuBuilder: contextMenuBuilder,

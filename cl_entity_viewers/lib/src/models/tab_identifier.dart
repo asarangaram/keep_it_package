@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 
 @immutable
@@ -6,6 +7,7 @@ class ViewIdentifier {
     required this.parentID,
     required this.viewId,
   });
+
   final String parentID;
   final String viewId;
 
@@ -35,33 +37,33 @@ class ViewIdentifier {
 
 @immutable
 class TabIdentifier {
-  const TabIdentifier({
+  const TabIdentifier._({
     required this.view,
-    required this.tabId,
   });
+  factory TabIdentifier.def(ViewIdentifier view) {
+    return TabIdentifier._(view: view);
+  }
+
   final ViewIdentifier view;
-  final String tabId;
 
   TabIdentifier copyWith({
     ViewIdentifier? view,
-    String? tabId,
   }) {
-    return TabIdentifier(
+    return TabIdentifier._(
       view: view ?? this.view,
-      tabId: tabId ?? this.tabId,
     );
   }
 
   @override
-  String toString() => 'TapIdentifier(view: $view, tabId: $tabId)';
+  String toString() => 'TabIdentifier(view: $view)';
 
   @override
   bool operator ==(covariant TabIdentifier other) {
     if (identical(this, other)) return true;
 
-    return other.view == view && other.tabId == tabId;
+    return other.view == view;
   }
 
   @override
-  int get hashCode => view.hashCode ^ tabId.hashCode;
+  int get hashCode => view.hashCode;
 }

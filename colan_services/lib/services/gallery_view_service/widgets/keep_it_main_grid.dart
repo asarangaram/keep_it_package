@@ -53,8 +53,7 @@ class KeepItMainGrid extends ConsumerWidget {
             onRefresh: /* isSelectionMode ? null : */
                 () async => ref.read(reloadProvider.notifier).reload(),
             child: CLGalleryGridView(
-              tabIdentifier:
-                  TabIdentifier(view: viewIdentifier, tabId: 'Media'),
+              tabIdentifier: TabIdentifier.def(viewIdentifier),
               incoming: entities,
               filtersDisabled: false,
               onSelectionChanged: null,

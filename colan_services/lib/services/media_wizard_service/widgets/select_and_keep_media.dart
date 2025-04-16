@@ -179,7 +179,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
   @override
   Widget build(BuildContext context) {
     return GetSelectionMode(
-      tabIdentifier: TabIdentifier(view: widget.viewIdentifier, tabId: 'Media'),
+      tabIdentifier: TabIdentifier.def(widget.viewIdentifier),
       builder: ({
         required onUpdateSelectionmode,
         required selectionMode,
@@ -373,23 +373,19 @@ class SelectionControlIcon extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GetSelectionMode(
-      tabIdentifier: TabIdentifier(view: viewIdentifier, tabId: 'Media'),
+      tabIdentifier: TabIdentifier.def(viewIdentifier),
       builder: ({
         required void Function({required bool enable}) onUpdateSelectionmode,
         required bool selectionMode,
         required TabIdentifier tabIdentifier,
       }) {
-        if (tabIdentifier.tabId != 'Media') {
-          return const SizedBox.shrink();
-        } else {
-          return ShadButton.ghost(
-            padding: const EdgeInsets.only(right: 8),
-            onPressed: () {
-              onUpdateSelectionmode(enable: !selectionMode);
-            },
-            child: const Icon(LucideIcons.listChecks),
-          );
-        }
+        return ShadButton.ghost(
+          padding: const EdgeInsets.only(right: 8),
+          onPressed: () {
+            onUpdateSelectionmode(enable: !selectionMode);
+          },
+          child: const Icon(LucideIcons.listChecks),
+        );
       },
     );
   }
