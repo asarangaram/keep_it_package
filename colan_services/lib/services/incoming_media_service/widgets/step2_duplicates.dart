@@ -69,7 +69,8 @@ class _DuplicatePageStatefulState extends State<DuplicatePageStateful> {
         message: 'Should not have seen this.',
       );
     }
-    return GetAllCollections(
+    return GetEntity(
+      id: widget.incomingMedia.collection?.id,
       storeIdentity: widget.storeIdentity,
       errorBuilder: (_, __) {
         throw UnimplementedError('errorBuilder');
@@ -77,10 +78,7 @@ class _DuplicatePageStatefulState extends State<DuplicatePageStateful> {
       loadingBuilder: () => CLLoader.widget(
         debugMessage: 'GetAllCollection',
       ),
-      builder: (collections) {
-        final newCollection = collections
-            .where((e) => e.id == widget.incomingMedia.collection?.id)
-            .firstOrNull;
+      builder: (newCollection) {
         final collectionLablel = newCollection?.data.label != null
             ? '"${newCollection?.data.label}"'
             : 'a new collection';
@@ -121,8 +119,8 @@ class _DuplicatePageStatefulState extends State<DuplicatePageStateful> {
               children: [
                 Flexible(
                   child: ExistInDifferentCollection(
-                    collections: collections,
                     parentIdentifier: widget.parentIdentifier,
+                    storeIdentity: widget.storeIdentity,
                     media: currentMedia,
                     onRemove: (m) {
                       final updated = currentMedia.remove(m);
@@ -148,15 +146,16 @@ class _DuplicatePageStatefulState extends State<DuplicatePageStateful> {
 class ExistInDifferentCollection extends StatelessWidget {
   const ExistInDifferentCollection({
     required this.media,
+    required this.storeIdentity,
     required this.parentIdentifier,
-    required this.collections,
     required this.onRemove,
     super.key,
   });
 
   final CLSharedMedia media;
   final String parentIdentifier;
-  final List<StoreEntity> collections;
+  final String storeIdentity;
+
   final void Function(StoreEntity media) onRemove;
 
   @override
@@ -188,59 +187,73 @@ class ExistInDifferentCollection extends StatelessWidget {
               itemCount: duplicates.length,
               itemBuilder: (BuildContext ctx, index) {
                 final m = duplicates[index];
-                final currCollection =
-                    collections.where((e) => e.id == m.parentId).firstOrNull;
-                final String currCollectionLabel;
 
-                if (m.data.isDeleted) {
-                  currCollectionLabel = 'Deleted Items';
-                } else {
-                  currCollectionLabel =
-                      currCollection?.data.label ?? 'somethig wrong';
-                }
+                return GetEntity(
+                  id: m.parentId,
+                  storeIdentity: storeIdentity,
+                  errorBuilder: (_, __) {
+                    throw UnimplementedError('errorBuilder');
+                  },
+                  loadingBuilder: () => CLLoader.widget(
+                    debugMessage: 'GetAllCollection',
+                  ),
+                  builder: (currCollection) {
+                    /* final currCollection = collections
+                        .where((e) => e.id == m.parentId)
+                        .firstOrNull; */
+                    final String currCollectionLabel;
 
-                return SizedBox(
-                  height: 80,
-                  child: Dismissible(
-                    key: Key(m.data.md5!),
-                    direction: DismissDirection.endToStart,
-                    onDismissed: (direction) {
-                      onRemove(m);
-                    },
-                    background: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      alignment: AlignmentDirectional.center,
-                      child: Text(
-                        'Keep the item in "${currCollectionLabel.trim()}"',
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        AspectRatio(
-                          aspectRatio: 1,
-                          child: Padding(
-                            padding: const EdgeInsets.all(2),
-                            child: MediaThumbnail(
-                              media: m,
-                            ),
+                    if (m.data.isDeleted) {
+                      currCollectionLabel = 'Deleted Items';
+                    } else {
+                      currCollectionLabel =
+                          currCollection?.data.label ?? 'somethig wrong';
+                    }
+                    return SizedBox(
+                      height: 80,
+                      child: Dismissible(
+                        key: Key(m.data.md5!),
+                        direction: DismissDirection.endToStart,
+                        onDismissed: (direction) {
+                          onRemove(m);
+                        },
+                        background: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          alignment: AlignmentDirectional.center,
+                          child: Text(
+                            'Keep the item in "${currCollectionLabel.trim()}"',
                           ),
                         ),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8),
-                            child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: CLText.standard(
-                                'Found in '
-                                '"${currCollectionLabel.trim()}"',
-                                textAlign: TextAlign.start,
+                        child: Row(
+                          children: [
+                            AspectRatio(
+                              aspectRatio: 1,
+                              child: Padding(
+                                padding: const EdgeInsets.all(2),
+                                child: MediaThumbnail(
+                                  media: m,
+                                ),
                               ),
                             ),
-                          ),
+                            Expanded(
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 8),
+                                child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: CLText.standard(
+                                    'Found in '
+                                    '"${currCollectionLabel.trim()}"',
+                                    textAlign: TextAlign.start,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  ),
+                      ),
+                    );
+                  },
                 );
               },
             ),

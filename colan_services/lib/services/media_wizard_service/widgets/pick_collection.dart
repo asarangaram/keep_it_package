@@ -29,7 +29,8 @@ class PickCollection extends StatelessWidget {
         debugMessage: 'GetAllVisibleCollection',
       ),
       builder: (theStore) {
-        return GetAllVisibleCollection(
+        return GetEntities(
+          isCollection: true,
           storeIdentity: storeIdentity,
           errorBuilder: (_, __) {
             throw UnimplementedError('errorBuilder');

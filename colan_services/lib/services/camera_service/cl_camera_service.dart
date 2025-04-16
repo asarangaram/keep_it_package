@@ -40,7 +40,7 @@ class CLCameraService extends ConsumerWidget {
           debugMessage: 'GetStoreUpdater',
         ),
         builder: (theStore) {
-          return GetCollection(
+          return GetEntity(
             storeIdentity: storeIdentity,
             id: parentId,
             errorBuilder: (_, __) {

@@ -106,7 +106,7 @@ class _CollectionEditorState extends State<CollectionEditor> {
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
-      child: GetCollection(
+      child: GetEntity(
         storeIdentity: widget.storeIdentity,
         id: widget.id,
         errorBuilder: errorBuilder,
@@ -119,7 +119,9 @@ class _CollectionEditorState extends State<CollectionEditor> {
               return errorBuilder(e, st);
             }
           }
-          return GetAllCollections(
+          return GetEntities(
+            isHidden: null,
+            isDeleted: null,
             storeIdentity: widget.storeIdentity,
             errorBuilder: errorBuilder,
             loadingBuilder: () => loading('GetAllCollection'),

@@ -19,7 +19,7 @@ class KeepItBottomBar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final parent = ref.watch(activeCollectionProvider);
 
-    return GetCollection(
+    return GetEntity(
       storeIdentity: storeIdentity,
       id: parent?.id,
       errorBuilder: (_, __) => const SizedBox.shrink(),
