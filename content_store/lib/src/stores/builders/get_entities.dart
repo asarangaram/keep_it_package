@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import 'w3_get_from_store.dart';
+import '../providers/store_query_result.dart';
 
 class GetEntity extends ConsumerWidget {
   const GetEntity({
@@ -25,6 +25,9 @@ class GetEntity extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    if (storeIdentity != 'local') {
+      throw Exception('Unknown store!');
+    }
     final EntityQuery query;
     try {
       if ([id, md5, label].where((x) => x != null).length != 1) {
@@ -49,12 +52,11 @@ class GetEntity extends ConsumerWidget {
     } catch (e, st) {
       return errorBuilder(e, st);
     }
-
-    return GetFromStore(
-      query: query,
-      errorBuilder: errorBuilder,
-      loadingBuilder: loadingBuilder,
-      builder: (entities) {
+    final dataAsync = ref.watch(entitiesProvider(query));
+    return dataAsync.when(
+      error: errorBuilder,
+      loading: loadingBuilder,
+      data: (entities) {
         final entity = entities.where((e) => e.id == id).firstOrNull;
         return builder(entity);
       },
@@ -87,6 +89,9 @@ class GetEntities extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    if (storeIdentity != 'local') {
+      throw Exception('Unknown store!');
+    }
     final query = EntityQuery(
       storeIdentity,
       {
@@ -98,11 +103,11 @@ class GetEntities extends ConsumerWidget {
       },
     );
 
-    return GetFromStore(
-      query: query,
-      errorBuilder: errorBuilder,
-      loadingBuilder: loadingBuilder,
-      builder: builder,
+    final dataAsync = ref.watch(entitiesProvider(query));
+    return dataAsync.when(
+      error: errorBuilder,
+      loading: loadingBuilder,
+      data: builder,
     );
   }
 }
