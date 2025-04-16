@@ -9,17 +9,17 @@ import '../providers/media_grouper.dart';
 
 class GroupByView extends ConsumerWidget {
   const GroupByView({
-    required this.tabIdentifier,
+    required this.viewIdentifier,
     required this.groupBy,
     super.key,
   });
-  final TabIdentifier tabIdentifier;
+  final ViewIdentifier viewIdentifier;
   final GroupBy groupBy;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currValue = ref.watch(
-      groupMethodProvider(tabIdentifier.view.parentID),
+      groupMethodProvider(viewIdentifier.parentID),
     );
 
     return ShadRadioGroup<GroupTypes>(
@@ -28,7 +28,7 @@ class GroupByView extends ConsumerWidget {
         if (v != null) {
           ref
               .read(
-                groupMethodProvider(tabIdentifier.view.parentID).notifier,
+                groupMethodProvider(viewIdentifier.parentID).notifier,
               )
               .state = currValue.copyWith(method: v);
         }

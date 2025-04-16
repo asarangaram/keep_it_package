@@ -6,12 +6,12 @@ import 'media_filters.dart';
 import '../models/view_modifier.dart';
 
 final viewModifiersProvider =
-    StateProvider.family<List<ViewModifier>, TabIdentifier>(
-        (ref, tabIdentifier) {
+    StateProvider.family<List<ViewModifier>, ViewIdentifier>(
+        (ref, viewIdentifier) {
   final items = [
-    ref.watch(mediaFiltersProvider(tabIdentifier.view.parentID)),
+    ref.watch(mediaFiltersProvider(viewIdentifier.parentID)),
     ref.watch(
-      groupMethodProvider(tabIdentifier.view.parentID),
+      groupMethodProvider(viewIdentifier.parentID),
     ),
   ];
   return items;

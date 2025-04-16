@@ -11,7 +11,7 @@ import 'cl_grid.dart';
 
 class CLRawGalleryGridView extends ConsumerStatefulWidget {
   const CLRawGalleryGridView(
-      {required this.tabIdentifier,
+      {required this.viewIdentifier,
       required this.incoming,
       required this.itemBuilder,
       required this.labelBuilder,
@@ -20,7 +20,7 @@ class CLRawGalleryGridView extends ConsumerStatefulWidget {
       required this.whenEmpty,
       super.key,
       this.draggableMenuBuilder});
-  final TabIdentifier tabIdentifier;
+  final ViewIdentifier viewIdentifier;
   final List<ViewerEntityMixin> incoming;
   final int columns;
   final Widget Function(BuildContext context, ViewerEntityMixin item)
@@ -55,13 +55,14 @@ class CLEntityGalleryTabState extends ConsumerState<CLRawGalleryGridView> {
     super.initState();
     _scrollController = ScrollController(
       initialScrollOffset:
-          ref.read(tabScrollPositionProvider(widget.tabIdentifier)),
+          ref.read(tabScrollPositionProvider(widget.viewIdentifier)),
     );
 
     // Listen for scroll changes
     _scrollController.addListener(() {
-      ref.read(tabScrollPositionProvider(widget.tabIdentifier).notifier).state =
-          _scrollController.offset;
+      ref
+          .read(tabScrollPositionProvider(widget.viewIdentifier).notifier)
+          .state = _scrollController.offset;
     });
   }
 
@@ -70,7 +71,7 @@ class CLEntityGalleryTabState extends ConsumerState<CLRawGalleryGridView> {
     final galleryGroups = ref.watch(
       groupedMediaProvider(
         MapEntry(
-          widget.tabIdentifier,
+          widget.viewIdentifier,
           widget.incoming,
         ),
       ),

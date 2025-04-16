@@ -39,10 +39,10 @@ class KeepItTopBar extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             GetSelectionMode(
-              tabIdentifier: TabIdentifier.def(viewIdentifier),
+              viewIdentifier: viewIdentifier,
               builder: ({
                 required onUpdateSelectionmode,
-                required tabIdentifier,
+                required viewIdentifier,
                 required selectionMode,
               }) {
                 return CLButtonIcon.small(
@@ -79,7 +79,7 @@ class KeepItTopBar extends ConsumerWidget {
               ),
             if (entities.isNotEmpty)
               PopOverMenu(
-                tabIdentifier: TabIdentifier.def(viewIdentifier),
+                viewIdentifier: viewIdentifier,
               )
             else
               ShadButton.ghost(

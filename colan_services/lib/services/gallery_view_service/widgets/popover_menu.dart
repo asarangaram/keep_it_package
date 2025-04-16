@@ -7,8 +7,8 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import '../../basic_page_service/widgets/page_manager.dart';
 
 class PopOverMenu extends ConsumerStatefulWidget {
-  const PopOverMenu({required this.tabIdentifier, super.key});
-  final TabIdentifier tabIdentifier;
+  const PopOverMenu({required this.viewIdentifier, super.key});
+  final ViewIdentifier viewIdentifier;
 
   @override
   ConsumerState<PopOverMenu> createState() => _PopoverPageState();
@@ -49,14 +49,14 @@ class _PopoverPageState extends ConsumerState<PopOverMenu> {
             ),
             SingleChildScrollView(
               child: ViewModifierSettings(
-                tabIdentifier: widget.tabIdentifier,
+                viewIdentifier: widget.viewIdentifier,
               ),
             ),
           ],
         ),
       ),
       child: GetViewModifiers(
-        tabIdentifier: widget.tabIdentifier,
+        viewIdentifier: widget.viewIdentifier,
         builder: (items) {
           return ShadButton.ghost(
             padding: const EdgeInsets.only(right: 8),

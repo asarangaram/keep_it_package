@@ -16,7 +16,7 @@ import 'selection_count.dart';
 
 class SelectionBanner extends ConsumerWidget {
   const SelectionBanner({
-    required this.tabIdentifier,
+    required this.viewIdentifier,
     required this.incoming,
     super.key,
     this.galleryMap = const [],
@@ -24,11 +24,11 @@ class SelectionBanner extends ConsumerWidget {
   final List<ViewerEntityMixin> incoming;
   final List<ViewerEntityGroup> galleryMap;
 
-  final TabIdentifier tabIdentifier;
+  final ViewIdentifier viewIdentifier;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final selectionMode = ref.watch(selectModeProvider(tabIdentifier));
+    final selectionMode = ref.watch(selectModeProvider(viewIdentifier));
     if (!selectionMode) {
       return SizedBox.shrink();
     }
@@ -103,7 +103,7 @@ class SelectionBanner extends ConsumerWidget {
           ] else
             ShadButton.secondary(
               onPressed:
-                  ref.read(selectModeProvider(tabIdentifier).notifier).disable,
+                  ref.read(selectModeProvider(viewIdentifier).notifier).disable,
               child: const Text(
                 'Done',
               ),

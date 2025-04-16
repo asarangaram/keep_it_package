@@ -34,36 +34,3 @@ class ViewIdentifier {
   @override
   int get hashCode => parentID.hashCode ^ viewId.hashCode;
 }
-
-@immutable
-class TabIdentifier {
-  const TabIdentifier._({
-    required this.view,
-  });
-  factory TabIdentifier.def(ViewIdentifier view) {
-    return TabIdentifier._(view: view);
-  }
-
-  final ViewIdentifier view;
-
-  TabIdentifier copyWith({
-    ViewIdentifier? view,
-  }) {
-    return TabIdentifier._(
-      view: view ?? this.view,
-    );
-  }
-
-  @override
-  String toString() => 'TabIdentifier(view: $view)';
-
-  @override
-  bool operator ==(covariant TabIdentifier other) {
-    if (identical(this, other)) return true;
-
-    return other.view == view;
-  }
-
-  @override
-  int get hashCode => view.hashCode;
-}

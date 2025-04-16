@@ -10,7 +10,7 @@ import 'selection_control.dart';
 
 class CLGalleryGridView extends StatelessWidget {
   const CLGalleryGridView(
-      {required this.tabIdentifier,
+      {required this.viewIdentifier,
       required this.incoming,
       required this.bannersBuilder,
       required this.itemBuilder,
@@ -20,7 +20,7 @@ class CLGalleryGridView extends StatelessWidget {
       super.key,
       required this.whenEmpty});
 
-  final TabIdentifier tabIdentifier;
+  final ViewIdentifier viewIdentifier;
   final List<ViewerEntityMixin> incoming;
 
   final Widget Function(
@@ -47,7 +47,7 @@ class CLGalleryGridView extends StatelessWidget {
             .overrideWith((ref) => MenuPositionNotifier()),
       ],
       child: SelectionContol(
-        tabIdentifier: tabIdentifier,
+        viewIdentifier: viewIdentifier,
         itemBuilder: itemBuilder,
         contextMenuBuilder: contextMenuBuilder,
         onSelectionChanged: onSelectionChanged,

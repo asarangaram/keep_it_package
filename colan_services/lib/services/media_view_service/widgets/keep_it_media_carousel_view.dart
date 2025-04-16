@@ -50,7 +50,7 @@ class KeepItMediaCorouselView extends ConsumerWidget {
     );
 
     /* return ViewModifierBuilder(
-      tabIdentifier: TabIdentifier(view: viewIdentifier, tabId: 'Media'),
+      viewIdentifier: ViewIdentifier(view: viewIdentifier, tabId: 'Media'),
       incoming: entities,
       bannersBuilder: (context, _) => [],
       builder: (

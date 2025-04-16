@@ -7,18 +7,18 @@ import '../providers/view_modifiers.dart';
 
 class GetViewModifiers extends ConsumerWidget {
   const GetViewModifiers({
-    required this.tabIdentifier,
+    required this.viewIdentifier,
     required this.builder,
     super.key,
   });
-  final TabIdentifier tabIdentifier;
+  final ViewIdentifier viewIdentifier;
   final Widget Function(
     List<ViewModifier> viewModifiers,
   ) builder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final items = ref.watch(viewModifiersProvider(tabIdentifier));
+    final items = ref.watch(viewModifiersProvider(viewIdentifier));
     return builder(items);
   }
 }

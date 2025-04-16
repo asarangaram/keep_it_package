@@ -7,27 +7,27 @@ import '../providers/select_mode.dart';
 
 class GetSelectionMode extends ConsumerWidget {
   const GetSelectionMode({
-    required this.tabIdentifier,
+    required this.viewIdentifier,
     required this.builder,
     super.key,
   });
-  final TabIdentifier tabIdentifier;
+  final ViewIdentifier viewIdentifier;
   final Widget Function({
     required bool selectionMode,
-    required TabIdentifier tabIdentifier,
+    required ViewIdentifier viewIdentifier,
     required void Function({required bool enable}) onUpdateSelectionmode,
   }) builder;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final selectionMode = ref.watch(selectModeProvider(tabIdentifier));
+    final selectionMode = ref.watch(selectModeProvider(viewIdentifier));
     return builder(
       selectionMode: selectionMode,
-      tabIdentifier: tabIdentifier,
+      viewIdentifier: viewIdentifier,
       onUpdateSelectionmode: ({required enable}) {
         if (enable) {
-          ref.read(selectModeProvider(tabIdentifier).notifier).enable();
+          ref.read(selectModeProvider(viewIdentifier).notifier).enable();
         } else {
-          ref.read(selectModeProvider(tabIdentifier).notifier).disable();
+          ref.read(selectModeProvider(viewIdentifier).notifier).disable();
         }
       },
     );

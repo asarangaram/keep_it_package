@@ -10,7 +10,7 @@ class SelectModeNotifier extends StateNotifier<bool> {
 }
 
 final selectModeProvider =
-    StateNotifierProvider.family<SelectModeNotifier, bool, TabIdentifier>(
+    StateNotifierProvider.family<SelectModeNotifier, bool, ViewIdentifier>(
         (ref, identifier) {
   return SelectModeNotifier();
 });

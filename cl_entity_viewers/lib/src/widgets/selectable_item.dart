@@ -11,18 +11,18 @@ import '../providers/selector.dart';
 
 class SelectableItem extends ConsumerWidget {
   const SelectableItem({
-    required this.tabIdentifier,
+    required this.viewIdentifier,
     required this.item,
     required this.itemBuilder,
     super.key,
   });
-  final TabIdentifier tabIdentifier;
+  final ViewIdentifier viewIdentifier;
   final ViewerEntityMixin item;
   final Widget Function(BuildContext, ViewerEntityMixin) itemBuilder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final selectionMode = ref.watch(selectModeProvider(tabIdentifier));
+    final selectionMode = ref.watch(selectModeProvider(viewIdentifier));
 
     final itemWidget = itemBuilder(
       context,

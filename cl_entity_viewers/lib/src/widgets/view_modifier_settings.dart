@@ -11,8 +11,8 @@ import 'filters/filters_view.dart';
 import 'group_by_view.dart';
 
 class ViewModifierSettings extends StatefulWidget {
-  const ViewModifierSettings({required this.tabIdentifier, super.key});
-  final TabIdentifier tabIdentifier;
+  const ViewModifierSettings({required this.viewIdentifier, super.key});
+  final ViewIdentifier viewIdentifier;
 
   @override
   State<StatefulWidget> createState() => _ViewModifierSettingsState();
@@ -23,7 +23,7 @@ class _ViewModifierSettingsState extends State<ViewModifierSettings> {
   @override
   Widget build(BuildContext context) {
     return GetViewModifiers(
-      tabIdentifier: widget.tabIdentifier,
+      viewIdentifier: widget.viewIdentifier,
       builder: (items) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -68,12 +68,12 @@ class _ViewModifierSettingsState extends State<ViewModifierSettings> {
               constraints: const BoxConstraints(minHeight: 100),
               child: switch (currIndex) {
                 0 => FiltersView(
-                    parentIdentifier: widget.tabIdentifier.view.parentID,
+                    parentIdentifier: widget.viewIdentifier.parentID,
                     filters:
                         (items[0] as SearchFilters<ViewerEntityMixin>).filters,
                   ),
                 1 => GroupByView(
-                    tabIdentifier: widget.tabIdentifier,
+                    viewIdentifier: widget.viewIdentifier,
                     groupBy: items[1] as GroupBy,
                   ),
                 _ => throw UnimplementedError(),

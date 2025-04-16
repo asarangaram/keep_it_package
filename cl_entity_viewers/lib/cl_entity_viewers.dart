@@ -1,4 +1,4 @@
-export 'src/models/tab_identifier.dart' show TabIdentifier, ViewIdentifier;
+export 'src/models/tab_identifier.dart' show ViewIdentifier;
 export 'src/models/viewer_entity_mixin.dart'
     show ViewerEntityMixin, ViewerEntityGroup;
 export 'src/models/cl_context_menu.dart' show CLContextMenu;

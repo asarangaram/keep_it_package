@@ -179,11 +179,11 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
   @override
   Widget build(BuildContext context) {
     return GetSelectionMode(
-      tabIdentifier: TabIdentifier.def(widget.viewIdentifier),
+      viewIdentifier: widget.viewIdentifier,
       builder: ({
         required onUpdateSelectionmode,
         required selectionMode,
-        required tabIdentifier,
+        required viewIdentifier,
       }) {
         final currEntities =
             (selectionMode ? selectedMedia.entries : widget.media.entries);
@@ -373,11 +373,11 @@ class SelectionControlIcon extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GetSelectionMode(
-      tabIdentifier: TabIdentifier.def(viewIdentifier),
+      viewIdentifier: viewIdentifier,
       builder: ({
         required void Function({required bool enable}) onUpdateSelectionmode,
         required bool selectionMode,
-        required TabIdentifier tabIdentifier,
+        required ViewIdentifier viewIdentifier,
       }) {
         return ShadButton.ghost(
           padding: const EdgeInsets.only(right: 8),

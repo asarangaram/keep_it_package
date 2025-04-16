@@ -107,11 +107,11 @@ class SelectMenuItem extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GetSelectionMode(
-      tabIdentifier: TabIdentifier.def(viewIdentifier),
+      viewIdentifier: viewIdentifier,
       builder: ({
         required void Function({required bool enable}) onUpdateSelectionmode,
         required bool selectionMode,
-        required TabIdentifier tabIdentifier,
+        required ViewIdentifier viewIdentifier,
       }) {
         return ShadContextMenuItem(
           leading: SizedBox.square(

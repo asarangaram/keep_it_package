@@ -17,14 +17,14 @@ import 'selection_banner.dart';
 
 class SelectionContol extends ConsumerWidget {
   const SelectionContol(
-      {required this.tabIdentifier,
+      {required this.viewIdentifier,
       required this.itemBuilder,
       required this.contextMenuBuilder,
       required this.onSelectionChanged,
       super.key,
       required this.filtersDisabled,
       required this.whenEmpty});
-  final TabIdentifier tabIdentifier;
+  final ViewIdentifier viewIdentifier;
   final bool filtersDisabled;
   final Widget whenEmpty;
 
@@ -49,7 +49,7 @@ class SelectionContol extends ConsumerWidget {
       filterred = incoming;
     } else {
       filterred =
-          ref.watch(filterredMediaProvider(MapEntry(tabIdentifier, incoming)));
+          ref.watch(filterredMediaProvider(MapEntry(viewIdentifier, incoming)));
     }
 
     /* return MediaViewService1.pageView(
@@ -64,26 +64,26 @@ class SelectionContol extends ConsumerWidget {
         ); */
 
     return CLRawGalleryGridView(
-      tabIdentifier: tabIdentifier,
+      viewIdentifier: viewIdentifier,
       incoming: filterred,
       bannersBuilder: (context, galleryMap) {
         return [
           FilterBanner(filterred: filterred, incoming: incoming),
           if (incoming.isNotEmpty)
             SelectionBanner(
-              tabIdentifier: tabIdentifier,
+              viewIdentifier: viewIdentifier,
               incoming: incoming,
               galleryMap: galleryMap,
             ),
         ];
       },
       labelBuilder: (context, galleryMap, gallery) => SelectableLabel(
-        tabIdentifier: tabIdentifier,
+        viewIdentifier: viewIdentifier,
         gallery: gallery,
         galleryMap: galleryMap,
       ),
       itemBuilder: (context, item) => SelectableItem(
-        tabIdentifier: tabIdentifier,
+        viewIdentifier: viewIdentifier,
         item: item,
         itemBuilder: itemBuilder,
       ),
@@ -92,7 +92,7 @@ class SelectionContol extends ConsumerWidget {
               contextMenuBuilder != null
           ? contextMenuBuilder!(context, selector.items.toList())
               .draggableMenuBuilder(context,
-                  ref.read(selectModeProvider(tabIdentifier).notifier).disable)
+                  ref.read(selectModeProvider(viewIdentifier).notifier).disable)
           : null,
       whenEmpty: whenEmpty,
     );

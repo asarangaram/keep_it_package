@@ -11,12 +11,12 @@ import '../providers/selector.dart';
 
 class SelectableLabel extends ConsumerWidget {
   const SelectableLabel({
-    required this.tabIdentifier,
+    required this.viewIdentifier,
     super.key,
     required this.galleryMap,
     required this.gallery,
   });
-  final TabIdentifier tabIdentifier;
+  final ViewIdentifier viewIdentifier;
   final List<ViewerEntityGroup<ViewerEntityMixin>> galleryMap;
   final ViewerEntityGroup<ViewerEntityMixin> gallery;
 
@@ -28,7 +28,7 @@ class SelectableLabel extends ConsumerWidget {
       textAlign: TextAlign.start,
     );
 
-    final selectionMode = ref.watch(selectModeProvider(tabIdentifier));
+    final selectionMode = ref.watch(selectModeProvider(viewIdentifier));
     if (!selectionMode) {
       return labelWidget;
     }
