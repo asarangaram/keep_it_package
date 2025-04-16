@@ -8,7 +8,8 @@ import '../../draggable_menu/providers/menu_position.dart';
 import '../../entity/models/cl_context_menu.dart';
 import '../../entity/models/viewer_entity_mixin.dart';
 import '../../gallery_grid_view/models/tab_identifier.dart';
-import '../../gallery_grid_view/providers/tap_state.dart';
+import '../../gallery_grid_view/widgets/gallery_view.dart';
+import '../../view_modifiers/search_filters/builders/get_filtered_media.dart';
 import '../models/selector.dart';
 
 import '../providers/select_mode.dart';
@@ -18,18 +19,18 @@ import 'selectable_label.dart';
 import 'selection_count.dart';
 
 class SelectionControl extends ConsumerWidget {
-  const SelectionControl({
-    required this.viewIdentifier,
-    required this.incoming,
-    required this.builder,
-    required this.itemBuilder,
-    required this.labelBuilder,
-    required this.bannersBuilder,
-    required this.contextMenuOf,
-    required this.onSelectionChanged,
-    super.key,
-  });
-  final ViewIdentifier viewIdentifier;
+  const SelectionControl(
+      {required this.tabIdentifier,
+      required this.incoming,
+      required this.itemBuilder,
+      required this.labelBuilder,
+      required this.bannersBuilder,
+      required this.contextMenuOf,
+      required this.onSelectionChanged,
+      super.key,
+      this.filtersDisabled = false,
+      required this.whenEmpty});
+  final TabIdentifier tabIdentifier;
   final List<ViewerEntityMixin> incoming;
   final Widget Function(
     BuildContext,
@@ -44,36 +45,17 @@ class SelectionControl extends ConsumerWidget {
     BuildContext context,
     List<ViewerEntityGroup<ViewerEntityMixin>> galleryMap,
   ) bannersBuilder;
-  final Widget Function({
-    required List<ViewerEntityMixin> items,
-    required Widget Function(
-      BuildContext,
-      ViewerEntityMixin,
-    ) itemBuilder,
-    required Widget? Function(
-      BuildContext context,
-      List<ViewerEntityGroup<ViewerEntityMixin>> galleryMap,
-      ViewerEntityGroup<ViewerEntityMixin> gallery,
-    ) labelBuilder,
-    required List<Widget> Function(
-      BuildContext context,
-      List<ViewerEntityGroup<ViewerEntityMixin>> galleryMap,
-    ) bannersBuilder,
-    Widget Function(
-      BuildContext, {
-      required GlobalKey<State<StatefulWidget>> parentKey,
-    })? draggableMenuBuilder,
-  }) builder;
+
   final CLContextMenu Function(BuildContext, List<ViewerEntityMixin>)?
       contextMenuOf;
 
   final void Function(List<ViewerEntityMixin>)? onSelectionChanged;
 
+  final bool filtersDisabled;
+  final Widget whenEmpty;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentTab = ref.watch(currTabProvider(viewIdentifier));
-    final tabIdentifier =
-        TabIdentifier(view: viewIdentifier, tabId: currentTab);
     return ProviderScope(
       overrides: [
         selectorProvider.overrideWith((ref) => SelectorNotifier(incoming)),
@@ -82,27 +64,30 @@ class SelectionControl extends ConsumerWidget {
       ],
       child: SelectionContol0(
         tabIdentifier: tabIdentifier,
-        builder: builder,
         itemBuilder: itemBuilder,
         labelBuilder: labelBuilder,
         contextMenuOf: contextMenuOf,
         onSelectionChanged: onSelectionChanged,
+        filtersDisabled: filtersDisabled,
+        whenEmpty: whenEmpty,
       ),
     );
   }
 }
 
 class SelectionContol0 extends ConsumerWidget {
-  const SelectionContol0({
-    required this.tabIdentifier,
-    required this.builder,
-    required this.itemBuilder,
-    required this.labelBuilder,
-    required this.contextMenuOf,
-    required this.onSelectionChanged,
-    super.key,
-  });
+  const SelectionContol0(
+      {required this.tabIdentifier,
+      required this.itemBuilder,
+      required this.labelBuilder,
+      required this.contextMenuOf,
+      required this.onSelectionChanged,
+      super.key,
+      required this.filtersDisabled,
+      required this.whenEmpty});
   final TabIdentifier tabIdentifier;
+  final bool filtersDisabled;
+  final Widget whenEmpty;
 
   final Widget Function(
     BuildContext,
@@ -113,23 +98,6 @@ class SelectionContol0 extends ConsumerWidget {
     List<ViewerEntityGroup<ViewerEntityMixin>> galleryMap,
     ViewerEntityGroup<ViewerEntityMixin> gallery,
   ) labelBuilder;
-  final Widget Function({
-    required List<ViewerEntityMixin> items,
-    required Widget Function(
-      BuildContext,
-      ViewerEntityMixin,
-    ) itemBuilder,
-    required Widget? Function(
-      BuildContext context,
-      List<ViewerEntityGroup<ViewerEntityMixin>> galleryMap,
-      ViewerEntityGroup<ViewerEntityMixin> gallery,
-    ) labelBuilder,
-    required List<Widget> Function(
-      BuildContext context,
-      List<ViewerEntityGroup<ViewerEntityMixin>> galleryMap,
-    ) bannersBuilder,
-    DraggableMenuBuilderType? draggableMenuBuilder,
-  }) builder;
 
   final CLContextMenu Function(BuildContext, List<ViewerEntityMixin>)?
       contextMenuOf;
@@ -143,25 +111,9 @@ class SelectionContol0 extends ConsumerWidget {
     });
     final incoming = selector.entities;
 
-    return builder(
-      items: incoming,
-      itemBuilder: (
-        context,
-        item,
-      ) {
-        return SelectableItem(
-          tabIdentifier: tabIdentifier,
-          item: item,
-          itemBuilder: itemBuilder,
-        );
-      },
-      labelBuilder: (context, galleryMap, gallery) {
-        return SelectableLabel(
-          labelBuilder: labelBuilder,
-          gallery: gallery,
-          galleryMap: galleryMap,
-        );
-      },
+    return GetFilterredMedia(
+      tabIdentifier: tabIdentifier,
+      incoming: incoming,
       bannersBuilder: (context, galleryMap) {
         return [
           SelectionBanner(
@@ -171,11 +123,49 @@ class SelectionContol0 extends ConsumerWidget {
           ),
         ];
       },
-      draggableMenuBuilder: selector.items.isNotEmpty && contextMenuOf != null
-          ? contextMenuOf!(context, selector.items.toList())
-              .draggableMenuBuilder(context,
-                  ref.read(selectModeProvider(tabIdentifier).notifier).disable)
-          : null,
+      disabled: filtersDisabled,
+      builder: (
+        List<ViewerEntityMixin> filterred, {
+        required List<Widget> Function(
+          BuildContext,
+          List<ViewerEntityGroup<ViewerEntityMixin>>,
+        ) bannersBuilder,
+      }) {
+        return CLGalleryGridView(
+          tabIdentifier: tabIdentifier,
+          incoming: filterred,
+          bannersBuilder: bannersBuilder,
+          labelBuilder: (context, galleryMap, gallery) {
+            return SelectableLabel(
+              tabIdentifier: tabIdentifier,
+              labelBuilder: labelBuilder,
+              gallery: gallery,
+              galleryMap: galleryMap,
+            );
+          },
+          itemBuilder: (
+            context,
+            item,
+          ) {
+            return SelectableItem(
+              tabIdentifier: tabIdentifier,
+              item: item,
+              itemBuilder: itemBuilder,
+            );
+          },
+          columns: 3,
+          draggableMenuBuilder:
+              selector.items.isNotEmpty && contextMenuOf != null
+                  ? contextMenuOf!(context, selector.items.toList())
+                      .draggableMenuBuilder(
+                          context,
+                          ref
+                              .read(selectModeProvider(tabIdentifier).notifier)
+                              .disable)
+                  : null,
+          whenEmpty: whenEmpty,
+        );
+      },
     );
   }
 }
@@ -194,6 +184,10 @@ class SelectionBanner extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final selectionMode = ref.watch(selectModeProvider(tabIdentifier));
+    if (!selectionMode) {
+      return SizedBox.shrink();
+    }
     final allCount = selector.entities.length;
     final selectedInAllCount = selector.count;
     final currentItems = galleryMap.getEntities.toList();
@@ -263,9 +257,8 @@ class SelectionBanner extends ConsumerWidget {
               ),
           ] else
             ShadButton.secondary(
-              onPressed: ref
-                  .read(selectModeProvider(tabIdentifier).notifier)
-                  .disable(),
+              onPressed:
+                  ref.read(selectModeProvider(tabIdentifier).notifier).disable,
               child: const Text(
                 'Done',
               ),

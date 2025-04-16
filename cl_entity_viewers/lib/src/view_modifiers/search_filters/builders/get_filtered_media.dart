@@ -11,7 +11,7 @@ class GetFilterredMedia extends ConsumerWidget {
     required this.builder,
     required this.incoming,
     required this.bannersBuilder,
-    required this.viewIdentifier,
+    required this.tabIdentifier,
     super.key,
     this.disabled = false,
   });
@@ -29,7 +29,7 @@ class GetFilterredMedia extends ConsumerWidget {
     List<ViewerEntityGroup<ViewerEntityMixin>>,
   ) bannersBuilder;
   final bool disabled;
-  final ViewIdentifier viewIdentifier;
+  final TabIdentifier tabIdentifier;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -40,7 +40,7 @@ class GetFilterredMedia extends ConsumerWidget {
       banners = [];
     } else {
       filterred =
-          ref.watch(filterredMediaProvider(MapEntry(viewIdentifier, incoming)));
+          ref.watch(filterredMediaProvider(MapEntry(tabIdentifier, incoming)));
 
       final topMsg = (filterred.length < incoming.length)
           ? ' ${filterred.length} out of '

@@ -33,3 +33,5 @@ export 'src/view_modifiers/search_filters/models/filters.dart'
     show SearchFilters;
 export 'src/view_modifiers/search_filters/widgets/filters_view.dart'
     show FiltersView;
+export 'src/view_modifiers/merged/widgets/view_modifier_builder.dart'
+    show ViewModifierBuilder;

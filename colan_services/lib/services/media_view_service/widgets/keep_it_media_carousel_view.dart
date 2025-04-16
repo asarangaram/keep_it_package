@@ -8,7 +8,6 @@ import 'package:store/store.dart';
 
 import '../../gallery_view_service/providers/active_collection.dart';
 import '../media_view_service1.dart';
-import 'get_sorted_entities.dart';
 
 class KeepItMediaCorouselView extends ConsumerWidget {
   const KeepItMediaCorouselView({
@@ -39,31 +38,26 @@ class KeepItMediaCorouselView extends ConsumerWidget {
         PageManager.of(context).pop();
       });
     }
-    return GetSortedEntity(
-      entities: entities,
-      builder: (sorted) {
-        return GetFilterredMedia(
-          viewIdentifier: viewIdentifier,
-          incoming: sorted,
-          bannersBuilder: (context, _) => [],
-          builder: (
-            List<ViewerEntityMixin> filterred, {
-            required List<Widget> Function(
-              BuildContext,
-              List<ViewerEntityGroup<ViewerEntityMixin>>,
-            ) bannersBuilder,
-          }) {
-            return MediaViewService1.pageView(
-              media: filterred.map((e) => e as StoreEntity).toList(),
-              parentIdentifier: viewIdentifier.toString(),
-              initialMediaIndex:
-                  filterred.indexWhere((e) => e.id == initialMediaIndex),
-              errorBuilder: errorBuilder,
-              loadingBuilder: () => CLLoader.widget(
-                debugMessage: 'MediaViewService.pageView',
-              ),
-            );
-          },
+    return GetFilterredMedia(
+      tabIdentifier: TabIdentifier(view: viewIdentifier, tabId: 'Media'),
+      incoming: entities,
+      bannersBuilder: (context, _) => [],
+      builder: (
+        List<ViewerEntityMixin> filterred, {
+        required List<Widget> Function(
+          BuildContext,
+          List<ViewerEntityGroup<ViewerEntityMixin>>,
+        ) bannersBuilder,
+      }) {
+        return MediaViewService1.pageView(
+          media: filterred.map((e) => e as StoreEntity).toList(),
+          parentIdentifier: viewIdentifier.toString(),
+          initialMediaIndex:
+              filterred.indexWhere((e) => e.id == initialMediaIndex),
+          errorBuilder: errorBuilder,
+          loadingBuilder: () => CLLoader.widget(
+            debugMessage: 'MediaViewService.pageView',
+          ),
         );
       },
     );

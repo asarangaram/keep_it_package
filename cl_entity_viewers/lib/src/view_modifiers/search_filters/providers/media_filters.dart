@@ -104,7 +104,8 @@ final StringFilter<ViewerEntityMixin> textSearchFilter = StringFilter(
 );
 
 final filterredMediaProvider = StateProvider.family<List<ViewerEntityMixin>,
-    MapEntry<ViewIdentifier, List<ViewerEntityMixin>>>((ref, mediaMap) {
-  final mediaFilters = ref.watch(mediaFiltersProvider(mediaMap.key.parentID));
+    MapEntry<TabIdentifier, List<ViewerEntityMixin>>>((ref, mediaMap) {
+  final mediaFilters =
+      ref.watch(mediaFiltersProvider(mediaMap.key.view.parentID));
   return mediaFilters.apply(mediaMap.value);
 });

@@ -11,8 +11,8 @@ import '../../media_view_service/widgets/stale_media_indicator_service.dart';
 import '../providers/active_collection.dart';
 import 'actions/bottom_bar.dart';
 import 'actions/top_bar.dart';
-import 'gallery_view.dart';
-import 'view_modifier_builder.dart';
+
+import 'when_empty.dart';
 
 class KeepItMainGrid extends ConsumerWidget {
   const KeepItMainGrid({
@@ -53,8 +53,9 @@ class KeepItMainGrid extends ConsumerWidget {
             onRefresh: /* isSelectionMode ? null : */
                 () async => ref.read(reloadProvider.notifier).reload(),
             child: ViewModifierBuilder(
-              viewIdentifier: viewIdentifier,
-              entities: entities,
+              tabIdentifier:
+                  TabIdentifier(view: viewIdentifier, tabId: 'Media'),
+              incoming: entities,
               filtersDisabled: false,
               onSelectionChanged: null,
               bannersBuilder: (context, _) {
@@ -75,28 +76,7 @@ class KeepItMainGrid extends ConsumerWidget {
                 viewIdentifier: viewIdentifier,
                 item: item,
               ),
-              builder: ({
-                required incoming,
-                required itemBuilder,
-                required labelBuilder,
-                required viewIdentifier,
-                required bannersBuilder,
-                required draggableMenuBuilder,
-              }) {
-                return EntityGridView(
-                  viewIdentifier: viewIdentifier,
-                  storeIdentity: storeIdentity,
-                  errorBuilder: errorBuilder,
-                  loadingBuilder: loadingBuilder,
-                  incoming: incoming,
-                  columns: 3,
-                  viewableAsCollection: parentId == null,
-                  itemBuilder: itemBuilder,
-                  labelBuilder: labelBuilder,
-                  bannersBuilder: bannersBuilder,
-                  draggableMenuBuilder: draggableMenuBuilder,
-                );
-              },
+              whenEmpty: const WhenEmpty(),
             ),
           ),
         ),

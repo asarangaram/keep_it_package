@@ -3,18 +3,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../entity/models/viewer_entity_mixin.dart';
+import '../../gallery_grid_view/models/tab_identifier.dart';
 import '../models/selector.dart';
 
+import '../providers/select_mode.dart';
 import '../providers/selector.dart';
 
 class SelectableLabel extends ConsumerWidget {
   const SelectableLabel({
+    required this.tabIdentifier,
     super.key,
     required this.labelBuilder,
     required this.galleryMap,
     required this.gallery,
   });
-
+  final TabIdentifier tabIdentifier;
   final List<ViewerEntityGroup<ViewerEntityMixin>> galleryMap;
   final ViewerEntityGroup<ViewerEntityMixin> gallery;
   final Widget? Function(
@@ -25,7 +28,12 @@ class SelectableLabel extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final labelWidget = labelBuilder(context, galleryMap, gallery);
+
     if (labelWidget == null) return const SizedBox.shrink();
+    final selectionMode = ref.watch(selectModeProvider(tabIdentifier));
+    if (!selectionMode) {
+      return labelWidget;
+    }
     final candidates =
         galleryMap.getEntitiesByGroup(gallery.groupIdentifier).toList();
     final selectionStatus =
