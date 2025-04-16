@@ -39,7 +39,8 @@ class KeepItTopBar extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             GetSelectionMode(
-              viewIdentifier: viewIdentifier,
+              tabIdentifier:
+                  TabIdentifier(view: viewIdentifier, tabId: 'Media'),
               builder: ({
                 required onUpdateSelectionmode,
                 required tabIdentifier,
@@ -79,7 +80,8 @@ class KeepItTopBar extends ConsumerWidget {
               ),
             if (entities.isNotEmpty)
               PopOverMenu(
-                viewIdentifier: viewIdentifier,
+                tabIdentifier:
+                    TabIdentifier(view: viewIdentifier, tabId: 'Media'),
               )
             else
               ShadButton.ghost(

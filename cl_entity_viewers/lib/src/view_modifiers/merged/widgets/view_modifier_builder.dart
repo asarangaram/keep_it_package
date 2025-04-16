@@ -6,7 +6,7 @@ import '../../../entity/models/cl_context_menu.dart';
 import '../../../entity/models/viewer_entity_mixin.dart';
 import '../../../gallery_grid_view/models/tab_identifier.dart';
 import '../../../selection/providers/selector.dart';
-import '../../../selection/widgets/selection_control.dart';
+import '../../../gallery_grid_view/widgets/selection_control.dart';
 
 class CLGalleryGridView extends StatelessWidget {
   const CLGalleryGridView(

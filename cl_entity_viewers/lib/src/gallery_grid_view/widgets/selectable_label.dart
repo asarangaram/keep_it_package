@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../entity/models/viewer_entity_mixin.dart';
-import '../../gallery_grid_view/models/tab_identifier.dart';
-import '../models/selector.dart';
+import '../models/tab_identifier.dart';
+import '../../selection/models/selector.dart';
 
-import '../providers/select_mode.dart';
-import '../providers/selector.dart';
+import '../../selection/providers/select_mode.dart';
+import '../../selection/providers/selector.dart';
 
 class SelectableLabel extends ConsumerWidget {
   const SelectableLabel({

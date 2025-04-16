@@ -182,7 +182,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
   @override
   Widget build(BuildContext context) {
     return GetSelectionMode(
-      viewIdentifier: widget.viewIdentifier,
+      tabIdentifier: TabIdentifier(view: widget.viewIdentifier, tabId: 'Media'),
       builder: ({
         required onUpdateSelectionmode,
         required selectionMode,
@@ -376,7 +376,7 @@ class SelectionControlIcon extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GetSelectionMode(
-      viewIdentifier: viewIdentifier,
+      tabIdentifier: TabIdentifier(view: viewIdentifier, tabId: 'Media'),
       builder: ({
         required void Function({required bool enable}) onUpdateSelectionmode,
         required bool selectionMode,

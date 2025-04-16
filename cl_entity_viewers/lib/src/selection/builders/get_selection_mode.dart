@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../gallery_grid_view/models/tab_identifier.dart';
-import '../../gallery_grid_view/providers/tap_state.dart';
+
 import '../providers/select_mode.dart';
 
 class GetSelectionMode extends ConsumerWidget {
   const GetSelectionMode({
-    required this.viewIdentifier,
+    required this.tabIdentifier,
     required this.builder,
     super.key,
   });
-  final ViewIdentifier viewIdentifier;
+  final TabIdentifier tabIdentifier;
   final Widget Function({
     required bool selectionMode,
     required TabIdentifier tabIdentifier,
@@ -19,9 +19,6 @@ class GetSelectionMode extends ConsumerWidget {
   }) builder;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentTab = ref.watch(currTabProvider(viewIdentifier));
-    final tabIdentifier =
-        TabIdentifier(view: viewIdentifier, tabId: currentTab);
     final selectionMode = ref.watch(selectModeProvider(tabIdentifier));
     return builder(
       selectionMode: selectionMode,

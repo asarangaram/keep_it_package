@@ -9,8 +9,8 @@ import 'package:store/store.dart';
 import '../../basic_page_service/widgets/page_manager.dart';
 
 class PopOverMenu extends ConsumerStatefulWidget {
-  const PopOverMenu({required this.viewIdentifier, super.key});
-  final ViewIdentifier viewIdentifier;
+  const PopOverMenu({required this.tabIdentifier, super.key});
+  final TabIdentifier tabIdentifier;
 
   @override
   ConsumerState<PopOverMenu> createState() => _PopoverPageState();
@@ -28,13 +28,8 @@ class _PopoverPageState extends ConsumerState<PopOverMenu> {
 
   @override
   Widget build(BuildContext context) {
-    final tabIdentifier = TabIdentifier(
-      view: widget.viewIdentifier,
-      tabId: ref.watch(currTabProvider(widget.viewIdentifier)),
-    );
-
     return GetViewModifiers(
-      tabIdentifier: tabIdentifier,
+      tabIdentifier: widget.tabIdentifier,
       builder: (items) {
         return ShadPopover(
           controller: popoverController,
@@ -104,12 +99,13 @@ class _PopoverPageState extends ConsumerState<PopOverMenu> {
                         constraints: const BoxConstraints(minHeight: 100),
                         child: switch (currIndex) {
                           0 => FiltersView(
-                              parentIdentifier: widget.viewIdentifier.parentID,
+                              parentIdentifier:
+                                  widget.tabIdentifier.view.parentID,
                               filters: (items[0] as SearchFilters<StoreEntity>)
                                   .filters,
                             ),
                           1 => GroupByView(
-                              tabIdentifier: tabIdentifier,
+                              tabIdentifier: widget.tabIdentifier,
                               groupBy: items[1] as GroupBy,
                             ),
                           _ => throw UnimplementedError(),

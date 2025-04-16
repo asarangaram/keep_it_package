@@ -107,7 +107,7 @@ class SelectMenuItem extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GetSelectionMode(
-      viewIdentifier: viewIdentifier,
+      tabIdentifier: TabIdentifier(view: viewIdentifier, tabId: 'Media'),
       builder: ({
         required void Function({required bool enable}) onUpdateSelectionmode,
         required bool selectionMode,
