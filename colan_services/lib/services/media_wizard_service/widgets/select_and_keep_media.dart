@@ -19,7 +19,6 @@ class SelectAndKeepMedia extends ConsumerStatefulWidget {
     required this.viewIdentifier,
     required this.media,
     required this.type,
-    required this.galleryMap,
     required this.storeIdentity,
     super.key,
   });
@@ -27,8 +26,6 @@ class SelectAndKeepMedia extends ConsumerStatefulWidget {
   final UniversalMediaSource type;
   final ViewIdentifier viewIdentifier;
   final String storeIdentity;
-
-  final List<ViewerEntityGroup<ViewerEntityMixin>> galleryMap;
 
   @override
   ConsumerState<SelectAndKeepMedia> createState() => SelectAndKeepMediaState();

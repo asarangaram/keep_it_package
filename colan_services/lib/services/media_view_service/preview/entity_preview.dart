@@ -33,9 +33,9 @@ class EntityPreview extends ConsumerWidget {
           child: Column(
             children: [
               Flexible(
-                child: GetMediaByCollectionId(
+                child: GetEntities(
                   storeIdentity: (item as StoreEntity).store.store.identity,
-                  parentId: (item as StoreEntity).id!,
+                  parentId: (item as StoreEntity).id,
                   loadingBuilder: GreyShimmer.new,
                   errorBuilder: (e, st) => const BrokenImage(),
                   builder: (children) {

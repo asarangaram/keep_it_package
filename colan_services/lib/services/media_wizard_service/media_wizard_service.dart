@@ -65,7 +65,6 @@ class MediaWizardService extends ConsumerWidget {
       return const FullscreenLayout(child: SizedBox.expand());
     }
 
-    final galleryMap = media.entries.cast<ViewerEntityMixin>().groupByTime(3);
     return FullscreenLayout(
       child: SelectAndKeepMedia(
         viewIdentifier: ViewIdentifier(
@@ -75,7 +74,6 @@ class MediaWizardService extends ConsumerWidget {
         storeIdentity: storeIdentity,
         media: media,
         type: type,
-        galleryMap: galleryMap,
       ),
     );
   }

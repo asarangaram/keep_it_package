@@ -1,11 +1,11 @@
 import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
-import '../../gallery_view_service/builders/available_media.dart';
 import '../widgets/cl_media_collage.dart';
 import '../widgets/folder_clip.dart';
 import 'media_preview_service.dart';
@@ -29,7 +29,7 @@ class CollectionView extends ConsumerWidget {
     return GetFilters(
       identifier: viewIdentifier.parentID,
       builder: (filters) {
-        return GetAvailableMediaByCollectionId(
+        return GetEntities(
           storeIdentity: collection.store.store.identity,
           parentId: collection.id,
           errorBuilder: (_, __) =>

@@ -28,7 +28,7 @@ class MediaViewService extends StatelessWidget {
 
     return AppTheme(
       child: FullscreenLayout(
-        child: GetAvailableMediaByActiveCollectionId(
+        child: GetEntitiesOfActiveCollection(
           storeIdentity: storeIdentity,
           loadingBuilder: () => CLLoader.widget(
             debugMessage: 'GetAvailableMediaByCollectionId',

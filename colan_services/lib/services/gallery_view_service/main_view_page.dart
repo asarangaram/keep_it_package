@@ -28,7 +28,7 @@ class GalleryViewService extends StatelessWidget {
         body: OnSwipe(
           child: SafeArea(
             bottom: false,
-            child: GetAvailableMediaByActiveCollectionId(
+            child: GetEntitiesOfActiveCollection(
               storeIdentity: storeIdentity,
               loadingBuilder: () => CLLoader.widget(
                 debugMessage: 'GetAvailableMediaByCollectionId',

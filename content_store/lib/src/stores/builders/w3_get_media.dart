@@ -85,37 +85,6 @@ class GetAllMedia extends ConsumerWidget {
   }
 }
 
-class GetMediaByCollectionId extends ConsumerWidget {
-  const GetMediaByCollectionId({
-    required this.builder,
-    required this.errorBuilder,
-    required this.loadingBuilder,
-    required this.storeIdentity,
-    required this.parentId,
-    super.key,
-  });
-  final Widget Function(List<StoreEntity> items) builder;
-  final Widget Function(Object, StackTrace) errorBuilder;
-  final Widget Function() loadingBuilder;
-  final String storeIdentity;
-  final int parentId;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final query = EntityQuery(
-      storeIdentity,
-      {'isCollection': 0, 'parentId': parentId},
-    );
-
-    return GetFromStore(
-      query: query,
-      errorBuilder: errorBuilder,
-      loadingBuilder: loadingBuilder,
-      builder: builder,
-    );
-  }
-}
-
 class GetMediaMultipleByIds extends ConsumerWidget {
   const GetMediaMultipleByIds({
     required this.builder,

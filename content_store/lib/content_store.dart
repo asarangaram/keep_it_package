@@ -2,6 +2,7 @@
 library;
 
 export 'src/share_files.dart' show ShareManager;
+export 'src/stores/builders/get_entities.dart' show GetEntities;
 export 'src/stores/builders/get_stores.dart';
 export 'src/stores/builders/w3_get_collection.dart';
 export 'src/stores/builders/w3_get_media.dart';

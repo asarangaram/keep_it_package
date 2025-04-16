@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
 import '../providers/active_collection.dart';
-
+/* 
 class GetAvailableMediaByCollectionId extends ConsumerWidget {
   const GetAvailableMediaByCollectionId({
     required this.builder,
@@ -30,7 +30,7 @@ class GetAvailableMediaByCollectionId extends ConsumerWidget {
         builder: builder,
       );
     }
-    return GetMediaByCollectionId(
+    return GetEntitiesByCollectionId(
       storeIdentity: storeIdentity,
       errorBuilder: errorBuilder,
       loadingBuilder: loadingBuilder,
@@ -38,10 +38,10 @@ class GetAvailableMediaByCollectionId extends ConsumerWidget {
       builder: builder,
     );
   }
-}
+} */
 
-class GetAvailableMediaByActiveCollectionId extends ConsumerWidget {
-  const GetAvailableMediaByActiveCollectionId({
+class GetEntitiesOfActiveCollection extends ConsumerWidget {
+  const GetEntitiesOfActiveCollection({
     required this.builder,
     required this.errorBuilder,
     required this.loadingBuilder,
@@ -57,7 +57,7 @@ class GetAvailableMediaByActiveCollectionId extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final parent = ref.watch(activeCollectionProvider);
 
-    return GetAvailableMediaByCollectionId(
+    return GetEntities(
       storeIdentity: storeIdentity,
       errorBuilder: errorBuilder,
       loadingBuilder: loadingBuilder,
