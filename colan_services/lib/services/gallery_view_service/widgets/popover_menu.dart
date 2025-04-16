@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:shadcn_ui/shadcn_ui.dart';
-import 'package:store/store.dart';
 
 import '../../basic_page_service/widgets/page_manager.dart';
 

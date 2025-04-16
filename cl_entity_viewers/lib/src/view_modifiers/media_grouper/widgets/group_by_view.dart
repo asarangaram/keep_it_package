@@ -18,42 +18,28 @@ class GroupByView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currValue = {
-      for (final type in ['Media', 'Collection'])
-        type: ref.watch(
-          groupMethodProvider(type),
+    final currValue = ref.watch(
+      groupMethodProvider(tabIdentifier.tabId),
+    );
+
+    return ShadRadioGroup<GroupTypes>(
+      initialValue: currValue.method,
+      onChanged: (v) {
+        if (v != null) {
+          ref
+              .read(
+                groupMethodProvider(tabIdentifier.tabId).notifier,
+              )
+              .state = currValue.copyWith(method: v);
+        }
+      },
+      axis: Axis.horizontal,
+      items: GroupTypes.values.map(
+        (e) => ShadRadio(
+          value: e,
+          label: Text(e.label),
         ),
-    };
-    final textTheme = ShadTheme.of(context).textTheme;
-    return ShadAccordion<String>.multiple(
-      maintainState: true,
-      initialValue: currValue.keys.toList(),
-      children: [
-        for (final type in currValue.entries)
-          ShadAccordionItem<String>(
-            value: type.key,
-            title: Text('Group ${type.key} By', style: textTheme.lead),
-            child: ShadRadioGroup<GroupTypes>(
-              initialValue: currValue[type.key]!.method,
-              onChanged: (v) {
-                if (v != null) {
-                  ref
-                      .read(
-                        groupMethodProvider(type.key).notifier,
-                      )
-                      .state = currValue[type.key]!.copyWith(method: v);
-                }
-              },
-              axis: Axis.horizontal,
-              items: GroupTypes.values.map(
-                (e) => ShadRadio(
-                  value: e,
-                  label: Text(e.label),
-                ),
-              ),
-            ),
-          ),
-      ],
+      ),
     );
   }
 }
