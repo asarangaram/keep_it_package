@@ -16,7 +16,7 @@ class FilterBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (incoming.isNotEmpty && filterred.length < incoming.length) {
+    if (incoming.isNotEmpty && filterred.length == incoming.length) {
       return SizedBox.shrink();
     }
     return Padding(

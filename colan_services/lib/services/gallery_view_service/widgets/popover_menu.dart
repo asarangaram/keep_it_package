@@ -101,8 +101,9 @@ class _PopoverPageState extends ConsumerState<PopOverMenu> {
                           0 => FiltersView(
                               parentIdentifier:
                                   widget.tabIdentifier.view.parentID,
-                              filters: (items[0] as SearchFilters<StoreEntity>)
-                                  .filters,
+                              filters:
+                                  (items[0] as SearchFilters<ViewerEntityMixin>)
+                                      .filters,
                             ),
                           1 => GroupByView(
                               tabIdentifier: widget.tabIdentifier,
