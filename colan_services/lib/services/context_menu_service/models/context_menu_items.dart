@@ -30,6 +30,92 @@ class EntityContextMenu extends CLContextMenu {
     required this.onDelete,
     required this.infoMap,
   });
+  factory EntityContextMenu.ofEntity(
+    BuildContext context,
+    WidgetRef ref,
+    StoreEntity entity,
+  ) {
+    Future<bool> onEditInfo() async {
+      if (context.mounted) {
+        final updated = await (entity.isCollection
+            ? CollectionEditor.openSheet(
+                context,
+                ref,
+                collection: entity,
+              )
+            : MediaMetadataEditor.openSheet(
+                context,
+                ref,
+                media: entity,
+              ));
+        if (updated != null && context.mounted) {
+          await updated.dbSave();
+        }
+      }
+
+      return true;
+    }
+
+    final editSupported = !entity.isCollection &&
+        switch (entity.data.mediaType) {
+          CLMediaType.text => false,
+          CLMediaType.image => true,
+          CLMediaType.video => ColanPlatformSupport.isMobilePlatform,
+          CLMediaType.uri => false,
+          CLMediaType.audio => false,
+          CLMediaType.file => false,
+          CLMediaType.unknown => false,
+        };
+
+    Future<bool> onEdit() async {
+      await PageManager.of(context).openEditor(entity);
+      return true;
+    }
+
+    Future<bool?> onMove() => MediaWizardService.openWizard(
+          context,
+          ref,
+          CLSharedMedia(
+            entries: [entity],
+            type: UniversalMediaSource.move,
+          ),
+        );
+    Future<bool> onDelete() async {
+      final confirmed = await DialogService.deleteEntity(
+            context,
+            entity: entity,
+          ) ??
+          false;
+
+      if (confirmed && context.mounted) {
+        await entity.delete();
+        return true;
+      }
+      return false;
+    }
+
+    Future<bool?> onShare() => share(context, [entity]);
+
+    Future<bool> onPin() async {
+      await entity.onPin();
+      return true;
+    }
+
+    return EntityContextMenu.template(
+      name: entity.data.label ?? 'Unnamed',
+      logoImageAsset: 'assets/icon/not_on_server.png',
+      onEdit: editSupported ? onEdit : null,
+      onEditInfo: onEditInfo,
+      onMove: onMove,
+      onShare: entity.isCollection ? null : onShare,
+      onPin: !entity.isCollection && !ColanPlatformSupport.isMobilePlatform
+          ? onPin
+          : null,
+      onDelete: onDelete,
+      infoMap: entity.data.toMapForDisplay(),
+      isPinned: false,
+    );
+  }
   factory EntityContextMenu.empty() {
     return EntityContextMenu.template(
       name: 'No Context Menu',
@@ -88,151 +174,7 @@ class EntityContextMenu extends CLContextMenu {
       infoMap: infoMap,
     );
   }
-  factory EntityContextMenu.ofCollection(
-    BuildContext context,
-    WidgetRef ref, {
-    required StoreEntity collection,
-    ValueGetter<Future<bool?> Function()?>? onEdit,
-    ValueGetter<Future<bool?> Function()?>? onEditInfo,
-    ValueGetter<Future<bool?> Function()?>? onMove,
-    ValueGetter<Future<bool?> Function()?>? onShare,
-    ValueGetter<Future<bool?> Function()?>? onPin,
-    ValueGetter<Future<bool?> Function()?>? onDelete,
-    List<ViewerEntityMixin>? Function(ViewerEntityMixin entity)? onGetChildren,
-  }) {
-    /// Basic Actions
-    final onEditInfo0 = onEditInfo != null
-        ? onEditInfo()
-        : () async {
-            final updated = await CollectionEditor.openSheet(
-              context,
-              ref,
-              collection: collection,
-            );
-            if (updated != null && context.mounted) {
-              await updated.dbSave();
-            }
 
-            return true;
-          };
-
-    final onEdit0 = onEdit?.call();
-    final onMove0 = onMove?.call();
-    final onShare0 = onShare?.call();
-    final onPin0 = onPin?.call();
-
-    // Destructive Actions
-    final onDelete0 = onDelete != null
-        ? onDelete()
-        : () async {
-            final confirmed = await DialogService.deleteEntity(
-                  context,
-                  entity: collection,
-                ) ??
-                false;
-
-            if (context.mounted && confirmed) {
-              await collection.delete();
-              return true;
-            }
-            return false;
-          };
-
-    final ac = onGetCollectionActionControl(
-      collection,
-      onGetChildren: onGetChildren,
-    );
-    return EntityContextMenu.template(
-      name: collection.data.label!,
-      logoImageAsset: 'assets/icon/not_on_server.png',
-      onEdit: ac.onEdit(onEdit0),
-      onEditInfo: ac.onEdit(onEditInfo0),
-      onMove: ac.onMove(onMove0),
-      onShare: ac.onShare(onShare0),
-      onPin: ac.onPin(onPin0),
-      onDelete: ac.onDelete(onDelete0),
-      infoMap: collection.data.toMapForDisplay(),
-      isPinned: false,
-    );
-  }
-  factory EntityContextMenu.ofMedia(
-    BuildContext context,
-    WidgetRef ref, {
-    required StoreEntity media,
-    required StoreEntity parentCollection,
-    ValueGetter<Future<bool?> Function()?>? onMove,
-    ValueGetter<Future<bool?> Function()?>? onShare,
-    ValueGetter<Future<bool?> Function()?>? onDelete,
-  }) {
-    Future<bool> onEdit0() async {
-      await PageManager.of(context).openEditor(media);
-      return true;
-    }
-
-    Future<bool> onEditInfo0() async {
-      final updated = await MediaMetadataEditor.openSheet(
-        context,
-        ref,
-        media: media,
-      );
-      if (updated != null && context.mounted) {
-        await updated.dbSave();
-        return true;
-      }
-
-      return false;
-    }
-
-    final onMove0 = onMove != null
-        ? onMove()
-        : () => MediaWizardService.openWizard(
-              context,
-              ref,
-              CLSharedMedia(
-                entries: [media],
-                type: UniversalMediaSource.move,
-              ),
-            );
-
-    final onShare0 =
-        onShare != null ? onShare() : () => share(context, [media]);
-    final onDelete0 = onDelete != null
-        ? onDelete()
-        : () async {
-            final confirmed = await DialogService.deleteEntity(
-                  context,
-                  entity: media,
-                ) ??
-                false;
-            if (!confirmed) return confirmed;
-            if (confirmed && context.mounted) {
-              await media.delete();
-            }
-            return false;
-          };
-
-    Future<bool> onPin0() async {
-      await media.onPin();
-      return true;
-    }
-
-    final ac = onGetMediaActionControl(
-      media,
-      parentCollection,
-    );
-    return EntityContextMenu.template(
-      name: media.data.label ?? 'Unnamed',
-      logoImageAsset: 'assets/icon/not_on_server.png',
-      onEdit: ac.onEdit(onEdit0),
-      onEditInfo: ac.onEdit(onEditInfo0),
-      onMove: ac.onMove(onMove0),
-      onShare: ac.onShare(onShare0),
-      onPin: ac.onPin(onPin0),
-      onDelete: ac.onDelete(onDelete0),
-      infoMap: media.data.toMapForDisplay(),
-      isPinned: media.data.pin != null,
-    );
-  }
   factory EntityContextMenu.ofMultipleMedia(
     BuildContext context,
     WidgetRef ref, {
@@ -293,6 +235,7 @@ class EntityContextMenu extends CLContextMenu {
       isPinned: items.any((media) => media.data.pin != null),
     );
   }
+
   final String name;
   final String logoImageAsset;
   final CLMenuItem onEdit;
@@ -370,41 +313,6 @@ class EntityContextMenu extends CLContextMenu {
       context,
       files.toList(),
       sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
-    );
-  }
-
-  static ActionControl onGetCollectionActionControl(
-    StoreEntity collection, {
-    List<ViewerEntityMixin>? Function(ViewerEntityMixin entity)? onGetChildren,
-  }) {
-    return const ActionControl(
-      allowEdit: true,
-      allowDelete: true,
-      allowDeleteLocalCopy: true,
-    );
-  }
-
-  static ActionControl onGetMediaActionControl(
-    StoreEntity media,
-    StoreEntity parentCollection,
-  ) {
-    final editSupported = switch (media.data.mediaType) {
-      CLMediaType.text => false,
-      CLMediaType.image => true,
-      CLMediaType.video => ColanPlatformSupport.isMobilePlatform,
-      CLMediaType.uri => false,
-      CLMediaType.audio => false,
-      CLMediaType.file => false,
-      CLMediaType.unknown => false,
-    };
-
-    return ActionControl(
-      allowEdit: editSupported,
-      allowDelete: true,
-      allowMove: true,
-      allowShare: true,
-      allowPin: ColanPlatformSupport.isMobilePlatform,
-      allowDuplicateMedia: true,
     );
   }
 }

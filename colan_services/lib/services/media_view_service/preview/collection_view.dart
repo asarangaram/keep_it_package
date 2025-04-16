@@ -14,12 +14,10 @@ class CollectionView extends ConsumerWidget {
   const CollectionView.preview(
     this.collection, {
     required this.viewIdentifier,
-    required this.containingMedia,
     super.key,
   });
   final ViewIdentifier viewIdentifier;
   final StoreEntity collection;
-  final List<StoreEntity> containingMedia;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -36,7 +34,8 @@ class CollectionView extends ConsumerWidget {
               throw UnimplementedError('GetMediaByCollectionId'),
           loadingBuilder: () =>
               CLLoader.hide(debugMessage: 'GetMediaByCollectionId'),
-          builder: (allMedia) {
+          builder: (children) {
+            final filterredChildren = children; // FIXME Introduce filter
             return FolderItem(
               name: collection.data.label!,
               borderColor: borderColor,
@@ -63,7 +62,7 @@ class CollectionView extends ConsumerWidget {
                                 .colorScheme
                                 .mutedForeground,
                             child: Text(
-                              '${containingMedia.length}/${allMedia.length} matches',
+                              '${filterredChildren.length}/${children.length} matches',
                             ),
                           ),
                         ),
@@ -71,11 +70,11 @@ class CollectionView extends ConsumerWidget {
                     )
                   : null,
               child: CLMediaCollage.byMatrixSize(
-                containingMedia.length,
+                filterredChildren.length,
                 hCount: 3,
                 vCount: 3,
                 itemBuilder: (context, index) => MediaThumbnail(
-                  media: containingMedia[index],
+                  media: filterredChildren[index],
                 ),
                 whenNopreview: Center(
                   child: CLText.veryLarge(
