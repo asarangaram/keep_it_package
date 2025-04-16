@@ -169,7 +169,7 @@ class GetStaleMedia extends ConsumerWidget {
   }
 }
 
-class GetDeletedMedia extends ConsumerWidget {
+/* class GetDeletedMedia extends ConsumerWidget {
   const GetDeletedMedia({
     required this.builder,
     required this.errorBuilder,
@@ -193,4 +193,4 @@ class GetDeletedMedia extends ConsumerWidget {
       builder: builder,
     );
   }
-}
+} */

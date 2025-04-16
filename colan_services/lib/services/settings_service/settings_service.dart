@@ -24,7 +24,10 @@ class SettingsService extends ConsumerWidget {
         ),
       ),
       popupActionItems: const [],
-      child: GetDeletedMedia(
+      child: GetEntities(
+        isDeleted: true,
+        isHidden: null,
+        parentId: 0,
         storeIdentity: storeIdentity,
         errorBuilder: (_, __) {
           throw UnimplementedError('errorBuilder');
