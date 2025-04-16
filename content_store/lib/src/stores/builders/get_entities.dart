@@ -10,9 +10,11 @@ class GetEntities extends ConsumerWidget {
     required this.errorBuilder,
     required this.loadingBuilder,
     required this.storeIdentity,
-    this.parentId,
-    this.isCollection,
+    this.parentId, // parentID = 0 ignores parentId, null is a valid parentId
+    this.isCollection, // isCollection = null ignores isCollection
     super.key,
+    this.isHidden = false, // isHidden = null ignores isHidden
+    this.isDeleted = false, // isDeleted = null ignores isDeleted
   });
   final Widget Function(List<StoreEntity> items) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
@@ -20,15 +22,17 @@ class GetEntities extends ConsumerWidget {
   final String storeIdentity;
   final int? parentId;
   final bool? isCollection;
+  final bool? isHidden;
+  final bool? isDeleted;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final query = EntityQuery(
       storeIdentity,
       {
-        'isHidden': 0,
-        'isDeleted': 0,
-        'parentId': parentId,
+        if (isHidden != null) 'isHidden': isHidden! ? 1 : 0,
+        if (isDeleted != null) 'isDeleted': isDeleted! ? 1 : 0,
+        if (parentId != 0) 'parentId': parentId,
         if (isCollection != null) 'isCollection': isCollection! ? 1 : 0,
       },
     );
