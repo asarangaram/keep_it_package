@@ -50,7 +50,19 @@ class SelectionContol extends ConsumerWidget {
 
     final filterred =
         ref.watch(filterredMediaProvider(MapEntry(tabIdentifier, incoming)));
-    return CLGalleryGridView(
+
+    /* return MediaViewService1.pageView(
+          media: filterred.map((e) => e as StoreEntity).toList(),
+          parentIdentifier: viewIdentifier.toString(),
+          initialMediaIndex:
+              filterred.indexWhere((e) => e.id == initialMediaIndex),
+          errorBuilder: errorBuilder,
+          loadingBuilder: () => CLLoader.widget(
+            debugMessage: 'MediaViewService.pageView',
+          ),
+        ); */
+
+    return CLRawGalleryGridView(
       tabIdentifier: tabIdentifier,
       incoming: filterred,
       bannersBuilder: (context, galleryMap) {

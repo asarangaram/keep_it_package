@@ -38,7 +38,18 @@ class KeepItMediaCorouselView extends ConsumerWidget {
         PageManager.of(context).pop();
       });
     }
-    return GetFilterredMedia(
+    //FIXME Filter
+    return MediaViewService1.pageView(
+      media: entities.map((e) => e).toList(),
+      parentIdentifier: viewIdentifier.toString(),
+      initialMediaIndex: entities.indexWhere((e) => e.id == initialMediaIndex),
+      errorBuilder: errorBuilder,
+      loadingBuilder: () => CLLoader.widget(
+        debugMessage: 'MediaViewService.pageView',
+      ),
+    );
+
+    /* return ViewModifierBuilder(
       tabIdentifier: TabIdentifier(view: viewIdentifier, tabId: 'Media'),
       incoming: entities,
       bannersBuilder: (context, _) => [],
@@ -48,18 +59,7 @@ class KeepItMediaCorouselView extends ConsumerWidget {
           BuildContext,
           List<ViewerEntityGroup<ViewerEntityMixin>>,
         ) bannersBuilder,
-      }) {
-        return MediaViewService1.pageView(
-          media: filterred.map((e) => e as StoreEntity).toList(),
-          parentIdentifier: viewIdentifier.toString(),
-          initialMediaIndex:
-              filterred.indexWhere((e) => e.id == initialMediaIndex),
-          errorBuilder: errorBuilder,
-          loadingBuilder: () => CLLoader.widget(
-            debugMessage: 'MediaViewService.pageView',
-          ),
-        );
-      },
-    );
+      }) {},
+    ); */
   }
 }

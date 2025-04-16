@@ -9,8 +9,8 @@ import '../models/tab_identifier.dart';
 import '../providers/scroll_position.dart';
 import 'cl_grid.dart';
 
-class CLGalleryGridView extends ConsumerStatefulWidget {
-  const CLGalleryGridView(
+class CLRawGalleryGridView extends ConsumerStatefulWidget {
+  const CLRawGalleryGridView(
       {required this.tabIdentifier,
       required this.incoming,
       required this.itemBuilder,
@@ -43,10 +43,11 @@ class CLGalleryGridView extends ConsumerStatefulWidget {
   })? draggableMenuBuilder;
 
   @override
-  ConsumerState<CLGalleryGridView> createState() => CLEntityGalleryTabState();
+  ConsumerState<CLRawGalleryGridView> createState() =>
+      CLEntityGalleryTabState();
 }
 
-class CLEntityGalleryTabState extends ConsumerState<CLGalleryGridView> {
+class CLEntityGalleryTabState extends ConsumerState<CLRawGalleryGridView> {
   final GlobalKey parentKey = GlobalKey();
   late ScrollController _scrollController;
   @override
