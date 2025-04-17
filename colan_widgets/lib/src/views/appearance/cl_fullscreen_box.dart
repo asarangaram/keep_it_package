@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:keep_it_state/keep_it_state.dart';
-import '../../basics/cl_button.dart';
 
+import '../../basics/cl_button.dart';
+import '../../models/ext_color.dart';
 import '../../theme/models/cl_icons.dart';
 
 class CLFullscreenBox extends StatefulWidget {
