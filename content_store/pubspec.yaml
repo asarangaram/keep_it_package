@@ -28,8 +28,6 @@ dependencies:
   image: ^4.2.0
   intl: ^0.19.0
 
-  keep_it_state:
-    path: ../keep_it_state
   local_store:
     path: ../local_store
   meta: ^1.12.0
