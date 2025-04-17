@@ -3,12 +3,12 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import '../../basic_page_service/widgets/page_manager.dart';
-import '../../context_menu_service/models/context_menu_items.dart';
-import '../../context_menu_service/widgets/shad_context_menu.dart';
-import '../../gallery_view_service/providers/active_collection.dart';
-import 'collection_view.dart';
-import 'media_preview_service.dart';
+import '../../../basic_page_service/widgets/page_manager.dart';
+import 'context_menu.dart';
+import '../../../media_view_service/preview/collection_view.dart';
+import '../../../media_view_service/preview/media_preview_service.dart';
+import '../../models/entity_actions.dart';
+import '../../providers/active_collection.dart';
 
 class EntityPreview extends ConsumerWidget {
   const EntityPreview({
@@ -23,7 +23,7 @@ class EntityPreview extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final entity = item as StoreEntity;
 
-    final contextMenu = EntityContextMenu.ofEntity(
+    final contextMenu = EntityActions.ofEntity(
       context,
       ref,
       entity,
@@ -46,7 +46,7 @@ class EntityPreview extends ConsumerWidget {
       ],
     ); */
 
-    return CLBasicContextMenu(
+    return KeepItContextMenu(
       viewIdentifier: viewIdentifier,
       onTap: () async {
         if (entity.isCollection) {

@@ -4,17 +4,14 @@ import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../context_menu_service/models/context_menu_items.dart';
-import '../media_view_service/preview/entity_preview.dart';
-
+import 'models/entity_actions.dart';
 import 'providers/active_collection.dart';
-
-import 'widgets/actions/bottom_bar.dart';
-import 'widgets/actions/top_bar.dart';
-
-import 'widgets/stale_media_banner.dart';
-import 'widgets/when_empty.dart';
-import 'widgets/when_error.dart';
+import 'widgets/basics/bottom_bar.dart';
+import 'widgets/basics/entity_preview.dart';
+import 'widgets/basics/stale_media_banner.dart';
+import 'widgets/basics/top_bar.dart';
+import 'widgets/basics/when_empty.dart';
+import 'widgets/basics/when_error.dart';
 
 class GalleryViewService extends StatelessWidget {
   const GalleryViewService({
@@ -88,10 +85,7 @@ class GalleryViewService0 extends ConsumerWidget {
               FadeTransition(opacity: animation, child: child),
           child: Column(
             children: [
-              KeepItTopBar(
-                parentIdentifier: parentIdentifier,
-                entities: entities,
-              ),
+              KeepItTopBar(viewIdentifier: viewIdentifier, entities: entities),
               Expanded(
                 child: RefreshIndicator(
                   onRefresh: /* isSelectionMode ? null : */
@@ -109,7 +103,7 @@ class GalleryViewService0 extends ConsumerWidget {
                           filtersDisabled: false,
                           onSelectionChanged: null,
                           contextMenuBuilder: (context, entities) =>
-                              EntityContextMenu.entitiesContextMenuBuilder(
+                              EntityActions.entitiesContextMenuBuilder(
                             context,
                             ref,
                             entities,

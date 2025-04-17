@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 
-import '../models/context_menu_items.dart';
+import '../../gallery_view_service/models/entity_actions.dart';
 
 class PullDownContextMenu extends ConsumerWidget {
   const PullDownContextMenu({
@@ -16,7 +16,7 @@ class PullDownContextMenu extends ConsumerWidget {
 
   final Widget child;
   final Future<bool?> Function()? onTap;
-  final EntityContextMenu? contextMenu;
+  final EntityActions? contextMenu;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -344,7 +344,7 @@ class EntityMetaData extends ConsumerWidget {
 
   final Widget child;
 
-  final EntityContextMenu? contextMenu;
+  final EntityActions? contextMenu;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

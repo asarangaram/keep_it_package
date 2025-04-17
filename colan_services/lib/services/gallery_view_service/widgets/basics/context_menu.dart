@@ -2,13 +2,12 @@ import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../models/context_menu_items.dart';
+import '../../models/entity_actions.dart';
 
-class CLBasicContextMenu extends ConsumerWidget {
-  const CLBasicContextMenu({
+class KeepItContextMenu extends ConsumerWidget {
+  const KeepItContextMenu({
     required this.viewIdentifier,
     required this.child,
     super.key,
@@ -18,7 +17,7 @@ class CLBasicContextMenu extends ConsumerWidget {
   final ViewIdentifier viewIdentifier;
   final Widget child;
   final Future<bool?> Function()? onTap;
-  final EntityContextMenu? contextMenu;
+  final EntityActions? contextMenu;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

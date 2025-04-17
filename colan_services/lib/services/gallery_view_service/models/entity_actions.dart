@@ -8,18 +8,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/keep_it_state.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
-
 import 'package:store/store.dart';
 
 import '../../basic_page_service/widgets/dialogs.dart';
 import '../../basic_page_service/widgets/page_manager.dart';
-import '../../gallery_view_service/widgets/collection_editor.dart';
-import '../../gallery_view_service/widgets/media_editor.dart';
 import '../../media_wizard_service/media_wizard_service.dart';
+import '../widgets/collection_editor.dart';
+import '../widgets/media_editor.dart';
 
 @immutable
-class EntityContextMenu extends CLContextMenu {
-  const EntityContextMenu({
+class EntityActions extends CLContextMenu {
+  const EntityActions({
     required this.name,
     required this.logoImageAsset,
     required this.onEdit,
@@ -30,7 +29,7 @@ class EntityContextMenu extends CLContextMenu {
     required this.onDelete,
     required this.infoMap,
   });
-  factory EntityContextMenu.ofEntity(
+  factory EntityActions.ofEntity(
     BuildContext context,
     WidgetRef ref,
     StoreEntity entity,
@@ -101,7 +100,7 @@ class EntityContextMenu extends CLContextMenu {
       return true;
     }
 
-    return EntityContextMenu.template(
+    return EntityActions.template(
       name: entity.data.label ?? 'Unnamed',
       logoImageAsset: 'assets/icon/not_on_server.png',
       onEdit: editSupported ? onEdit : null,
@@ -116,15 +115,15 @@ class EntityContextMenu extends CLContextMenu {
       isPinned: false,
     );
   }
-  factory EntityContextMenu.empty() {
-    return EntityContextMenu.template(
+  factory EntityActions.empty() {
+    return EntityActions.template(
       name: 'No Context Menu',
       logoImageAsset: '',
       infoMap: const {},
       isPinned: false,
     );
   }
-  factory EntityContextMenu.template({
+  factory EntityActions.template({
     required String name,
     required String logoImageAsset,
     required Map<String, dynamic> infoMap,
@@ -136,7 +135,7 @@ class EntityContextMenu extends CLContextMenu {
     Future<bool?> Function()? onPin,
     Future<bool?> Function()? onDelete,
   }) {
-    return EntityContextMenu(
+    return EntityActions(
       name: name,
       logoImageAsset: logoImageAsset,
       onEdit: CLMenuItem(
@@ -175,7 +174,7 @@ class EntityContextMenu extends CLContextMenu {
     );
   }
 
-  factory EntityContextMenu.ofMultipleMedia(
+  factory EntityActions.ofMultipleMedia(
     BuildContext context,
     WidgetRef ref, {
     required List<StoreEntity> items,
@@ -222,7 +221,7 @@ class EntityContextMenu extends CLContextMenu {
       return false;
     }
 
-    return EntityContextMenu.template(
+    return EntityActions.template(
       name: 'Multiple Media',
       logoImageAsset: 'assets/icon/not_on_server.png',
       onEdit: onEdit != null ? onEdit() : onEdit0,
@@ -269,7 +268,7 @@ class EntityContextMenu extends CLContextMenu {
         onDelete,
       ];
 
-  static EntityContextMenu entitiesContextMenuBuilder(
+  static EntityActions entitiesContextMenuBuilder(
     BuildContext context,
     WidgetRef ref,
     List<ViewerEntityMixin> entities,
@@ -281,7 +280,7 @@ class EntityContextMenu extends CLContextMenu {
             (e) => e is StoreEntity && e.data.isCollection == false,
           ) =>
         () {
-          return EntityContextMenu.ofMultipleMedia(
+          return EntityActions.ofMultipleMedia(
             context,
             ref,
             items: e.map((e) => e as StoreEntity).toList(),
@@ -293,7 +292,7 @@ class EntityContextMenu extends CLContextMenu {
             (e) => e is StoreEntity && e.data.isCollection == true,
           ) =>
         () {
-          return EntityContextMenu.empty();
+          return EntityActions.empty();
         }(),
       _ => throw UnimplementedError('Mix of items not supported yet')
     };

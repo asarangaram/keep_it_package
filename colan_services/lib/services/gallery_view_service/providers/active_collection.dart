@@ -5,7 +5,7 @@ final activeCollectionProvider = StateProvider<StoreEntity?>((ref) {
   return null;
 });
 
-enum MainViews { page, grid }
+/* enum MainViews { page, grid }
 
 final currView = StateProvider<MainViews>((ref) {
   return MainViews.page;
@@ -14,3 +14,4 @@ final currView = StateProvider<MainViews>((ref) {
 final currPageIndex = StateProvider<int>((ref) {
   return 0;
 });
+ */

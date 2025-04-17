@@ -2,9 +2,8 @@ import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 
 import 'package:flutter/material.dart';
 
-import '../../context_menu_service/models/context_menu_items.dart';
-
-import '../../gallery_view_service/widgets/when_empty.dart';
+import '../../gallery_view_service/models/entity_actions.dart';
+import '../../gallery_view_service/widgets/basics/when_empty.dart';
 
 class CLGalleryView extends StatelessWidget {
   const CLGalleryView({
@@ -31,7 +30,7 @@ class CLGalleryView extends StatelessWidget {
   final int columns;
 
   final Widget emptyWidget;
-  final EntityContextMenu Function(BuildContext, List<ViewerEntityMixin>)
+  final EntityActions Function(BuildContext, List<ViewerEntityMixin>)
       contextMenuBuilder;
   final void Function(List<ViewerEntityMixin>)? onSelectionChanged;
   final bool filterDisabled;

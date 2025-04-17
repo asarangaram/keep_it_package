@@ -8,7 +8,8 @@ import 'package:store/store.dart';
 
 import '../../basic_page_service/widgets/cl_error_view.dart';
 import '../../basic_page_service/widgets/page_manager.dart';
-import '../../context_menu_service/models/context_menu_items.dart';
+
+import '../../gallery_view_service/models/entity_actions.dart';
 import 'wizard_grid_view.dart';
 
 class WizardPreview extends ConsumerStatefulWidget {
@@ -63,7 +64,7 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
       errorBuilder: errorBuilder,
 
       // Wizard don't use context menu
-      contextMenuBuilder: (context, list) => EntityContextMenu.empty(),
+      contextMenuBuilder: (context, list) => EntityActions.empty(),
       onSelectionChanged: onSelectionChanged == null
           ? null
           : (items) => onSelectionChanged
