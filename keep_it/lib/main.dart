@@ -80,7 +80,7 @@ class KeepItApp implements AppDescriptor {
               parentIdentifier = parameters['parentIdentifier']!;
             }
             if (!parameters.containsKey('parentId')) {
-              parentId = null;
+              parentId = 0;
             } else {
               parentId = int.parse(parameters['parentId']!);
             }

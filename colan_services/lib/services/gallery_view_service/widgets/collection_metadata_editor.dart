@@ -9,15 +9,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
-class CollectionEditor extends StatefulWidget {
-  factory CollectionEditor({
+class CollectionMetadataEditor extends StatefulWidget {
+  factory CollectionMetadataEditor({
     required String storeIdentity,
     required int? id,
     required void Function(StoreEntity collection) onSubmit,
     required void Function() onCancel,
     Key? key,
   }) {
-    return CollectionEditor._(
+    return CollectionMetadataEditor._(
       storeIdentity: storeIdentity,
       id: id,
       onSubmit: onSubmit,
@@ -26,14 +26,14 @@ class CollectionEditor extends StatefulWidget {
       key: key,
     );
   }
-  factory CollectionEditor.dialog({
+  factory CollectionMetadataEditor.dialog({
     required String storeIdentity,
     required int id,
     required void Function(StoreEntity collection) onSubmit,
     required void Function() onCancel,
     Key? key,
   }) {
-    return CollectionEditor._(
+    return CollectionMetadataEditor._(
       storeIdentity: storeIdentity,
       id: id,
       onSubmit: onSubmit,
@@ -42,7 +42,7 @@ class CollectionEditor extends StatefulWidget {
       key: key,
     );
   }
-  const CollectionEditor._({
+  const CollectionMetadataEditor._({
     required this.storeIdentity,
     required this.id,
     required this.isDialog,
@@ -59,7 +59,8 @@ class CollectionEditor extends StatefulWidget {
   final bool isDialog;
 
   @override
-  State<CollectionEditor> createState() => _CollectionEditorState();
+  State<CollectionMetadataEditor> createState() =>
+      _CollectionMetadataEditorState();
 
   static Future<StoreEntity?> openSheet(
     BuildContext context,
@@ -68,7 +69,7 @@ class CollectionEditor extends StatefulWidget {
   }) async {
     return showShadSheet<StoreEntity>(
       context: context,
-      builder: (BuildContext context) => CollectionEditor.dialog(
+      builder: (BuildContext context) => CollectionMetadataEditor.dialog(
         storeIdentity: collection.store.store.identity,
         id: collection.id!,
         onSubmit: (collection) {
@@ -80,7 +81,7 @@ class CollectionEditor extends StatefulWidget {
   }
 }
 
-class _CollectionEditorState extends State<CollectionEditor> {
+class _CollectionMetadataEditorState extends State<CollectionMetadataEditor> {
   final formKey = GlobalKey<ShadFormState>();
   Map<Object, dynamic> formValue = {};
 

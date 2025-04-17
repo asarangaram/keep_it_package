@@ -13,8 +13,8 @@ import 'package:store/store.dart';
 import '../../basic_page_service/widgets/dialogs.dart';
 import '../../basic_page_service/widgets/page_manager.dart';
 import '../../media_wizard_service/media_wizard_service.dart';
-import '../widgets/collection_editor.dart';
-import '../widgets/media_editor.dart';
+import '../widgets/collection_metadata_editor.dart';
+import '../widgets/media_metadata_editor.dart';
 
 @immutable
 class EntityActions extends CLContextMenu {
@@ -37,7 +37,7 @@ class EntityActions extends CLContextMenu {
     Future<bool> onEditInfo() async {
       if (context.mounted) {
         final updated = await (entity.isCollection
-            ? CollectionEditor.openSheet(
+            ? CollectionMetadataEditor.openSheet(
                 context,
                 ref,
                 collection: entity,

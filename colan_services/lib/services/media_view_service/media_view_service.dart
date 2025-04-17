@@ -3,7 +3,6 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:store/store.dart';
 
 import '../../internal/fullscreen_layout.dart';
 import '../basic_page_service/widgets/page_manager.dart';
@@ -32,7 +31,36 @@ class MediaViewService extends ConsumerWidget {
           errorMessage: e.toString(),
         );
     final parentId = ref.watch(activeCollectionProvider)?.id;
-
+    final viewIdentifier = ViewIdentifier(
+      parentID: parentIdentifier,
+      viewId: parentId.toString(),
+    );
+    if (parentId == 0) {
+      GetEntity(
+        storeIdentity: storeIdentity,
+        id: id,
+        errorBuilder: errorBuilder,
+        loadingBuilder: () => CLLoader.widget(
+          debugMessage: 'MediaViewService',
+        ),
+        builder: (entity) {
+          if (entity == null) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              PageManager.of(context).pop();
+            });
+          }
+          return MediaViewService0(
+            media: [if (entity != null) entity],
+            parentIdentifier: viewIdentifier.toString(),
+            initialMediaIndex: 0,
+            errorBuilder: errorBuilder,
+            loadingBuilder: () => CLLoader.widget(
+              debugMessage: 'MediaViewService.pageView',
+            ),
+          );
+        },
+      );
+    }
     return AppTheme(
       child: FullscreenLayout(
         child: GetEntities(
@@ -42,82 +70,26 @@ class MediaViewService extends ConsumerWidget {
             debugMessage: 'GetAvailableMediaByCollectionId',
           ),
           errorBuilder: errorBuilder,
-          builder: (entities) => AnimatedSwitcher(
-            duration: const Duration(milliseconds: 300),
-            switchInCurve: Curves.easeInOut,
-            switchOutCurve: Curves.easeInOut,
-            transitionBuilder: (
-              Widget child,
-              Animation<double> animation,
-            ) =>
-                FadeTransition(opacity: animation, child: child),
-            child: KeepItMediaCorouselView(
-              parentIdentifier: parentIdentifier,
-              entities: entities,
-              initialMediaIndex: id,
-              loadingBuilder: () => CLLoader.widget(
-                debugMessage: 'KeepItMainGrid',
-              ),
+          builder: (entities) {
+            if (entities.isEmpty) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                PageManager.of(context).pop();
+              });
+            }
+
+            //FIXME Filter
+            return MediaViewService0(
+              media: entities.map((e) => e).toList(),
+              parentIdentifier: viewIdentifier.toString(),
+              initialMediaIndex: entities.indexWhere((e) => e.id == id),
               errorBuilder: errorBuilder,
-            ),
-          ),
+              loadingBuilder: () => CLLoader.widget(
+                debugMessage: 'MediaViewService.pageView',
+              ),
+            );
+          },
         ),
       ),
     );
-  }
-}
-
-class KeepItMediaCorouselView extends ConsumerWidget {
-  const KeepItMediaCorouselView({
-    required this.parentIdentifier,
-    required this.entities,
-    required this.loadingBuilder,
-    required this.errorBuilder,
-    this.initialMediaIndex = 0,
-    super.key,
-  });
-  final String parentIdentifier;
-  final List<StoreEntity> entities;
-  final Widget Function() loadingBuilder;
-  final Widget Function(Object, StackTrace) errorBuilder;
-
-  final int initialMediaIndex;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final parentId = ref.watch(activeCollectionProvider);
-    final viewIdentifier = ViewIdentifier(
-      parentID: parentIdentifier,
-      viewId: parentId.toString(),
-    );
-
-    if (entities.isEmpty) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        PageManager.of(context).pop();
-      });
-    }
-    //FIXME Filter
-    return MediaViewService1.pageView(
-      media: entities.map((e) => e).toList(),
-      parentIdentifier: viewIdentifier.toString(),
-      initialMediaIndex: entities.indexWhere((e) => e.id == initialMediaIndex),
-      errorBuilder: errorBuilder,
-      loadingBuilder: () => CLLoader.widget(
-        debugMessage: 'MediaViewService.pageView',
-      ),
-    );
-
-    /* return ViewModifierBuilder(
-      viewIdentifier: ViewIdentifier(view: viewIdentifier, tabId: 'Media'),
-      incoming: entities,
-      bannersBuilder: (context, _) => [],
-      builder: (
-        List<ViewerEntityMixin> filterred, {
-        required List<Widget> Function(
-          BuildContext,
-          List<ViewerEntityGroup<ViewerEntityMixin>>,
-        ) bannersBuilder,
-      }) {},
-    ); */
   }
 }

@@ -10,7 +10,7 @@ import 'package:store/store.dart';
 
 import '../../basic_page_service/widgets/dialogs.dart';
 import '../../basic_page_service/widgets/page_manager.dart';
-import '../../context_menu_service/models/wizard_menu_items.dart';
+import 'wizard_menu_items.dart';
 import 'create_collection_wizard.dart';
 import 'wizard_preview.dart';
 

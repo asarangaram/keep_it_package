@@ -1,4 +1,3 @@
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,98 +7,8 @@ import 'package:store/store.dart';
 import 'widgets/media_page_view.dart';
 import 'widgets/media_view.dart';
 
-class MediaViewService1 extends StatelessWidget {
-  factory MediaViewService1({
-    required StoreEntity media,
-    required String parentIdentifier,
-    required Widget Function(Object, StackTrace) errorBuilder,
-    required Widget Function() loadingBuilder,
-    Key? key,
-  }) {
-    return MediaViewService1._(
-      initialMediaIndex: 0,
-      media: [media],
-      parentIdentifier: parentIdentifier,
-      key: key,
-      isPreview: false,
-      errorBuilder: errorBuilder,
-      loadingBuilder: loadingBuilder,
-    );
-  }
-
-  factory MediaViewService1.pageView({
-    required int initialMediaIndex,
-    required List<StoreEntity> media,
-    required String parentIdentifier,
-    required Widget Function(Object, StackTrace) errorBuilder,
-    required Widget Function() loadingBuilder,
-    Key? key,
-  }) {
-    return MediaViewService1._(
-      initialMediaIndex: initialMediaIndex,
-      media: media,
-      parentIdentifier: parentIdentifier,
-      key: key,
-      isPreview: false,
-      errorBuilder: errorBuilder,
-      loadingBuilder: loadingBuilder,
-    );
-  }
-  const MediaViewService1._({
-    required this.initialMediaIndex,
-    required this.media,
-    required this.parentIdentifier,
-    required this.isPreview,
-    super.key,
-    this.errorBuilder,
-    this.loadingBuilder,
-  });
-
-  final List<StoreEntity> media;
-  final int initialMediaIndex;
-  final String parentIdentifier;
-  final bool isPreview;
-  final Widget Function(Object, StackTrace)? errorBuilder;
-  final Widget Function()? loadingBuilder;
-  @override
-  Widget build(BuildContext context) {
-    if (isPreview) {
-      return CLAspectRationDecorated(
-        //hasBorder: true,
-        //borderRadius: const BorderRadius.all(Radius.circular(16)),
-        child: MediaView.preview(
-          media[0],
-          parentIdentifier: parentIdentifier,
-        ),
-      );
-    }
-    if (errorBuilder == null || loadingBuilder == null) {
-      throw Error();
-    }
-    if (media.length == 1) {
-      return MediaViewService0._(
-        initialMediaIndex: 0,
-        media: media,
-        parentIdentifier: parentIdentifier,
-        key: key,
-        errorBuilder: errorBuilder!,
-        loadingBuilder: loadingBuilder!,
-      );
-    }
-
-    return MediaViewService0._(
-      initialMediaIndex: initialMediaIndex,
-      media: media,
-      parentIdentifier: parentIdentifier,
-      key: key,
-      errorBuilder: errorBuilder!,
-      loadingBuilder: loadingBuilder!,
-    );
-  }
-}
-
 class MediaViewService0 extends ConsumerStatefulWidget {
-  const MediaViewService0._({
+  const MediaViewService0({
     required this.initialMediaIndex,
     required this.media,
     required this.parentIdentifier,
