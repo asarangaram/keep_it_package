@@ -152,6 +152,7 @@ class InvokeEditor extends StatelessWidget {
           PageManager.of(context).pop();
         });
         return Container();
+      case CLMediaType.collection:
       case CLMediaType.text:
       case CLMediaType.uri:
       case CLMediaType.audio:

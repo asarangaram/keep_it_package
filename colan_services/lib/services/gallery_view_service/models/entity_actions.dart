@@ -55,16 +55,16 @@ class EntityActions extends CLContextMenu {
       return true;
     }
 
-    final editSupported = !entity.isCollection &&
-        switch (entity.data.mediaType) {
-          CLMediaType.text => false,
-          CLMediaType.image => true,
-          CLMediaType.video => ColanPlatformSupport.isMobilePlatform,
-          CLMediaType.uri => false,
-          CLMediaType.audio => false,
-          CLMediaType.file => false,
-          CLMediaType.unknown => false,
-        };
+    final editSupported = switch (entity.data.mediaType) {
+      CLMediaType.text => false,
+      CLMediaType.image => true,
+      CLMediaType.video => ColanPlatformSupport.isMobilePlatform,
+      CLMediaType.uri => false,
+      CLMediaType.audio => false,
+      CLMediaType.file => false,
+      CLMediaType.unknown => false,
+      CLMediaType.collection => false,
+    };
 
     Future<bool> onEdit() async {
       await PageManager.of(context).openEditor(entity);

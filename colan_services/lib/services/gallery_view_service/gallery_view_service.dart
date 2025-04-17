@@ -97,22 +97,25 @@ class GalleryViewService0 extends ConsumerWidget {
                           storeIdentity: storeIdentity,
                         ),
                       Expanded(
-                        child: CLGalleryGridView(
-                          viewIdentifier: viewIdentifier,
-                          incoming: entities,
-                          filtersDisabled: false,
-                          onSelectionChanged: null,
-                          contextMenuBuilder: (context, entities) =>
-                              EntityActions.entitiesContextMenuBuilder(
-                            context,
-                            ref,
-                            entities,
-                          ),
-                          itemBuilder: (context, item) => EntityPreview(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: CLGalleryGridView(
                             viewIdentifier: viewIdentifier,
-                            item: item,
+                            incoming: entities,
+                            filtersDisabled: false,
+                            onSelectionChanged: null,
+                            contextMenuBuilder: (context, entities) =>
+                                EntityActions.entitiesContextMenuBuilder(
+                              context,
+                              ref,
+                              entities,
+                            ),
+                            itemBuilder: (context, item) => EntityPreview(
+                              viewIdentifier: viewIdentifier,
+                              item: item,
+                            ),
+                            whenEmpty: const WhenEmpty(),
                           ),
-                          whenEmpty: const WhenEmpty(),
                         ),
                       ),
                     ],

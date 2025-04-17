@@ -169,7 +169,8 @@ class StoreEntity implements ViewerEntityMixin {
   int get hashCode => data.hashCode ^ store.hashCode ^ path.hashCode;
 
   @override
-  CLMediaType get mediaType => data.mediaType;
+  CLMediaType get mediaType =>
+      data.isCollection ? CLMediaType.collection : data.mediaType;
 
   @override
   String get searchableTexts =>

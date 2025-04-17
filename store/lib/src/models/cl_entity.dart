@@ -259,7 +259,9 @@ class CLEntity {
 
   DateTime get sortDate => createDate ?? updatedDate;
 
-  CLMediaType get mediaType => CLMediaType.values.asNameMap()[type]!;
+  CLMediaType get mediaType => isCollection
+      ? CLMediaType.collection
+      : CLMediaType.values.asNameMap()[type]!;
 
   CLEntity clone({
     ValueGetter<int?>? id,

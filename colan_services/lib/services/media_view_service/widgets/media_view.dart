@@ -165,6 +165,8 @@ class MediaView0 extends ConsumerWidget {
                   CLMediaType.file => const BrokenImage(),
                   CLMediaType.uri => const BrokenImage(),
                   CLMediaType.unknown => const BrokenImage(),
+                  CLMediaType.collection =>
+                    const BrokenImage(), // FIXME, How to show in Mediaview
                 },
               ),
             ),
