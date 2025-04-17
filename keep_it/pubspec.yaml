@@ -1,12 +1,12 @@
 name: keep_it
 description: An app allows you to preserve the images you get from web in an organized manner, without messing it up with photos.
-publish_to: 'none' 
+publish_to: "none"
 homepage: htts://www.cloudonlanapps.com
 
 version: 0.1.0+1
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
   colan_services:
@@ -16,21 +16,20 @@ dependencies:
   flutter:
     sdk: flutter
   fvp: ^0.29.0
-  keep_it_state:
-    path: ../keep_it_state
+
   window_size: ^0.1.0
-  
+
 dev_dependencies:
-  flutter_launcher_icons: ^0.14.3 
+  flutter_launcher_icons: ^0.14.3
   flutter_lints: ^5.0.0
   very_good_analysis: ^7.0.0
-  
+
 flutter_icons:
   android: "launcher_icon"
   ios: true
   image_path: "assets/icon/icon.png"
   remove_alpha_ios: true
-  
+
 flutter:
   uses-material-design: true
   assets:
@@ -42,4 +41,3 @@ flutter:
     - assets/icon/cloud_on_lan_128px_color.png
     - assets/icon/on_device.png
     - assets/icon/not_on_server.png
-
