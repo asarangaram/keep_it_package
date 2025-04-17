@@ -2,8 +2,42 @@ import 'dart:math';
 
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:keep_it_state/keep_it_state.dart';
-import 'package:store/store.dart';
+
+extension ExtONDouble on double {
+  double nearest(double value) {
+    if (value == 0.0) {
+      // Avoid division by zero
+      return value;
+    }
+    return (this / value).floor() * value;
+  }
+}
+
+@immutable
+class CLDimension {
+  const CLDimension({
+    required this.itemsInRow,
+    required this.itemsInColumn,
+  });
+  final int itemsInRow;
+  final int itemsInColumn;
+
+  @override
+  bool operator ==(covariant CLDimension other) {
+    if (identical(this, other)) return true;
+
+    return other.itemsInRow == itemsInRow &&
+        other.itemsInColumn == itemsInColumn;
+  }
+
+  @override
+  int get hashCode => itemsInRow.hashCode ^ itemsInColumn.hashCode;
+
+  @override
+  String toString() => 'Dimension(width: $itemsInRow, height: $itemsInColumn)';
+
+  int get totalCount => itemsInRow * itemsInColumn;
+}
 
 class CLMediaCollage extends StatelessWidget {
   const CLMediaCollage._({

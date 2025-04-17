@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/keep_it_state.dart';
 import 'package:store/store.dart';
 
-import '../preview/media_preview_service.dart';
+import '../preview/media_preview.dart';
 import 'media_background.dart';
 import 'media_controls.dart';
 

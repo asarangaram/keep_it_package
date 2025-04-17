@@ -8,8 +8,8 @@ import 'package:keep_it_state/keep_it_state.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
-import '../../../basic_page_service/widgets/page_manager.dart';
-import '../../providers/active_collection.dart';
+import '../../basic_page_service/widgets/page_manager.dart';
+import '../providers/active_collection.dart';
 import 'popover_menu.dart';
 
 class KeepItTopBar extends CLBanner {

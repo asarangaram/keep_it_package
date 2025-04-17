@@ -6,12 +6,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'models/entity_actions.dart';
 import 'providers/active_collection.dart';
-import 'widgets/basics/bottom_bar.dart';
-import 'widgets/basics/entity_preview.dart';
-import 'widgets/basics/stale_media_banner.dart';
-import 'widgets/basics/top_bar.dart';
-import 'widgets/basics/when_empty.dart';
-import 'widgets/basics/when_error.dart';
+import 'widgets/bottom_bar.dart';
+import 'widgets/entity_preview.dart';
+import 'widgets/stale_media_banner.dart';
+import 'widgets/top_bar.dart';
+import 'widgets/when_empty.dart';
+import 'widgets/when_error.dart';
 
 class GalleryViewService extends StatelessWidget {
   const GalleryViewService({

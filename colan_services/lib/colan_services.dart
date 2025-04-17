@@ -18,8 +18,8 @@ export 'services/media_edit_service/media_edit_service.dart'
     show MediaEditService;
 export 'services/media_view_service/media_view_service.dart'
     show MediaViewService;
-export 'services/media_view_service/preview/collection_view.dart'
-    show CollectionView;
+export 'services/media_view_service/preview/collection_preview.dart'
+    show CollectionPreview;
 
 export 'services/media_wizard_service/media_wizard_service.dart'
     show MediaWizardService;

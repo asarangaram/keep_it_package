@@ -18,7 +18,6 @@ export 'providers/app_init.dart';
 export 'models/cl_media_candidate.dart';
 export 'providers/incoming_media.dart';
 
-export 'models/cl_dimension.dart';
 export 'models/progress.dart';
 export 'extensions/ext_color.dart';
 

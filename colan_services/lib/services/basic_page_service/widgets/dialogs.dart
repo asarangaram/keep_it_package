@@ -1,10 +1,11 @@
 import 'package:cl_entity_viewers/cl_entity_viewers.dart';
-import 'package:colan_services/colan_services.dart';
+
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:store/store.dart';
 
-import '../../media_view_service/preview/media_preview_service.dart';
-import '../../media_view_service/widgets/cl_media_collage.dart';
+import '../../gallery_view_service/widgets/entity_preview.dart';
+import 'page_manager.dart';
 
 class DialogService {
   static Future<bool?> template(
@@ -30,8 +31,12 @@ class DialogService {
                         hCount: 3,
                         vCount: 3,
                         itemBuilder: (context, index) {
-                          return MediaThumbnail(
-                            media: entity[index] as StoreEntity,
+                          return EntityPreview(
+                            viewIdentifier: const ViewIdentifier(
+                              parentID: 'Dialog Service',
+                              viewId: 'PreviewInDialog',
+                            ),
+                            item: entity[index] as StoreEntity,
                           );
                         },
                         whenNopreview: const Center(),

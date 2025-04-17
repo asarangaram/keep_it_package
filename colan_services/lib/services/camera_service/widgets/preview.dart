@@ -1,8 +1,9 @@
-import 'package:colan_services/services/media_view_service/preview/media_preview_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/keep_it_state.dart';
 import 'package:store/store.dart';
+
+import '../../media_view_service/preview/media_preview.dart';
 
 class PreviewCapturedMedia extends ConsumerWidget {
   const PreviewCapturedMedia({

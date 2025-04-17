@@ -9,6 +9,7 @@ export 'src/basics/cl_custom_chip.dart' show CLCustomChip;
 export 'src/basics/cl_decorate_square.dart' show CLAspectRationDecorated;
 export 'src/basics/cl_icon.dart' show CLIcon, CLIconLabelled;
 export 'src/basics/cl_matrix.dart' show Matrix2D;
+export 'src/basics/cl_media_collage.dart' show CLDimension, CLMediaCollage;
 export 'src/basics/cl_text.dart' show CLLabel, CLText;
 export 'src/basics/overlay_icon.dart' show OverlayIcon;
 export 'src/basics/progress_bar.dart' show ProgressBar;

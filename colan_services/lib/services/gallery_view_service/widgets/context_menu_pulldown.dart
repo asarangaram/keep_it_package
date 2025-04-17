@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 
-import '../../gallery_view_service/models/entity_actions.dart';
+import '../models/entity_actions.dart';
 
 class PullDownContextMenu extends ConsumerWidget {
   const PullDownContextMenu({

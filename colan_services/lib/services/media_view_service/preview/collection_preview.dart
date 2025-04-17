@@ -6,12 +6,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
-import '../widgets/cl_media_collage.dart';
 import '../widgets/folder_clip.dart';
-import 'media_preview_service.dart';
+import 'media_preview.dart';
 
-class CollectionView extends ConsumerWidget {
-  const CollectionView.preview(
+class CollectionPreview extends ConsumerWidget {
+  const CollectionPreview.preview(
     this.collection, {
     required this.viewIdentifier,
     super.key,

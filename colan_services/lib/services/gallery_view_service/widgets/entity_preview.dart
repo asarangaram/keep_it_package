@@ -3,12 +3,13 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import '../../../basic_page_service/widgets/page_manager.dart';
+import '../../basic_page_service/widgets/page_manager.dart';
+import '../../media_view_service/preview/collection_preview.dart';
+
+import '../../media_view_service/preview/media_preview.dart';
+import '../models/entity_actions.dart';
+import '../providers/active_collection.dart';
 import 'context_menu.dart';
-import '../../../media_view_service/preview/collection_view.dart';
-import '../../../media_view_service/preview/media_preview_service.dart';
-import '../../models/entity_actions.dart';
-import '../../providers/active_collection.dart';
 
 class EntityPreview extends ConsumerWidget {
   const EntityPreview({
@@ -66,7 +67,7 @@ class EntityPreview extends ConsumerWidget {
       },
       contextMenu: contextMenu,
       child: entity.isCollection
-          ? CollectionView.preview(
+          ? CollectionPreview.preview(
               entity,
               viewIdentifier: viewIdentifier,
             )

@@ -1,5 +1,4 @@
 import 'package:cl_entity_viewers/cl_entity_viewers.dart';
-import 'package:colan_services/services/media_view_service/preview/media_preview_service.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,6 +9,7 @@ import '../../basic_page_service/widgets/cl_error_view.dart';
 import '../../basic_page_service/widgets/page_manager.dart';
 
 import '../../gallery_view_service/models/entity_actions.dart';
+import '../../media_view_service/preview/media_preview.dart';
 import 'wizard_grid_view.dart';
 
 class WizardPreview extends ConsumerStatefulWidget {

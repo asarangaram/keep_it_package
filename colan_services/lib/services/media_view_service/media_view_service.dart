@@ -8,7 +8,7 @@ import '../../internal/fullscreen_layout.dart';
 import '../basic_page_service/widgets/page_manager.dart';
 
 import '../gallery_view_service/providers/active_collection.dart';
-import '../gallery_view_service/widgets/basics/when_error.dart';
+import '../gallery_view_service/widgets/when_error.dart';
 
 import 'media_view_service1.dart';
 

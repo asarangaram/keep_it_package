@@ -10,8 +10,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
-import '../../context_menu_service/widgets/pull_down_context_menu.dart';
-import '../../media_view_service/preview/media_preview_service.dart';
+import '../../media_view_service/preview/media_preview.dart';
+import 'context_menu_pulldown.dart';
 
 class MediaMetadataEditor extends StatelessWidget {
   factory MediaMetadataEditor({

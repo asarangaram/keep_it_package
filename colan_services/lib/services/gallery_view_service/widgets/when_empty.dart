@@ -3,19 +3,13 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../providers/active_collection.dart';
+import '../providers/active_collection.dart';
 
-class WhenError extends ConsumerWidget {
-  const WhenError({
-    required this.errorMessage,
+class WhenEmpty extends ConsumerWidget {
+  const WhenEmpty({
     super.key,
-    this.errorDetails,
-    this.onRecover,
   });
 
-  final String errorMessage;
-  final String? errorDetails;
-  final CLMenuItem? onRecover;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final parentId = ref.watch(activeCollectionProvider);
@@ -29,9 +23,13 @@ class WhenError extends ConsumerWidget {
               return true;
             },
           );
+
     return CLErrorView(
-      errorMessage: errorMessage,
-      errorDetails: errorDetails,
+      errorMessage: 'Nothing to show',
+      errorDetails:
+          'Import Photos and Videos from the Gallery or using Camera. '
+          'Connect to server to view your home collections '
+          "using 'Cloud on LAN' service.",
       onRecover: onRecover,
     );
   }
