@@ -66,7 +66,9 @@ class MediaView extends ConsumerWidget {
                       placeHolder: ImageViewer.basic(
                         uri: media.previewUri!,
                       ),
-                      errorBuilder: BrokenImage.show,
+                      errorBuilder: (_, __) => ImageViewer.basic(
+                        uri: media.previewUri!,
+                      ),
                       loadingBuilder: () => CLLoader.widget(
                         debugMessage: 'VideoPlayer',
                       ),
