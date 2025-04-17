@@ -8,7 +8,7 @@ export 'services/basic_page_service/widgets/page_manager.dart' show PageManager;
 export 'services/camera_service/cl_camera_service.dart' show CLCameraService;
 export 'services/camera_service/models/default_theme.dart'
     show DefaultCLCameraIcons;
-export 'services/gallery_view_service/main_view_page.dart'
+export 'services/gallery_view_service/gallery_view_service.dart'
     show GalleryViewService;
 export 'services/incoming_media_service/incoming_media_monitor.dart'
     show IncomingMediaMonitor;
