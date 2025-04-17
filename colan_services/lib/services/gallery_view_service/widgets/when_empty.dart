@@ -8,7 +8,9 @@ import '../providers/active_collection.dart';
 class WhenEmpty extends ConsumerWidget {
   const WhenEmpty({
     super.key,
+    this.onReset,
   });
+  final Future<bool?> Function()? onReset;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -18,10 +20,11 @@ class WhenEmpty extends ConsumerWidget {
         : CLMenuItem(
             title: 'Reset',
             icon: clIcons.navigateHome,
-            onTap: () async {
-              ref.read(activeCollectionProvider.notifier).state = null;
-              return true;
-            },
+            onTap: onReset ??
+                () async {
+                  ref.read(activeCollectionProvider.notifier).state = null;
+                  return true;
+                },
           );
 
     return CLErrorView(

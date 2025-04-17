@@ -15,15 +15,15 @@ import 'widgets/when_error.dart';
 
 class GalleryViewService extends StatelessWidget {
   const GalleryViewService({
+    required this.parentIdentifier,
     required this.storeIdentity,
     super.key,
   });
+  final String parentIdentifier;
   final String storeIdentity;
 
   @override
   Widget build(BuildContext context) {
-    const parentIdentifier = 'GalleryViewService';
-
     return AppTheme(
       child: Scaffold(
         body: OnSwipe(

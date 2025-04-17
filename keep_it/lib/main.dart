@@ -21,6 +21,7 @@ class KeepItApp implements AppDescriptor {
         CLRouteDescriptor(
           name: '',
           builder: (context, parameters) => const GalleryViewService(
+            parentIdentifier: 'KeepIt Viewer',
             storeIdentity: 'local',
           ),
         ),
