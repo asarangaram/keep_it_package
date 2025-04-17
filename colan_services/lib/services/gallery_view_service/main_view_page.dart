@@ -21,7 +21,7 @@ class GalleryViewService extends StatelessWidget {
     Widget errorBuilder(Object e, StackTrace st) => WhenError(
           errorMessage: e.toString(),
         );
-    const parentIdentifier = 'KeepItMainGrid';
+    const parentIdentifier = 'GalleryViewService';
 
     return AppTheme(
       child: Scaffold(

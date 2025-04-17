@@ -28,6 +28,9 @@ class GetEntity extends ConsumerWidget {
     if (storeIdentity != 'local') {
       throw Exception('Unknown store!');
     }
+    if ([id, md5, label].every((e) => e == null)) {
+      return builder(null);
+    }
     final EntityQuery query;
     try {
       if ([id, md5, label].where((x) => x != null).length != 1) {

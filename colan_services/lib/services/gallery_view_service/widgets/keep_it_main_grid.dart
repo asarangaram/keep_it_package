@@ -32,7 +32,7 @@ class KeepItMainGrid extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final parentId = ref.watch(activeCollectionProvider);
+    final parentId = ref.watch(activeCollectionProvider)?.id;
     final viewIdentifier = ViewIdentifier(
       parentID: parentIdentifier,
       viewId: parentId.toString(),

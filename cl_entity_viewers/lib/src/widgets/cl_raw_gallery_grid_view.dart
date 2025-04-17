@@ -44,10 +44,10 @@ class CLRawGalleryGridView extends ConsumerStatefulWidget {
 
   @override
   ConsumerState<CLRawGalleryGridView> createState() =>
-      CLEntityGalleryTabState();
+      CLRawGalleryGridViewState();
 }
 
-class CLEntityGalleryTabState extends ConsumerState<CLRawGalleryGridView> {
+class CLRawGalleryGridViewState extends ConsumerState<CLRawGalleryGridView> {
   final GlobalKey parentKey = GlobalKey();
   late ScrollController _scrollController;
   @override

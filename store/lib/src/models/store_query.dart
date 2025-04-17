@@ -20,7 +20,10 @@ class StoreQuery<T> {
   }
 
   @override
-  int get hashCode => storeIdentity.hashCode ^ map.hashCode;
+  int get hashCode =>
+      map.entries.fold(storeIdentity.hashCode, (previousValue, element) {
+        return previousValue ^ element.key.hashCode ^ element.value.hashCode;
+      });
 
   StoreQuery<T> copyWith({
     String? storeIdentity,
