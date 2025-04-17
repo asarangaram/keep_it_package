@@ -3,10 +3,10 @@ import 'dart:async';
 import 'package:cl_media_tools/cl_media_tools.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:keep_it_state/extensions/ext_list.dart';
 
 import 'package:share_handler/share_handler.dart';
 
+import '../../extensions/ext_list.dart';
 import '../models/cl_media_candidate.dart';
 import '../models/platform_support.dart';
 import '../models/universal_media_source.dart';
@@ -23,7 +23,7 @@ class IncomingMediaNotifier extends StateNotifier<List<CLMediaFileGroup>> {
   Future<void> load() async {
     final handler = ShareHandler.instance;
     if (ColanPlatformSupport.isMobilePlatform) {
-      receiveSharedMedia(await handler.getInitialSharedMedia());
+      await receiveSharedMedia(await handler.getInitialSharedMedia());
 
       intentDataStreamSubscription = handler.sharedMediaStream.listen(
         receiveSharedMedia,
@@ -46,7 +46,7 @@ class IncomingMediaNotifier extends StateNotifier<List<CLMediaFileGroup>> {
     };
   }
 
-  void receiveSharedMedia(SharedMedia? media) async {
+  Future<void> receiveSharedMedia(SharedMedia? media) async {
     if (media == null) return;
     final attachements = [
       if (media.content != null && media.content!.isNotEmpty)

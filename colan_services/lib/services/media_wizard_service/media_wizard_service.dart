@@ -3,9 +3,11 @@ import 'package:colan_services/services/media_wizard_service/widgets/select_and_
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:keep_it_state/keep_it_state.dart';
 
 import '../../internal/fullscreen_layout.dart';
+import '../../models/cl_shared_media.dart';
+import '../../models/universal_media_source.dart';
+import '../../providers/universal_media.dart';
 import '../basic_page_service/widgets/page_manager.dart';
 
 class MediaWizardService extends ConsumerWidget {

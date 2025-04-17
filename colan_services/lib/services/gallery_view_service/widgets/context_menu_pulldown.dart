@@ -1,10 +1,17 @@
-import 'package:colan_services/extensions/cl_menu_item.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 
 import '../models/entity_actions.dart';
+
+extension PullDownExtOnCLMenuItem on CLMenuItem {
+  PullDownMenuItem get pullDownMenuItem => PullDownMenuItem(
+        title: title,
+        icon: icon,
+        onTap: onTap,
+      );
+}
 
 class PullDownContextMenu extends ConsumerWidget {
   const PullDownContextMenu({

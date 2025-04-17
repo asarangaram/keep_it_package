@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:keep_it_state/keep_it_state.dart';
+
 import 'package:store/store.dart';
 
+import '../../providers/show_controls.dart';
 import 'widgets/media_page_view.dart';
 import 'widgets/media_view.dart';
 

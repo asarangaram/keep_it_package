@@ -1,11 +1,12 @@
-import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:keep_it_state/keep_it_state.dart';
+
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../builders/on_init_done.dart';
 import '../../builders/state_provider_scope.dart';
+import '../../models/app_descriptor.dart';
+import '../incoming_media_service/incoming_media_monitor.dart';
 
 class AppStartService extends StatelessWidget {
   const AppStartService({

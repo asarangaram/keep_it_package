@@ -1,3 +1,23 @@
+export '../extensions/ext_list.dart';
+export '../models/app_descriptor.dart'
+    show
+        AppDescriptor,
+        CLAppInitializer,
+        CLRedirector,
+        CLTransitionBuilder,
+        IncomingMediaViewBuilder;
+export '../models/cl_media_candidate.dart';
+export '../models/cl_route_descriptor.dart' show CLRouteDescriptor;
+export '../models/cl_shared_media.dart';
+export '../models/platform_support.dart';
+export '../models/progress.dart';
+export '../models/universal_media_source.dart';
+export '../providers/app_init.dart';
+export '../providers/camera_provider.dart';
+export '../providers/captured_media.dart';
+export '../providers/incoming_media.dart';
+export '../providers/show_controls.dart';
+export '../providers/universal_media.dart';
 export 'services/app_start_service/app_start_service.dart' show AppStartService;
 export 'services/basic_page_service/basic_page_service.dart'
     show BasicPageService;
@@ -20,8 +40,6 @@ export 'services/media_view_service/media_view_service.dart'
     show MediaViewService;
 export 'services/media_view_service/preview/collection_preview.dart'
     show CollectionPreview;
-
 export 'services/media_wizard_service/media_wizard_service.dart'
     show MediaWizardService;
-
 export 'services/settings_service/settings_service.dart' show SettingsService;

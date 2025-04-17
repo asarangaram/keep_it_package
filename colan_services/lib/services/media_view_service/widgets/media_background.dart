@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:keep_it_state/keep_it_state.dart';
+
+import '../../../providers/show_controls.dart';
 
 class MediaBackground extends ConsumerWidget {
   const MediaBackground({super.key});

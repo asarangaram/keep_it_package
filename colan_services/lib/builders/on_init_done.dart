@@ -1,9 +1,11 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:keep_it_state/keep_it_state.dart';
+
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import '../models/app_descriptor.dart';
+import '../providers/app_init.dart';
 import '../services/basic_page_service/widgets/cl_error_view.dart';
 
 class OnInitDone extends ConsumerWidget {

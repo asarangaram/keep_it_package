@@ -4,9 +4,10 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:keep_it_state/keep_it_state.dart';
+
 import 'package:store/store.dart';
 
+import '../../../providers/show_controls.dart';
 import '../preview/media_preview.dart';
 import 'media_background.dart';
 import 'media_controls.dart';

@@ -37,7 +37,7 @@ class CLSharedMedia {
 
   Iterable<StoreEntity> get _stored => entries.where((e) => e.id != null);
   Iterable<StoreEntity> get _targetMismatch =>
-      _stored.where((e) => e.parentId != collection?.id && !(e.data.isHidden));
+      _stored.where((e) => e.parentId != collection?.id && !e.data.isHidden);
 
   List<StoreEntity> get targetMismatch => _targetMismatch.toList();
   List<StoreEntity> get stored => _stored.toList();
@@ -48,7 +48,9 @@ class CLSharedMedia {
     final items = <StoreEntity>[];
     for (final e in entries) {
       await e.updateWith(
-          isDeleted: () => false, parentId: () => collection?.id);
+        isDeleted: () => false,
+        parentId: () => collection?.id,
+      );
     }
     return copyWith(entries: items.toList());
   }

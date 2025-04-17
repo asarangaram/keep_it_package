@@ -2,9 +2,11 @@ import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:keep_it_state/keep_it_state.dart';
+
 import 'package:store/store.dart';
 
+import '../../../models/universal_media_source.dart';
+import '../../../providers/universal_media.dart';
 import '../../basic_page_service/widgets/cl_error_view.dart';
 import '../../basic_page_service/widgets/page_manager.dart';
 

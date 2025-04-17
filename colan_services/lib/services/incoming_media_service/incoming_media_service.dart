@@ -2,10 +2,12 @@ import 'package:cl_media_tools/cl_media_tools.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:keep_it_state/keep_it_state.dart';
+
 import 'package:store/store.dart';
 
 import '../../internal/fullscreen_layout.dart';
+import '../../models/cl_media_candidate.dart';
+import '../../models/cl_shared_media.dart';
 import '../basic_page_service/widgets/cl_error_view.dart';
 import '../media_wizard_service/media_wizard_service.dart';
 
