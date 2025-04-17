@@ -20,8 +20,7 @@ export 'services/media_view_service/media_view_service.dart'
     show MediaViewService;
 export 'services/media_view_service/preview/collection_view.dart'
     show CollectionView;
-export 'services/media_view_service/widgets/stale_media_indicator_service.dart'
-    show StaleMediaIndicatorService;
+
 export 'services/media_wizard_service/media_wizard_service.dart'
     show MediaWizardService;
 

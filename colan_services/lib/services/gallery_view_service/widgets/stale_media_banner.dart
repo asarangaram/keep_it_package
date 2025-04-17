@@ -1,32 +1,44 @@
+import 'package:colan_services/services/gallery_view_service/widgets/cl_banner.dart';
 import 'package:colan_services/services/media_wizard_service/media_wizard_service.dart';
-import 'package:colan_widgets/colan_widgets.dart';
+
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:keep_it_state/keep_it_state.dart';
 
-class StaleMediaIndicatorService extends ConsumerWidget {
-  const StaleMediaIndicatorService({
+class StaleMediaBanner extends CLBanner {
+  const StaleMediaBanner({
     required this.storeIdentity,
     super.key,
   });
   final String storeIdentity;
+  @override
+  String get widgetLabel => 'StaleMediaBanner';
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(
+    BuildContext context,
+    WidgetRef ref, {
+    Color? backgroundColor,
+    Color? foregroundColor,
+    String msg = '',
+    void Function()? onTap,
+  }) {
     return GetEntities(
       isHidden: true,
       isCollection: false,
       parentId: 0,
       storeIdentity: storeIdentity,
-      errorBuilder: (p0, p1) => const SizedBox.shrink(),
-      loadingBuilder: () => CLLoader.widget(
-        debugMessage: 'GetStaleMedia',
-      ),
+      errorBuilder: errorBuilder,
+      loadingBuilder: loadingBuilder,
       builder: (staleMedia) {
-        if (staleMedia.isEmpty) return const SizedBox.shrink();
-        return BannerView(
-          staleMediaCount: staleMedia.length,
+        return super.build(
+          context,
+          ref,
+          msg: staleMedia.isEmpty
+              ? ''
+              : 'You have ${staleMedia.length} unclassified media. '
+                  'Tap here to show',
           onTap: () => MediaWizardService.openWizard(
             context,
             ref,
