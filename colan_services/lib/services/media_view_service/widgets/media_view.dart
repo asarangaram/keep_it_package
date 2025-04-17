@@ -8,102 +8,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
 import '../../../providers/show_controls.dart';
-import '../preview/media_preview.dart';
+
 import 'media_background.dart';
 import 'media_controls.dart';
 
-class MediaView extends StatelessWidget {
-  factory MediaView({
-    required StoreEntity media,
-    required String parentIdentifier,
-    required bool autoStart,
-    required bool autoPlay,
-    required Widget Function(Object, StackTrace) errorBuilder,
-    required Widget Function() loadingBuilder,
-    bool isLocked = false,
-    void Function({required bool lock})? onLockPage,
-    Key? key,
-  }) {
-    return MediaView._(
-      isPreview: false,
-      key: key,
-      media: media,
-      parentIdentifier: parentIdentifier,
-      isLocked: isLocked,
-      autoStart: autoStart,
-      autoPlay: autoPlay,
-      onLockPage: onLockPage,
-      errorBuilder: errorBuilder,
-      loadingBuilder: loadingBuilder,
-    );
-  }
-  factory MediaView.preview(
-    StoreEntity media, {
-    required String parentIdentifier,
-  }) {
-    return MediaView._(
-      isPreview: true,
-      media: media,
-      parentIdentifier: parentIdentifier,
-      isLocked: true,
-      autoStart: true,
-      autoPlay: true,
-    );
-  }
-  const MediaView._({
-    required this.isPreview,
-    required this.media,
-    required this.parentIdentifier,
-    required this.isLocked,
-    required this.autoStart,
-    required this.autoPlay,
-    this.onLockPage,
-    super.key,
-    this.errorBuilder,
-    this.loadingBuilder,
-  });
-  final StoreEntity media;
-
-  final String parentIdentifier;
-
-  final bool autoStart;
-  final bool autoPlay;
-  final bool isLocked;
-  final void Function({required bool lock})? onLockPage;
-  final bool isPreview;
-  final Widget Function(Object, StackTrace)? errorBuilder;
-  final Widget Function()? loadingBuilder;
-  @override
-  Widget build(BuildContext context) {
-    /* log(
-      '${media.md5String}  isPreview: $isPreview',
-      name: 'MediaView | build',
-    ); */
-
-    if (isPreview) {
-      return MediaPreviewWithOverlays(
-        media: media,
-        parentIdentifier: parentIdentifier,
-      );
-    }
-    if (errorBuilder == null || loadingBuilder == null) {
-      throw Error();
-    }
-    return MediaView0(
-      media: media,
-      parentIdentifier: parentIdentifier,
-      isLocked: isLocked,
-      autoPlay: autoPlay,
-      autoStart: autoStart,
-      onLockPage: onLockPage,
-      errorBuilder: errorBuilder!,
-      loadingBuilder: loadingBuilder!,
-    );
-  }
-}
-
-class MediaView0 extends ConsumerWidget {
-  const MediaView0({
+class MediaView extends ConsumerWidget {
+  const MediaView({
     required this.media,
     required this.parentIdentifier,
     required this.isLocked,
@@ -154,7 +64,7 @@ class MediaView0 extends ConsumerWidget {
                       onLockPage: onLockPage,
                       isLocked: isLocked,
                       placeHolder: ImageViewer.basic(
-                        uri: media.previewUri!, // FIXME
+                        uri: media.previewUri!,
                       ),
                       errorBuilder: BrokenImage.show,
                       loadingBuilder: () => CLLoader.widget(

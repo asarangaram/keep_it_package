@@ -1,6 +1,7 @@
 import 'package:colan_services/services/basic_page_service/widgets/page_manager.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../../models/platform_support.dart';
 
@@ -46,10 +47,11 @@ class CLPopScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CLKeyListener(
-      onEsc: (popGesture == CLScreenPopGesture.swipeLeft) &&
-              !ColanPlatformSupport.isMobilePlatform
-          ? () => PageManager.of(context).pop(result)
-          : null,
+      keyHandler: {
+        if (popGesture == CLScreenPopGesture.swipeLeft &&
+            !ColanPlatformSupport.isMobilePlatform)
+          LogicalKeyboardKey.escape: () => PageManager.of(context).pop(result),
+      },
       child: GestureDetector(
         onTap: popGesture == CLScreenPopGesture.onTap
             ? () => PageManager.of(context).pop

@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class CLKeyListener extends StatefulWidget {
-  const CLKeyListener({required this.child, required this.onEsc, super.key});
+  const CLKeyListener({
+    required this.child,
+    required this.keyHandler,
+    super.key,
+  });
   final Widget child;
-  final VoidCallback? onEsc;
+  final Map<LogicalKeyboardKey, VoidCallback> keyHandler;
 
   @override
   CLKeyListenerState createState() => CLKeyListenerState();
@@ -32,10 +36,8 @@ class CLKeyListenerState extends State<CLKeyListener> {
       focusNode: _focusNode,
       onKeyEvent: (KeyEvent event) {
         if (event is KeyDownEvent) {
-          if (widget.onEsc != null) {
-            if (event.logicalKey == LogicalKeyboardKey.escape) {
-              widget.onEsc!();
-            }
+          if (widget.keyHandler.keys.contains(event.logicalKey)) {
+            widget.keyHandler[event.logicalKey]!();
           }
         }
       },
