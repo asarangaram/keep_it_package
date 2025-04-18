@@ -12,7 +12,6 @@ import 'package:store/store.dart';
 import '../../../providers/show_controls.dart';
 
 import 'media_background.dart';
-import 'media_controls.dart';
 
 class MediaView extends ConsumerWidget {
   const MediaView({
@@ -43,91 +42,116 @@ class MediaView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final showControl = ref.watch(showControlsProvider);
-    return GestureDetector(
-      behavior: HitTestBehavior.translucent,
-      onTap: () => ref.read(showControlsProvider.notifier).toggleControls(),
-      child: Stack(
-        children: [
-          const MediaBackground(),
-          Column(
-            children: [
-              Flexible(
-                child: Hero(
-                  tag: '$parentIdentifier /item/${media.id}',
-                  child: SafeArea(
-                    top: showControl.showNotes,
-                    bottom: showControl.showNotes,
-                    left: showControl.showNotes,
-                    right: showControl.showNotes,
-                    child: Center(
-                      child: Row(
-                        children: [
-                          if (showControl.showMenu && prev != null) prev!,
-                          Flexible(
-                            child: Stack(
-                              children: [
-                                Positioned.fill(
-                                  child: Align(
-                                    alignment: showControl.showMenu
-                                        ? Alignment.topCenter
-                                        : Alignment.center,
-                                    child: switch (media.data.mediaType) {
-                                      CLMediaType.image => ImageViewer.guesture(
-                                          uri: media.mediaUri!,
-                                          onLockPage: onLockPage,
-                                          isLocked: isLocked,
-                                        ),
-                                      CLMediaType.video => VideoPlayer(
-                                          uri: media.mediaUri!,
-                                          autoStart: autoStart,
-                                          autoPlay: autoPlay,
-                                          onLockPage: onLockPage,
-                                          isLocked: isLocked,
-                                          placeHolder: ImageViewer.basic(
-                                            uri: media.previewUri!,
-                                          ),
-                                          errorBuilder: (_, __) =>
-                                              ImageViewer.basic(
-                                            uri: media.previewUri!,
-                                          ),
-                                          loadingBuilder: () => CLLoader.widget(
-                                            debugMessage: 'VideoPlayer',
-                                          ),
-                                          videoMenuBuilder: showControl.showMenu
-                                              ? (context) {
-                                                  return const VideoMenu();
-                                                }
-                                              : null,
-                                        ),
-                                      CLMediaType.text => const BrokenImage(),
-                                      CLMediaType.audio => const BrokenImage(),
-                                      CLMediaType.file => const BrokenImage(),
-                                      CLMediaType.uri => const BrokenImage(),
-                                      CLMediaType.unknown =>
-                                        const BrokenImage(),
-                                      CLMediaType.collection =>
-                                        const BrokenImage(), // FIXME, How to show in Mediaview
+    print(showControl);
+    return Stack(
+      children: [
+        const MediaBackground(),
+        Column(
+          children: [
+            Flexible(
+              child: Hero(
+                tag: '$parentIdentifier /item/${media.id}',
+                child: SafeArea(
+                  child: Center(
+                    child: Row(
+                      children: [
+                        if ((!showControl.isFullScreen) && prev != null) prev!,
+                        Flexible(
+                          child: Stack(
+                            children: [
+                              Positioned.fill(
+                                child: Align(
+                                  alignment: showControl.isFullScreen
+                                      ? Alignment.center
+                                      : Alignment.topCenter,
+                                  child: VidoeControlButton(
+                                    builder: ([controls]) {
+                                      return InkWell(
+                                        onHover: (_) => ref
+                                            .read(
+                                              showControlsProvider.notifier,
+                                            )
+                                            .briefHover(
+                                              timeout:
+                                                  const Duration(seconds: 2),
+                                            ),
+                                        onTap: () {
+                                          controls?.onPlayPause();
+                                          ref
+                                              .read(
+                                                showControlsProvider.notifier,
+                                              )
+                                              .briefHover(
+                                                timeout:
+                                                    const Duration(seconds: 2),
+                                              );
+                                        },
+                                        child: switch (media.data.mediaType) {
+                                          CLMediaType.image =>
+                                            ImageViewer.guesture(
+                                              uri: media.mediaUri!,
+                                              onLockPage: onLockPage,
+                                              isLocked: isLocked,
+                                            ),
+                                          CLMediaType.video => VideoPlayer(
+                                              uri: media.mediaUri!,
+                                              autoStart: autoStart,
+                                              autoPlay: autoPlay,
+                                              onLockPage: onLockPage,
+                                              isLocked: isLocked,
+                                              placeHolder: ImageViewer.basic(
+                                                uri: media.previewUri!,
+                                              ),
+                                              errorBuilder: (_, __) =>
+                                                  ImageViewer.basic(
+                                                uri: media.previewUri!,
+                                              ),
+                                              loadingBuilder: () =>
+                                                  CLLoader.widget(
+                                                debugMessage: 'VideoPlayer',
+                                              ),
+                                              videoMenuBuilder:
+                                                  showControl.showMenu
+                                                      ? (context) {
+                                                          return const VideoMenu();
+                                                        }
+                                                      : null,
+                                            ),
+                                          CLMediaType.text =>
+                                            const BrokenImage(),
+                                          CLMediaType.audio =>
+                                            const BrokenImage(),
+                                          CLMediaType.file =>
+                                            const BrokenImage(),
+                                          CLMediaType.uri =>
+                                            const BrokenImage(),
+                                          CLMediaType.unknown =>
+                                            const BrokenImage(),
+                                          CLMediaType.collection =>
+                                            const BrokenImage(), // FIXME, How to show in Mediaview
+                                        },
+                                      );
                                     },
                                   ),
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
-                          if (showControl.showMenu && next != null) next!,
-                        ],
-                      ),
+                        ),
+                        if (!showControl.isFullScreen && next != null) next!,
+                      ],
                     ),
                   ),
                 ),
               ),
-              if (showControl.showMenu)
-                const Flexible(
-                  child: SizedBox(),
-                ),
-            ],
-          ),
-        ],
-      ),
+            ),
+            if (!showControl.isFullScreen)
+              const Flexible(
+                child: SizedBox(),
+              ),
+          ],
+        ),
+      ],
     );
   }
 }
@@ -163,6 +187,7 @@ class VideoMenu extends ConsumerWidget {
               : controls.videoStatus.isPlaying
                   ? videoPlayerIcons.playerPause
                   : videoPlayerIcons.playerPlay,
+          color: Colors.white,
         ),
       ),
     );
@@ -176,6 +201,7 @@ class VideoMenu extends ConsumerWidget {
               : controls.volume == 0
                   ? videoPlayerIcons.audioMuted
                   : videoPlayerIcons.audioUnmuted,
+          color: Colors.white,
         ),
       ),
     );
@@ -188,9 +214,11 @@ class VideoMenu extends ConsumerWidget {
       ),
     );
     final fullScreen = ShadButton.ghost(
-      onPressed: () => ref.read(showControlsProvider.notifier).toggleControls(),
+      onPressed: () =>
+          ref.read(showControlsProvider.notifier).fullScreenToggle(),
       child: const Icon(
         Icons.fullscreen,
+        color: Colors.white,
       ),
     );
     return Container(
@@ -216,26 +244,3 @@ class VideoMenu extends ConsumerWidget {
     );
   }
 }
-
-
-/**
- * 
- * MediaControls(
-            media: media,
-          ),
-
-TimeStampBuilder(
-              controller: controller,
-              builder: ({
-                required currentPosition,
-                required totalDuration,
-              }) {
-                return Text(
-                  '${currentPosition.timestamp} / ${totalDuration.timestamp}',
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: Colors.white,
-                      ),
-                );
-              },
-            ),
- */

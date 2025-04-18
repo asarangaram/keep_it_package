@@ -37,7 +37,7 @@ class MediaControls extends ConsumerWidget {
 
     return Stack(
       children: [
-        if (showControl.showMenu || showControl.showNotes)
+        if (showControl.show??Menu || showControl.showNotes)
           SafeArea(
             child: Align(
               alignment: Alignment.topLeft,
@@ -56,7 +56,7 @@ class MediaControls extends ConsumerWidget {
               ),
             ),
           ),
-        if (showControl.showMenu || showControl.showNotes)
+        if (showControl.showM??enu || showControl.showNotes)
           SafeArea(
             child: Align(
               alignment: Alignment.topRight,
@@ -71,7 +71,7 @@ class MediaControls extends ConsumerWidget {
               ),
             ),
           ),
-        if (showControl.showMenu)
+        if (showControl.show??Menu)
           if ([onEdit, onDelete, onMove, onShare, onPin]
                   .any((e) => e != null) ||
               (media.data.mediaType == CLMediaType.video))

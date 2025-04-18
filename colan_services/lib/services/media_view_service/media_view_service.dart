@@ -191,7 +191,7 @@ class MediaViewService0State extends ConsumerState<MediaViewService0> {
       DeviceOrientation.landscapeRight,
     ]);
     final showControl = ref.watch(showControlsProvider);
-    if (!showControl.showStatusBar) {
+    if (showControl.isFullScreen) {
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.leanBack);
     } else {
       SystemChrome.setEnabledSystemUIMode(
