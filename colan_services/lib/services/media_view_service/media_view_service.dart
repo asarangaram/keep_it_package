@@ -181,7 +181,8 @@ class MediaViewService0State extends ConsumerState<MediaViewService0> {
                       curve: Curves.easeInOut,
                     )
               else
-                LogicalKeyboardKey.arrowLeft: () => pageController.animateTo(
+                LogicalKeyboardKey.arrowLeft: () =>
+                    pageController.animateToPage(
                       widget.incoming.length - 1,
                       duration: const Duration(milliseconds: 300),
                       curve: Curves.easeInOut,
@@ -192,7 +193,8 @@ class MediaViewService0State extends ConsumerState<MediaViewService0> {
                       curve: Curves.easeInOut,
                     )
               else
-                LogicalKeyboardKey.altRight: () => pageController.animateTo(
+                LogicalKeyboardKey.arrowRight: () =>
+                    pageController.animateToPage(
                       0,
                       duration: const Duration(milliseconds: 300),
                       curve: Curves.easeInOut,
