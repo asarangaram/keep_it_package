@@ -145,6 +145,36 @@ class MediaViewService0State extends ConsumerState<MediaViewService0> {
     super.dispose();
   }
 
+  void moveToNext() {
+    if (currIndex < widget.incoming.length - 1) {
+      pageController.nextPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    } else {
+      pageController.animateToPage(
+        0,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
+  void moveToPrev() {
+    if (currIndex > 0) {
+      pageController.previousPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    } else {
+      pageController.animateToPage(
+        widget.incoming.length - 1,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (currIndex >= widget.incoming.length) {
@@ -175,30 +205,8 @@ class MediaViewService0State extends ConsumerState<MediaViewService0> {
             keyHandler: {
               if (!ColanPlatformSupport.isMobilePlatform)
                 LogicalKeyboardKey.escape: () => PageManager.of(context).pop(),
-              if (currIndex > 0)
-                LogicalKeyboardKey.arrowLeft: () => pageController.previousPage(
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
-                    )
-              else
-                LogicalKeyboardKey.arrowLeft: () =>
-                    pageController.animateToPage(
-                      widget.incoming.length - 1,
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
-                    ),
-              if (currIndex < widget.incoming.length - 1)
-                LogicalKeyboardKey.arrowRight: () => pageController.nextPage(
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
-                    )
-              else
-                LogicalKeyboardKey.arrowRight: () =>
-                    pageController.animateToPage(
-                      0,
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
-                    ),
+              LogicalKeyboardKey.arrowLeft: moveToPrev,
+              LogicalKeyboardKey.arrowRight: moveToNext,
             },
             child: Stack(
               children: [
@@ -217,34 +225,6 @@ class MediaViewService0State extends ConsumerState<MediaViewService0> {
                     return itemBuilder(context, media);
                   },
                 ),
-                if (currIndex > 0)
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: ShadButton.ghost(
-                      padding: EdgeInsets.zero,
-                      onPressed: () {
-                        pageController.previousPage(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                        );
-                      },
-                      child: const CLIcon.large(LucideIcons.chevronLeft),
-                    ),
-                  ),
-                if (currIndex < widget.incoming.length - 1)
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: ShadButton.ghost(
-                      padding: EdgeInsets.zero,
-                      onPressed: () {
-                        pageController.nextPage(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                        );
-                      },
-                      child: const CLIcon.large(LucideIcons.chevronRight),
-                    ),
-                  ),
               ],
             ),
           );
@@ -269,6 +249,22 @@ class MediaViewService0State extends ConsumerState<MediaViewService0> {
       onLockPage: onLockPage,
       errorBuilder: widget.errorBuilder,
       loadingBuilder: widget.loadingBuilder,
+      prev: Align(
+        alignment: Alignment.centerLeft,
+        child: ShadButton.ghost(
+          padding: EdgeInsets.zero,
+          onPressed: moveToPrev,
+          child: const CLIcon.large(LucideIcons.chevronLeft),
+        ),
+      ),
+      next: Align(
+        alignment: Alignment.centerRight,
+        child: ShadButton.ghost(
+          padding: EdgeInsets.zero,
+          onPressed: moveToNext,
+          child: const CLIcon.large(LucideIcons.chevronRight),
+        ),
+      ),
     );
   }
 }

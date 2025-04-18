@@ -1,4 +1,4 @@
-import 'dart:math' as math;
+/* import 'dart:math' as math;
 
 import 'package:cl_media_tools/cl_media_tools.dart';
 import 'package:cl_media_viewers_flutter/cl_media_viewers_flutter.dart';
@@ -81,7 +81,7 @@ class MediaControls extends ConsumerWidget {
               right: 0,
               child: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 500),
-                child: GetVideoController(
+                child: GetVideoControls(
                   errorBuilder: (e, st) {
                     return ControllerMenu(
                       media: media,
@@ -253,3 +253,4 @@ class ControllerMenu extends StatelessWidget {
     );
   }
 }
+ */

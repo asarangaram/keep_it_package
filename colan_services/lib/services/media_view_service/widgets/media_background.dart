@@ -12,7 +12,7 @@ class MediaBackground extends ConsumerWidget {
 
     return AnimatedOpacity(
       opacity: showControl.showBackground ? 0 : 1.0,
-      duration: const Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 200),
       child: Container(
         decoration:
             BoxDecoration(color: Theme.of(context).colorScheme.inverseSurface),
