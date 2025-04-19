@@ -6,6 +6,7 @@ import 'package:colan_services/services/basic_page_service/widgets/page_manager.
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import 'package:store/store.dart';
@@ -281,6 +282,40 @@ class ControllerMenu extends StatelessWidget {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class InVideoMenuBar extends ConsumerWidget {
+  const InVideoMenuBar({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final showControl = ref.watch(showControlsProvider);
+    return IconTheme(
+      data: Theme.of(context).iconTheme.copyWith(color: Colors.white),
+      child: Container(
+        decoration: BoxDecoration(
+          color: ShadTheme.of(context).colorScheme.background.withAlpha(192),
+        ),
+        child: Row(
+          children: [
+            const Spacer(),
+            Align(
+              alignment: Alignment.bottomRight,
+              child: ShadButton.ghost(
+                onPressed: () =>
+                    ref.read(showControlsProvider.notifier).fullScreenToggle(),
+                icon: Icon(
+                  showControl.isFullScreen
+                      ? MdiIcons.fullscreenExit
+                      : MdiIcons.fullscreen,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

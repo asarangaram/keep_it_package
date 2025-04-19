@@ -1,11 +1,8 @@
 import 'package:cl_media_tools/cl_media_tools.dart';
 import 'package:cl_media_viewers_flutter/cl_media_viewers_flutter.dart';
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:shadcn_ui/shadcn_ui.dart';
 
 import 'package:store/store.dart';
 
@@ -56,14 +53,20 @@ class MediaView extends ConsumerWidget {
     });
 
     return MediaFullScreenToggle(
-      child: MediaWithOverlays(
-        pageController: pageController,
-        parentIdentifier: parentIdentifier,
-        media: media,
+      pageController: pageController,
+      child: MediaViewer(
+        heroTag: '$parentIdentifier /item/${media.id}',
+        uri: media.mediaUri!,
+        previewUri: media.previewUri,
+        mime: media.data.mimeType!,
         onLockPage: onLockPage,
         isLocked: isLocked,
         autoStart: autoStart,
         autoPlay: autoPlay,
+        brokenImage: const BrokenImage(),
+        loadWidget: const GreyShimmer(),
+        decoration: null,
+        keepAspectRatio: true,
       ),
     );
   }
@@ -71,178 +74,75 @@ class MediaView extends ConsumerWidget {
 
 class MediaFullScreenToggle extends ConsumerWidget {
   const MediaFullScreenToggle({
+    required this.pageController,
     required this.child,
     super.key,
   });
+  final PageController pageController;
   final Widget child;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isFullScreen =
         ref.watch(showControlsProvider.select((e) => e.isFullScreen));
+
+    final plainMedia = Center(
+      child: Stack(
+        children: [
+          child,
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white10..withAlpha(64),
+              ),
+              child: const InVideoMenuBar(),
+            ),
+          ),
+        ],
+      ),
+    );
     if (isFullScreen) {
-      return child;
+      return plainMedia;
     }
     return Column(
       children: [
-        Flexible(child: child),
-        Flexible(child: Container()),
-      ],
-    );
-  }
-}
-
-class MediaWithOverlays extends StatelessWidget {
-  const MediaWithOverlays({
-    required this.pageController,
-    required this.parentIdentifier,
-    required this.media,
-    required this.onLockPage,
-    required this.isLocked,
-    required this.autoStart,
-    required this.autoPlay,
-    super.key,
-  });
-
-  final PageController pageController;
-  final String parentIdentifier;
-  final StoreEntity media;
-  final void Function({required bool lock})? onLockPage;
-  final bool isLocked;
-  final bool autoStart;
-  final bool autoPlay;
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        const MediaBackground(),
-        Positioned.fill(
-          child: Row(
+        Flexible(
+          flex: 4,
+          child: Stack(
             children: [
-              Align(
-                alignment: Alignment.centerLeft,
-                child: OnGotoPrevPage(
-                  pageController: pageController,
-                ),
-              ),
-              Flexible(
-                child: Hero(
-                  tag: '$parentIdentifier /item/${media.id}',
-                  child: Center(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.red),
-                      ),
-                      child: Stack(
-                        children: [
-                          switch (media.data.mediaType) {
-                            CLMediaType.image => ImageViewer.guesture(
-                                uri: media.mediaUri!,
-                                onLockPage: onLockPage,
-                                isLocked: isLocked,
-                                brokenImage: const BrokenImage(),
-                                loadingWidget: const GreyShimmer(),
-                                keepAspectRatio: true,
-                              ),
-                            CLMediaType.video => VideoPlayer(
-                                uri: media.mediaUri!,
-                                autoStart: autoStart,
-                                autoPlay: autoPlay,
-                                onLockPage: onLockPage,
-                                isLocked: isLocked,
-                                placeHolder: ImageViewer.basic(
-                                  uri: media.previewUri!,
-                                  brokenImage: const BrokenImage(),
-                                  loadingWidget: const GreyShimmer(),
-                                  keepAspectRatio: true,
-                                ),
-                                errorBuilder: (_, __) => ImageViewer.basic(
-                                  uri: media.previewUri!,
-                                  brokenImage: const BrokenImage(),
-                                  loadingWidget: const GreyShimmer(),
-                                  keepAspectRatio: true,
-                                ),
-                                loadingBuilder: GreyShimmer.new,
-                              ),
-                            CLMediaType.text => const BrokenImage(),
-                            CLMediaType.audio => const BrokenImage(),
-                            CLMediaType.file => const BrokenImage(),
-                            CLMediaType.uri => const BrokenImage(),
-                            CLMediaType.unknown => const BrokenImage(),
-                            CLMediaType.collection =>
-                              const BrokenImage(), // FIXME, How to show in Mediaview
-                          },
-                          Positioned(
-                            bottom: 0,
-                            left: 0,
-                            right: 0,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white10..withAlpha(64),
-                              ),
-                              child: const MediaControlMenu(),
-                            ),
-                          ),
-                          //const MediaControlMenu(),
-                        ],
+              const MediaBackground(),
+              Positioned.fill(
+                child: Row(
+                  children: [
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: OnGotoPrevPage(
+                        pageController: pageController,
                       ),
                     ),
-                  ),
-                ),
-              ),
-              Align(
-                alignment: Alignment.centerRight,
-                child: OnGotoNextPage(
-                  pageController: pageController,
+                    Flexible(
+                      child: plainMedia,
+                    ),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: OnGotoNextPage(
+                        pageController: pageController,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
         ),
-
-        /*  Positioned(
-          left: 0,
-          right: 0,
-          child: MediaControls(
-            media: media,
-          ),
-        ), */
+        Flexible(
+          flex: 6,
+          child: Container(),
+        ),
       ],
-    );
-  }
-}
-
-class MediaControlMenu extends ConsumerWidget {
-  const MediaControlMenu({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final showControl = ref.watch(showControlsProvider);
-    return IconTheme(
-      data: Theme.of(context).iconTheme.copyWith(color: Colors.white),
-      child: Container(
-        decoration: BoxDecoration(
-          color: ShadTheme.of(context).colorScheme.background.withAlpha(192),
-        ),
-        child: Row(
-          children: [
-            const Spacer(),
-            Align(
-              alignment: Alignment.bottomRight,
-              child: ShadButton.ghost(
-                onPressed: () =>
-                    ref.read(showControlsProvider.notifier).fullScreenToggle(),
-                icon: Icon(
-                  showControl.isFullScreen
-                      ? MdiIcons.fullscreenExit
-                      : MdiIcons.fullscreen,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
