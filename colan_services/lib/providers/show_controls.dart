@@ -85,6 +85,10 @@ class ShowControlNotifier extends StateNotifier<ShowWhat> {
     state = state.copyWith(isFullScreen: false);
   }
 
+  void fullScreenToggle() {
+    state = state.copyWith(isFullScreen: !state.isFullScreen);
+  }
+
   void briefHover({Duration? timeout}) {
     disableControls?.cancel();
     showControls();

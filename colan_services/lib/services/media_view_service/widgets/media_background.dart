@@ -11,7 +11,7 @@ class MediaBackground extends ConsumerWidget {
     final showControl = ref.watch(showControlsProvider);
 
     return AnimatedOpacity(
-      opacity: showControl.showBackground ? 0 : 1.0,
+      opacity: showControl.showBackground ? 1 : 0,
       duration: const Duration(milliseconds: 500),
       child: Container(
         decoration:

@@ -2,11 +2,9 @@ import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:cl_media_viewers_flutter/cl_media_viewers_flutter.dart';
 import 'package:colan_services/internal/fullscreen_layout.dart';
 import 'package:colan_services/services/gallery_view_service/widgets/when_empty.dart';
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
 import '../basic_page_service/widgets/page_manager.dart';
@@ -148,81 +146,33 @@ class MediaPageView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final mediaViewerState = ref.watch(mediaViewerStateProvider);
-    return Row(
-      children: [
-        Align(
-          alignment: Alignment.centerLeft,
-          child: ShadButton.ghost(
-            padding: EdgeInsets.zero,
-            onPressed: () {
-              if (mediaViewerState.currentIndex > 0) {
-                pageController.previousPage(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                );
-              } else {
-                pageController.animateToPage(
-                  mediaViewerState.entities.length - 1,
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                );
-              }
-            },
-            child: const CLIcon.large(LucideIcons.chevronLeft),
-          ),
-        ),
-        Flexible(
-          child: PageView.builder(
-            controller: pageController,
-            itemCount: mediaViewerState.entities.length,
-            physics: mediaViewerState.lockScreen
-                ? const NeverScrollableScrollPhysics()
-                : null,
-            onPageChanged: (index) {
-              ref.read(mediaViewerStateProvider.notifier).currIndex = index;
-            },
-            itemBuilder: (context, index) {
-              return GetUniversalVideoControls(
-                builder: (controls) {
-                  return MediaView(
-                    parentIdentifier: viewIdentifier.parentID,
-                    media: mediaViewerState.entities[index] as StoreEntity,
-                    isLocked: false, //FIXME
-                    autoStart: index == mediaViewerState.currentIndex,
-                    autoPlay: false,
-                    onLockPage: ({required bool lock}) {},
-                    errorBuilder: (_, __) => throw UnimplementedError(''),
-                    loadingBuilder: GreyShimmer.show,
-                    controls: controls,
-                  );
-                },
-              );
-            },
-          ),
-        ),
-        Align(
-          alignment: Alignment.centerLeft,
-          child: ShadButton.ghost(
-            padding: EdgeInsets.zero,
-            onPressed: () {
-              if (mediaViewerState.currentIndex <
-                  mediaViewerState.entities.length - 1) {
-                pageController.nextPage(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                );
-              } else {
-                pageController.animateToPage(
-                  0,
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                );
-              }
-            },
-            child: const CLIcon.large(LucideIcons.chevronRight),
-          ),
-        ),
-      ],
+    return PageView.builder(
+      controller: pageController,
+      itemCount: mediaViewerState.entities.length,
+      physics: mediaViewerState.lockScreen
+          ? const NeverScrollableScrollPhysics()
+          : null,
+      onPageChanged: (index) {
+        ref.read(mediaViewerStateProvider.notifier).currIndex = index;
+      },
+      itemBuilder: (context, index) {
+        return GetUniversalVideoControls(
+          builder: (videoControls) {
+            return MediaView(
+              parentIdentifier: viewIdentifier.parentID,
+              media: mediaViewerState.entities[index] as StoreEntity,
+              isLocked: false, //FIXME
+              autoStart: index == mediaViewerState.currentIndex,
+              autoPlay: false,
+              onLockPage: ({required bool lock}) {},
+              errorBuilder: (_, __) => throw UnimplementedError(''),
+              loadingBuilder: GreyShimmer.show,
+              videoControls: videoControls,
+              pageController: pageController,
+            );
+          },
+        );
+      },
     );
   }
 }
