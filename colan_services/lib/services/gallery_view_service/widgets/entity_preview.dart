@@ -59,8 +59,9 @@ class EntityPreview extends ConsumerWidget {
         } else {
           await PageManager.of(context).openMedia(
             entity.data.id!,
-            parentId: entity.data.parentId,
-            parentIdentifier: viewIdentifier.parentID,
+            parentId: ref.read(activeCollectionProvider)?.id,
+            parentIdentifier:
+                viewIdentifier.parentID, // FIXME: Is this correct?
           );
         }
         return true;

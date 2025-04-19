@@ -1,22 +1,16 @@
 import 'package:cl_entity_viewers/cl_entity_viewers.dart';
-import 'package:cl_media_tools/cl_media_tools.dart';
-import 'package:cl_media_viewers_flutter/cl_media_viewers_flutter.dart';
 import 'package:colan_services/internal/fullscreen_layout.dart';
 import 'package:colan_services/services/gallery_view_service/widgets/when_empty.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
-import 'package:store/store.dart';
 
-import '../../../providers/show_controls.dart';
-import '../../models/platform_support.dart';
-import '../basic_page_service/basic_page_service.dart';
 import '../basic_page_service/widgets/page_manager.dart';
+import 'models/media_view_state.dart';
+import 'providers/media_view_state.dart';
 import 'widgets/cl_page_widget.dart';
-import 'widgets/media_view.dart';
 
 class MediaViewService extends CLPageWidget {
   const MediaViewService({
@@ -55,12 +49,17 @@ class MediaViewService extends CLPageWidget {
                 });
                 return const WhenEmpty();
               }
-              return MediaViewService0(
-                viewIdentifier: viewIdentifier,
-                incoming: [entity],
-                initialMediaIndex: id,
-                errorBuilder: errorBuilder,
-                loadingBuilder: loadingWidget,
+              return ProviderScope(
+                overrides: [
+                  mediaViewerStateProvider.overrideWith(
+                    (ref) => MediaViewerStateNotifier(
+                      MediaViewerState(entities: [entity]),
+                    ),
+                  ),
+                ],
+                child: MediaViewService0(
+                  viewIdentifier: viewIdentifier,
+                ),
               );
             },
           )
@@ -83,12 +82,20 @@ class MediaViewService extends CLPageWidget {
                   },
                 );
               }
-              return MediaViewService0(
-                viewIdentifier: viewIdentifier,
-                incoming: entities,
-                initialMediaIndex: entities.indexWhere((e) => e.id == id),
-                errorBuilder: errorBuilder,
-                loadingBuilder: loadingWidget,
+              return ProviderScope(
+                overrides: [
+                  mediaViewerStateProvider.overrideWith(
+                    (ref) => MediaViewerStateNotifier(
+                      MediaViewerState(
+                        entities: entities,
+                        currentIndex: entities.indexWhere((e) => e.id == id),
+                      ),
+                    ),
+                  ),
+                ],
+                child: MediaViewService0(
+                  viewIdentifier: viewIdentifier,
+                ),
               );
             },
           ),
@@ -98,196 +105,99 @@ class MediaViewService extends CLPageWidget {
 }
 
 class MediaViewService0 extends ConsumerStatefulWidget {
-  const MediaViewService0({
-    required this.viewIdentifier,
-    required this.initialMediaIndex,
-    required this.incoming,
-    required this.errorBuilder,
-    required this.loadingBuilder,
-    this.filtersDisabled = false,
-    super.key,
-  });
-
+  const MediaViewService0({required this.viewIdentifier, super.key});
   final ViewIdentifier viewIdentifier;
-  final List<ViewerEntityMixin> incoming;
-  final int initialMediaIndex;
-
-  final bool filtersDisabled;
-  final Widget Function(Object, StackTrace) errorBuilder;
-  final Widget Function() loadingBuilder;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
-      MediaViewService0State();
+      _MediaViewService0State();
 }
 
-class MediaViewService0State extends ConsumerState<MediaViewService0> {
-  bool lockPage = false;
-
+class _MediaViewService0State extends ConsumerState<MediaViewService0> {
   late final PageController pageController;
-  late int currIndex;
 
   @override
   void initState() {
-    currIndex = widget.initialMediaIndex;
-    pageController = PageController(initialPage: widget.initialMediaIndex);
+    pageController = PageController(
+      initialPage: ref.read(mediaViewerStateProvider).currentIndex,
+    );
     super.initState();
   }
 
   @override
-  void dispose() {
-    SystemChrome.setEnabledSystemUIMode(
-      SystemUiMode.manual,
-      overlays: SystemUiOverlay.values,
-    );
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
-    super.dispose();
+  Widget build(BuildContext context) {
+    return MediaPageView(pageController: pageController);
   }
+}
+
+class MediaPageView extends ConsumerWidget {
+  const MediaPageView({required this.pageController, super.key});
+  final PageController pageController;
 
   @override
-  Widget build(BuildContext context) {
-    if (currIndex >= widget.incoming.length) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        PageManager.of(context).pop();
-      });
-      return BasicPageService.withNavBar(message: 'Media seems deleted');
-    }
-
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
-    ]);
-    final showControl = ref.watch(showControlsProvider);
-    if (!showControl.showStatusBar) {
-      SystemChrome.setEnabledSystemUIMode(SystemUiMode.leanBack);
-    } else {
-      SystemChrome.setEnabledSystemUIMode(
-        SystemUiMode.manual,
-        overlays: SystemUiOverlay.values,
-      );
-    }
-    return GetUniversalVideoControls(
-      builder: (videoPlayerControl) {
-        WidgetsBinding.instance.addPostFrameCallback((_) async {
-          await videoPlayerControl.stopVideo();
-          if (widget.incoming[currIndex].mediaType == CLMediaType.video &&
-              widget.incoming[currIndex].mediaUri != null) {
-            await videoPlayerControl
-                .setVideo(widget.incoming[currIndex].mediaUri!);
-          }
-        });
-        return (widget.incoming.length == 1)
-            ? itemBuilder(context, widget.incoming[0])
-            : CLKeyListener(
-                keyHandler: {
-                  if (!ColanPlatformSupport.isMobilePlatform)
-                    LogicalKeyboardKey.escape: () =>
-                        PageManager.of(context).pop(),
-                  if (currIndex > 0)
-                    LogicalKeyboardKey.arrowLeft: () =>
-                        pageController.previousPage(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                        )
-                  else
-                    LogicalKeyboardKey.arrowLeft: () =>
-                        pageController.animateTo(
-                          widget.incoming.length - 1,
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                        ),
-                  if (currIndex < widget.incoming.length - 1)
-                    LogicalKeyboardKey.arrowRight: () =>
-                        pageController.nextPage(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                        )
-                  else
-                    LogicalKeyboardKey.altRight: () => pageController.animateTo(
-                          0,
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                        ),
-                },
-                child: Stack(
-                  children: [
-                    PageView.builder(
-                      controller: pageController,
-                      itemCount: widget.incoming.length,
-                      physics: lockPage
-                          ? const NeverScrollableScrollPhysics()
-                          : null,
-                      onPageChanged: (index) {
-                        setState(() {
-                          currIndex = index;
-                          if (widget.incoming[index].mediaType ==
-                              CLMediaType.video) {}
-                        });
-                      },
-                      itemBuilder: (context, index) {
-                        final media = widget.incoming[index];
-                        return itemBuilder(context, media);
-                      },
-                    ),
-                    if (currIndex > 0)
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: ShadButton.ghost(
-                          padding: EdgeInsets.zero,
-                          onPressed: () {
-                            pageController.previousPage(
-                              duration: const Duration(milliseconds: 300),
-                              curve: Curves.easeInOut,
-                            );
-                          },
-                          child: const CLIcon.large(LucideIcons.chevronLeft),
-                        ),
-                      ),
-                    if (currIndex < widget.incoming.length - 1)
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: ShadButton.ghost(
-                          padding: EdgeInsets.zero,
-                          onPressed: () {
-                            pageController.nextPage(
-                              duration: const Duration(milliseconds: 300),
-                              curve: Curves.easeInOut,
-                            );
-                          },
-                          child: const CLIcon.large(LucideIcons.chevronRight),
-                        ),
-                      ),
-                  ],
-                ),
-              );
-      },
-    );
-  }
-
-  void onLockPage({required bool lock}) {
-    setState(() {
-      lockPage = lock;
-    });
-  }
-
-  Widget itemBuilder(
-    BuildContext context,
-    ViewerEntityMixin entity,
-  ) {
-    return MediaView(
-      parentIdentifier: widget.viewIdentifier.parentID,
-      media: entity as StoreEntity,
-      isLocked: lockPage,
-      autoStart: true,
-      autoPlay: false,
-      onLockPage: onLockPage,
-      errorBuilder: widget.errorBuilder,
-      loadingBuilder: widget.loadingBuilder,
+  Widget build(BuildContext context, WidgetRef ref) {
+    final mediaViewerState = ref.watch(mediaViewerStateProvider);
+    return Row(
+      children: [
+        Align(
+          alignment: Alignment.centerLeft,
+          child: ShadButton.ghost(
+            padding: EdgeInsets.zero,
+            onPressed: () {
+              if (mediaViewerState.currentIndex > 0) {
+                pageController.previousPage(
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                );
+              } else {
+                pageController.animateToPage(
+                  mediaViewerState.entities.length - 1,
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                );
+              }
+            },
+            child: const CLIcon.large(LucideIcons.chevronLeft),
+          ),
+        ),
+        Flexible(
+          child: PageView.builder(
+            controller: pageController,
+            itemCount: mediaViewerState.entities.length,
+            physics: mediaViewerState.lockScreen
+                ? const NeverScrollableScrollPhysics()
+                : null,
+            onPageChanged: (index) {
+              ref.read(mediaViewerStateProvider.notifier).currIndex = index;
+            },
+            itemBuilder: (context, index) {
+              return Text('index: $index. [${mediaViewerState.currentIndex}]');
+            },
+          ),
+        ),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: ShadButton.ghost(
+            padding: EdgeInsets.zero,
+            onPressed: () {
+              if (mediaViewerState.currentIndex <
+                  mediaViewerState.entities.length - 1) {
+                pageController.nextPage(
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                );
+              } else {
+                pageController.animateToPage(
+                  0,
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                );
+              }
+            },
+            child: const CLIcon.large(LucideIcons.chevronRight),
+          ),
+        ),
+      ],
     );
   }
 }
