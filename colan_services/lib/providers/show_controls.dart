@@ -3,56 +3,51 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-enum ItemViewModes { fullView, menu }
-
 @immutable
 class ShowWhat {
   const ShowWhat({
-    this.itemViewMode = ItemViewModes.fullView,
-    this.showNotes = false,
+    this.showControls = true,
+    this.isFullScreen = true,
   });
-  final ItemViewModes itemViewMode;
-  final bool showNotes;
+  final bool showControls;
+  final bool isFullScreen;
 
   ShowWhat copyWith({
-    ItemViewModes? itemViewMode,
-    bool? showNotes,
+    bool? showControls,
+    bool? isFullScreen,
   }) {
     return ShowWhat(
-      itemViewMode: itemViewMode ?? this.itemViewMode,
-      showNotes: showNotes ?? this.showNotes,
+      showControls: showControls ?? this.showControls,
+      isFullScreen: isFullScreen ?? this.isFullScreen,
     );
   }
 
   @override
   String toString() =>
-      'ShowWhat(itemViewMode: $itemViewMode, showNotes: $showNotes)';
+      'ShowWhat(showControls: $showControls, isFullScreen: $isFullScreen)';
 
   @override
   bool operator ==(covariant ShowWhat other) {
     if (identical(this, other)) return true;
 
-    return other.itemViewMode == itemViewMode && other.showNotes == showNotes;
+    return other.showControls == showControls &&
+        other.isFullScreen == isFullScreen;
   }
 
   @override
-  int get hashCode => itemViewMode.hashCode ^ showNotes.hashCode;
+  int get hashCode => showControls.hashCode ^ isFullScreen.hashCode;
 
   bool get showMenu {
-    return itemViewMode == ItemViewModes.menu && !showNotes;
+    return showControls;
   }
 
   bool get showStatusBar {
-    return itemViewMode == ItemViewModes.menu || showNotes;
+    return showControls;
   }
 
   bool get showBackground {
-    return itemViewMode != ItemViewModes.fullView || showNotes;
+    return isFullScreen;
   }
-
-  /* bool get showNotes {
-    return itemViewMode == ItemViewModes.notes;
-  } */
 }
 
 class ShowControlNotifier extends StateNotifier<ShowWhat> {
@@ -68,23 +63,26 @@ class ShowControlNotifier extends StateNotifier<ShowWhat> {
 
   void hideControls() {
     if (state.showMenu) {
-      state = state.copyWith(itemViewMode: ItemViewModes.fullView);
+      state = state.copyWith(showControls: false);
     }
   }
 
   void showControls() {
     if (!state.showMenu) {
-      state = state.copyWith(itemViewMode: ItemViewModes.menu);
+      state = state.copyWith(showControls: true);
     }
   }
 
   void toggleControls() {
-    switch (state.itemViewMode) {
-      case ItemViewModes.fullView:
-        state = state.copyWith(itemViewMode: ItemViewModes.menu);
-      case ItemViewModes.menu:
-        state = state.copyWith(itemViewMode: ItemViewModes.fullView);
-    }
+    state = state.copyWith(showControls: !state.showControls);
+  }
+
+  void fullScreenOn() {
+    state = state.copyWith(isFullScreen: true);
+  }
+
+  void fullScreenOff() {
+    state = state.copyWith(isFullScreen: false);
   }
 
   void briefHover({Duration? timeout}) {
@@ -100,14 +98,6 @@ class ShowControlNotifier extends StateNotifier<ShowWhat> {
         },
       );
     }
-  }
-
-  void showNotes() {
-    state = state.copyWith(showNotes: true);
-  }
-
-  void hideNotes() {
-    state = state.copyWith(showNotes: false);
   }
 }
 

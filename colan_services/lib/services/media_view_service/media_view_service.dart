@@ -173,10 +173,12 @@ class MediaViewService0State extends ConsumerState<MediaViewService0> {
     }
     return GetUniversalVideoControls(
       builder: (videoPlayerControl) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
+        WidgetsBinding.instance.addPostFrameCallback((_) async {
+          await videoPlayerControl.stopVideo();
           if (widget.incoming[currIndex].mediaType == CLMediaType.video &&
               widget.incoming[currIndex].mediaUri != null) {
-            videoPlayerControl.setVideo(widget.incoming[currIndex].mediaUri!);
+            await videoPlayerControl
+                .setVideo(widget.incoming[currIndex].mediaUri!);
           }
         });
         return (widget.incoming.length == 1)

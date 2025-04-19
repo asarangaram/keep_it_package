@@ -37,26 +37,7 @@ class MediaControls extends ConsumerWidget {
 
     return Stack(
       children: [
-        if (showControl.showMenu || showControl.showNotes)
-          SafeArea(
-            child: Align(
-              alignment: Alignment.topLeft,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 8, top: 8),
-                child: CircledIcon(
-                  showControl.showNotes
-                      ? clIcons.closeNotes
-                      : clIcons.openNotes,
-                  onTap: () {
-                    showControl.showNotes
-                        ? ref.read(showControlsProvider.notifier).hideNotes()
-                        : ref.read(showControlsProvider.notifier).showNotes();
-                  },
-                ),
-              ),
-            ),
-          ),
-        if (showControl.showMenu || showControl.showNotes)
+        if (showControl.showMenu)
           SafeArea(
             child: Align(
               alignment: Alignment.topRight,

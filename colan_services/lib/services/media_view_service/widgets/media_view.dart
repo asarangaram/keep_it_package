@@ -36,7 +36,6 @@ class MediaView extends ConsumerWidget {
   final Widget Function() loadingBuilder;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final showControl = ref.watch(showControlsProvider);
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
       onTap: () => ref.read(showControlsProvider.notifier).toggleControls(),
@@ -46,18 +45,14 @@ class MediaView extends ConsumerWidget {
           Positioned.fill(
             child: Hero(
               tag: '$parentIdentifier /item/${media.id}',
-              child: SafeArea(
-                top: showControl.showNotes,
-                bottom: showControl.showNotes,
-                left: showControl.showNotes,
-                right: showControl.showNotes,
-                child: switch (media.data.mediaType) {
-                  CLMediaType.image => ImageViewer.guesture(
-                      uri: media.mediaUri!,
-                      onLockPage: onLockPage,
-                      isLocked: isLocked,
-                    ),
-                  CLMediaType.video => VideoPlayer(
+              child: switch (media.data.mediaType) {
+                CLMediaType.image => ImageViewer.guesture(
+                    uri: media.mediaUri!,
+                    onLockPage: onLockPage,
+                    isLocked: isLocked,
+                  ),
+                CLMediaType.video => Center(
+                    child: VideoPlayer(
                       uri: media.mediaUri!,
                       autoStart: autoStart,
                       autoPlay: autoPlay,
@@ -73,15 +68,15 @@ class MediaView extends ConsumerWidget {
                         debugMessage: 'VideoPlayer',
                       ),
                     ),
-                  CLMediaType.text => const BrokenImage(),
-                  CLMediaType.audio => const BrokenImage(),
-                  CLMediaType.file => const BrokenImage(),
-                  CLMediaType.uri => const BrokenImage(),
-                  CLMediaType.unknown => const BrokenImage(),
-                  CLMediaType.collection =>
-                    const BrokenImage(), // FIXME, How to show in Mediaview
-                },
-              ),
+                  ),
+                CLMediaType.text => const BrokenImage(),
+                CLMediaType.audio => const BrokenImage(),
+                CLMediaType.file => const BrokenImage(),
+                CLMediaType.uri => const BrokenImage(),
+                CLMediaType.unknown => const BrokenImage(),
+                CLMediaType.collection =>
+                  const BrokenImage(), // FIXME, How to show in Mediaview
+              },
             ),
           ),
           MediaControls(
