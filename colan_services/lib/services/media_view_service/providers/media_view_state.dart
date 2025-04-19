@@ -11,8 +11,5 @@ class MediaViewerStateNotifier extends StateNotifier<MediaViewerState> {
 
 final mediaViewerStateProvider =
     StateNotifierProvider<MediaViewerStateNotifier, MediaViewerState>((ref) {
-  ref.listenSelf((prev, curr) {
-    print('Current media Id: $curr');
-  });
   return throw Exception('Override mising');
 });
