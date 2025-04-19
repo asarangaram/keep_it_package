@@ -1,4 +1,5 @@
 import 'package:cl_entity_viewers/cl_entity_viewers.dart';
+import 'package:cl_media_viewers_flutter/cl_media_viewers_flutter.dart';
 import 'package:colan_services/internal/fullscreen_layout.dart';
 import 'package:colan_services/services/gallery_view_service/widgets/when_empty.dart';
 import 'package:colan_widgets/colan_widgets.dart';
@@ -6,11 +7,13 @@ import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+import 'package:store/store.dart';
 
 import '../basic_page_service/widgets/page_manager.dart';
 import 'models/media_view_state.dart';
 import 'providers/media_view_state.dart';
 import 'widgets/cl_page_widget.dart';
+import 'widgets/media_view.dart';
 
 class MediaViewService extends CLPageWidget {
   const MediaViewService({
@@ -126,13 +129,21 @@ class _MediaViewService0State extends ConsumerState<MediaViewService0> {
 
   @override
   Widget build(BuildContext context) {
-    return MediaPageView(pageController: pageController);
+    return MediaPageView(
+      viewIdentifier: widget.viewIdentifier,
+      pageController: pageController,
+    );
   }
 }
 
 class MediaPageView extends ConsumerWidget {
-  const MediaPageView({required this.pageController, super.key});
+  const MediaPageView({
+    required this.viewIdentifier,
+    required this.pageController,
+    super.key,
+  });
   final PageController pageController;
+  final ViewIdentifier viewIdentifier;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -171,7 +182,21 @@ class MediaPageView extends ConsumerWidget {
               ref.read(mediaViewerStateProvider.notifier).currIndex = index;
             },
             itemBuilder: (context, index) {
-              return Text('index: $index. [${mediaViewerState.currentIndex}]');
+              return GetUniversalVideoControls(
+                builder: (controls) {
+                  return MediaView(
+                    parentIdentifier: viewIdentifier.parentID,
+                    media: mediaViewerState.entities[index] as StoreEntity,
+                    isLocked: false, //FIXME
+                    autoStart: index == mediaViewerState.currentIndex,
+                    autoPlay: false,
+                    onLockPage: ({required bool lock}) {},
+                    errorBuilder: (_, __) => throw UnimplementedError(''),
+                    loadingBuilder: GreyShimmer.show,
+                    controls: controls,
+                  );
+                },
+              );
             },
           ),
         ),

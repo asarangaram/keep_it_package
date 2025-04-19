@@ -22,6 +22,7 @@ class MediaView extends ConsumerWidget {
     required this.autoPlay,
     required this.errorBuilder,
     required this.loadingBuilder,
+    required this.controls,
     this.onLockPage,
     super.key,
   });
@@ -35,8 +36,22 @@ class MediaView extends ConsumerWidget {
   final void Function({required bool lock})? onLockPage;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
+  final UniversalPlayControls controls;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (autoStart) {
+        await controls.stopVideo();
+        if (media.mediaType == CLMediaType.video && media.mediaUri != null) {
+          await controls.setVideo(
+            media.mediaUri!,
+            forced: false,
+            autoPlay: true,
+          );
+        }
+      } else {}
+    });
+
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
       onTap: () => ref.read(showControlsProvider.notifier).toggleControls(),
@@ -51,8 +66,9 @@ class MediaView extends ConsumerWidget {
                   aspectRatio: (media.data.width ?? 1).toDouble() /
                       (media.data.height ?? 1),
                   child: Container(
-                    decoration:
-                        BoxDecoration(border: Border.all(color: Colors.red)),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.red),
+                    ),
                     child: Stack(
                       children: [
                         switch (media.data.mediaType) {
