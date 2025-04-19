@@ -81,30 +81,11 @@ class MediaControls extends ConsumerWidget {
               right: 0,
               child: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 500),
-                child: GetVideoController(
+                child: GetUriVideoControls(
                   uri: media.mediaUri!, // Make sure null check before
-                  errorBuilder: (e, st) {
-                    return ControllerMenu(
-                      media: media,
-                      onEdit: onEdit,
-                      onDelete: onDelete,
-                      onMove: onMove,
-                      onShare: onShare,
-                      onPin: onPin,
-                    );
-                  },
-                  loadingBuilder: () {
-                    return ControllerMenu(
-                      media: media,
-                      onEdit: onEdit,
-                      onDelete: onDelete,
-                      onMove: onMove,
-                      onShare: onShare,
-                      onPin: onPin,
-                    );
-                  },
+
                   builder: (
-                    VideoControls controller,
+                    UriPlayControls controller,
                   ) {
                     return ControllerMenu(
                       media: media,
@@ -179,14 +160,14 @@ class ControllerMenu extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              if (media.data.mediaType == CLMediaType.video)
+              /* if (media.data.mediaType == CLMediaType.video)
                 VideoDefaultControls(
                   uri: media.mediaUri!,
                   errorBuilder: (_, __) => Container(),
                   loadingBuilder: () => CLLoader.widget(
                     debugMessage: 'VideoDefaultControls',
                   ),
-                ),
+                ), */
               if ([onEdit, onDelete, onMove, onShare, onPin]
                   .any((e) => e != null))
                 Padding(

@@ -1,4 +1,6 @@
 import 'package:cl_entity_viewers/cl_entity_viewers.dart';
+import 'package:cl_media_tools/cl_media_tools.dart';
+import 'package:cl_media_viewers_flutter/cl_media_viewers_flutter.dart';
 import 'package:colan_services/internal/fullscreen_layout.dart';
 import 'package:colan_services/services/gallery_view_service/widgets/when_empty.dart';
 import 'package:colan_widgets/colan_widgets.dart';
@@ -169,83 +171,100 @@ class MediaViewService0State extends ConsumerState<MediaViewService0> {
         overlays: SystemUiOverlay.values,
       );
     }
-    return (widget.incoming.length == 1)
-        ? itemBuilder(context, widget.incoming[0])
-        : CLKeyListener(
-            keyHandler: {
-              if (!ColanPlatformSupport.isMobilePlatform)
-                LogicalKeyboardKey.escape: () => PageManager.of(context).pop(),
-              if (currIndex > 0)
-                LogicalKeyboardKey.arrowLeft: () => pageController.previousPage(
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
-                    )
-              else
-                LogicalKeyboardKey.arrowLeft: () => pageController.animateTo(
-                      widget.incoming.length - 1,
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
-                    ),
-              if (currIndex < widget.incoming.length - 1)
-                LogicalKeyboardKey.arrowRight: () => pageController.nextPage(
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
-                    )
-              else
-                LogicalKeyboardKey.altRight: () => pageController.animateTo(
-                      0,
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
-                    ),
-            },
-            child: Stack(
-              children: [
-                PageView.builder(
-                  controller: pageController,
-                  itemCount: widget.incoming.length,
-                  physics:
-                      lockPage ? const NeverScrollableScrollPhysics() : null,
-                  onPageChanged: (index) {
-                    setState(() {
-                      currIndex = index;
-                    });
-                  },
-                  itemBuilder: (context, index) {
-                    final media = widget.incoming[index];
-                    return itemBuilder(context, media);
-                  },
-                ),
-                if (currIndex > 0)
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: ShadButton.ghost(
-                      padding: EdgeInsets.zero,
-                      onPressed: () {
+    return GetUniversalVideoControls(
+      builder: (videoPlayerControl) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (widget.incoming[currIndex].mediaType == CLMediaType.video &&
+              widget.incoming[currIndex].mediaUri != null) {
+            videoPlayerControl.setVideo(widget.incoming[currIndex].mediaUri!);
+          }
+        });
+        return (widget.incoming.length == 1)
+            ? itemBuilder(context, widget.incoming[0])
+            : CLKeyListener(
+                keyHandler: {
+                  if (!ColanPlatformSupport.isMobilePlatform)
+                    LogicalKeyboardKey.escape: () =>
+                        PageManager.of(context).pop(),
+                  if (currIndex > 0)
+                    LogicalKeyboardKey.arrowLeft: () =>
                         pageController.previousPage(
                           duration: const Duration(milliseconds: 300),
                           curve: Curves.easeInOut,
-                        );
-                      },
-                      child: const CLIcon.large(LucideIcons.chevronLeft),
-                    ),
-                  ),
-                if (currIndex < widget.incoming.length - 1)
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: ShadButton.ghost(
-                      padding: EdgeInsets.zero,
-                      onPressed: () {
+                        )
+                  else
+                    LogicalKeyboardKey.arrowLeft: () =>
+                        pageController.animateTo(
+                          widget.incoming.length - 1,
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                        ),
+                  if (currIndex < widget.incoming.length - 1)
+                    LogicalKeyboardKey.arrowRight: () =>
                         pageController.nextPage(
                           duration: const Duration(milliseconds: 300),
                           curve: Curves.easeInOut,
-                        );
+                        )
+                  else
+                    LogicalKeyboardKey.altRight: () => pageController.animateTo(
+                          0,
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                        ),
+                },
+                child: Stack(
+                  children: [
+                    PageView.builder(
+                      controller: pageController,
+                      itemCount: widget.incoming.length,
+                      physics: lockPage
+                          ? const NeverScrollableScrollPhysics()
+                          : null,
+                      onPageChanged: (index) {
+                        setState(() {
+                          currIndex = index;
+                          if (widget.incoming[index].mediaType ==
+                              CLMediaType.video) {}
+                        });
                       },
-                      child: const CLIcon.large(LucideIcons.chevronRight),
+                      itemBuilder: (context, index) {
+                        final media = widget.incoming[index];
+                        return itemBuilder(context, media);
+                      },
                     ),
-                  ),
-              ],
-            ),
-          );
+                    if (currIndex > 0)
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: ShadButton.ghost(
+                          padding: EdgeInsets.zero,
+                          onPressed: () {
+                            pageController.previousPage(
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                            );
+                          },
+                          child: const CLIcon.large(LucideIcons.chevronLeft),
+                        ),
+                      ),
+                    if (currIndex < widget.incoming.length - 1)
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: ShadButton.ghost(
+                          padding: EdgeInsets.zero,
+                          onPressed: () {
+                            pageController.nextPage(
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                            );
+                          },
+                          child: const CLIcon.large(LucideIcons.chevronRight),
+                        ),
+                      ),
+                  ],
+                ),
+              );
+      },
+    );
   }
 
   void onLockPage({required bool lock}) {
