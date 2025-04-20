@@ -1,5 +1,6 @@
 import 'package:cl_media_tools/cl_media_tools.dart';
 import 'package:cl_media_viewers_flutter/cl_media_viewers_flutter.dart';
+import 'package:colan_services/services/media_view_service/widgets/resizable.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -51,7 +52,6 @@ class MediaView extends ConsumerWidget {
         }
       } else {}
     });
-
     return MediaFullScreenToggle(
       pageController: pageController,
       child: MediaViewer(
@@ -90,15 +90,14 @@ class MediaFullScreenToggle extends ConsumerWidget {
       child: Stack(
         children: [
           child,
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white10..withAlpha(64),
+          const Positioned.fill(
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: FractionallySizedBox(
+                heightFactor: 0.05,
+                widthFactor: 1,
+                child: InVideoMenuBar(),
               ),
-              child: const InVideoMenuBar(),
             ),
           ),
         ],
@@ -107,42 +106,36 @@ class MediaFullScreenToggle extends ConsumerWidget {
     if (isFullScreen) {
       return plainMedia;
     }
-    return Column(
-      children: [
-        Flexible(
-          flex: 4,
-          child: Stack(
-            children: [
-              const MediaBackground(),
-              Positioned.fill(
-                child: Row(
-                  children: [
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: OnGotoPrevPage(
-                        pageController: pageController,
-                      ),
+    return ResizablePage(
+      top: Padding(
+        padding: const EdgeInsets.only(top: 8, bottom: 16),
+        child: Stack(
+          children: [
+            const MediaBackground(),
+            Positioned.fill(
+              child: Row(
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: OnGotoPrevPage(
+                      pageController: pageController,
                     ),
-                    Flexible(
-                      child: plainMedia,
+                  ),
+                  Flexible(
+                    child: plainMedia,
+                  ),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: OnGotoNextPage(
+                      pageController: pageController,
                     ),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: OnGotoNextPage(
-                        pageController: pageController,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
-        Flexible(
-          flex: 6,
-          child: Container(),
-        ),
-      ],
+      ),
     );
   }
 }

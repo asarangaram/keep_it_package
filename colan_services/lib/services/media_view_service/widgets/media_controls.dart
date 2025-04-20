@@ -294,30 +294,41 @@ class InVideoMenuBar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final showControl = ref.watch(showControlsProvider);
-    return IconTheme(
-      data: Theme.of(context).iconTheme.copyWith(color: Colors.white),
-      child: Container(
-        decoration: BoxDecoration(
-          color: ShadTheme.of(context).colorScheme.background.withAlpha(192),
-        ),
-        child: Row(
-          children: [
-            const Spacer(),
-            Align(
-              alignment: Alignment.bottomRight,
-              child: ShadButton.ghost(
-                onPressed: () =>
-                    ref.read(showControlsProvider.notifier).fullScreenToggle(),
-                icon: Icon(
-                  showControl.isFullScreen
-                      ? MdiIcons.fullscreenExit
-                      : MdiIcons.fullscreen,
+    return LayoutBuilder(
+      builder: (context, constrains) {
+        if (constrains.maxHeight < kMinInteractiveDimension * 0.3) {
+          return const SizedBox.shrink();
+        }
+        return Container(
+          decoration: BoxDecoration(
+            color: ShadTheme.of(context).colorScheme.background.withAlpha(192),
+            border: Border.all(),
+          ),
+          width: constrains.maxWidth,
+          height: constrains.maxHeight,
+          alignment: Alignment.bottomRight,
+          child: FittedBox(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Align(
+                  alignment: Alignment.bottomRight,
+                  child: ShadButton.ghost(
+                    onPressed: () => ref
+                        .read(showControlsProvider.notifier)
+                        .fullScreenToggle(),
+                    icon: Icon(
+                      showControl.isFullScreen
+                          ? MdiIcons.fullscreenExit
+                          : MdiIcons.fullscreen,
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }

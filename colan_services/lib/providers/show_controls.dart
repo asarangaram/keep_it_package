@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class ShowWhat {
   const ShowWhat({
     this.showControls = true,
-    this.isFullScreen = true,
+    this.isFullScreen = false,
   });
   final bool showControls;
   final bool isFullScreen;
