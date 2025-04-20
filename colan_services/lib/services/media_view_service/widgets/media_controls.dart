@@ -11,6 +11,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
 import '../../../providers/show_controls.dart';
+import 'controls/time_stamp.dart';
 import 'controls/toggle_audio_mute.dart';
 import 'controls/toggle_fullscreen.dart';
 import 'controls/toggle_play.dart';
@@ -250,6 +251,7 @@ class InVideoMenuBar extends ConsumerWidget {
                   // Only for Video
                   OnToggleVideoPlay(uri: uri),
                   OnToggleAudioMute(uri: uri),
+                  ShowTimeStamp(uri: uri),
 
                   const OnToggleFullScreen(),
                 ],
