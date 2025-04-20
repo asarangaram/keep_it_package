@@ -50,7 +50,7 @@ class MediaView extends ConsumerWidget {
             autoPlay: true,
           );
         }
-      } else {}
+      }
     });
     return MediaFullScreenToggle(
       uri: media.mediaUri!,

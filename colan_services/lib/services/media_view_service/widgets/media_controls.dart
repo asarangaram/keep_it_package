@@ -353,33 +353,13 @@ class OnPlayToggle extends ConsumerWidget {
               return const SizedBox.shrink();
             }
 
-            void onPlayPause() {
-              if (videoplayerStatus.isCompleted) {
-                final isLive =
-                    (videoplayerStatus.duration.inSeconds) > 10 * 60 * 60;
-                if (isLive) {
-                  universalvideoControls
-                      .setVideo(uri, autoPlay: true, forced: true)
-                      .then((val) => uriPlayController.play());
-                } else {
-                  uriPlayController.play();
-                }
-              }
-              // If the video is playing, pause it.
-              if (videoplayerStatus.isPlaying) {
-                uriPlayController.pause();
-              } else {
-                uriPlayController.play();
-              }
-            }
-
             return ShadButton.ghost(
               icon: Icon(
                 videoplayerStatus.isPlaying
                     ? videoPlayerIcons.playerPause
                     : videoPlayerIcons.playerPlay,
               ),
-              onPressed: onPlayPause,
+              onPressed: uriPlayController.onPlayPause,
             );
           },
         );
