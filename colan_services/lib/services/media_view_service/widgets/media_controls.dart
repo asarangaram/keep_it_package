@@ -6,82 +6,14 @@ import 'package:colan_services/services/basic_page_service/widgets/page_manager.
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import 'package:store/store.dart';
 
 import '../../../providers/show_controls.dart';
-import '../providers/media_view_state.dart';
-import 'cl_icons.dart';
-
-class OnGotoPrevPage extends ConsumerWidget {
-  const OnGotoPrevPage({required this.pageController, super.key});
-  final PageController pageController;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final mediaViewerState = ref.watch(mediaViewerStateProvider);
-    final isFullScreen =
-        ref.watch(showControlsProvider.select((e) => e.isFullScreen));
-    if (isFullScreen) {
-      return const SizedBox.shrink();
-    }
-    return ShadButton.ghost(
-      padding: EdgeInsets.zero,
-      onPressed: () {
-        if (mediaViewerState.currentIndex > 0) {
-          pageController.previousPage(
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
-          );
-        } else {
-          pageController.animateToPage(
-            mediaViewerState.entities.length - 1,
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
-          );
-        }
-      },
-      child: const CLIcon.large(LucideIcons.chevronLeft),
-    );
-  }
-}
-
-class OnGotoNextPage extends ConsumerWidget {
-  const OnGotoNextPage({required this.pageController, super.key});
-  final PageController pageController;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final mediaViewerState = ref.watch(mediaViewerStateProvider);
-    final isFullScreen =
-        ref.watch(showControlsProvider.select((e) => e.isFullScreen));
-    if (isFullScreen) {
-      return const SizedBox.shrink();
-    }
-
-    return ShadButton.ghost(
-      padding: EdgeInsets.zero,
-      onPressed: () {
-        if (mediaViewerState.currentIndex <
-            mediaViewerState.entities.length - 1) {
-          pageController.nextPage(
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
-          );
-        } else {
-          pageController.animateToPage(
-            0,
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
-          );
-        }
-      },
-      child: const CLIcon.large(LucideIcons.chevronRight),
-    );
-  }
-}
+import 'controls/toggle_audio_mute.dart';
+import 'controls/toggle_fullscreen.dart';
+import 'controls/toggle_play.dart';
 
 class MediaControls extends ConsumerWidget {
   const MediaControls({
@@ -295,7 +227,6 @@ class InVideoMenuBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final showControl = ref.watch(showControlsProvider);
     return LayoutBuilder(
       builder: (context, constrains) {
         if (constrains.maxHeight < kMinInteractiveDimension * 0.3) {
@@ -317,51 +248,14 @@ class InVideoMenuBar extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   // Only for Video
-                  OnPlayToggle(uri: uri),
+                  OnToggleVideoPlay(uri: uri),
+                  OnToggleAudioMute(uri: uri),
 
-                  ShadButton.ghost(
-                    onPressed: () => ref
-                        .read(showControlsProvider.notifier)
-                        .fullScreenToggle(),
-                    icon: Icon(
-                      showControl.isFullScreen
-                          ? MdiIcons.fullscreenExit
-                          : MdiIcons.fullscreen,
-                    ),
-                  ),
+                  const OnToggleFullScreen(),
                 ],
               ),
             ),
           ),
-        );
-      },
-    );
-  }
-}
-
-class OnPlayToggle extends ConsumerWidget {
-  const OnPlayToggle({required this.uri, super.key});
-  final Uri uri;
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return GetUniversalVideoControls(
-      builder: (universalvideoControls) {
-        return GetUriPlayStatus(
-          uri: uri,
-          builder: (uriPlayController, videoplayerStatus) {
-            if (videoplayerStatus == null || uriPlayController == null) {
-              return const SizedBox.shrink();
-            }
-
-            return ShadButton.ghost(
-              icon: Icon(
-                videoplayerStatus.isPlaying
-                    ? videoPlayerIcons.playerPause
-                    : videoPlayerIcons.playerPlay,
-              ),
-              onPressed: uriPlayController.onPlayPause,
-            );
-          },
         );
       },
     );

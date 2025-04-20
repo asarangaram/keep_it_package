@@ -9,6 +9,8 @@ import 'package:store/store.dart';
 
 import '../../../providers/show_controls.dart';
 
+import 'controls/goto_next_media.dart';
+import 'controls/goto_prev_media.dart';
 import 'media_background.dart';
 import 'media_controls.dart';
 
@@ -42,7 +44,7 @@ class MediaView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (autoStart) {
-        await videoControls.stopVideo();
+        await videoControls.removeVideo();
         if (media.mediaType == CLMediaType.video && media.mediaUri != null) {
           await videoControls.setVideo(
             media.mediaUri!,
@@ -122,7 +124,7 @@ class MediaFullScreenToggle extends ConsumerWidget {
                 children: [
                   Align(
                     alignment: Alignment.centerLeft,
-                    child: OnGotoPrevPage(
+                    child: OnGotoPrevMedia(
                       pageController: pageController,
                     ),
                   ),
