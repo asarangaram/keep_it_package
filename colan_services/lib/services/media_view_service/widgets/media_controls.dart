@@ -6,15 +6,10 @@ import 'package:colan_services/services/basic_page_service/widgets/page_manager.
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shadcn_ui/shadcn_ui.dart';
 
 import 'package:store/store.dart';
 
 import '../../../providers/show_controls.dart';
-import 'controls/time_stamp.dart';
-import 'controls/toggle_audio_mute.dart';
-import 'controls/toggle_fullscreen.dart';
-import 'controls/toggle_play.dart';
 
 class MediaControls extends ConsumerWidget {
   const MediaControls({
@@ -218,75 +213,6 @@ class ControllerMenu extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-class InVideoMenuBar extends ConsumerWidget {
-  const InVideoMenuBar({required this.uri, super.key});
-  final Uri uri;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return LayoutBuilder(
-      builder: (context, constrains) {
-        if (constrains.maxHeight < kMinInteractiveDimension * 0.3) {
-          return const SizedBox.shrink();
-        }
-
-        return Container(
-          decoration: BoxDecoration(
-            color: ShadTheme.of(context).colorScheme.background.withAlpha(192),
-            border: Border.all(),
-          ),
-          width: constrains.maxWidth,
-          height: constrains.maxHeight,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              // Only for Video
-              Container(
-                decoration: BoxDecoration(border: Border.all()),
-                child: OnToggleVideoPlay(uri: uri),
-              ),
-              OnToggleVideoPlay(uri: uri),
-              OnToggleAudioMute(uri: uri),
-              ShowTimeStamp(uri: uri),
-              const Spacer(),
-              const OnToggleFullScreen(),
-            ],
-          ),
-        );
-        /* return Container(
-          decoration: BoxDecoration(
-            color: ShadTheme.of(context).colorScheme.background.withAlpha(192),
-            border: Border.all(),
-          ),
-          width: constrains.maxWidth,
-          height: constrains.maxHeight,
-          alignment: Alignment.center,
-          child: FittedBox(
-            child: SizedBox(
-              width: constrains.maxWidth,
-              height: constrains.maxHeight,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // Only for Video
-                  Container(
-                    decoration: BoxDecoration(border: Border.all()),
-                    child: OnToggleVideoPlay(uri: uri),
-                  ),
-                  OnToggleAudioMute(uri: uri),
-                  ShowTimeStamp(uri: uri),
-
-                  const OnToggleFullScreen(),
-                ],
-              ),
-            ),
-          ),
-        ); */
-      },
     );
   }
 }

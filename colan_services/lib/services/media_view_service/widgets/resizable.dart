@@ -6,8 +6,8 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import '../providers/media_view_state.dart';
 
 class ResizablePage extends ConsumerStatefulWidget {
-  const ResizablePage({super.key, this.top, this.bottom});
-  final Widget? top;
+  const ResizablePage({required this.top, super.key, this.bottom});
+  final Widget top;
   final Widget? bottom;
 
   @override
@@ -40,41 +40,27 @@ class _ResizablePageState extends ConsumerState<ResizablePage> {
   @override
   Widget build(BuildContext context) {
     final theme = ShadTheme.of(context);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        borderRadius: theme.radius,
-        border: Border.all(
-          color: theme.colorScheme.border,
-        ),
-      ),
-      child: ClipRRect(
-        borderRadius: theme.radius,
-        child: ShadResizablePanelGroup(
-          axis: Axis.vertical,
-          showHandle: true,
-          handleDecoration: const ShadDecoration(color: Colors.red),
-          dividerColor: Colors.red,
-          resetOnDoubleTap: true,
-          controller: controller,
-          children: [
-            ShadResizablePanel(
-              minSize: 0.4,
-              maxSize: 0.8,
-              defaultSize: topSize,
-              child: widget.top ??
-                  Center(
-                    child: Text('Empty', style: theme.textTheme.large),
-                  ),
-            ),
-            ShadResizablePanel(
-              defaultSize: 1 - topSize,
-              child: widget.bottom ??
-                  Center(
-                    child: Text('Three', style: theme.textTheme.large),
-                  ),
-            ),
-          ],
-        ),
+    return ClipRRect(
+      borderRadius: theme.radius,
+      child: ShadResizablePanelGroup(
+        axis: Axis.vertical,
+        dividerColor: theme.colorScheme.muted,
+        controller: controller,
+        children: [
+          ShadResizablePanel(
+            minSize: 0.4,
+            maxSize: 0.8,
+            defaultSize: topSize,
+            child: widget.top,
+          ),
+          ShadResizablePanel(
+            defaultSize: 1 - topSize,
+            child: widget.bottom ??
+                Center(
+                  child: Text('Empty', style: theme.textTheme.large),
+                ),
+          ),
+        ],
       ),
     );
   }
