@@ -2,6 +2,7 @@ import 'package:cl_media_viewers_flutter/cl_media_viewers_flutter.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 extension ExtDuration on Duration {
   String get timestamp {
@@ -43,7 +44,11 @@ class ShowTimeStamp extends ConsumerWidget {
               }
             }
 
-            return CLText.tiny(timeStamp(null));
+            return ShadButton.ghost(
+              child: Text(
+                timeStamp(null),
+              ),
+            );
           },
         );
       },

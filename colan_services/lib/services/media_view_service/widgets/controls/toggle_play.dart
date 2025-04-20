@@ -21,6 +21,7 @@ class OnToggleVideoPlay extends ConsumerWidget {
             }
 
             return ShadButton.ghost(
+              padding: EdgeInsets.zero,
               icon: Icon(
                 videoplayerStatus.isPlaying
                     ? videoPlayerIcons.playerPause

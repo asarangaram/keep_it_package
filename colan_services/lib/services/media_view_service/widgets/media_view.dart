@@ -4,6 +4,7 @@ import 'package:colan_services/services/media_view_service/widgets/resizable.dar
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 import 'package:store/store.dart';
 
@@ -11,6 +12,10 @@ import '../../../providers/show_controls.dart';
 
 import 'controls/goto_next_media.dart';
 import 'controls/goto_prev_media.dart';
+import 'controls/time_stamp.dart';
+import 'controls/toggle_audio_mute.dart';
+import 'controls/toggle_fullscreen.dart';
+import 'controls/toggle_play.dart';
 import 'media_background.dart';
 import 'media_controls.dart';
 
@@ -95,6 +100,44 @@ class MediaFullScreenToggle extends ConsumerWidget {
       child: Stack(
         children: [
           child,
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return Container(
+                  color: Colors.black54,
+                  width: constraints.maxWidth, // Matches media width
+                  child: ShadTheme(
+                    data: ShadTheme.of(context).copyWith(
+                      textTheme: ShadTheme.of(context).textTheme.copyWith(
+                            small:
+                                ShadTheme.of(context).textTheme.small.copyWith(
+                                      color: Colors.white,
+                                      fontSize: 10,
+                                    ),
+                          ),
+                      ghostButtonTheme: const ShadButtonTheme(
+                        foregroundColor: Colors.white,
+                        size: ShadButtonSize.sm,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        FittedBox(child: OnToggleVideoPlay(uri: uri)),
+                        FittedBox(child: OnToggleAudioMute(uri: uri)),
+                        if (constraints.maxWidth > 240)
+                          FittedBox(child: ShowTimeStamp(uri: uri)),
+                        const Spacer(),
+                        const FittedBox(child: OnToggleFullScreen()),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ), /* 
           Positioned.fill(
             child: Align(
               alignment: Alignment.bottomCenter,
@@ -106,7 +149,7 @@ class MediaFullScreenToggle extends ConsumerWidget {
                 ),
               ),
             ),
-          ),
+          ), */
         ],
       ),
     );

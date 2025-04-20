@@ -233,7 +233,31 @@ class InVideoMenuBar extends ConsumerWidget {
         if (constrains.maxHeight < kMinInteractiveDimension * 0.3) {
           return const SizedBox.shrink();
         }
+
         return Container(
+          decoration: BoxDecoration(
+            color: ShadTheme.of(context).colorScheme.background.withAlpha(192),
+            border: Border.all(),
+          ),
+          width: constrains.maxWidth,
+          height: constrains.maxHeight,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // Only for Video
+              Container(
+                decoration: BoxDecoration(border: Border.all()),
+                child: OnToggleVideoPlay(uri: uri),
+              ),
+              OnToggleVideoPlay(uri: uri),
+              OnToggleAudioMute(uri: uri),
+              ShowTimeStamp(uri: uri),
+              const Spacer(),
+              const OnToggleFullScreen(),
+            ],
+          ),
+        );
+        /* return Container(
           decoration: BoxDecoration(
             color: ShadTheme.of(context).colorScheme.background.withAlpha(192),
             border: Border.all(),
@@ -249,7 +273,10 @@ class InVideoMenuBar extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   // Only for Video
-                  OnToggleVideoPlay(uri: uri),
+                  Container(
+                    decoration: BoxDecoration(border: Border.all()),
+                    child: OnToggleVideoPlay(uri: uri),
+                  ),
                   OnToggleAudioMute(uri: uri),
                   ShowTimeStamp(uri: uri),
 
@@ -258,7 +285,7 @@ class InVideoMenuBar extends ConsumerWidget {
               ),
             ),
           ),
-        );
+        ); */
       },
     );
   }
