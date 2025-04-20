@@ -1,6 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 class ResizablePage extends StatefulWidget {
@@ -30,9 +29,10 @@ class _ResizablePageState extends State<ResizablePage> {
           showHandle: true,
           handleDecoration: const ShadDecoration(color: Colors.red),
           dividerColor: Colors.red,
+          resetOnDoubleTap: true,
           children: [
             ShadResizablePanel(
-              minSize: 0.2,
+              minSize: 0.4,
               maxSize: 0.8,
               defaultSize: 0.4,
               child: widget.top ??
