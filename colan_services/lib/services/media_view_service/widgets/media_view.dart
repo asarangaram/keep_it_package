@@ -53,6 +53,7 @@ class MediaView extends ConsumerWidget {
       } else {}
     });
     return MediaFullScreenToggle(
+      uri: media.mediaUri!,
       pageController: pageController,
       child: MediaViewer(
         heroTag: '$parentIdentifier /item/${media.id}',
@@ -74,11 +75,13 @@ class MediaView extends ConsumerWidget {
 
 class MediaFullScreenToggle extends ConsumerWidget {
   const MediaFullScreenToggle({
+    required this.uri,
     required this.pageController,
     required this.child,
     super.key,
   });
   final PageController pageController;
+  final Uri uri;
   final Widget child;
 
   @override
@@ -90,13 +93,15 @@ class MediaFullScreenToggle extends ConsumerWidget {
       child: Stack(
         children: [
           child,
-          const Positioned.fill(
+          Positioned.fill(
             child: Align(
               alignment: Alignment.bottomCenter,
               child: FractionallySizedBox(
                 heightFactor: 0.05,
                 widthFactor: 1,
-                child: InVideoMenuBar(),
+                child: InVideoMenuBar(
+                  uri: uri,
+                ),
               ),
             ),
           ),

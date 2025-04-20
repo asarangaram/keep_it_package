@@ -13,6 +13,7 @@ import 'package:store/store.dart';
 
 import '../../../providers/show_controls.dart';
 import '../providers/media_view_state.dart';
+import 'cl_icons.dart';
 
 class OnGotoPrevPage extends ConsumerWidget {
   const OnGotoPrevPage({required this.pageController, super.key});
@@ -289,7 +290,8 @@ class ControllerMenu extends StatelessWidget {
 }
 
 class InVideoMenuBar extends ConsumerWidget {
-  const InVideoMenuBar({super.key});
+  const InVideoMenuBar({required this.uri, super.key});
+  final Uri uri;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -306,14 +308,18 @@ class InVideoMenuBar extends ConsumerWidget {
           ),
           width: constrains.maxWidth,
           height: constrains.maxHeight,
-          alignment: Alignment.bottomRight,
+          alignment: Alignment.center,
           child: FittedBox(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Align(
-                  alignment: Alignment.bottomRight,
-                  child: ShadButton.ghost(
+            child: SizedBox(
+              width: constrains.maxWidth,
+              height: constrains.maxHeight,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Only for Video
+                  OnPlayToggle(uri: uri),
+
+                  ShadButton.ghost(
                     onPressed: () => ref
                         .read(showControlsProvider.notifier)
                         .fullScreenToggle(),
@@ -323,10 +329,59 @@ class InVideoMenuBar extends ConsumerWidget {
                           : MdiIcons.fullscreen,
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
+        );
+      },
+    );
+  }
+}
+
+class OnPlayToggle extends ConsumerWidget {
+  const OnPlayToggle({required this.uri, super.key});
+  final Uri uri;
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return GetUniversalVideoControls(
+      builder: (universalvideoControls) {
+        return GetUriPlayStatus(
+          uri: uri,
+          builder: (uriPlayController, videoplayerStatus) {
+            if (videoplayerStatus == null || uriPlayController == null) {
+              return const SizedBox.shrink();
+            }
+
+            void onPlayPause() {
+              if (videoplayerStatus.isCompleted) {
+                final isLive =
+                    (videoplayerStatus.duration.inSeconds) > 10 * 60 * 60;
+                if (isLive) {
+                  universalvideoControls
+                      .setVideo(uri, autoPlay: true, forced: true)
+                      .then((val) => uriPlayController.play());
+                } else {
+                  uriPlayController.play();
+                }
+              }
+              // If the video is playing, pause it.
+              if (videoplayerStatus.isPlaying) {
+                uriPlayController.pause();
+              } else {
+                uriPlayController.play();
+              }
+            }
+
+            return ShadButton.ghost(
+              icon: Icon(
+                videoplayerStatus.isPlaying
+                    ? videoPlayerIcons.playerPause
+                    : videoPlayerIcons.playerPlay,
+              ),
+              onPressed: onPlayPause,
+            );
+          },
         );
       },
     );

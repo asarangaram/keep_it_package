@@ -32,6 +32,8 @@ class _ResizablePageState extends State<ResizablePage> {
           dividerColor: Colors.red,
           children: [
             ShadResizablePanel(
+              minSize: 0.2,
+              maxSize: 0.8,
               defaultSize: 0.4,
               child: widget.top ??
                   Center(
