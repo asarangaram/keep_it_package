@@ -47,7 +47,7 @@ class MediaView extends ConsumerWidget {
           await videoControls.setVideo(
             media.mediaUri!,
             forced: false,
-            autoPlay: true,
+            autoPlay: false,
           );
         }
       }
