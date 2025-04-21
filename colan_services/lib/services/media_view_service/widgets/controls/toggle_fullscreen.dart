@@ -1,3 +1,4 @@
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -13,14 +14,12 @@ class OnToggleFullScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final showControl = ref.watch(showControlsProvider);
-    return ShadButton.ghost(
-      onPressed: () =>
-          ref.read(showControlsProvider.notifier).fullScreenToggle(),
-      icon: Icon(
-        showControl.isFullScreen
-            ? videoPlayerIcons.fullscreenExit
-            : videoPlayerIcons.fullscreen,
-      ),
+    return CLButtonIcon.small(
+      showControl.isFullScreen
+          ? videoPlayerIcons.fullscreenExit
+          : videoPlayerIcons.fullscreen,
+      onTap: ref.read(showControlsProvider.notifier).fullScreenToggle,
+      color: ShadTheme.of(context).colorScheme.background,
     );
   }
 }

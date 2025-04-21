@@ -4,7 +4,7 @@ library;
 export 'src/basics/cl_blink.dart' show CLBlink;
 export 'src/basics/cl_button.dart'
     show CLButtonIcon, CLButtonIconLabelled, CLButtonText;
-export 'src/basics/cl_circled_icon.dart' show CircledIcon;
+export 'src/basics/cl_circled_icon.dart' show CircledIcon, CircledSvgIcon;
 export 'src/basics/cl_custom_chip.dart' show CLCustomChip;
 export 'src/basics/cl_decorate_square.dart' show CLAspectRationDecorated;
 export 'src/basics/cl_icon.dart' show CLIcon, CLIconLabelled;
@@ -13,6 +13,7 @@ export 'src/basics/cl_media_collage.dart' show CLDimension, CLMediaCollage;
 export 'src/basics/cl_text.dart' show CLLabel, CLText;
 export 'src/basics/overlay_icon.dart' show OverlayIcon;
 export 'src/basics/progress_bar.dart' show ProgressBar;
+export 'src/basics/svg_icon.dart' show SvgIcon, SvgIcons;
 export 'src/models/cl_menu_item.dart'
     show CLMenuItem, Ext1DCLMenuItem, Ext2DCLMenuItem;
 export 'src/models/cl_scale_type.dart' show CLScaleType;

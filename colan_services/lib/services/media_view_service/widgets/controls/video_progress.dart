@@ -2,9 +2,12 @@ import 'dart:math';
 
 import 'package:cl_media_viewers_flutter/cl_media_viewers_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:video_player/video_player.dart';
+
+import '../../../../providers/show_controls.dart';
 
 extension ExtDuration on Duration {
   String get timestamp {
@@ -39,90 +42,130 @@ extension ExtVideoPlayerValue on VideoPlayerValue {
   }
 }
 
-class VideoProgress extends StatefulWidget {
+class VideoProgress extends ConsumerStatefulWidget {
   const VideoProgress({
-    required this.playerControls,
-    required this.playStatus,
+    required this.uri,
     super.key,
   });
 
-  final VideoPlayerControls playerControls;
-  final VideoPlayerValue playStatus;
+  final Uri uri;
 
   @override
-  State<VideoProgress> createState() => _VideoProgressState();
+  ConsumerState<VideoProgress> createState() => _VideoProgressState();
 }
 
-class _VideoProgressState extends State<VideoProgress> {
+class _VideoProgressState extends ConsumerState<VideoProgress> {
   double? seekValue;
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Flexible(
-          flex: 3,
-          child: Material(
-            color: Colors.transparent,
-            child: Stack(
-              children: [
-                // required only for network
-                SliderTheme(
-                  data: SliderTheme.of(context).copyWith(
-                    overlayShape: const SmallOverlayShape(),
-                    trackShape: CustomTrackShape(),
-                    trackHeight: 2,
-                    thumbShape: SliderComponentShape.noThumb,
-                    disabledActiveTrackColor:
-                        const Color.fromARGB(255, 192, 192, 192),
-                    disabledInactiveTrackColor:
-                        const Color.fromARGB(255, 224, 224, 224),
-                  ),
-                  child: Slider(
-                    max: widget.playStatus.durationInSeconds,
-                    value: widget.playStatus.bufferedInSeconds,
-                    onChanged: null,
-                  ),
-                ),
-
-                SliderTheme(
-                  data: SliderTheme.of(context).copyWith(
-                    overlayShape: const SmallOverlayShape(),
-                    trackHeight: 2,
-                    trackShape: CustomTrackShape(),
-                    thumbShape: const RoundSliderThumbShape(
-                      enabledThumbRadius: 6,
-                      pressedElevation: 2,
-                    ),
-                    activeTrackColor: const Color.fromARGB(255, 64, 64, 64),
-                    inactiveTrackColor: const Color.fromARGB(0, 0, 0, 0),
-                    thumbColor: Colors.red,
-                  ),
-                  child: Slider(
-                    max: widget.playStatus.durationInSeconds,
-                    value: widget.playStatus.positionInSeconds,
-                    onChanged: (double value) =>
-                        setState(() => seekValue = value),
-                    onChangeEnd: (double value) {
-                      setState(() => seekValue = null);
-                      widget.playerControls.seekTo(doubleToDuration(value));
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        Flexible(
-          child: FittedBox(
-            child: ShadButton.ghost(
-              enabled: false,
-              child: Text(
-                widget.playStatus.playTimeString(seekValue),
+    final isFullScreen =
+        ref.watch(showControlsProvider.select((e) => e.isFullScreen));
+    return GetUriPlayStatus(
+      uri: widget.uri,
+      builder: ([playerControls, playStatus]) {
+        if (playerControls == null || playStatus == null) {
+          return const SizedBox.shrink();
+        }
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            return Container(
+              decoration: BoxDecoration(
+                color: Colors.black54,
+                borderRadius: isFullScreen ? BorderRadius.circular(12) : null,
               ),
-            ),
-          ),
-        ),
-      ],
+              margin: isFullScreen ? const EdgeInsets.all(8) : null,
+              child: ShadTheme(
+                data: ShadTheme.of(context).copyWith(
+                  textTheme: ShadTheme.of(context).textTheme.copyWith(
+                        small: ShadTheme.of(context).textTheme.small.copyWith(
+                              color: Colors.white,
+                              fontSize: 10,
+                            ),
+                      ),
+                  ghostButtonTheme: const ShadButtonTheme(
+                    foregroundColor: Colors.white,
+                    size: ShadButtonSize.sm,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Flexible(
+                      flex: 3,
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 16),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: Stack(
+                            children: [
+                              // required only for network
+                              SliderTheme(
+                                data: SliderTheme.of(context).copyWith(
+                                  overlayShape: const SmallOverlayShape(),
+                                  trackShape: CustomTrackShape(),
+                                  trackHeight: 2,
+                                  thumbShape: SliderComponentShape.noThumb,
+                                  disabledActiveTrackColor:
+                                      const Color.fromARGB(255, 192, 192, 192),
+                                  disabledInactiveTrackColor:
+                                      const Color.fromARGB(255, 224, 224, 224),
+                                ),
+                                child: Slider(
+                                  max: playStatus.durationInSeconds,
+                                  value: playStatus.bufferedInSeconds,
+                                  onChanged: null,
+                                ),
+                              ),
+
+                              SliderTheme(
+                                data: SliderTheme.of(context).copyWith(
+                                  overlayShape: const SmallOverlayShape(),
+                                  trackHeight: 2,
+                                  trackShape: CustomTrackShape(),
+                                  thumbShape: const RoundSliderThumbShape(
+                                    enabledThumbRadius: 6,
+                                    pressedElevation: 2,
+                                  ),
+                                  activeTrackColor:
+                                      const Color.fromARGB(255, 64, 64, 64),
+                                  inactiveTrackColor:
+                                      const Color.fromARGB(0, 0, 0, 0),
+                                  thumbColor: Colors.red,
+                                ),
+                                child: Slider(
+                                  max: playStatus.durationInSeconds,
+                                  value: playStatus.positionInSeconds,
+                                  onChanged: (double value) =>
+                                      setState(() => seekValue = value),
+                                  onChangeEnd: (double value) {
+                                    setState(() => seekValue = null);
+                                    playerControls
+                                        .seekTo(doubleToDuration(value));
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: FittedBox(
+                        child: ShadButton.ghost(
+                          enabled: false,
+                          child: Text(
+                            playStatus.playTimeString(seekValue),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }

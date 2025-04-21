@@ -41,3 +41,5 @@ flutter:
     - assets/icon/cloud_on_lan_128px_color.png
     - assets/icon/on_device.png
     - assets/icon/not_on_server.png
+    - assets/icon/svg/rotate-left-19.svg
+    - assets/icon/svg/rotate-right-18.svg

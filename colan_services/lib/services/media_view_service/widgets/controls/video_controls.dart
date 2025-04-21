@@ -1,9 +1,12 @@
 import 'package:cl_media_viewers_flutter/cl_media_viewers_flutter.dart';
 import 'package:colan_services/services/media_view_service/widgets/controls/cl_icons.dart';
 import 'package:colan_services/services/media_view_service/widgets/controls/toggle_fullscreen.dart';
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:video_player/video_player.dart';
+
+import 'menu_icon_decorator.dart';
 
 class VideoControls extends StatelessWidget {
   const VideoControls({
@@ -20,31 +23,38 @@ class VideoControls extends StatelessWidget {
     return Row(
       children: [
         FittedBox(
-          child: ShadButton.ghost(
-            padding: EdgeInsets.zero,
-            icon: Icon(
-              playStatus.isPlaying
+          child: MenuItemView(
+            CLMenuItem(
+              title: playStatus.isPlaying ? 'Pause' : 'Play',
+              icon: playStatus.isPlaying
                   ? videoPlayerIcons.playerPause
                   : videoPlayerIcons.playerPlay,
-            ),
-            onPressed: () => playerControls.onPlayPause(
-              autoPlay: false,
-              forced: true,
+              onTap: () async {
+                await playerControls.onPlayPause(
+                  autoPlay: false,
+                  forced: true,
+                );
+
+                return true;
+              },
             ),
           ),
         ),
         FittedBox(
-          child: ShadButton.ghost(
-            icon: Icon(
-              playStatus.volume == 0
+          child: MenuItemView(
+            CLMenuItem(
+              title: 'Audio Mute',
+              icon: playStatus.volume == 0
                   ? videoPlayerIcons.audioMuted
                   : videoPlayerIcons.audioUnmuted,
+              onTap: () async {
+                await playerControls.onToggleAudioMute();
+                return true;
+              },
             ),
-            onPressed: playerControls.onToggleAudioMute,
           ),
         ),
         const Spacer(),
-        const FittedBox(child: OnToggleFullScreen()),
       ],
     );
   }
