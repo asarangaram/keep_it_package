@@ -62,11 +62,9 @@ class MediaControls extends ConsumerWidget {
               right: 0,
               child: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 500),
-                child: GetUriVideoControls(
-                  uri: media.mediaUri!, // Make sure null check before
-
+                child: GetUniversalVideoControls(
                   builder: (
-                    UriPlayControls controller,
+                    UniversalPlayControls controller,
                   ) {
                     return ControllerMenu(
                       media: media,

@@ -25,8 +25,8 @@ class PlayTimeSlider extends ConsumerWidget {
       builder: (universalvideoControls) {
         return GetUriPlayStatus(
           uri: uri,
-          builder: (uriPlayController, videoplayerStatus) {
-            if (videoplayerStatus == null || uriPlayController == null) {
+          builder: (videoplayerStatus) {
+            if (videoplayerStatus == null) {
               return const SizedBox.shrink();
             }
             final bufferedPosition = min(

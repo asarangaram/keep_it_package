@@ -9,6 +9,7 @@ import 'package:store/store.dart';
 
 import '../../../providers/show_controls.dart';
 
+import '../providers/media_view_state.dart';
 import 'controls/goto_next_media.dart';
 import 'controls/goto_prev_media.dart';
 
@@ -43,9 +44,24 @@ class MediaView extends ConsumerWidget {
   final PageController pageController;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.listen(mediaViewerStateProvider, (prev, curr) {
+      if (curr.currentIndex != prev?.currentIndex) {
+        final currMedia = curr.entities[curr.currentIndex];
+        if (currMedia.mediaType == CLMediaType.video &&
+            currMedia.mediaUri != null) {
+          videoControls.setVideo(
+            currMedia.mediaUri!,
+            forced: false,
+            autoPlay: false,
+          );
+        } else {
+          videoControls.removeVideo();
+        }
+      }
+    });
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (autoStart) {
-        await videoControls.removeVideo();
+      // This seems still required
+      if (autoStart && videoControls.uri != media.mediaUri) {
         if (media.mediaType == CLMediaType.video && media.mediaUri != null) {
           await videoControls.setVideo(
             media.mediaUri!,

@@ -15,8 +15,8 @@ class OnToggleVideoPlay extends ConsumerWidget {
       builder: (universalvideoControls) {
         return GetUriPlayStatus(
           uri: uri,
-          builder: (uriPlayController, videoplayerStatus) {
-            if (videoplayerStatus == null || uriPlayController == null) {
+          builder: (videoplayerStatus) {
+            if (videoplayerStatus == null) {
               return const SizedBox.shrink();
             }
 
@@ -27,8 +27,8 @@ class OnToggleVideoPlay extends ConsumerWidget {
                     ? videoPlayerIcons.playerPause
                     : videoPlayerIcons.playerPlay,
               ),
-              onPressed: () =>
-                  uriPlayController.onPlayPause(autoPlay: false, forced: true),
+              onPressed: () => universalvideoControls.onPlayPause(
+                  autoPlay: false, forced: true),
             );
           },
         );
