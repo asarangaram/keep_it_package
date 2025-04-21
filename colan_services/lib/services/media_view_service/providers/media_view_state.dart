@@ -13,7 +13,3 @@ final mediaViewerStateProvider =
     StateNotifierProvider<MediaViewerStateNotifier, MediaViewerState>((ref) {
   return throw Exception('Override mising');
 });
-
-final lastKnownPanelSize = StateProvider<double>((ref) {
-  return 0.4;
-});

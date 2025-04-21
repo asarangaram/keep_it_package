@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class LinuxFolderClipper extends CustomClipper<Path> {
+class FolderClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     final path = Path()
@@ -33,8 +33,8 @@ class LinuxFolderClipper extends CustomClipper<Path> {
   bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
 
-class LinuxFolderPainter extends CustomPainter {
-  LinuxFolderPainter({
+class FolderPainter extends CustomPainter {
+  FolderPainter({
     this.borderColor = Colors.black54,
     this.strokeWidth = 1.0,
   });
@@ -81,8 +81,8 @@ class LinuxFolderPainter extends CustomPainter {
   bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
 
-class LinuxFolderWidget extends StatelessWidget {
-  const LinuxFolderWidget({
+class FolderWidget extends StatelessWidget {
+  const FolderWidget({
     required this.child,
     super.key,
     this.folderColor = const Color(0xFFE6B65C),
@@ -103,7 +103,7 @@ class LinuxFolderWidget extends StatelessWidget {
     return Stack(
       children: [
         ClipPath(
-          clipper: LinuxFolderClipper(),
+          clipper: FolderClipper(),
           child: SizedBox(
             width: width,
             height: height,
@@ -121,7 +121,7 @@ class LinuxFolderWidget extends StatelessWidget {
           ),
         ),
         CustomPaint(
-          painter: LinuxFolderPainter(
+          painter: FolderPainter(
             borderColor: borderColor,
             strokeWidth: borderWidth,
           ),

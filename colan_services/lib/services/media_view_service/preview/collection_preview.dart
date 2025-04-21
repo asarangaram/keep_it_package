@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
-import '../widgets/folder_clip.dart';
+import '../../../internal/folder_clip.dart';
 import 'media_preview.dart';
 
 class CollectionPreview extends ConsumerWidget {
@@ -111,7 +111,7 @@ class FolderItem extends StatelessWidget {
       children: [
         LayoutBuilder(
           builder: (context, constrain) {
-            return LinuxFolderWidget(
+            return FolderWidget(
               width: constrain.maxWidth,
               height: constrain.maxHeight,
               borderColor: borderColor,

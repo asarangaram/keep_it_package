@@ -3,8 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../providers/media_view_state.dart';
-
 class ResizablePage extends ConsumerStatefulWidget {
   const ResizablePage({required this.top, super.key, this.bottom});
   final Widget top;
@@ -65,3 +63,7 @@ class _ResizablePageState extends ConsumerState<ResizablePage> {
     );
   }
 }
+
+final lastKnownPanelSize = StateProvider<double>((ref) {
+  return 0.4;
+});

@@ -2,7 +2,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../gallery_view_service/widgets/when_error.dart';
+import '../services/gallery_view_service/widgets/when_error.dart';
 
 abstract class CLPageWidget extends ConsumerWidget {
   const CLPageWidget({super.key});

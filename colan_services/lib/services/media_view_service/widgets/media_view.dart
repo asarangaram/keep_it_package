@@ -1,6 +1,7 @@
+import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:cl_media_tools/cl_media_tools.dart';
 import 'package:cl_media_viewers_flutter/cl_media_viewers_flutter.dart';
-import 'package:colan_services/services/media_view_service/widgets/resizable.dart';
+import 'package:colan_services/internal/resizable.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -72,7 +73,7 @@ class MediaView extends ConsumerWidget {
       }
     });
     return MediaFullScreenToggle(
-      uri: media.mediaUri!,
+      entity: media,
       pageController: pageController,
       child: MediaViewer(
         heroTag: '$parentIdentifier /item/${media.id}',
@@ -94,20 +95,20 @@ class MediaView extends ConsumerWidget {
 
 class MediaFullScreenToggle extends ConsumerWidget {
   const MediaFullScreenToggle({
-    required this.uri,
+    required this.entity,
     required this.pageController,
     required this.child,
     super.key,
   });
   final PageController pageController;
-  final Uri uri;
+  final ViewerEntityMixin entity;
   final Widget child;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isFullScreen =
         ref.watch(showControlsProvider.select((e) => e.isFullScreen));
-
+    final uri = entity.mediaUri!;
     final plainMedia = Center(
       child: Stack(
         children: [
@@ -120,7 +121,27 @@ class MediaFullScreenToggle extends ConsumerWidget {
                   bottom: 0,
                   left: 0,
                   right: 0,
-                  child: VideoOverlayMenu(uri: uri),
+                  child: switch (entity.mediaType) {
+                    CLMediaType.video => VideoOverlayMenu(uri: uri),
+                    CLMediaType.collection => const SizedBox.shrink(),
+                    CLMediaType.text => const SizedBox.shrink(),
+                    CLMediaType.image => const SizedBox.shrink(),
+                    CLMediaType.audio => const SizedBox.shrink(),
+                    CLMediaType.file => const SizedBox.shrink(),
+                    CLMediaType.uri => const SizedBox.shrink(),
+                    CLMediaType.unknown => const SizedBox.shrink(),
+                  },
+                ),
+                const Positioned(
+                  top: 4,
+                  right: 4,
+                  child: ColoredBox(
+                    color: Colors.black54,
+                    child: Icon(
+                      Icons.close,
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
               ],
             ),

@@ -7,10 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
+import '../../internal/cl_page_widget.dart';
 import '../basic_page_service/widgets/page_manager.dart';
 import 'models/media_view_state.dart';
 import 'providers/media_view_state.dart';
-import 'widgets/cl_page_widget.dart';
 import 'widgets/media_view.dart';
 
 class MediaViewService extends CLPageWidget {
