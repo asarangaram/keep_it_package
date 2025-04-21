@@ -156,7 +156,7 @@ class MediaPageView extends ConsumerWidget {
         ref.read(mediaViewerStateProvider.notifier).currIndex = index;
       },
       itemBuilder: (context, index) {
-        return GetUniversalVideoControls(
+        return GetVideoPlayerControls(
           builder: (videoControls) {
             return MediaView(
               parentIdentifier: viewIdentifier.parentID,

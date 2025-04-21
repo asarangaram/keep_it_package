@@ -40,7 +40,7 @@ class MediaView extends ConsumerWidget {
   final void Function({required bool lock})? onLockPage;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
-  final UniversalPlayControls videoControls;
+  final VideoPlayerControls videoControls;
   final PageController pageController;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
