@@ -27,7 +27,8 @@ class OnToggleVideoPlay extends ConsumerWidget {
                     ? videoPlayerIcons.playerPause
                     : videoPlayerIcons.playerPlay,
               ),
-              onPressed: uriPlayController.onPlayPause,
+              onPressed: () =>
+                  uriPlayController.onPlayPause(autoPlay: false, forced: true),
             );
           },
         );
