@@ -4,8 +4,6 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import 'menu_icon_decorator.dart';
-
 class OnToggleAudioMute extends StatelessWidget {
   const OnToggleAudioMute({
     required this.uri,

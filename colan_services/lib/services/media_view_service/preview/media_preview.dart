@@ -3,6 +3,7 @@ import 'dart:math' as math;
 
 import 'package:cl_media_tools/cl_media_tools.dart';
 import 'package:cl_media_viewers_flutter/cl_media_viewers_flutter.dart';
+
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
@@ -113,8 +114,8 @@ class MediaThumbnail extends StatelessWidget {
         uri: media.previewUri!,
         fit: BoxFit.cover,
         overlays: overlays,
-        brokenImage: const BrokenImage(),
-        loadingWidget: const GreyShimmer(),
+        errorBuilder: (_, __) => const BrokenImage(),
+        loadingBuilder: () => const GreyShimmer(),
         keepAspectRatio: false,
       );
     } catch (e) {

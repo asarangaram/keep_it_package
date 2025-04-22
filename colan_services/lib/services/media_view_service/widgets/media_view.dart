@@ -33,7 +33,7 @@ class MediaView extends ConsumerWidget {
     required this.loadingBuilder,
     required this.videoControls,
     required this.pageController,
-    this.onLockPage,
+    required this.onLockPage,
     super.key,
   });
   final StoreEntity media;
@@ -43,7 +43,7 @@ class MediaView extends ConsumerWidget {
   final bool autoStart;
   final bool autoPlay;
   final bool isLocked;
-  final void Function({required bool lock})? onLockPage;
+  final void Function({required bool lock}) onLockPage;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
   final VideoPlayerControls videoControls;
@@ -123,8 +123,8 @@ class MediaView extends ConsumerWidget {
                 isLocked: isLocked,
                 autoStart: autoStart,
                 autoPlay: autoPlay,
-                brokenImage: const BrokenImage(),
-                loadWidget: const GreyShimmer(),
+                errorBuilder: (_, __) => const BrokenImage(),
+                loadingBuilder: () => const GreyShimmer(),
                 decoration: () => null,
                 keepAspectRatio: true,
               ),

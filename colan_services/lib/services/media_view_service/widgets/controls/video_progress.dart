@@ -98,23 +98,29 @@ class _VideoProgressState extends ConsumerState<VideoProgress> {
                           child: Stack(
                             children: [
                               // required only for network
-                              SliderTheme(
-                                data: SliderTheme.of(context).copyWith(
-                                  overlayShape: const SmallOverlayShape(),
-                                  trackShape: CustomTrackShape(),
-                                  trackHeight: 2,
-                                  thumbShape: SliderComponentShape.noThumb,
-                                  disabledActiveTrackColor:
-                                      const Color.fromARGB(255, 192, 192, 192),
-                                  disabledInactiveTrackColor:
-                                      const Color.fromARGB(255, 224, 224, 224),
+                              if (!widget.uri.isScheme('file'))
+                                SliderTheme(
+                                  data: SliderTheme.of(context).copyWith(
+                                    overlayShape: const SmallOverlayShape(),
+                                    trackShape: CustomTrackShape(),
+                                    trackHeight: 2,
+                                    thumbShape: SliderComponentShape.noThumb,
+                                    disabledActiveTrackColor:
+                                        const Color.fromARGB(
+                                      255,
+                                      128,
+                                      128,
+                                      128,
+                                    ),
+                                    disabledInactiveTrackColor:
+                                        const Color.fromARGB(255, 64, 64, 64),
+                                  ),
+                                  child: Slider(
+                                    max: playStatus.durationInSeconds,
+                                    value: playStatus.bufferedInSeconds,
+                                    onChanged: null,
+                                  ),
                                 ),
-                                child: Slider(
-                                  max: playStatus.durationInSeconds,
-                                  value: playStatus.bufferedInSeconds,
-                                  onChanged: null,
-                                ),
-                              ),
 
                               SliderTheme(
                                 data: SliderTheme.of(context).copyWith(
@@ -126,9 +132,11 @@ class _VideoProgressState extends ConsumerState<VideoProgress> {
                                     pressedElevation: 2,
                                   ),
                                   activeTrackColor:
-                                      const Color.fromARGB(255, 64, 64, 64),
-                                  inactiveTrackColor:
-                                      const Color.fromARGB(0, 0, 0, 0),
+                                      const Color.fromARGB(255, 224, 224, 224),
+                                  inactiveTrackColor: (!widget.uri
+                                          .isScheme('file'))
+                                      ? const Color.fromARGB(0, 0, 0, 0)
+                                      : const Color.fromARGB(255, 64, 64, 64),
                                   thumbColor: Colors.red,
                                 ),
                                 child: Slider(

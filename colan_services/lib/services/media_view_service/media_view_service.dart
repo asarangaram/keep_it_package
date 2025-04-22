@@ -4,6 +4,7 @@ import 'package:colan_services/internal/fullscreen_layout.dart';
 import 'package:colan_services/services/gallery_view_service/widgets/when_empty.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
@@ -35,6 +36,7 @@ class MediaViewService extends CLPageWidget {
       parentID: parentIdentifier,
       viewId: '$parentId $id',
     );
+    timeDilation = 10;
     return FullscreenLayout(
       child: [
         if (parentId == 0)
