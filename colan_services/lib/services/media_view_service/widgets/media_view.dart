@@ -9,16 +9,9 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 
 import 'package:store/store.dart';
 
-import '../../../providers/show_controls.dart';
-
 import '../providers/media_view_state.dart';
 import 'controls/goto_next_media.dart';
 import 'controls/goto_prev_media.dart';
-
-import 'controls/on_rotate.dart';
-import 'controls/on_toggle_audio_mute.dart';
-import 'controls/on_toggle_play.dart';
-import 'media_fullscreen_view.dart';
 
 class MediaView extends ConsumerWidget {
   const MediaView({
@@ -92,42 +85,19 @@ class MediaView extends ConsumerWidget {
       child: MediaFullScreenToggle(
         entity: media,
         pageController: pageController,
-        child: GetVideoPlayerControls(
-          builder: (playerControls) {
-            return GestureDetector(
-              onTap: switch (media.mediaType) {
-                CLMediaType.video => () => {
-                      playerControls.onPlayPause(
-                        autoPlay: false,
-                        forced: true,
-                      ),
-                    },
-                CLMediaType.collection => null,
-                CLMediaType.text => null,
-                CLMediaType.image => () {
-                    ref.read(showControlsProvider.notifier).fullScreenToggle();
-                  },
-                CLMediaType.audio => null,
-                CLMediaType.file => null,
-                CLMediaType.uri => null,
-                CLMediaType.unknown => null,
-              },
-              child: MediaViewer(
-                heroTag: '$parentIdentifier /item/${media.id}',
-                uri: media.mediaUri!,
-                previewUri: media.previewUri,
-                mime: media.data.mimeType!,
-                onLockPage: onLockPage,
-                isLocked: isLocked,
-                autoStart: autoStart,
-                autoPlay: autoPlay,
-                errorBuilder: (_, __) => const BrokenImage(),
-                loadingBuilder: () => const GreyShimmer(),
-                decoration: () => null,
-                keepAspectRatio: true,
-              ),
-            );
-          },
+        child: MediaViewer(
+          heroTag: '$parentIdentifier /item/${media.id}',
+          uri: media.mediaUri!,
+          previewUri: media.previewUri,
+          mime: media.data.mimeType!,
+          onLockPage: onLockPage,
+          isLocked: isLocked,
+          autoStart: autoStart,
+          autoPlay: autoPlay,
+          errorBuilder: (_, __) => const BrokenImage(),
+          loadingBuilder: () => const GreyShimmer(),
+          decoration: () => null,
+          keepAspectRatio: true,
         ),
       ),
     );
@@ -143,74 +113,58 @@ class MediaFullScreenToggle extends ConsumerWidget {
   });
   final PageController pageController;
   final ViewerEntityMixin entity;
-  final Widget child;
+  final MediaViewer child;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isFullScreen =
-        ref.watch(showControlsProvider.select((e) => e.isFullScreen));
-
     final uri = entity.mediaUri!;
 
-    if (isFullScreen) {
-      return EntityFullScreenView(
-        entity: entity,
-        child: child,
-      );
-    }
     final plainMedia = EntityFullScreenView(
-      entity: entity,
+      uri: uri,
+      mime: (entity as StoreEntity).data.mimeType!,
       child: child,
     );
-    if (isFullScreen) {
-      return plainMedia;
-    }
 
-    return ResizablePage(
-      top: Padding(
-        padding: const EdgeInsets.only(top: 8, bottom: 16),
-        child: Row(
-          children: [
-            Align(
-              alignment: Alignment.centerLeft,
-              child: OnGotoPrevMedia(
-                pageController: pageController,
-              ),
-            ),
-            Flexible(
-              child: plainMedia,
-            ),
-            Align(
-              alignment: Alignment.centerRight,
-              child: OnGotoNextPage(
-                pageController: pageController,
-              ),
-            ),
-          ],
-        ),
-      ),
-      bottom: Padding(
-        padding: const EdgeInsets.only(left: 8, right: 8, top: 16),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  OnTogglePlay2(
-                    uri: uri,
+    return GetFullScreenStatus(
+      builder: ({required bool isFullScreen, required bool showMenu}) {
+        if (isFullScreen) {
+          return plainMedia;
+        }
+        return ResizablePage(
+          top: Padding(
+            padding: const EdgeInsets.only(top: 8, bottom: 16),
+            child: Row(
+              children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: OnGotoPrevMedia(
+                    pageController: pageController,
                   ),
-                  OnToggleAudioMute2(uri: uri),
-                  ...[
-                    OnRotateLeft2(uri: uri),
-                  ],
+                ),
+                Flexible(
+                  child: plainMedia,
+                ),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: OnGotoNextPage(
+                    pageController: pageController,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          bottom: Padding(
+            padding: const EdgeInsets.only(left: 8, right: 8, top: 16),
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  MediaTitle(entity as StoreEntity),
                 ],
               ),
-              MediaTitle(entity as StoreEntity),
-            ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

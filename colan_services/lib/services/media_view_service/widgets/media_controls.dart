@@ -9,8 +9,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:store/store.dart';
 
-import '../../../providers/show_controls.dart';
-
 class MediaControls extends ConsumerWidget {
   const MediaControls({
     required this.media,
@@ -33,76 +31,71 @@ class MediaControls extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final showControl = ref.watch(showControlsProvider);
-
     return Stack(
       children: [
-        if (showControl.showMenu)
-          SafeArea(
-            child: Align(
-              alignment: Alignment.topRight,
-              child: Padding(
-                padding: const EdgeInsets.only(right: 8, top: 8),
-                child: GestureDetector(
-                  onTap: PageManager.of(context).pop,
-                  child: CircledIcon(
-                    clIcons.closeFullscreen,
-                  ),
+        SafeArea(
+          child: Align(
+            alignment: Alignment.topRight,
+            child: Padding(
+              padding: const EdgeInsets.only(right: 8, top: 8),
+              child: GestureDetector(
+                onTap: PageManager.of(context).pop,
+                child: CircledIcon(
+                  clIcons.closeFullscreen,
                 ),
               ),
             ),
           ),
-        if (showControl.showMenu)
-          if ([onEdit, onDelete, onMove, onShare, onPin]
-                  .any((e) => e != null) ||
-              (media.data.mediaType == CLMediaType.video))
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 500),
-                child: GetVideoPlayerControls(
-                  builder: (
-                    VideoPlayerControls controller,
-                  ) {
-                    return ControllerMenu(
-                      media: media,
-                      onEdit: onEdit == null
-                          ? null
-                          : () async {
-                              await controller.pause();
-                              return onEdit?.call();
-                            },
-                      onDelete: onDelete == null
-                          ? null
-                          : () async {
-                              await controller.pause();
-                              return onDelete?.call();
-                            },
-                      onMove: onMove == null
-                          ? null
-                          : () async {
-                              await controller.pause();
-                              return onMove?.call();
-                            },
-                      onShare: onShare == null
-                          ? null
-                          : () async {
-                              await controller.pause();
-                              return onShare?.call();
-                            },
-                      onPin: onPin == null
-                          ? null
-                          : () async {
-                              await controller.pause();
-                              return onPin?.call();
-                            },
-                    );
-                  },
-                ),
+        ),
+        if ([onEdit, onDelete, onMove, onShare, onPin].any((e) => e != null) ||
+            (media.data.mediaType == CLMediaType.video))
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 500),
+              child: GetVideoPlayerControls(
+                builder: (
+                  VideoPlayerControls controller,
+                ) {
+                  return ControllerMenu(
+                    media: media,
+                    onEdit: onEdit == null
+                        ? null
+                        : () async {
+                            await controller.pause();
+                            return onEdit?.call();
+                          },
+                    onDelete: onDelete == null
+                        ? null
+                        : () async {
+                            await controller.pause();
+                            return onDelete?.call();
+                          },
+                    onMove: onMove == null
+                        ? null
+                        : () async {
+                            await controller.pause();
+                            return onMove?.call();
+                          },
+                    onShare: onShare == null
+                        ? null
+                        : () async {
+                            await controller.pause();
+                            return onShare?.call();
+                          },
+                    onPin: onPin == null
+                        ? null
+                        : () async {
+                            await controller.pause();
+                            return onPin?.call();
+                          },
+                  );
+                },
               ),
             ),
+          ),
       ],
     );
   }

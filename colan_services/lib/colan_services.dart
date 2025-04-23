@@ -16,7 +16,7 @@ export '../providers/app_init.dart';
 export '../providers/camera_provider.dart';
 export '../providers/captured_media.dart';
 export '../providers/incoming_media.dart';
-export '../providers/show_controls.dart';
+
 export '../providers/universal_media.dart';
 export 'services/app_start_service/app_start_service.dart' show AppStartService;
 export 'services/basic_page_service/basic_page_service.dart'
