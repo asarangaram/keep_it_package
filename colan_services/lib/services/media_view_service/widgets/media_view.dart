@@ -2,6 +2,7 @@ import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:cl_media_tools/cl_media_tools.dart';
 import 'package:cl_media_viewers_flutter/cl_media_viewers_flutter.dart';
 import 'package:colan_services/internal/resizable.dart';
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,8 +11,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
 import '../providers/media_view_state.dart';
-import 'controls/goto_next_media.dart';
-import 'controls/goto_prev_media.dart';
+import 'media_controls.dart';
 
 class MediaView extends ConsumerWidget {
   const MediaView({
@@ -68,37 +68,23 @@ class MediaView extends ConsumerWidget {
         }
       }
     });
-    final themeData = ShadTheme.of(context).copyWith(
-      textTheme: ShadTheme.of(context).textTheme.copyWith(
-            small: ShadTheme.of(context).textTheme.small.copyWith(
-                  color: Colors.white,
-                  fontSize: 10,
-                ),
-          ),
-      ghostButtonTheme: const ShadButtonTheme(
-        foregroundColor: Colors.white,
-        size: ShadButtonSize.sm,
-      ),
-    );
-    return ShadTheme(
-      data: themeData,
-      child: MediaFullScreenToggle(
-        entity: media,
-        pageController: pageController,
-        child: MediaViewer(
-          heroTag: '$parentIdentifier /item/${media.id}',
-          uri: media.mediaUri!,
-          previewUri: media.previewUri,
-          mime: media.data.mimeType!,
-          onLockPage: onLockPage,
-          isLocked: isLocked,
-          autoStart: autoStart,
-          autoPlay: autoPlay,
-          errorBuilder: (_, __) => const BrokenImage(),
-          loadingBuilder: () => const GreyShimmer(),
-          decoration: () => null,
-          keepAspectRatio: true,
-        ),
+
+    return MediaFullScreenToggle(
+      entity: media,
+      pageController: pageController,
+      child: MediaViewer(
+        heroTag: '$parentIdentifier /item/${media.id}',
+        uri: media.mediaUri!,
+        previewUri: media.previewUri,
+        mime: media.data.mimeType!,
+        onLockPage: onLockPage,
+        isLocked: isLocked,
+        autoStart: autoStart,
+        autoPlay: autoPlay,
+        errorBuilder: (_, __) => const BrokenImage(),
+        loadingBuilder: () => const GreyShimmer(),
+        decoration: () => null,
+        keepAspectRatio: true,
       ),
     );
   }
@@ -135,32 +121,38 @@ class MediaFullScreenToggle extends ConsumerWidget {
             padding: const EdgeInsets.only(top: 8, bottom: 16),
             child: Row(
               children: [
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: OnGotoPrevMedia(
-                    pageController: pageController,
+                if (!isFullScreen)
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: ShadButton.ghost(
+                      padding: EdgeInsets.zero,
+                      onPressed: () => ref
+                          .read(mediaViewerStateProvider.notifier)
+                          .prevPage(pageController),
+                      child: const CLIcon.large(LucideIcons.chevronLeft),
+                    ),
                   ),
-                ),
-                Flexible(
-                  child: plainMedia,
-                ),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: OnGotoNextPage(
-                    pageController: pageController,
+                Flexible(child: plainMedia),
+                if (!isFullScreen)
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: ShadButton.ghost(
+                      padding: EdgeInsets.zero,
+                      onPressed: () => ref
+                          .read(mediaViewerStateProvider.notifier)
+                          .nextPage(pageController),
+                      child: const CLIcon.large(LucideIcons.chevronRight),
+                    ),
                   ),
-                ),
               ],
             ),
           ),
-          bottom: Padding(
-            padding: const EdgeInsets.only(left: 8, right: 8, top: 16),
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  MediaTitle(entity as StoreEntity),
-                ],
-              ),
+          bottom: SingleChildScrollView(
+            child: Column(
+              children: [
+                MediaControls(media: entity as StoreEntity),
+                MediaTitle(entity as StoreEntity),
+              ],
             ),
           ),
         );

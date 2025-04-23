@@ -1,6 +1,7 @@
 import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 
 @immutable
 class MediaViewerState {
@@ -16,10 +17,12 @@ class MediaViewerState {
   MediaViewerState copyWith({
     List<ViewerEntityMixin>? entities,
     int? currentIndex,
+    bool? lockScreen,
   }) {
     return MediaViewerState(
       entities: entities ?? this.entities,
       currentIndex: currentIndex ?? this.currentIndex,
+      lockScreen: lockScreen ?? this.lockScreen,
     );
   }
 
@@ -29,13 +32,15 @@ class MediaViewerState {
     final listEquals = const DeepCollectionEquality().equals;
 
     return listEquals(other.entities, entities) &&
-        other.currentIndex == currentIndex;
+        other.currentIndex == currentIndex &&
+        other.lockScreen == lockScreen;
   }
 
   @override
-  int get hashCode => entities.hashCode ^ currentIndex.hashCode;
+  int get hashCode =>
+      entities.hashCode ^ currentIndex.hashCode ^ lockScreen.hashCode;
 
   @override
   String toString() =>
-      'MediaViewerState(entities: $entities, currentIndex: $currentIndex)';
+      'MediaViewerState(entities: $entities, currentIndex: $currentIndex, lockScreen: $lockScreen)';
 }

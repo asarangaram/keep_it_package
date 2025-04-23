@@ -1,128 +1,65 @@
-import 'dart:math' as math;
-
-import 'package:cl_media_tools/cl_media_tools.dart';
 import 'package:cl_media_viewers_flutter/cl_media_viewers_flutter.dart';
-import 'package:colan_services/services/basic_page_service/widgets/page_manager.dart';
-import 'package:colan_widgets/colan_widgets.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 import 'package:store/store.dart';
+
+import '../../gallery_view_service/models/entity_actions.dart';
 
 class MediaControls extends ConsumerWidget {
   const MediaControls({
     required this.media,
     super.key,
-    this.onEdit,
-    this.onDelete,
-    this.onMove,
-    this.onShare,
-    this.onTap,
-    this.onPin,
   });
-  final StoreEntity media;
 
-  final Future<bool?> Function()? onEdit;
-  final Future<bool?> Function()? onDelete;
-  final Future<bool?> Function()? onMove;
-  final Future<bool?> Function()? onShare;
-  final Future<bool?> Function()? onTap;
-  final Future<bool?> Function()? onPin;
+  final StoreEntity media;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Stack(
-      children: [
-        SafeArea(
-          child: Align(
-            alignment: Alignment.topRight,
-            child: Padding(
-              padding: const EdgeInsets.only(right: 8, top: 8),
-              child: GestureDetector(
-                onTap: PageManager.of(context).pop,
-                child: CircledIcon(
-                  clIcons.closeFullscreen,
+    final actions = EntityActions.ofEntity(
+      context,
+      ref,
+      media,
+    );
+    // Why the context didn't get initialied with CLTheme?
+    return GetVideoPlayerControls(
+      builder: (
+        VideoPlayerControls controller,
+      ) {
+        return Padding(
+          padding: const EdgeInsets.only(top: 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              for (final action in actions.actions)
+                Padding(
+                  padding: const EdgeInsets.only(right: 16),
+                  child: ShadButton.ghost(
+                    icon: Icon(
+                      action.icon,
+                      //  color: Colors.amber,
+                    ),
+                    // color: Theme.of(context).colorScheme.surface,
+                    onPressed: () async {
+                      await controller.pause();
+                      await action.onTap?.call();
+                    },
+                  ),
                 ),
-              ),
-            ),
+            ],
           ),
-        ),
-        if ([onEdit, onDelete, onMove, onShare, onPin].any((e) => e != null) ||
-            (media.data.mediaType == CLMediaType.video))
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 500),
-              child: GetVideoPlayerControls(
-                builder: (
-                  VideoPlayerControls controller,
-                ) {
-                  return ControllerMenu(
-                    media: media,
-                    onEdit: onEdit == null
-                        ? null
-                        : () async {
-                            await controller.pause();
-                            return onEdit?.call();
-                          },
-                    onDelete: onDelete == null
-                        ? null
-                        : () async {
-                            await controller.pause();
-                            return onDelete?.call();
-                          },
-                    onMove: onMove == null
-                        ? null
-                        : () async {
-                            await controller.pause();
-                            return onMove?.call();
-                          },
-                    onShare: onShare == null
-                        ? null
-                        : () async {
-                            await controller.pause();
-                            return onShare?.call();
-                          },
-                    onPin: onPin == null
-                        ? null
-                        : () async {
-                            await controller.pause();
-                            return onPin?.call();
-                          },
-                  );
-                },
-              ),
-            ),
-          ),
-      ],
+        );
+      },
     );
   }
 }
 
-class ControllerMenu extends StatelessWidget {
-  const ControllerMenu({
-    required this.media,
-    required this.onEdit,
-    required this.onDelete,
-    required this.onMove,
-    required this.onShare,
-    required this.onPin,
-    super.key,
-  });
+/*
 
-  final StoreEntity media;
-
-  final Future<bool?> Function()? onEdit;
-  final Future<bool?> Function()? onDelete;
-  final Future<bool?> Function()? onMove;
-  final Future<bool?> Function()? onShare;
-  final Future<bool?> Function()? onPin;
-
-  @override
-  Widget build(BuildContext context) {
-    return ColoredBox(
+return ColoredBox(
       color: Theme.of(context).colorScheme.onSurface.withAlpha(128),
       child: SafeArea(
         top: false,
@@ -140,70 +77,11 @@ class ControllerMenu extends StatelessWidget {
                     debugMessage: 'VideoDefaultControls',
                   ),
                 ), */
-              if ([onEdit, onDelete, onMove, onShare, onPin]
-                  .any((e) => e != null))
-                Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (onEdit != null)
-                        CLButtonIcon.small(
-                          clIcons.imageEdit,
-                          color: Theme.of(context).colorScheme.surface,
-                          onTap: onEdit,
-                        ),
-                      if (onDelete != null)
-                        CLButtonIcon.small(
-                          clIcons.imageDelete,
-                          color: Theme.of(context).colorScheme.surface,
-                          onTap: onDelete,
-                        ),
-                      if (onMove != null)
-                        CLButtonIcon.small(
-                          clIcons.imageMove,
-                          color: Theme.of(context).colorScheme.surface,
-                          onTap: onMove,
-                        ),
-                      if (onShare != null)
-                        CLButtonIcon.small(
-                          clIcons.imageShare,
-                          color: Theme.of(context).colorScheme.surface,
-                          onTap: onShare,
-                        ),
-                      if (onPin != null)
-                        Transform.rotate(
-                          angle: math.pi / 4,
-                          child: CLButtonIcon.small(
-                            media.data.pin != null
-                                ? clIcons.pinned
-                                : clIcons.notPinned,
-                            color: media.data.pin != null
-                                ? Colors.blue
-                                : Theme.of(context).colorScheme.surface,
-                            onTap: onPin,
-                          ),
-                        ),
-                    ]
-                        .map(
-                          (e) => Padding(
-                            padding: const EdgeInsets.only(
-                              right: 16,
-                            ),
-                            child: e,
-                          ),
-                        )
-                        .toList(),
-                  ),
-                ),
-              const SizedBox(
-                height: 16,
-              ),
+              ,
+              
             ],
           ),
         ),
       ),
     );
-  }
-}
+     */
