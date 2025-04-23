@@ -18,8 +18,6 @@ import 'controls/goto_prev_media.dart';
 import 'controls/on_rotate.dart';
 import 'controls/on_toggle_audio_mute.dart';
 import 'controls/on_toggle_play.dart';
-import 'controls/toggle_fullscreen.dart';
-import 'controls/video_progress2.dart';
 import 'media_fullscreen_view.dart';
 
 class MediaView extends ConsumerWidget {
@@ -151,6 +149,7 @@ class MediaFullScreenToggle extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isFullScreen =
         ref.watch(showControlsProvider.select((e) => e.isFullScreen));
+
     final uri = entity.mediaUri!;
 
     if (isFullScreen) {
@@ -159,35 +158,14 @@ class MediaFullScreenToggle extends ConsumerWidget {
         child: child,
       );
     }
-    final plainMedia = Center(
-      child: Center(
-        child: Stack(
-          children: [
-            child,
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: switch (entity.mediaType) {
-                CLMediaType.video => VideoProgress2(uri: uri),
-                CLMediaType.collection => const SizedBox.shrink(),
-                CLMediaType.text => const SizedBox.shrink(),
-                CLMediaType.image => const SizedBox.shrink(),
-                CLMediaType.audio => const SizedBox.shrink(),
-                CLMediaType.file => const SizedBox.shrink(),
-                CLMediaType.uri => const SizedBox.shrink(),
-                CLMediaType.unknown => const SizedBox.shrink(),
-              },
-            ),
-            const Positioned(
-              top: 4,
-              right: 4,
-              child: OnToggleFullScreen(),
-            ),
-          ],
-        ),
-      ),
+    final plainMedia = EntityFullScreenView(
+      entity: entity,
+      child: child,
     );
+    if (isFullScreen) {
+      return plainMedia;
+    }
+
     return ResizablePage(
       top: Padding(
         padding: const EdgeInsets.only(top: 8, bottom: 16),
@@ -224,7 +202,7 @@ class MediaFullScreenToggle extends ConsumerWidget {
                   ),
                   OnToggleAudioMute2(uri: uri),
                   ...[
-                    OnRotateLeft(uri: uri),
+                    OnRotateLeft2(uri: uri),
                   ],
                 ],
               ),

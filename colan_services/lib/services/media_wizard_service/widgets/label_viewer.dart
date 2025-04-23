@@ -30,7 +30,7 @@ class LabelViewer extends StatelessWidget {
             Transform.translate(
               offset: const Offset(0, -4),
               child: CLIcon.verySmall(
-                icon!,
+                icon,
               ),
             ),
           ],

@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:cl_media_viewers_flutter/cl_media_viewers_flutter.dart';
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -8,6 +9,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../../../providers/show_controls.dart';
+import 'on_rotate.dart';
 
 extension ExtDuration on Duration {
   String get timestamp {
@@ -74,6 +76,7 @@ class _VideoProgressState extends ConsumerState<VideoProgress> {
                 borderRadius: isFullScreen ? BorderRadius.circular(12) : null,
               ),
               margin: isFullScreen ? const EdgeInsets.all(8) : null,
+              padding: const EdgeInsets.all(8),
               child: ShadTheme(
                 data: ShadTheme.of(context).copyWith(
                   textTheme: ShadTheme.of(context).textTheme.copyWith(
@@ -87,85 +90,113 @@ class _VideoProgressState extends ConsumerState<VideoProgress> {
                     size: ShadButtonSize.sm,
                   ),
                 ),
-                child: Row(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  spacing: 4,
                   children: [
-                    Flexible(
-                      flex: 3,
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 16),
-                        child: Material(
-                          color: Colors.transparent,
-                          child: Stack(
-                            children: [
-                              // required only for network
-                              if (!widget.uri.isScheme('file'))
-                                SliderTheme(
-                                  data: SliderTheme.of(context).copyWith(
-                                    overlayShape: const SmallOverlayShape(),
-                                    trackShape: CustomTrackShape(),
-                                    trackHeight: 2,
-                                    thumbShape: SliderComponentShape.noThumb,
-                                    disabledActiveTrackColor:
-                                        const Color.fromARGB(
-                                      255,
-                                      128,
-                                      128,
-                                      128,
-                                    ),
-                                    disabledInactiveTrackColor:
-                                        const Color.fromARGB(255, 64, 64, 64),
-                                  ),
-                                  child: Slider(
-                                    max: playStatus.durationInSeconds,
-                                    value: playStatus.bufferedInSeconds,
-                                    onChanged: null,
-                                  ),
-                                ),
-
-                              SliderTheme(
-                                data: SliderTheme.of(context).copyWith(
-                                  overlayShape: const SmallOverlayShape(),
-                                  trackHeight: 2,
-                                  trackShape: CustomTrackShape(),
-                                  thumbShape: const RoundSliderThumbShape(
-                                    enabledThumbRadius: 6,
-                                    pressedElevation: 2,
-                                  ),
-                                  activeTrackColor:
-                                      const Color.fromARGB(255, 224, 224, 224),
-                                  inactiveTrackColor: (!widget.uri
-                                          .isScheme('file'))
-                                      ? const Color.fromARGB(0, 0, 0, 0)
-                                      : const Color.fromARGB(255, 64, 64, 64),
-                                  thumbColor: Colors.red,
-                                ),
-                                child: Slider(
-                                  max: playStatus.durationInSeconds,
-                                  value: playStatus.positionInSeconds,
-                                  onChanged: (double value) =>
-                                      setState(() => seekValue = value),
-                                  onChangeEnd: (double value) {
-                                    setState(() => seekValue = null);
-                                    playerControls
-                                        .seekTo(doubleToDuration(value));
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
                     Align(
                       alignment: Alignment.centerRight,
-                      child: FittedBox(
-                        child: ShadButton.ghost(
-                          enabled: false,
-                          child: Text(
-                            playStatus.playTimeString(seekValue),
+                      child: OnRotateLeft(uri: widget.uri),
+                    ),
+                    Row(
+                      children: [
+                        Flexible(
+                          flex: 3,
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 16),
+                            child: Material(
+                              color: Colors.transparent,
+                              child: Stack(
+                                children: [
+                                  // required only for network
+                                  if (!widget.uri.isScheme('file'))
+                                    SliderTheme(
+                                      data: SliderTheme.of(context).copyWith(
+                                        overlayShape: const SmallOverlayShape(),
+                                        trackShape: CustomTrackShape(),
+                                        trackHeight: 2,
+                                        thumbShape:
+                                            SliderComponentShape.noThumb,
+                                        disabledActiveTrackColor:
+                                            const Color.fromARGB(
+                                          255,
+                                          128,
+                                          128,
+                                          128,
+                                        ),
+                                        disabledInactiveTrackColor:
+                                            const Color.fromARGB(
+                                          255,
+                                          64,
+                                          64,
+                                          64,
+                                        ),
+                                      ),
+                                      child: Slider(
+                                        max: playStatus.durationInSeconds,
+                                        value: playStatus.bufferedInSeconds,
+                                        onChanged: null,
+                                      ),
+                                    ),
+
+                                  SliderTheme(
+                                    data: SliderTheme.of(context).copyWith(
+                                      overlayShape: const SmallOverlayShape(),
+                                      trackHeight: 2,
+                                      trackShape: CustomTrackShape(),
+                                      thumbShape: const RoundSliderThumbShape(
+                                        enabledThumbRadius: 6,
+                                        pressedElevation: 2,
+                                      ),
+                                      activeTrackColor: const Color.fromARGB(
+                                        255,
+                                        224,
+                                        224,
+                                        224,
+                                      ),
+                                      inactiveTrackColor:
+                                          (!widget.uri.isScheme('file'))
+                                              ? const Color.fromARGB(0, 0, 0, 0)
+                                              : const Color.fromARGB(
+                                                  255,
+                                                  64,
+                                                  64,
+                                                  64,
+                                                ),
+                                      thumbColor: Colors.red,
+                                    ),
+                                    child: Slider(
+                                      max: playStatus.durationInSeconds,
+                                      value: playStatus.positionInSeconds,
+                                      onChanged: (double value) =>
+                                          setState(() => seekValue = value),
+                                      onChangeEnd: (double value) {
+                                        setState(() => seekValue = null);
+                                        playerControls
+                                            .seekTo(doubleToDuration(value));
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                         ),
-                      ),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: FittedBox(
+                            child: Text(
+                              playStatus.playTimeString(seekValue),
+                              style: ShadTheme.of(context)
+                                  .textTheme
+                                  .muted
+                                  .copyWith(
+                                    fontSize: CLScaleType.tiny.fontSize,
+                                  ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
