@@ -119,7 +119,7 @@ class MediaFullScreenToggle extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final uri = entity.mediaUri!;
 
-    final plainMedia = EntityFullScreenView(
+    final plainMedia = MediaPlayerControls(
       uri: uri,
       mime: (entity as StoreEntity).data.mimeType!,
       child: child,
