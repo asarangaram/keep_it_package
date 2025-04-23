@@ -1,7 +1,8 @@
-import 'package:colan_widgets/src/basics/cl_text.dart';
 import 'package:flutter/material.dart';
 
 import '../models/cl_scale_type.dart';
+import 'cl_text.dart';
+import 'svg_icon.dart';
 
 class _CLIcon extends StatelessWidget {
   const _CLIcon(
@@ -11,7 +12,7 @@ class _CLIcon extends StatelessWidget {
     super.key,
     this.color,
   });
-  final IconData iconData;
+  final dynamic iconData;
   final String? text;
   final CLScaleType scaleType;
   final Color? color;
@@ -19,32 +20,42 @@ class _CLIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (text == null) {
-      return Icon(
-        iconData,
-        color: color,
-        size: scaleType.iconSize,
-      );
+      return switch (iconData) {
+        final IconData iconData => Icon(
+            iconData,
+            color: color,
+            size: scaleType.iconSize,
+          ),
+        final SvgIcons svgIcons => SvgIcon(
+            svgIcons,
+            color: color,
+            size: scaleType.iconSize,
+          ),
+        _ => throw Exception('Only IconData or compatible types are supported'),
+      };
     }
-
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(
-          iconData,
-          color: color ?? Theme.of(context).textTheme.bodyLarge?.color,
-          size: scaleType.iconSize,
+    return switch (iconData) {
+      (final IconData iconData) => Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              iconData,
+              color: color ?? Theme.of(context).textTheme.bodyLarge?.color,
+              size: scaleType.iconSize,
+            ),
+            switch (scaleType) {
+              CLScaleType.veryLarge => CLText.veryLarge,
+              CLScaleType.large => CLText.large,
+              CLScaleType.standard => CLText.standard,
+              CLScaleType.small => CLText.small,
+              CLScaleType.verySmall => CLText.verySmall,
+              CLScaleType.tiny => CLText.tiny,
+            }(text!, color: color),
+          ],
         ),
-        switch (scaleType) {
-          CLScaleType.veryLarge => CLText.veryLarge,
-          CLScaleType.large => CLText.large,
-          CLScaleType.standard => CLText.standard,
-          CLScaleType.small => CLText.small,
-          CLScaleType.verySmall => CLText.verySmall,
-          CLScaleType.tiny => CLText.tiny,
-        }(text!, color: color),
-      ],
-    );
+      _ => throw Exception('only IonData or SVGIconSupported')
+    };
   }
 }
 

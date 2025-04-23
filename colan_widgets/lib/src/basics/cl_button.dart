@@ -15,7 +15,7 @@ class _CLButton extends StatelessWidget {
     this.onTap,
     this.boxDecoration,
   }) : disabledColor = disabledColor ?? color;
-  final IconData? iconData;
+  final dynamic iconData;
   final String? label;
   final Color? color;
   final Color? disabledColor;
@@ -47,7 +47,7 @@ class _CLButton extends StatelessWidget {
                   CLScaleType.small => CLIcon.small,
                   CLScaleType.verySmall => CLIcon.verySmall,
                   CLScaleType.tiny => CLIcon.tiny,
-                }(iconData!, color: color_),
+                }(iconData, color: color_),
               _ => switch (scaleType) {
                   CLScaleType.veryLarge => CLIconLabelled.veryLarge,
                   CLScaleType.large => CLIconLabelled.large,
@@ -55,7 +55,7 @@ class _CLButton extends StatelessWidget {
                   CLScaleType.small => CLIconLabelled.small,
                   CLScaleType.verySmall => CLIconLabelled.verySmall,
                   CLScaleType.tiny => CLIconLabelled.tiny,
-                }(iconData!, label!, color: color_)
+                }(iconData, label!, color: color_)
             },
         },
       ),
@@ -136,42 +136,42 @@ class CLButtonText extends _CLButton {
 
 class CLButtonIcon extends _CLButton {
   const CLButtonIcon.veryLarge(
-    IconData iconData, {
+    dynamic iconData, {
     super.key,
     super.color,
     super.disabledColor,
     super.onTap,
   }) : super(label: null, iconData: iconData, scaleType: CLScaleType.veryLarge);
   const CLButtonIcon.large(
-    IconData iconData, {
+    dynamic iconData, {
     super.key,
     super.color,
     super.disabledColor,
     super.onTap,
   }) : super(label: null, iconData: iconData, scaleType: CLScaleType.large);
   const CLButtonIcon.standard(
-    IconData iconData, {
+    dynamic iconData, {
     super.key,
     super.color,
     super.disabledColor,
     super.onTap,
   }) : super(label: null, iconData: iconData, scaleType: CLScaleType.standard);
   const CLButtonIcon.small(
-    IconData iconData, {
+    dynamic iconData, {
     super.key,
     super.color,
     super.disabledColor,
     super.onTap,
   }) : super(label: null, iconData: iconData, scaleType: CLScaleType.small);
   const CLButtonIcon.verySmall(
-    IconData iconData, {
+    dynamic iconData, {
     super.key,
     super.color,
     super.disabledColor,
     super.onTap,
   }) : super(label: null, iconData: iconData, scaleType: CLScaleType.verySmall);
   const CLButtonIcon.tiny(
-    IconData iconData, {
+    dynamic iconData, {
     super.key,
     super.color,
     super.disabledColor,
@@ -181,7 +181,7 @@ class CLButtonIcon extends _CLButton {
 
 class CLButtonIconLabelled extends _CLButton {
   const CLButtonIconLabelled.veryLarge(
-    IconData iconData,
+    dynamic iconData,
     String label, {
     super.key,
     super.color,
@@ -193,7 +193,7 @@ class CLButtonIconLabelled extends _CLButton {
           scaleType: CLScaleType.veryLarge,
         );
   const CLButtonIconLabelled.large(
-    IconData iconData,
+    dynamic iconData,
     String label, {
     super.key,
     super.color,
@@ -201,7 +201,7 @@ class CLButtonIconLabelled extends _CLButton {
     super.onTap,
   }) : super(label: label, iconData: iconData, scaleType: CLScaleType.large);
   const CLButtonIconLabelled.standard(
-    IconData iconData,
+    dynamic iconData,
     String label, {
     super.key,
     super.color,
@@ -209,7 +209,7 @@ class CLButtonIconLabelled extends _CLButton {
     super.onTap,
   }) : super(label: label, iconData: iconData, scaleType: CLScaleType.standard);
   const CLButtonIconLabelled.small(
-    IconData iconData,
+    dynamic iconData,
     String label, {
     super.key,
     super.color,
@@ -217,7 +217,7 @@ class CLButtonIconLabelled extends _CLButton {
     super.onTap,
   }) : super(label: label, iconData: iconData, scaleType: CLScaleType.small);
   const CLButtonIconLabelled.verySmall(
-    IconData iconData,
+    dynamic iconData,
     String label, {
     super.key,
     super.color,
@@ -229,7 +229,7 @@ class CLButtonIconLabelled extends _CLButton {
           scaleType: CLScaleType.verySmall,
         );
   const CLButtonIconLabelled.tiny(
-    IconData iconData,
+    dynamic iconData,
     String label, {
     super.key,
     super.color,
