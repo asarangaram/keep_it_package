@@ -10,6 +10,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 
 import 'package:store/store.dart';
 
+import '../../basic_page_service/widgets/page_manager.dart';
 import '../providers/media_view_state.dart';
 import 'media_controls.dart';
 
@@ -108,6 +109,7 @@ class MediaFullScreenToggle extends ConsumerWidget {
     final plainMedia = MediaPlayerControls(
       uri: uri,
       mime: (entity as StoreEntity).data.mimeType!,
+      onClose: PageManager.of(context).pop,
       child: child,
     );
 
