@@ -1,4 +1,5 @@
 import 'package:cl_entity_viewers/cl_entity_viewers.dart';
+import 'package:cl_media_viewers_flutter/cl_media_viewers_flutter.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
@@ -126,6 +127,28 @@ class FolderItem extends StatelessWidget {
             right: 0,
             child: counter!,
           ),
+        OverlayWidgets(
+          heightFactor: 0.2,
+          alignment: Alignment.bottomCenter,
+          fit: BoxFit.none,
+          child: Container(
+            //alignment: Alignment.center,
+            margin: const EdgeInsets.symmetric(horizontal: 4),
+            color: ShadTheme.of(context)
+                .colorScheme
+                .foreground
+                .withValues(alpha: 0.5),
+            child: Text(
+              name,
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: ShadTheme.of(context).textTheme.small.copyWith(
+                    color: ShadTheme.of(context).colorScheme.background,
+                  ),
+            ),
+          ),
+        ),
         if (avatarAsset != null)
           Positioned.fill(
             bottom: 6,
