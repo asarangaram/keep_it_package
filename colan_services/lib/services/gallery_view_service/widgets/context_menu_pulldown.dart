@@ -52,12 +52,12 @@ class PullDownContextMenu extends ConsumerWidget {
                 menu.onMove.pullDownMenuItem,
               ],
             ),
-          if (menu.onEdit.onTap != null ||
+          if (menu.onCrop.onTap != null ||
               menu.onPin.onTap != null ||
               menu.onShare.onTap != null)
             PullDownMenuActionsRow.small(
               items: [
-                menu.onEdit.pullDownMenuItem,
+                menu.onCrop.pullDownMenuItem,
                 menu.onPin.pullDownMenuItem,
                 menu.onShare.pullDownMenuItem,
               ],

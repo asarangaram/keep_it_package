@@ -24,8 +24,8 @@ class EntityActions extends CLContextMenu {
   const EntityActions({
     required this.name,
     required this.logoImageAsset,
+    required this.onCrop,
     required this.onEdit,
-    required this.onEditInfo,
     required this.onMove,
     required this.onShare,
     required this.onPin,
@@ -37,7 +37,7 @@ class EntityActions extends CLContextMenu {
     WidgetRef ref,
     StoreEntity entity,
   ) {
-    Future<bool> onEditInfo() async {
+    Future<bool> onEdit() async {
       if (context.mounted) {
         final updated = await (entity.isCollection
             ? CollectionMetadataEditor.openSheet(
@@ -58,7 +58,7 @@ class EntityActions extends CLContextMenu {
       return true;
     }
 
-    final editSupported = switch (entity.data.mediaType) {
+    final cropSupported = switch (entity.data.mediaType) {
       CLMediaType.text => false,
       CLMediaType.image => true,
       CLMediaType.video => ColanPlatformSupport.isMobilePlatform,
@@ -69,7 +69,7 @@ class EntityActions extends CLContextMenu {
       CLMediaType.collection => false,
     };
 
-    Future<bool> onEdit() async {
+    Future<bool> onCrop() async {
       await PageManager.of(context).openEditor(entity);
       return true;
     }
@@ -106,8 +106,8 @@ class EntityActions extends CLContextMenu {
     return EntityActions.template(
       name: entity.data.label ?? 'Unnamed',
       logoImageAsset: 'assets/icon/not_on_server.png',
-      onEdit: editSupported ? onEdit : null,
-      onEditInfo: onEditInfo,
+      onCrop: cropSupported ? onCrop : null,
+      onEdit: onEdit,
       onMove: onMove,
       onShare: entity.isCollection ? null : onShare,
       onPin: !entity.isCollection && !ColanPlatformSupport.isMobilePlatform
@@ -131,8 +131,8 @@ class EntityActions extends CLContextMenu {
     required String logoImageAsset,
     required Map<String, dynamic> infoMap,
     required bool isPinned,
+    Future<bool?> Function()? onCrop,
     Future<bool?> Function()? onEdit,
-    Future<bool?> Function()? onEditInfo,
     Future<bool?> Function()? onMove,
     Future<bool?> Function()? onShare,
     Future<bool?> Function()? onPin,
@@ -141,15 +141,15 @@ class EntityActions extends CLContextMenu {
     return EntityActions(
       name: name,
       logoImageAsset: logoImageAsset,
-      onEdit: CLMenuItem(
+      onCrop: CLMenuItem(
         title: 'Edit',
         icon: clIcons.imageEdit,
-        onTap: onEdit,
+        onTap: onCrop,
       ),
-      onEditInfo: CLMenuItem(
+      onEdit: CLMenuItem(
         title: 'Info',
         icon: LucideIcons.info,
-        onTap: onEditInfo,
+        onTap: onEdit,
       ),
       onMove: CLMenuItem(
         title: 'Move',
@@ -183,15 +183,15 @@ class EntityActions extends CLContextMenu {
     required List<StoreEntity> items,
     // ignore: avoid_unused_constructor_parameters For now, not required
     required bool hasOnlineService,
+    ValueGetter<Future<bool?> Function()?>? onCrop,
     ValueGetter<Future<bool?> Function()?>? onEdit,
-    ValueGetter<Future<bool?> Function()?>? onEditInfo,
     ValueGetter<Future<bool?> Function()?>? onMove,
     ValueGetter<Future<bool?> Function()?>? onShare,
     ValueGetter<Future<bool?> Function()?>? onPin,
     ValueGetter<Future<bool?> Function()?>? onDelete,
   }) {
-    final onEdit0 = onEdit?.call();
-    final onEditInfo0 = onEditInfo?.call();
+    final onEdit0 = onCrop?.call();
+    final onEditInfo0 = onEdit?.call();
     Future<bool?> onMove0() => MediaWizardService.openWizard(
           context,
           ref,
@@ -227,8 +227,8 @@ class EntityActions extends CLContextMenu {
     return EntityActions.template(
       name: 'Multiple Media',
       logoImageAsset: 'assets/icon/not_on_server.png',
-      onEdit: onEdit != null ? onEdit() : onEdit0,
-      onEditInfo: onEditInfo != null ? onEditInfo() : onEditInfo0,
+      onCrop: onCrop != null ? onCrop() : onEdit0,
+      onEdit: onEdit != null ? onEdit() : onEditInfo0,
       onMove: onMove != null ? onMove() : onMove0,
       onShare: onShare != null ? onShare() : onShare0,
       onPin: onPin != null ? onPin() : onPin0,
@@ -240,8 +240,8 @@ class EntityActions extends CLContextMenu {
 
   final String name;
   final String logoImageAsset;
+  final CLMenuItem onCrop;
   final CLMenuItem onEdit;
-  final CLMenuItem onEditInfo;
   final CLMenuItem onMove;
   final CLMenuItem onShare;
   final CLMenuItem onPin;
@@ -251,8 +251,8 @@ class EntityActions extends CLContextMenu {
 
   @override
   List<CLMenuItem> get actions => [
+        onCrop,
         onEdit,
-        onEditInfo,
         onMove,
         onShare,
         onPin,
@@ -260,8 +260,8 @@ class EntityActions extends CLContextMenu {
       ].where((e) => e.onTap != null).toList();
 
   List<CLMenuItem> get basicActions => [
+        onCrop,
         onEdit,
-        onEditInfo,
         onMove,
         onShare,
         onPin,

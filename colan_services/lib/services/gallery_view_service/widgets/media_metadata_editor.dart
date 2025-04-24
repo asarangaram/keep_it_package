@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,7 +10,6 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
 import '../../media_view_service/preview/media_preview.dart';
-import 'context_menu_pulldown.dart';
 
 class MediaMetadataEditor extends StatelessWidget {
   factory MediaMetadataEditor({
@@ -177,11 +175,20 @@ class _StatefulMediaEditorState extends State<StatefulMediaEditor> {
       ),
       child: ShadSheet(
         draggable: true,
-        title: Text(
-          'Edit Media "${widget.media.data.label?.capitalizeFirstLetter() ?? widget.media.id}"',
-        ),
-        description: const Text(
-          'Change the label and add/update description here',
+        title: Row(
+          spacing: 8,
+          children: [
+            Container(
+              decoration: BoxDecoration(border: Border.all()),
+              width: 64,
+              height: 64,
+              child: MediaThumbnail(media: widget.media),
+            ),
+            Text(
+              widget.media.data.label?.capitalizeFirstLetter() ??
+                  'Media #${widget.media.id}',
+            ),
+          ],
         ),
         actions: [
           ShadButton(
@@ -210,11 +217,6 @@ class _StatefulMediaEditorState extends State<StatefulMediaEditor> {
         ],
         child: Row(
           children: [
-            SizedBox(
-              width: 100,
-              height: 100,
-              child: MediaThumbnail(media: widget.media),
-            ),
             Flexible(
               child: ShadForm(
                 key: formKey,
@@ -226,9 +228,9 @@ class _StatefulMediaEditorState extends State<StatefulMediaEditor> {
                       controller: labelController,
                       id: 'label',
                       // prefix: const Icon(LucideIcons.tag),
-                      label: const Text(' Media Name'),
+                      //  label: const Text(' Media Name'),
 
-                      placeholder: const Text('Enter media name'),
+                      placeholder: Text('Media #${widget.media.id}'),
                       validator: (value) => validateName(
                         newLabel: value,
                         existingLabel: widget.media.data.label,
@@ -239,27 +241,27 @@ class _StatefulMediaEditorState extends State<StatefulMediaEditor> {
                           RegExp(r'\n'),
                         ),
                       ],
-                      suffix: ShadButton.ghost(
+                      /* suffix: ShadButton.ghost(
                         onPressed: labelController.clear,
                         child: const Icon(LucideIcons.delete),
-                      ),
+                      ), */
                       padding: EdgeInsets.zero,
                       inputPadding: const EdgeInsets.all(4),
                     ),
                     ShadInputFormField(
                       id: 'description',
                       // prefix: const Icon(LucideIcons.tag),
-                      label: const Text(' Description'),
+                      label: const Text(' About '),
                       controller: descriptionController,
                       placeholder: const Text('Write description'),
-                      suffix: ShadButton.ghost(
+                      /* suffix: ShadButton.ghost(
                         onPressed: descriptionController.clear,
                         child: const Icon(LucideIcons.delete),
-                      ),
+                      ), */
                       maxLines: 3,
                     ),
-                    if (kDebugMode)
-                      MapInfo(widget.media.data.toMapForDisplay()),
+                    /* if (kDebugMode)
+                      MapInfo(widget.media.data.toMapForDisplay()), */
                     if (formValue.isNotEmpty)
                       Padding(
                         padding: const EdgeInsets.only(top: 24, left: 12),
