@@ -179,8 +179,7 @@ class KeepItApp implements AppDescriptor {
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // ignore: dead_code tempoarily disable this to study the behaviour
-  if (false) if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+  if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     setWindowFrame(const Rect.fromLTWH(0, 0, 900, 900 * 16 / 9));
 
     setWindowMaxSize(const Size(900, 900 * 16 / 9));
