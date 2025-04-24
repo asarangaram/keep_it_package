@@ -43,7 +43,7 @@ class KeepItBottomBar extends CLBanner {
         children: [
           Center(
             child: ShadButton.secondary(
-              icon: Icon(
+              child: Icon(
                 clIcons.insertItem,
                 size: 30,
               ),
@@ -62,7 +62,7 @@ class KeepItBottomBar extends CLBanner {
               child: Align(
                 alignment: Alignment.centerRight,
                 child: ShadButton.secondary(
-                  icon: Icon(
+                  child: Icon(
                     clIcons.camera,
                     size: 30,
                   ),

@@ -68,8 +68,7 @@ dependencies:
   progress_indicators: ^1.0.0
   pull_down_button: ^0.10.2
 
-  shadcn_ui:
-    path: /Users/anandasarangaram/Work/flutter-shadcn-ui
+  shadcn_ui: ^0.24.0
   share_handler: ^0.0.21
   share_plus: ^10.0.0
   shared_preferences: ^2.2.3

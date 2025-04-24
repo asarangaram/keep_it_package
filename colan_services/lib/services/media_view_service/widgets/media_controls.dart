@@ -38,7 +38,7 @@ class MediaControls extends ConsumerWidget {
                 Padding(
                   padding: const EdgeInsets.only(right: 16),
                   child: ShadButton.ghost(
-                    icon: Icon(
+                    child: Icon(
                       action.icon,
                       //  color: Colors.amber,
                     ),

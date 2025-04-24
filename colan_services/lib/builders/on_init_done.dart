@@ -30,13 +30,11 @@ class OnInitDone extends ConsumerWidget {
       },
       error: (err, _) {
         return ShadApp(
-          debugShowCheckedModeBanner: false,
           home: CLErrorView(errorMessage: err.toString()),
         );
       },
       loading: () {
         return ShadApp(
-          debugShowCheckedModeBanner: false,
           home: CLLoader.widget(
             debugMessage: 'appInitAsync',
           ),

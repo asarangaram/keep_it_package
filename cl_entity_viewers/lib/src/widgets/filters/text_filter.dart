@@ -58,7 +58,7 @@ class _TextFilterViewState extends ConsumerState<TextFilterView> {
     return ShadInput(
       controller: controller,
       placeholder: const Text('Search Media'),
-      suffix: controller.text.isNotEmpty
+      trailing: controller.text.isNotEmpty
           ? ShadButton(
               width: CLScaleType.verySmall.iconSize,
               height: CLScaleType.verySmall.iconSize,
@@ -67,7 +67,7 @@ class _TextFilterViewState extends ConsumerState<TextFilterView> {
                 secondaryBorder: ShadBorder.none,
                 secondaryFocusedBorder: ShadBorder.none,
               ),
-              icon: const Icon(
+              child: const Icon(
                 LucideIcons.x,
               ),
               onPressed: () {

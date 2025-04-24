@@ -46,12 +46,14 @@ class _ResizablePageState extends ConsumerState<ResizablePage> {
         controller: controller,
         children: [
           ShadResizablePanel(
+            id: 0,
             minSize: 0.4,
             maxSize: 0.8,
             defaultSize: topSize,
             child: widget.top,
           ),
           ShadResizablePanel(
+            id: 1,
             defaultSize: 1 - topSize,
             child: widget.bottom ??
                 Center(
