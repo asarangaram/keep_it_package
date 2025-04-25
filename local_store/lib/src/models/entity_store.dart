@@ -149,7 +149,14 @@ class LocalSQLiteEntityStore extends EntityStore
           updated = curr;
         }
       }
-      currentMediaPath = absoluteMediaPath(updated);
+
+      final expectedPath = absoluteMediaPath(updated);
+      if (expectedPath != null && File(expectedPath).existsSync()) {
+        currentMediaPath = expectedPath;
+      } else {
+        currentMediaPath = null;
+      }
+
       prevMediaPath = prev == null ? null : absoluteMediaPath(prev);
     } catch (e) {
       return prev;
@@ -167,9 +174,9 @@ class LocalSQLiteEntityStore extends EntityStore
         ),
       );
       if (entityFromDB == null) throw Exception('failed to update DB');
-      if (currentMediaPath != null &&
-          prevMediaPath != currentMediaPath &&
-          path != null) {
+      if (path != null) {
+        // do we need to check this against prevMediaPath
+        // if they are same, still this overwrites.
         await createMediaFiles(updated, path);
       }
       // generate preview here

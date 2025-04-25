@@ -140,29 +140,33 @@ class CLStore {
     final mediaInDB = await store.get(
       EntityQuery(null, {'md5': mediaFile.md5, 'isCollection': 1}),
     );
-    int? parentId0;
+    final CLEntity? parent;
+
     if (parentId != null) {
-      var parent = (await get(
-        EntityQuery(null, {'id': parentId}),
-      ))
-          ?.data;
+      parent = (await get(EntityQuery(null, {'id': parentId})))?.data;
+
       if (parent == null) {
-        final tempParent = await createCollection(label: tempCollectionName);
-        if (tempParent != null) {
-          parent = (await (await tempParent.updateWith(isHidden: () => true))
-                  ?.dbSave())
-              ?.data;
-        }
+        throw Exception(
+          "missing parent; collection with id $parentId doesn't exists",
+        );
       }
-      if (parent == null || parent.id == null) {
-        throw Exception('missing parent; unable to create default collection');
-      }
-      if (!parent.isCollection) {
-        throw Exception('Parent entity must be a collection.');
-      }
-      parentId0 = parent.id;
     } else {
-      parentId0 = parentId;
+      final tempParent = await createCollection(label: tempCollectionName);
+
+      parent =
+          (await (await tempParent?.updateWith(isHidden: () => true))?.dbSave())
+              ?.data;
+      if (parent == null) {
+        throw Exception(
+          'missing parent; failed to create a default collection',
+        );
+      }
+    }
+    if (!parent.isCollection) {
+      throw Exception('Parent entity must be a collection.');
+    }
+    if (parent.id == null) {
+      throw Exception("media can't be stored with valid parentId");
     }
 
     if (mediaInDB != null && mediaInDB.id != null) {
@@ -173,7 +177,7 @@ class CLStore {
           mediaInDB,
           label: label,
           description: description,
-          parentId: () => parentId0,
+          parentId: () => parent!.id!,
           strategy: strategy,
         );
       }
@@ -196,7 +200,7 @@ class CLStore {
         isDeleted: false,
       ),
       store: this,
-      path: mediaFile.path,
+      // path: mediaFile.path,
     );
   }
 
@@ -353,7 +357,7 @@ class CLStore {
         duration: mediaFile == null ? null : () => mediaFile.duration,
       ),
       store: this,
-      path: mediaFile?.path,
+      // path: mediaFile?.path,
     );
   }
 

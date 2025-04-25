@@ -11,23 +11,23 @@ class StoreEntity implements ViewerEntityMixin {
   factory StoreEntity({
     required CLEntity entity,
     required CLStore store,
-    String? path,
+    //   String? path,
   }) {
     return StoreEntity._(
       data: entity,
       store: store,
-      path: path,
+      //    path: path,
     );
   }
   const StoreEntity._({
     required this.data,
     required this.store,
-    this.path,
+    //   this.path,
   });
 
   final CLEntity data;
   final CLStore store;
-  final String? path;
+//  final String? path;
 
   Future<StoreEntity?> updateWith({
     CLMediaFile? mediaFile,
@@ -156,17 +156,17 @@ class StoreEntity implements ViewerEntityMixin {
   Uri? get previewUri => store.store.previewUri(data);
 
   @override
-  String toString() => 'StoreEntity(entity: $data, store: $store, path: $path)';
+  String toString() => 'StoreEntity(entity: $data, store: $store';
 
   @override
   bool operator ==(covariant StoreEntity other) {
     if (identical(this, other)) return true;
 
-    return other.data == data && other.store == store && other.path == path;
+    return other.data == data && other.store == store;
   }
 
   @override
-  int get hashCode => data.hashCode ^ store.hashCode ^ path.hashCode;
+  int get hashCode => data.hashCode ^ store.hashCode;
 
   @override
   CLMediaType get mediaType =>

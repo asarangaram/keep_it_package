@@ -57,12 +57,13 @@ class CLCameraService extends ConsumerWidget {
                   final mediaFile = await CLMediaFile.fromPath(path);
 
                   if (mediaFile != null) {
-                    return theStore.createMedia(
+                    return (await theStore.createMedia(
                       mediaFile: mediaFile,
                       parentId: parentId,
                       label: () => p.basenameWithoutExtension(mediaFile.path),
                       description: () => 'captured with Camera',
-                    );
+                    ))
+                        ?.dbSave(mediaFile.path);
                   }
                   return null;
                 },
@@ -143,6 +144,7 @@ class CLCameraService0 extends ConsumerWidget {
             }
             final media =
                 await onNewMedia(updatedFile ?? file, isVideo: isVideo);
+            // Validate if the media has id, has required files here.
             if (media != null) {
               ref.read(capturedMediaProvider.notifier).add(media);
             }
