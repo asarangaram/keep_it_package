@@ -28,6 +28,7 @@ class MediaPreviewWithOverlays extends StatelessWidget {
       overlays: [
         OverlayWidgets(
           heightFactor: 0.2,
+          widthFactor: 0.9,
           alignment: Alignment.bottomCenter,
           fit: BoxFit.none,
           child: Container(
