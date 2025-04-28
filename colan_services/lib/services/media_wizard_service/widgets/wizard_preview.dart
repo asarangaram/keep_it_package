@@ -73,6 +73,7 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
               ?.call(items.map((e) => e as StoreEntity).toList()),
       itemBuilder: (context, item) {
         return MediaThumbnail(
+          parentIdentifier: widget.viewIdentifier.parentID,
           media: item as StoreEntity,
 
           /** onTap: () async {

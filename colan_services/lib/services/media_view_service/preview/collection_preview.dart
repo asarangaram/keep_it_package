@@ -30,10 +30,8 @@ class CollectionPreview extends ConsumerWidget {
         return GetEntities(
           storeIdentity: collection.store.store.identity,
           parentId: collection.id,
-          errorBuilder: (_, __) =>
-              throw UnimplementedError('GetMediaByCollectionId'),
-          loadingBuilder: () =>
-              CLLoader.hide(debugMessage: 'GetMediaByCollectionId'),
+          errorBuilder: (_, __) => const BrokenImage(),
+          loadingBuilder: () => const GreyShimmer(),
           builder: (children) {
             final filterredChildren = children; // FIXME Introduce filter
             return FolderItem(
@@ -41,29 +39,15 @@ class CollectionPreview extends ConsumerWidget {
               borderColor: borderColor,
               avatarAsset: 'assets/icon/not_on_server.png',
               counter: (filters.isActive || filters.isTextFilterActive)
-                  ? AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 300),
-                      switchInCurve: Curves.easeInOut,
-                      switchOutCurve: Curves.easeInOut,
-                      transitionBuilder: (
-                        Widget child,
-                        Animation<double> animation,
-                      ) =>
-                          SizeTransition(
-                        sizeFactor: animation,
-                        child: child,
-                      ),
-                      child: Container(
-                        margin: const EdgeInsets.all(4),
-                        alignment: Alignment.bottomCenter,
-                        child: FittedBox(
-                          child: ShadBadge(
-                            backgroundColor: ShadTheme.of(context)
-                                .colorScheme
-                                .mutedForeground,
-                            child: Text(
-                              '${filterredChildren.length}/${children.length} matches',
-                            ),
+                  ? Container(
+                      margin: const EdgeInsets.all(4),
+                      alignment: Alignment.bottomCenter,
+                      child: FittedBox(
+                        child: ShadBadge(
+                          backgroundColor:
+                              ShadTheme.of(context).colorScheme.mutedForeground,
+                          child: Text(
+                            '${filterredChildren.length}/${children.length} matches',
                           ),
                         ),
                       ),
@@ -74,6 +58,7 @@ class CollectionPreview extends ConsumerWidget {
                 hCount: 3,
                 vCount: 3,
                 itemBuilder: (context, index) => MediaThumbnail(
+                  parentIdentifier: viewIdentifier.parentID,
                   media: filterredChildren[index],
                 ),
                 whenNopreview: Center(

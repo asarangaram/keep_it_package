@@ -30,6 +30,7 @@ class PreviewCapturedMedia extends ConsumerWidget {
               child: Badge(
                 label: Text(capturedMedia.length.toString()),
                 child: MediaThumbnail(
+                  parentIdentifier: parentIdentifier,
                   media: capturedMedia.last,
                 ),
               ),

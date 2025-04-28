@@ -84,7 +84,6 @@ class MediaView extends ConsumerWidget {
         autoPlay: autoPlay,
         errorBuilder: (_, __) => const BrokenImage(),
         loadingBuilder: () => const GreyShimmer(),
-        decoration: () => null,
         keepAspectRatio: true,
       ),
     );

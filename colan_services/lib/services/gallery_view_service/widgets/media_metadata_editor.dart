@@ -182,7 +182,10 @@ class _StatefulMediaEditorState extends State<StatefulMediaEditor> {
               decoration: BoxDecoration(border: Border.all()),
               width: 64,
               height: 64,
-              child: MediaThumbnail(media: widget.media),
+              child: MediaThumbnail(
+                parentIdentifier: 'Metadata Editor', // FIXME
+                media: widget.media,
+              ),
             ),
             Text(
               widget.media.data.label?.capitalizeFirstLetter() ??

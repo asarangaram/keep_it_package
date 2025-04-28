@@ -232,6 +232,7 @@ class ExistInDifferentCollection extends StatelessWidget {
                               child: Padding(
                                 padding: const EdgeInsets.all(2),
                                 child: MediaThumbnail(
+                                  parentIdentifier: parentIdentifier,
                                   media: m,
                                 ),
                               ),
