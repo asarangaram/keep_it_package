@@ -183,10 +183,10 @@ void main() {
     setWindowMaxSize(const Size(900, 900 * 16 / 9));
     setWindowMinSize(const Size(450, 450 * 16 / 9));
   }
-  SystemChrome.setPreferredOrientations(
+  /* SystemChrome.setPreferredOrientations(
     [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
-  );
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
+  ); */
+  // SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
   fvp.registerWith(
     options: {
       'global': {'logLevel': 'Error'},

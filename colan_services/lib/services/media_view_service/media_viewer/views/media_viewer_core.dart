@@ -96,31 +96,27 @@ class _ViewMediaState extends State<ViewMedia> {
             widget.currentItem.mediaUri != null;
         return GetVideoPlayerControls(
           builder: (controls) {
-            return Container(
-              padding: EdgeInsets.zero,
-              alignment: Alignment.center,
-              child: GestureDetector(
-                onTap: () async {
-                  await setVideo();
-                  await controls.onPlayPause(
-                    autoPlay: false,
-                    forced: isPlayable,
-                  );
-                },
-                child: MediaViewer(
-                  heroTag: '${widget.parentIdentifier} /item/${currentItem.id}',
-                  uri: currentItem.mediaUri!,
-                  previewUri: currentItem.previewUri,
-                  mime: (currentItem as StoreEntity).data.mimeType!,
-                  onLockPage: ({required bool lock}) {},
-                  isLocked: false,
-                  autoStart: widget.autoStart,
-                  autoPlay: true, // Fixme
-                  errorBuilder: (_, __) => const BrokenImage(),
-                  loadingBuilder: () => const GreyShimmer(),
-                  keepAspectRatio: true,
-                  hasGesture: !stateManager.showMenu,
-                ),
+            return GestureDetector(
+              onTap: () async {
+                await setVideo();
+                await controls.onPlayPause(
+                  autoPlay: false,
+                  forced: isPlayable,
+                );
+              },
+              child: MediaViewer(
+                heroTag: '${widget.parentIdentifier} /item/${currentItem.id}',
+                uri: currentItem.mediaUri!,
+                previewUri: currentItem.previewUri,
+                mime: (currentItem as StoreEntity).data.mimeType!,
+                onLockPage: ({required bool lock}) {},
+                isLocked: false,
+                autoStart: widget.autoStart,
+                autoPlay: true, // Fixme
+                errorBuilder: (_, __) => const BrokenImage(),
+                loadingBuilder: () => const GreyShimmer(),
+                keepAspectRatio: true,
+                hasGesture: !stateManager.showMenu,
               ),
             );
           },
