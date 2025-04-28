@@ -116,7 +116,6 @@ class MediaThumbnail extends StatelessWidget {
         loadingBuilder: () => const GreyShimmer(),
         fit: BoxFit.cover,
         keepAspectRatio: false,
-        overlays: overlays,
       );
     } catch (e) {
       return const BrokenImage();
