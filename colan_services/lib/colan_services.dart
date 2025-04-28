@@ -16,7 +16,6 @@ export '../providers/app_init.dart';
 export '../providers/camera_provider.dart';
 export '../providers/captured_media.dart';
 export '../providers/incoming_media.dart';
-
 export '../providers/universal_media.dart';
 export 'services/app_start_service/app_start_service.dart' show AppStartService;
 export 'services/basic_page_service/basic_page_service.dart'
@@ -38,6 +37,8 @@ export 'services/media_edit_service/media_edit_service.dart'
     show MediaEditService;
 export 'services/media_view_service/media_view_service.dart'
     show MediaViewService;
+export 'services/media_view_service/media_viewer/media_viewer.dart'
+    show MediaViewer;
 export 'services/media_view_service/preview/collection_preview.dart'
     show CollectionPreview;
 export 'services/media_wizard_service/media_wizard_service.dart'

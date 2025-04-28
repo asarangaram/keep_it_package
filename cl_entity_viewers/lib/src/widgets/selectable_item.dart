@@ -15,19 +15,19 @@ class SelectableItem extends ConsumerWidget {
     required this.item,
     required this.itemBuilder,
     super.key,
+    required this.entities,
   });
   final ViewIdentifier viewIdentifier;
   final ViewerEntityMixin item;
-  final Widget Function(BuildContext, ViewerEntityMixin) itemBuilder;
+  final List<ViewerEntityMixin> entities;
+  final Widget Function(
+      BuildContext, ViewerEntityMixin, List<ViewerEntityMixin>) itemBuilder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectionMode = ref.watch(selectModeProvider(viewIdentifier));
 
-    final itemWidget = itemBuilder(
-      context,
-      item,
-    );
+    final itemWidget = itemBuilder(context, item, entities);
     if (!selectionMode) {
       return itemWidget;
     }

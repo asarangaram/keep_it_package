@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 class OnPinButton extends StatelessWidget {
-  const OnPinButton({super.key, required this.iconColor});
+  const OnPinButton({required this.iconColor, super.key});
 
   final Color iconColor;
 

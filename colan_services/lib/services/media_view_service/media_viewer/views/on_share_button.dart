@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 class OnShareButton extends StatelessWidget {
-  const OnShareButton({super.key, required this.iconColor});
+  const OnShareButton({required this.iconColor, super.key});
 
   final Color iconColor;
 

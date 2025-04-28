@@ -23,8 +23,8 @@ class CLRawGalleryGridView extends ConsumerStatefulWidget {
   final ViewIdentifier viewIdentifier;
   final List<ViewerEntityMixin> incoming;
   final int columns;
-  final Widget Function(BuildContext context, ViewerEntityMixin item)
-      itemBuilder;
+  final Widget Function(BuildContext context, ViewerEntityMixin item,
+      List<ViewerEntityMixin> entities) itemBuilder;
 
   final Widget? Function(
     BuildContext context,
@@ -99,9 +99,7 @@ class CLRawGalleryGridViewState extends ConsumerState<CLRawGalleryGridView> {
                   columns: widget.columns,
                   itemBuilder: (context, itemIndex) {
                     final itemWidget = widget.itemBuilder(
-                      context,
-                      gallery.items[itemIndex],
-                    );
+                        context, gallery.items[itemIndex], widget.incoming);
 
                     return itemWidget;
                   },

@@ -59,10 +59,14 @@ class UIState {
   String toString() {
     return 'UIState(showMenu: $showMenu, isDartTheme: $isDartTheme, iconColor: $iconColor, entities: $entities, currentIndex: $currentIndex)';
   }
+
+  ViewerEntityMixin get currentItem => entities[currentIndex];
+
+  int get length => entities.length;
 }
 
-class UIStateNotifier extends MMNotifier<UIState> {
-  UIStateNotifier() : super(const UIState());
+class MediaViewerUIStateNotifier extends MMNotifier<UIState> {
+  MediaViewerUIStateNotifier() : super(const UIState());
 
   void lightTheme() => notify(state.copyWith(isDartTheme: false));
   void darkTheme() => notify(state.copyWith(isDartTheme: true));
@@ -81,6 +85,6 @@ class UIStateNotifier extends MMNotifier<UIState> {
   List<ViewerEntityMixin> get entities => state.entities;
 }
 
-final MMManager<UIStateNotifier> uiStateManager = MMManager(
-  UIStateNotifier.new,
+final MMManager<MediaViewerUIStateNotifier> uiStateManager = MMManager(
+  MediaViewerUIStateNotifier.new,
 );

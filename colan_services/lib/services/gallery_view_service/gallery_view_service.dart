@@ -110,9 +110,11 @@ class GalleryViewService0 extends ConsumerWidget {
                               ref,
                               entities,
                             ),
-                            itemBuilder: (context, item) => EntityPreview(
+                            itemBuilder: (context, item, entities) =>
+                                EntityPreview(
                               viewIdentifier: viewIdentifier,
                               item: item,
+                              entities: entities,
                             ),
                             whenEmpty: const WhenEmpty(),
                           ),

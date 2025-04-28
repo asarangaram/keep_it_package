@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 class OnCropButton extends StatelessWidget {
-  const OnCropButton({super.key, required this.iconColor});
+  const OnCropButton({required this.iconColor, super.key});
 
   final Color iconColor;
 

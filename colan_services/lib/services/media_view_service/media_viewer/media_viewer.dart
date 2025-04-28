@@ -1,25 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:shadcn_ui/shadcn_ui.dart';
+
 import 'notifier/ui_state.dart';
 import 'views/m_viewer_main_screen.dart';
 
 class MediaViewer extends StatelessWidget {
-  const MediaViewer({super.key});
+  const MediaViewer({required this.parentIdentifier, super.key});
+  final String parentIdentifier;
 
   @override
   Widget build(BuildContext context) {
-    final lightColorScheme = ShadColorScheme.fromName('rose');
+    //FIXME
+    /*  final lightColorScheme = ShadColorScheme.fromName('rose');
     final darkColorScheme = ShadColorScheme.fromName(
       'rose',
       brightness: Brightness.dark,
-    );
+    ); */
     final isDartTheme = uiStateManager.notifier.select(
       (state) => state.isDartTheme,
     );
     return ListenableBuilder(
       listenable: isDartTheme,
-      builder: (final _, final __) {
-        return ShadApp(
+      builder: (_, __) {
+        return MViewerMainScreen(parentIdentifier: parentIdentifier);
+        /* return ShadApp(
           theme: ShadThemeData(
             colorScheme: lightColorScheme,
             brightness: Brightness.light,
@@ -29,8 +32,8 @@ class MediaViewer extends StatelessWidget {
             brightness: Brightness.dark,
           ),
           themeMode: isDartTheme.value ? ThemeMode.dark : ThemeMode.light,
-          home: const MViewerMainScreen(),
-        );
+          home: MViewerMainScreen(parentIdentifier: parentIdentifier),
+        ); */
       },
     );
   }

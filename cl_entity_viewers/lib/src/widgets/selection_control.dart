@@ -29,9 +29,7 @@ class SelectionContol extends ConsumerWidget {
   final Widget whenEmpty;
 
   final Widget Function(
-    BuildContext,
-    ViewerEntityMixin,
-  ) itemBuilder;
+      BuildContext, ViewerEntityMixin, List<ViewerEntityMixin>) itemBuilder;
 
   final CLContextMenu Function(BuildContext, List<ViewerEntityMixin>)?
       contextMenuBuilder;
@@ -82,10 +80,11 @@ class SelectionContol extends ConsumerWidget {
         gallery: gallery,
         galleryMap: galleryMap,
       ),
-      itemBuilder: (context, item) => SelectableItem(
+      itemBuilder: (context, item, entities) => SelectableItem(
         viewIdentifier: viewIdentifier,
         item: item,
         itemBuilder: itemBuilder,
+        entities: entities,
       ),
       columns: 3,
       draggableMenuBuilder: selector.items.isNotEmpty &&

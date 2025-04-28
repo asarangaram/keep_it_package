@@ -22,9 +22,7 @@ class CLGalleryGridView extends StatelessWidget {
   final ViewIdentifier viewIdentifier;
   final List<ViewerEntityMixin> incoming;
   final Widget Function(
-    BuildContext,
-    ViewerEntityMixin,
-  ) itemBuilder;
+      BuildContext, ViewerEntityMixin, List<ViewerEntityMixin>) itemBuilder;
   final CLContextMenu Function(BuildContext, List<ViewerEntityMixin>)?
       contextMenuBuilder;
   final void Function(List<ViewerEntityMixin>)? onSelectionChanged;
@@ -60,9 +58,7 @@ class CLGalleryGridView0 extends StatelessWidget {
   final ViewIdentifier viewIdentifier;
   final List<ViewerEntityMixin> incoming;
   final Widget Function(
-    BuildContext,
-    ViewerEntityMixin,
-  ) itemBuilder;
+      BuildContext, ViewerEntityMixin, List<ViewerEntityMixin>) itemBuilder;
   final CLContextMenu Function(BuildContext, List<ViewerEntityMixin>)?
       contextMenuBuilder;
   final void Function(List<ViewerEntityMixin>)? onSelectionChanged;

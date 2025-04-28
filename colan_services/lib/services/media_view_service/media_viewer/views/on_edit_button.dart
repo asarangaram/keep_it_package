@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 class OnEditButton extends StatelessWidget {
-  const OnEditButton({super.key, required this.iconColor});
+  const OnEditButton({required this.iconColor, super.key});
 
   final Color iconColor;
 

@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
 import '../../basic_page_service/widgets/page_manager.dart';
+import '../../media_view_service/media_viewer/notifier/ui_state.dart'
+    show uiStateManager;
 import '../../media_view_service/preview/collection_preview.dart';
 
 import '../../media_view_service/preview/media_preview.dart';
@@ -15,10 +17,12 @@ class EntityPreview extends ConsumerWidget {
   const EntityPreview({
     required this.viewIdentifier,
     required this.item,
+    required this.entities,
     super.key,
   });
   final ViewIdentifier viewIdentifier;
   final ViewerEntityMixin item;
+  final List<ViewerEntityMixin> entities;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -57,6 +61,14 @@ class EntityPreview extends ConsumerWidget {
               )
               .state = entity;
         } else {
+          // Setup provider, it may be good idea to have a single function
+          // to avoid extra notification
+          final supportedEntities =
+              entities /* .where((e) => e.mediaType == CLMediaType.image).toList() */;
+          uiStateManager.notifier.entities = supportedEntities;
+          uiStateManager.notifier.currIndex =
+              supportedEntities.indexWhere((e) => e.id == entity.data.id!);
+
           await PageManager.of(context).openMedia(
             entity.data.id!,
             parentId: ref.read(activeCollectionProvider)?.id,

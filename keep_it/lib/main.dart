@@ -73,6 +73,7 @@ class KeepItApp implements AppDescriptor {
           name: 'media',
           builder: (context, parameters) {
             final String parentIdentifier;
+            // ignore: unused_local_variable
             final int? parentId;
 
             if (!parameters.containsKey('parentIdentifier')) {
@@ -86,10 +87,7 @@ class KeepItApp implements AppDescriptor {
               parentId = int.parse(parameters['parentId']!);
             }
 
-            return MediaViewService(
-              storeIdentity: 'local',
-              parentId: parentId,
-              id: int.parse(parameters['id']!),
+            return MediaViewer(
               parentIdentifier: parentIdentifier,
             );
           },

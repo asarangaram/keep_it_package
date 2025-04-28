@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 class OnMoreActions extends StatelessWidget {
-  const OnMoreActions({super.key, required this.iconColor});
+  const OnMoreActions({required this.iconColor, super.key});
 
   final Color iconColor;
 

@@ -37,6 +37,7 @@ class DialogService {
                               viewId: 'PreviewInDialog',
                             ),
                             item: entity[index] as StoreEntity,
+                            entities: const [],
                           );
                         },
                         whenNopreview: const Center(),

@@ -6,7 +6,8 @@ import 'media_viewer_core.dart';
 import 'top_bar.dart';
 
 class MViewerMainScreen extends StatelessWidget {
-  const MViewerMainScreen({super.key});
+  const MViewerMainScreen({required this.parentIdentifier, super.key});
+  final String parentIdentifier;
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +24,9 @@ class MViewerMainScreen extends StatelessWidget {
         //extendBody: true,
         body: GestureDetector(
           onTap: uiStateManager.notifier.toggleMenu,
-          child: const MediaViewerCore(),
+          child: MediaViewerCore(
+            parentIdentifier: parentIdentifier,
+          ),
         ),
         bottomNavigationBar: const BottomBar(iconColor: iconColor),
       ),
