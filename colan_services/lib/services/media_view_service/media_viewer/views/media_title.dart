@@ -7,7 +7,6 @@ class MediaTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text('Title here', style: ShadTheme.of(context).textTheme.h3),
         Text('29 Apr, 2026', style: ShadTheme.of(context).textTheme.small),
