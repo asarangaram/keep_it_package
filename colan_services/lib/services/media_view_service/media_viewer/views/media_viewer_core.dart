@@ -91,32 +91,39 @@ class _ViewMediaState extends State<ViewMedia> {
         final stateManager = uiStateManager.notifier.state;
         final currentItem = stateManager.currentItem;
         final isPlayable = widget.autoStart &&
-            widget.playerControls.uri != widget.currentItem.mediaUri &&
+            /* widget.playerControls.uri != widget.currentItem.mediaUri && */
             widget.currentItem.mediaType == CLMediaType.video &&
             widget.currentItem.mediaUri != null;
         return GetVideoPlayerControls(
           builder: (controls) {
-            return GestureDetector(
-              onTap: () async {
-                await setVideo();
-                await controls.onPlayPause(
-                  autoPlay: false,
-                  forced: isPlayable,
-                );
-              },
-              child: MediaViewer(
-                heroTag: '${widget.parentIdentifier} /item/${currentItem.id}',
-                uri: currentItem.mediaUri!,
-                previewUri: currentItem.previewUri,
-                mime: (currentItem as StoreEntity).data.mimeType!,
-                onLockPage: ({required bool lock}) {},
-                isLocked: false,
-                autoStart: widget.autoStart,
-                autoPlay: true, // Fixme
-                errorBuilder: (_, __) => const BrokenImage(),
-                loadingBuilder: () => const GreyShimmer(),
-                keepAspectRatio: true,
-                hasGesture: !stateManager.showMenu,
+            return Container(
+              color: Colors.black,
+              alignment: Alignment.center,
+              child: GestureDetector(
+                onTap: isPlayable
+                    ? () async {
+                        await setVideo();
+                        await controls.onPlayPause(
+                          autoPlay: false,
+                          forced: isPlayable,
+                        );
+                        uiStateManager.notifier.showMenu();
+                      }
+                    : null,
+                child: MediaViewer(
+                  heroTag: '${widget.parentIdentifier} /item/${currentItem.id}',
+                  uri: currentItem.mediaUri!,
+                  previewUri: currentItem.previewUri,
+                  mime: (currentItem as StoreEntity).data.mimeType!,
+                  onLockPage: ({required bool lock}) {},
+                  isLocked: false,
+                  autoStart: widget.autoStart,
+                  autoPlay: true, // Fixme
+                  errorBuilder: (_, __) => const BrokenImage(),
+                  loadingBuilder: () => const GreyShimmer(),
+                  keepAspectRatio: true,
+                  hasGesture: !stateManager.showMenu,
+                ),
               ),
             );
           },
