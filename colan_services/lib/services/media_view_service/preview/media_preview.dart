@@ -108,14 +108,19 @@ class MediaThumbnail extends StatelessWidget {
       return const BrokenImage();
     }
     try {
-      return MediaViewer(
-        heroTag: '$parentIdentifier /item/${media.id}',
+      return MediaViewerOverlays(
         uri: media.previewUri!,
         mime: 'image/jpeg',
-        errorBuilder: (_, __) => const BrokenImage(),
-        loadingBuilder: () => const GreyShimmer(),
-        fit: BoxFit.cover,
-        keepAspectRatio: false,
+        overlays: overlays ?? const [],
+        child: MediaViewer(
+          heroTag: '$parentIdentifier /item/${media.id}',
+          uri: media.previewUri!,
+          mime: 'image/jpeg',
+          errorBuilder: (_, __) => const BrokenImage(),
+          loadingBuilder: () => const GreyShimmer(),
+          fit: BoxFit.cover,
+          keepAspectRatio: false,
+        ),
       );
     } catch (e) {
       return const BrokenImage();
