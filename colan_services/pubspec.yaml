@@ -56,6 +56,7 @@ dependencies:
 
   meta: ^1.12.0
   mime: ^2.0.0
+  minimal_mvn: ^2.0.1
   multicast_dns: ^0.3.2+7
   mutex: ^3.1.0
   nsd: ^4.0.3
