@@ -35,8 +35,8 @@ export 'services/incoming_media_service/incoming_media_service.dart'
     show IncomingMediaService;
 export 'services/media_edit_service/media_edit_service.dart'
     show MediaEditService;
-export 'services/media_view_service/media_view_service.dart'
-    show MediaViewService;
+/* export 'services/media_view_service/media_view_service.dart'
+    show MediaViewService; */
 export 'services/media_view_service/media_viewer/media_viewer.dart'
     show MediaViewer;
 export 'services/media_view_service/preview/collection_preview.dart'

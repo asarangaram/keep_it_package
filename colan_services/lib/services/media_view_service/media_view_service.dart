@@ -1,4 +1,4 @@
-import 'package:cl_entity_viewers/cl_entity_viewers.dart';
+/* import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:cl_media_viewers_flutter/cl_media_viewers_flutter.dart';
 import 'package:colan_services/internal/fullscreen_layout.dart';
 import 'package:colan_services/services/gallery_view_service/widgets/when_empty.dart';
@@ -167,3 +167,4 @@ class MediaPageViewState extends ConsumerState<MediaPageView> {
     );
   }
 }
+ */

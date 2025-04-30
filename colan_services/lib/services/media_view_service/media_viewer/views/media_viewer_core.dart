@@ -9,6 +9,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
 import '../notifier/ui_state.dart' show uiStateManager;
+import 'on_toggle_audio_mute.dart';
+import 'on_toggle_play.dart';
+import 'toggle_fullscreen.dart';
+import 'video_progress.dart';
 
 class MediaViewerCore extends StatelessWidget {
   const MediaViewerCore({required this.parentIdentifier, super.key});
@@ -83,8 +87,6 @@ class _ViewMediaState extends State<ViewMedia> {
 
   @override
   Widget build(BuildContext context) {
-    print('autoStart = ${widget.autoStart}');
-
     return ListenableBuilder(
       listenable: uiStateManager.notifier,
       builder: (_, __) {
@@ -94,6 +96,102 @@ class _ViewMediaState extends State<ViewMedia> {
             /* widget.playerControls.uri != widget.currentItem.mediaUri && */
             widget.currentItem.mediaType == CLMediaType.video &&
             widget.currentItem.mediaUri != null;
+
+        final uri = currentItem.mediaUri!;
+        final mediaViewer = MediaViewer(
+          heroTag: '${widget.parentIdentifier} /item/${currentItem.id}',
+          uri: currentItem.mediaUri!,
+          previewUri: currentItem.previewUri,
+          mime: (currentItem as StoreEntity).data.mimeType!,
+          onLockPage: ({required bool lock}) {},
+          isLocked: false,
+          autoStart: widget.autoStart,
+          autoPlay: true, // Fixme
+          errorBuilder: (_, __) => const BrokenImage(),
+          loadingBuilder: () => const GreyShimmer(),
+          keepAspectRatio: stateManager.showMenu || isPlayable,
+          hasGesture: !stateManager.showMenu,
+        );
+
+        if (!isPlayable) {
+          return GestureDetector(
+            onTap: uiStateManager.notifier.toggleMenu,
+            child: mediaViewer,
+          );
+        } else {
+          final player = Center(
+            child: Stack(
+              alignment: AlignmentDirectional.center,
+              children: [
+                mediaViewer,
+                if (stateManager.showPlayerMenu) ...[
+                  Positioned(
+                    top: 0,
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: OnTogglePlay(
+                      uri: currentItem.mediaUri!,
+                    ),
+                  ),
+                  Positioned(
+                    top: 0,
+                    left: 0,
+                    child: OnToggleAudioMute(uri: currentItem.mediaUri!),
+                  ),
+                  const Positioned(
+                    top: 0,
+                    right: 0,
+                    child: OnToggleFullScreen(),
+                  ),
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: VideoProgress(uri: currentItem.mediaUri!),
+                  ),
+                ],
+              ],
+            ),
+          );
+          {
+            return GetUriPlayStatus(
+              uri: uri,
+              builder: ([playerControls, playStatus]) {
+                return GestureDetector(
+                  onTap: () {
+                    playerControls?.onPlayPause(
+                      uri,
+                      autoPlay: false,
+                      forced: true,
+                    );
+                    uiStateManager.notifier.showPlayerMenu();
+                  },
+                  child: Container(
+                    decoration: stateManager.showMenu
+                        ? const BoxDecoration(
+                            color: Colors.black,
+                            borderRadius: BorderRadius.all(Radius.circular(8)),
+                          )
+                        : const BoxDecoration(
+                            color: Colors.black,
+                          ),
+                    child: player,
+                  ),
+                );
+              },
+            );
+          }
+        }
+
+        /* if (!isPlayable) {
+          return mediaViewer;
+        } else if (stateManager.showMenu) {
+          return mediaViewer;
+        } else {
+          return mediaViewer;
+        }
+
         return GetVideoPlayerControls(
           builder: (controls) {
             return Container(
@@ -103,31 +201,18 @@ class _ViewMediaState extends State<ViewMedia> {
                 onTap: isPlayable
                     ? () async {
                         await setVideo();
-                        await controls.onPlayPause(
+                        await controls.onPlayPause(uri, 
                           autoPlay: false,
                           forced: isPlayable,
                         );
                         uiStateManager.notifier.showMenu();
                       }
                     : null,
-                child: MediaViewer(
-                  heroTag: '${widget.parentIdentifier} /item/${currentItem.id}',
-                  uri: currentItem.mediaUri!,
-                  previewUri: currentItem.previewUri,
-                  mime: (currentItem as StoreEntity).data.mimeType!,
-                  onLockPage: ({required bool lock}) {},
-                  isLocked: false,
-                  autoStart: widget.autoStart,
-                  autoPlay: true, // Fixme
-                  errorBuilder: (_, __) => const BrokenImage(),
-                  loadingBuilder: () => const GreyShimmer(),
-                  keepAspectRatio: true,
-                  hasGesture: !stateManager.showMenu,
-                ),
+                child: mediaViewer,
               ),
             );
           },
-        );
+        ); */
       },
     );
   }

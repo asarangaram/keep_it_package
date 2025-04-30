@@ -1,4 +1,4 @@
-import 'package:cl_entity_viewers/cl_entity_viewers.dart';
+/* import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:cl_media_tools/cl_media_tools.dart';
 import 'package:cl_media_viewers_flutter/cl_media_viewers_flutter.dart';
 import 'package:colan_services/internal/resizable.dart';
@@ -187,3 +187,4 @@ class MediaTitle extends ConsumerWidget {
     );
   }
 }
+ */

@@ -12,24 +12,17 @@ class MViewerMainScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const iconColor = Color.fromARGB(255, 80, 140, 224);
-    return SafeArea(
-      top: false,
-      bottom: false,
-      left: false,
-      right: false,
-      child: Scaffold(
-        // backgroundColor:  Colors.white, // ShadTheme.of(context).colorScheme.background,
-        appBar: const TopBar(iconColor: iconColor),
-        // extendBodyBehindAppBar: true,
-        //extendBody: true,
-        body: GestureDetector(
-          onTap: uiStateManager.notifier.toggleMenu,
-          child: MediaViewerCore(
-            parentIdentifier: parentIdentifier,
-          ),
+    return Scaffold(
+      // backgroundColor:  Colors.white, // ShadTheme.of(context).colorScheme.background,
+      appBar: const TopBar(iconColor: iconColor),
+      // extendBodyBehindAppBar: true,
+      //extendBody: true,
+      body: SafeArea(
+        child: MediaViewerCore(
+          parentIdentifier: parentIdentifier,
         ),
-        bottomNavigationBar: const BottomBar(iconColor: iconColor),
       ),
+      bottomNavigationBar: const BottomBar(iconColor: iconColor),
     );
   }
 }
