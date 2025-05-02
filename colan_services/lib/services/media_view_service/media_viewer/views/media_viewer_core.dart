@@ -1,6 +1,7 @@
 import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:cl_media_tools/cl_media_tools.dart';
 import 'package:cl_media_viewers_flutter/cl_media_viewers_flutter.dart';
+import 'package:colan_services/services/media_view_service/media_viewer/views/media_viewer_page_view.dart';
 import 'package:content_store/content_store.dart';
 
 import 'package:flutter/material.dart';
@@ -11,7 +12,6 @@ import 'package:store/store.dart';
 import '../notifier/ui_state.dart' show uiStateManager;
 import 'on_toggle_audio_mute.dart';
 import 'on_toggle_play.dart';
-import 'toggle_fullscreen.dart';
 import 'video_progress.dart';
 
 class MediaViewerCore extends StatelessWidget {
@@ -114,16 +114,50 @@ class _ViewMediaState extends State<ViewMedia> {
         );
 
         if (!isPlayable) {
+          return Row(
+            children: [
+              MaterialApp(
+                home: SafeArea(
+                  child: GestureDetector(
+                    onTap: uiStateManager.notifier.toggleMenu,
+                    onDoubleTap: isPlayable
+                        ? () => widget.playerControls.onPlayPause(uri)
+                        : null,
+                    child: mediaViewer,
+                  ),
+                ),
+              ),
+            ],
+          );
+        } else if (!stateManager.showMenu) {
           return GestureDetector(
-            onTap: uiStateManager.notifier.toggleMenu,
-            child: mediaViewer,
+            onTap: () => widget.playerControls.onPlayPause(uri),
+            onDoubleTap: uiStateManager.notifier.toggleMenu,
+            child: SafeArea(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.black,
+                  border: Border.all(color: Colors.white),
+                ),
+                alignment: Alignment.center,
+                child: mediaViewer,
+              ),
+            ),
           );
         } else {
           final player = Center(
             child: Stack(
-              alignment: AlignmentDirectional.center,
               children: [
-                mediaViewer,
+                GestureDetector(
+                  onTap: () {
+                    uiStateManager.notifier.toggleMenu();
+                    widget.playerControls.onPlayPause(uri);
+                  },
+                  onDoubleTap: isPlayable
+                      ? () => widget.playerControls.onPlayPause(uri)
+                      : null,
+                  child: mediaViewer,
+                ),
                 if (stateManager.showPlayerMenu) ...[
                   Positioned(
                     top: 0,
@@ -139,11 +173,6 @@ class _ViewMediaState extends State<ViewMedia> {
                     left: 0,
                     child: OnToggleAudioMute(uri: currentItem.mediaUri!),
                   ),
-                  const Positioned(
-                    top: 0,
-                    right: 0,
-                    child: OnToggleFullScreen(),
-                  ),
                   Positioned(
                     bottom: 0,
                     left: 0,
@@ -154,128 +183,8 @@ class _ViewMediaState extends State<ViewMedia> {
               ],
             ),
           );
-          {
-            return GetUriPlayStatus(
-              uri: uri,
-              builder: ([playerControls, playStatus]) {
-                return GestureDetector(
-                  onTap: () {
-                    playerControls?.onPlayPause(
-                      uri,
-                      autoPlay: false,
-                      forced: true,
-                    );
-                    uiStateManager.notifier.showPlayerMenu();
-                  },
-                  child: Container(
-                    decoration: stateManager.showMenu
-                        ? const BoxDecoration(
-                            color: Colors.black,
-                            borderRadius: BorderRadius.all(Radius.circular(8)),
-                          )
-                        : const BoxDecoration(
-                            color: Colors.black,
-                          ),
-                    child: player,
-                  ),
-                );
-              },
-            );
-          }
+          return player;
         }
-
-        /* if (!isPlayable) {
-          return mediaViewer;
-        } else if (stateManager.showMenu) {
-          return mediaViewer;
-        } else {
-          return mediaViewer;
-        }
-
-        return GetVideoPlayerControls(
-          builder: (controls) {
-            return Container(
-              color: Colors.black,
-              alignment: Alignment.center,
-              child: GestureDetector(
-                onTap: isPlayable
-                    ? () async {
-                        await setVideo();
-                        await controls.onPlayPause(uri, 
-                          autoPlay: false,
-                          forced: isPlayable,
-                        );
-                        uiStateManager.notifier.showMenu();
-                      }
-                    : null,
-                child: mediaViewer,
-              ),
-            );
-          },
-        ); */
-      },
-    );
-  }
-}
-
-class MediaViewerPageView extends ConsumerStatefulWidget {
-  const MediaViewerPageView({
-    required this.parentIdentifier,
-    required this.playerControls,
-    super.key,
-  });
-  final String parentIdentifier;
-  final VideoPlayerControls playerControls;
-
-  @override
-  ConsumerState<ConsumerStatefulWidget> createState() =>
-      _MediaViewerPageViewState();
-}
-
-class _MediaViewerPageViewState extends ConsumerState<MediaViewerPageView> {
-  late final PageController pageController;
-
-  @override
-  void initState() {
-    pageController = PageController(
-      initialPage: uiStateManager.notifier.state.currentIndex,
-    );
-
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    pageController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final stateManagerNotifier = uiStateManager.notifier;
-
-    return ListenableBuilder(
-      listenable: stateManagerNotifier,
-      builder: (_, __) {
-        final stateManager = stateManagerNotifier.state;
-        return PageView.builder(
-          controller: pageController,
-          itemCount: stateManager.entities.length,
-          physics: !stateManager.showMenu
-              ? const NeverScrollableScrollPhysics()
-              : null,
-          onPageChanged: (index) {
-            stateManagerNotifier.currIndex = index;
-          },
-          itemBuilder: (context, index) {
-            return ViewMedia(
-              parentIdentifier: widget.parentIdentifier,
-              currentItem: stateManager.entities[index],
-              autoStart: index == stateManagerNotifier.state.currentIndex,
-              playerControls: widget.playerControls,
-            );
-          },
-        );
       },
     );
   }

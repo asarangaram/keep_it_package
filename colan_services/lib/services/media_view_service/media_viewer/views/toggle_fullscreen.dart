@@ -21,7 +21,7 @@ class OnToggleFullScreen extends ConsumerWidget {
 
           return CLButtonIcon.standard(
             isFullScreen ? LucideIcons.minimize2 : LucideIcons.maximize2,
-            onTap: uiStateManager.notifier.showMenu,
+            onTap: uiStateManager.notifier.toggleMenu,
             color: ShadTheme.of(context).colorScheme.background,
           );
         },

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../notifier/ui_state.dart';
 import 'bottom_bar.dart';
 import 'media_viewer_core.dart';
 import 'top_bar.dart';
@@ -17,10 +16,8 @@ class MViewerMainScreen extends StatelessWidget {
       appBar: const TopBar(iconColor: iconColor),
       // extendBodyBehindAppBar: true,
       //extendBody: true,
-      body: SafeArea(
-        child: MediaViewerCore(
-          parentIdentifier: parentIdentifier,
-        ),
+      body: MediaViewerCore(
+        parentIdentifier: parentIdentifier,
       ),
       bottomNavigationBar: const BottomBar(iconColor: iconColor),
     );
