@@ -2,6 +2,7 @@ import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:cl_media_tools/cl_media_tools.dart';
 import 'package:cl_media_viewers_flutter/cl_media_viewers_flutter.dart';
 import 'package:colan_services/services/media_view_service/media_viewer/views/media_viewer_page_view.dart';
+import 'package:colan_widgets/colan_widgets.dart' show SvgIcon, SvgIcons;
 import 'package:content_store/content_store.dart';
 
 import 'package:flutter/material.dart';
@@ -51,7 +52,7 @@ class MediaViewerCore extends StatelessWidget {
   }
 }
 
-class ViewMedia extends StatefulWidget {
+class ViewMedia extends StatelessWidget {
   const ViewMedia({
     required this.currentItem,
     required this.parentIdentifier,
@@ -59,26 +60,16 @@ class ViewMedia extends StatefulWidget {
     super.key,
     this.autoStart = false,
   });
+
   final String parentIdentifier;
   final ViewerEntityMixin currentItem;
   final VideoPlayerControls playerControls;
   final bool autoStart;
 
-  @override
-  State<ViewMedia> createState() => _ViewMediaState();
-}
-
-class _ViewMediaState extends State<ViewMedia> {
-  @override
-  void initState() {
-    //setVideo();
-    super.initState();
-  }
-
   Future<void> setVideo() async {
     // This seems still required
-    await widget.playerControls.setVideo(
-      widget.currentItem.mediaUri!,
+    await playerControls.setVideo(
+      currentItem.mediaUri!,
       forced: false,
       autoPlay: true,
     );
@@ -90,146 +81,114 @@ class _ViewMediaState extends State<ViewMedia> {
       listenable: uiStateManager.notifier,
       builder: (_, __) {
         final stateManager = uiStateManager.notifier.state;
-        final currentItem = stateManager.currentItem;
-        final isPlayable = widget.autoStart &&
-            /* widget.playerControls.uri != widget.currentItem.mediaUri && */
-            widget.currentItem.mediaType == CLMediaType.video &&
-            widget.currentItem.mediaUri != null;
-
         final uri = currentItem.mediaUri!;
+        final isPlayable = autoStart &&
+            /* widget.playerControls.uri != widget.currentItem.mediaUri && */
+            currentItem.mediaType == CLMediaType.video &&
+            currentItem.mediaUri != null;
         final mediaViewer = MediaViewer(
-          heroTag: '${widget.parentIdentifier} /item/${currentItem.id}',
+          heroTag: '$parentIdentifier /item/${currentItem.id}',
           uri: currentItem.mediaUri!,
           previewUri: currentItem.previewUri,
           mime: (currentItem as StoreEntity).data.mimeType!,
           onLockPage: ({required bool lock}) {},
           isLocked: false,
-          autoStart: widget.autoStart,
+          autoStart: autoStart,
           autoPlay: true, // Fixme
           errorBuilder: (_, __) => const BrokenImage(),
           loadingBuilder: () => const GreyShimmer(),
           keepAspectRatio: stateManager.showMenu || isPlayable,
           hasGesture: !stateManager.showMenu,
         );
-
         if (!isPlayable) {
           return GestureDetector(
             onTap: uiStateManager.notifier.toggleMenu,
-            onDoubleTap: isPlayable
-                ? () => widget.playerControls.onPlayPause(uri)
-                : null,
-            child: mediaViewer,
+            child: isPlayable ? Center(child: mediaViewer) : mediaViewer,
           );
-        } else if (!stateManager.showMenu) {
-          return GestureDetector(
-            onTap: () {
-              widget.playerControls.onPlayPause(uri);
-              uiStateManager.notifier.showPlayerMenu();
-            },
-            child: Container(
-              decoration: const BoxDecoration(
-                color: Colors.black,
-                // border: Border.all(color: Colors.white),
-              ),
-              alignment: Alignment.center,
-              child: Stack(
-                children: [
-                  Center(
-                    child: Stack(
-                      children: [
-                        mediaViewer,
-                        if (stateManager.showPlayerMenu) ...[
-                          Positioned(
-                            top: 0,
-                            bottom: 0,
-                            left: 0,
-                            right: 0,
-                            child: OnTogglePlay(
-                              uri: currentItem.mediaUri!,
-                            ),
-                          ),
-                          Positioned(
-                            top: 0,
-                            left: 0,
-                            child:
-                                OnToggleAudioMute(uri: currentItem.mediaUri!),
-                          ),
-                          Positioned(
-                            bottom: 0,
-                            left: 0,
-                            right: 0,
-                            child: VideoProgress(uri: currentItem.mediaUri!),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment.topRight,
-                    child: ShadButton.ghost(
-                      onPressed: uiStateManager.notifier.toggleMenu,
-                      child: const SvgIcon(
-                        SvgIcons.fullScreenExit,
-                        color: Colors.white,
-                        size: 20,
+        }
+
+        final player = ShadTheme(
+          data: ShadTheme.of(context).copyWith(
+            textTheme: ShadTheme.of(context).textTheme.copyWith(
+                  small: ShadTheme.of(context).textTheme.small.copyWith(
+                        color: playerUIPreferences.foregroundColor,
+                        fontSize: 10,
                       ),
-                    ),
-                  ),
-                ],
-              ),
+                ),
+            ghostButtonTheme: ShadButtonTheme(
+              backgroundColor: Colors.black.withValues(alpha: 0.5),
+              foregroundColor: Colors.white,
+              size: ShadButtonSize.sm,
             ),
-          );
-        } else {
-          final player = Center(
-            child: Stack(
-              children: [
+          ),
+          child: Stack(
+            children: [
+              if (stateManager.showMenu)
                 GestureDetector(
-                  onTap: () {
-                    uiStateManager.notifier.showPlayerMenu();
-                    widget.playerControls.onPlayPause(uri);
-                  },
-                  onDoubleTap: isPlayable
-                      ? () => widget.playerControls.onPlayPause(uri)
+                  onTap: isPlayable
+                      ? () {
+                          uiStateManager.notifier.showPlayerMenu();
+                          playerControls.onPlayPause(uri);
+                        }
                       : null,
                   child: mediaViewer,
+                )
+              else
+                Center(
+                  child: GestureDetector(
+                    onTap: isPlayable
+                        ? () {
+                            uiStateManager.notifier.showPlayerMenu();
+                            playerControls.onPlayPause(uri);
+                          }
+                        : null,
+                    child: mediaViewer,
+                  ),
                 ),
-                if (stateManager.showPlayerMenu) ...[
-                  Positioned(
-                    top: 0,
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    child: OnTogglePlay(
-                      uri: currentItem.mediaUri!,
-                    ),
+              Positioned(
+                top: 0,
+                right: 0,
+                child: ShadButton.ghost(
+                  onPressed: uiStateManager.notifier.toggleMenu,
+                  child: SvgIcon(
+                    stateManager.showMenu
+                        ? SvgIcons.fullScreen
+                        : SvgIcons.fullScreenExit,
+                    color: Colors.white,
+                    size: 20,
                   ),
-                  Positioned(
-                    top: 0,
-                    left: 0,
-                    child: OnToggleAudioMute(uri: currentItem.mediaUri!),
+                ),
+              ),
+              if (stateManager.showPlayerMenu) ...[
+                Positioned(
+                  top: 0,
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: OnTogglePlay(
+                    uri: currentItem.mediaUri!,
                   ),
-                  Positioned(
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    child: VideoProgress(uri: currentItem.mediaUri!),
-                  ),
-                  Positioned(
-                    top: 0,
-                    right: 0,
-                    child: ShadButton.ghost(
-                      onPressed: uiStateManager.notifier.toggleMenu,
-                      child: const Icon(
-                        LucideIcons.maximize2,
-                        // color: Colors.white,
-                        size: 20,
-                      ),
-                    ),
-                  ),
-                ],
+                ),
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  child: OnToggleAudioMute(uri: currentItem.mediaUri!),
+                ),
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: VideoProgress(uri: currentItem.mediaUri!),
+                ),
               ],
-            ),
+            ],
+          ),
+        );
+        if (stateManager.showMenu) {
+          return Center(
+            child: player,
           );
+        } else {
           return player;
         }
       },

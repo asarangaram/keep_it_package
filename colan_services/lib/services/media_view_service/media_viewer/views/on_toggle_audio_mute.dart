@@ -3,8 +3,6 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import 'video_progress.dart';
-
 class OnToggleAudioMute extends StatelessWidget {
   const OnToggleAudioMute({
     required this.uri,
@@ -15,24 +13,23 @@ class OnToggleAudioMute extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MenuBackground(
-      child: GetUriPlayStatus(
-        uri: uri,
-        builder: ([playerControls, playStatus]) {
-          if (playerControls == null || playStatus == null) {
-            return const SizedBox.shrink();
-          }
-          return CLButtonIcon.small(
-            playStatus.volume == 0
-                ? playerUIPreferences.audioMuted
-                : playerUIPreferences.audioUnmuted,
-            onTap: playerControls.onToggleAudioMute,
+    return GetUriPlayStatus(
+      uri: uri,
+      builder: ([playerControls, playStatus]) {
+        if (playerControls == null || playStatus == null) {
+          return const SizedBox.shrink();
+        }
+        return ShadButton.ghost(
+          onPressed: playerControls.onToggleAudioMute,
+          child: SvgIcon(
+            playStatus.volume == 0 ? SvgIcons.audioOff : SvgIcons.audioOn,
             color: playStatus.volume == 0
                 ? ShadTheme.of(context).colorScheme.destructive
                 : ShadTheme.of(context).colorScheme.background,
-          );
-        },
-      ),
+            size: 20,
+          ),
+        );
+      },
     );
   }
 }

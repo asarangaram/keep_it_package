@@ -8,6 +8,8 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 
 import 'package:video_player/video_player.dart';
 
+import 'on_rotate.dart';
+
 double durationToDouble(Duration duration) => duration.inSeconds.toDouble();
 
 Duration doubleToDuration(double position) =>
@@ -71,29 +73,18 @@ class _VideoProgressState extends ConsumerState<VideoProgress> {
         }
         return LayoutBuilder(
           builder: (context, constraints) {
-            return MenuBackground(
-              child: ShadTheme(
-                data: ShadTheme.of(context).copyWith(
-                  textTheme: ShadTheme.of(context).textTheme.copyWith(
-                        small: ShadTheme.of(context).textTheme.small.copyWith(
-                              color: playerUIPreferences.foregroundColor,
-                              fontSize: 10,
-                            ),
-                      ),
-                  ghostButtonTheme: const ShadButtonTheme(
-                    foregroundColor: Colors.white,
-                    size: ShadButtonSize.sm,
-                  ),
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              spacing: 4,
+              children: [
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: OnRotateLeft(uri: widget.uri),
                 ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  spacing: 4,
-                  children: [
-                    /* Align(
-                      alignment: Alignment.centerRight,
-                      child: OnRotateLeft(uri: widget.uri),
-                    ), */
-                    Row(
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: MenuBackground2(
+                    child: Row(
                       children: [
                         Flexible(
                           flex: 3,
@@ -176,9 +167,9 @@ class _VideoProgressState extends ConsumerState<VideoProgress> {
                         ),
                       ],
                     ),
-                  ],
+                  ),
                 ),
-              ),
+              ],
             );
           },
         );
@@ -235,8 +226,8 @@ class SmallOverlayShape extends SliderComponentShape {
   }
 }
 
-class MenuBackground extends ConsumerWidget {
-  const MenuBackground({required this.child, super.key});
+class MenuBackground2 extends ConsumerWidget {
+  const MenuBackground2({required this.child, super.key});
   final Widget child;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -249,7 +240,7 @@ class MenuBackground extends ConsumerWidget {
           color: foregroundColor,
         ),
       ),
-      margin: const EdgeInsets.all(16),
+      // margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(8),
       child: child,
     );

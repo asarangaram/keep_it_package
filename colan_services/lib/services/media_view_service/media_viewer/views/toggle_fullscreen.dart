@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../notifier/ui_state.dart';
-import 'video_progress.dart' show MenuBackground;
 
 class OnToggleFullScreen extends ConsumerWidget {
   const OnToggleFullScreen({
@@ -13,19 +12,17 @@ class OnToggleFullScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return MenuBackground(
-      child: ListenableBuilder(
-        listenable: uiStateManager.notifier,
-        builder: (_, __) {
-          final isFullScreen = !uiStateManager.notifier.state.showMenu;
+    return ListenableBuilder(
+      listenable: uiStateManager.notifier,
+      builder: (_, __) {
+        final isFullScreen = !uiStateManager.notifier.state.showMenu;
 
-          return CLButtonIcon.standard(
-            isFullScreen ? LucideIcons.minimize2 : LucideIcons.maximize2,
-            onTap: uiStateManager.notifier.toggleMenu,
-            color: ShadTheme.of(context).colorScheme.background,
-          );
-        },
-      ),
+        return CLButtonIcon.standard(
+          isFullScreen ? LucideIcons.minimize2 : LucideIcons.maximize2,
+          onTap: uiStateManager.notifier.toggleMenu,
+          color: ShadTheme.of(context).colorScheme.background,
+        );
+      },
     );
   }
 }

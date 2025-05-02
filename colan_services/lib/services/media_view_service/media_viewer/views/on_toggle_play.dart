@@ -3,7 +3,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import 'video_progress.dart' show MenuBackground;
+import 'video_progress.dart' show MenuBackground2;
 
 class OnTogglePlay extends StatelessWidget {
   const OnTogglePlay({
@@ -16,7 +16,7 @@ class OnTogglePlay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: MenuBackground(
+      child: MenuBackground2(
         child: GetUriPlayStatus(
           uri: uri,
           builder: ([playerControls, playStatus]) {

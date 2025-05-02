@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:async';
 
 import 'package:cl_entity_viewers/cl_entity_viewers.dart';
@@ -77,7 +76,8 @@ class UIState {
 class MediaViewerUIStateNotifier extends MMNotifier<UIState> {
   MediaViewerUIStateNotifier() : super(const UIState());
   Timer? disableControls;
-  final Duration? defaultTimeOut = const Duration(seconds: 3);
+  //final Duration? defaultTimeOut = const Duration(seconds: 3);
+  final Duration? defaultTimeOut = null;
 
   void lightTheme() => notify(state.copyWith(isDartTheme: false));
   void darkTheme() => notify(state.copyWith(isDartTheme: true));
