@@ -10,14 +10,13 @@ class UIState {
   const UIState({
     this.showMenu = false,
     this.showPlayerMenu = false,
-    this.isDartTheme = false,
     this.iconColor = const Color.fromARGB(255, 80, 140, 224),
     this.entities = const [],
     this.currentIndex = 0,
   });
   final bool showMenu;
   final bool showPlayerMenu;
-  final bool isDartTheme;
+
   final Color iconColor;
   final List<ViewerEntityMixin> entities;
   final int currentIndex;
@@ -25,7 +24,6 @@ class UIState {
   UIState copyWith({
     bool? showMenu,
     bool? showPlayerMenu,
-    bool? isDartTheme,
     Color? iconColor,
     List<ViewerEntityMixin>? entities,
     int? currentIndex,
@@ -33,7 +31,6 @@ class UIState {
     return UIState(
       showMenu: showMenu ?? this.showMenu,
       showPlayerMenu: showPlayerMenu ?? this.showPlayerMenu,
-      isDartTheme: isDartTheme ?? this.isDartTheme,
       iconColor: iconColor ?? this.iconColor,
       entities: entities ?? this.entities,
       currentIndex: currentIndex ?? this.currentIndex,
@@ -47,7 +44,6 @@ class UIState {
 
     return other.showMenu == showMenu &&
         other.showPlayerMenu == showPlayerMenu &&
-        other.isDartTheme == isDartTheme &&
         other.iconColor == iconColor &&
         listEquals(other.entities, entities) &&
         other.currentIndex == currentIndex;
@@ -57,7 +53,6 @@ class UIState {
   int get hashCode {
     return showMenu.hashCode ^
         showPlayerMenu.hashCode ^
-        isDartTheme.hashCode ^
         iconColor.hashCode ^
         entities.hashCode ^
         currentIndex.hashCode;
@@ -65,7 +60,7 @@ class UIState {
 
   @override
   String toString() {
-    return 'UIState(showMenu: $showMenu, showPlayerMenu: $showPlayerMenu, isDartTheme: $isDartTheme, iconColor: $iconColor, entities: $entities, currentIndex: $currentIndex)';
+    return 'UIState(showMenu: $showMenu, showPlayerMenu: $showPlayerMenu, iconColor: $iconColor, entities: $entities, currentIndex: $currentIndex)';
   }
 
   ViewerEntityMixin get currentItem => entities[currentIndex];
@@ -78,11 +73,6 @@ class MediaViewerUIStateNotifier extends MMNotifier<UIState> {
   Timer? disableControls;
   //final Duration? defaultTimeOut = const Duration(seconds: 3);
   final Duration? defaultTimeOut = null;
-
-  void lightTheme() => notify(state.copyWith(isDartTheme: false));
-  void darkTheme() => notify(state.copyWith(isDartTheme: true));
-  void toggleDarkTheme() =>
-      notify(state.copyWith(isDartTheme: !state.isDartTheme));
 
   void setupTimer([Duration? Function()? getTimeout]) {
     disableControls?.cancel();

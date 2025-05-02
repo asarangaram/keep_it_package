@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 
 import 'notifier/ui_state.dart';
-import 'views/m_viewer_main_screen.dart';
+
+import 'views/bottom_bar.dart';
+import 'views/media_viewer_core.dart';
+import 'views/top_bar.dart';
 
 class MediaViewer extends StatelessWidget {
   const MediaViewer({required this.parentIdentifier, super.key});
@@ -9,31 +12,24 @@ class MediaViewer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //FIXME
-    /*  final lightColorScheme = ShadColorScheme.fromName('rose');
-    final darkColorScheme = ShadColorScheme.fromName(
-      'rose',
-      brightness: Brightness.dark,
-    ); */
-    final isDartTheme = uiStateManager.notifier.select(
-      (state) => state.isDartTheme,
-    );
+    const iconColor = Color.fromARGB(255, 80, 140, 224);
+    final showMenu = uiStateManager.notifier.select((state) => state.showMenu);
+
+    const topBar = TopBar(iconColor: iconColor);
+    const bottomBar = BottomBar(iconColor: iconColor);
+
     return ListenableBuilder(
-      listenable: isDartTheme,
-      builder: (_, __) {
-        return MViewerMainScreen(parentIdentifier: parentIdentifier);
-        /* return ShadApp(
-          theme: ShadThemeData(
-            colorScheme: lightColorScheme,
-            brightness: Brightness.light,
-          ),
-          darkTheme: ShadThemeData(
-            colorScheme: darkColorScheme,
-            brightness: Brightness.dark,
-          ),
-          themeMode: isDartTheme.value ? ThemeMode.dark : ThemeMode.light,
-          home: MViewerMainScreen(parentIdentifier: parentIdentifier),
-        ); */
+      listenable: showMenu,
+      child: MediaViewerCore(
+        parentIdentifier: parentIdentifier,
+      ),
+      builder: (_, child) {
+        return Scaffold(
+          backgroundColor: showMenu.value ? null : Colors.black,
+          appBar: showMenu.value ? topBar : null,
+          body: SafeArea(child: child!),
+          bottomNavigationBar: showMenu.value ? bottomBar : null,
+        );
       },
     );
   }
