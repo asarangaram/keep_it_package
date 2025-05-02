@@ -9,9 +9,9 @@ import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
-import '../media_viewer/views/media_viewer.dart';
-import '../media_viewer/views/media_viewer_overlays.dart';
-import '../media_viewer/views/overlay_widget.dart';
+import 'media_viewer.dart';
+import 'media_viewer_overlays.dart';
+import 'overlay_widget.dart';
 
 class MediaPreviewWithOverlays extends StatelessWidget {
   const MediaPreviewWithOverlays({

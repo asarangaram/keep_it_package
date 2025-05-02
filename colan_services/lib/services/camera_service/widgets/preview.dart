@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
 import '../../../providers/captured_media.dart';
-import '../../media_view_service/preview/media_preview.dart';
+import '../../media_view_service/media_viewer/views/media_preview.dart';
 
 class PreviewCapturedMedia extends ConsumerWidget {
   const PreviewCapturedMedia({

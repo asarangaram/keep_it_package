@@ -39,7 +39,7 @@ export 'services/media_edit_service/media_edit_service.dart'
     show MediaViewService; */
 export 'services/media_view_service/media_viewer/media_viewer.dart'
     show MediaViewer;
-export 'services/media_view_service/preview/collection_preview.dart'
+export 'services/media_view_service/media_viewer/views/collection_preview.dart'
     show CollectionPreview;
 export 'services/media_wizard_service/media_wizard_service.dart'
     show MediaWizardService;

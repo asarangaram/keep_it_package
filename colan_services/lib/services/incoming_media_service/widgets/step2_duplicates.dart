@@ -6,7 +6,7 @@ import 'package:store/store.dart';
 
 import '../../../models/cl_shared_media.dart';
 import '../../basic_page_service/basic_page_service.dart';
-import '../../media_view_service/preview/media_preview.dart';
+import '../../media_view_service/media_viewer/views/media_preview.dart';
 
 class DuplicatePage extends StatelessWidget {
   const DuplicatePage({

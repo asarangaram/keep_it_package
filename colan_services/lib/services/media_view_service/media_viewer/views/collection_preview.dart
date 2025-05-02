@@ -6,9 +6,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
-import '../../../internal/folder_clip.dart';
-import '../media_viewer/views/overlay_widget.dart';
+import '../../../../internal/folder_clip.dart';
 import 'media_preview.dart';
+import 'overlay_widget.dart';
 
 class CollectionPreview extends ConsumerWidget {
   const CollectionPreview.preview(

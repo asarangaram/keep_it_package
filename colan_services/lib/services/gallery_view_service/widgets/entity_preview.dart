@@ -6,9 +6,9 @@ import 'package:store/store.dart';
 import '../../basic_page_service/widgets/page_manager.dart';
 import '../../media_view_service/media_viewer/notifier/ui_state.dart'
     show uiStateManager;
-import '../../media_view_service/preview/collection_preview.dart';
+import '../../media_view_service/media_viewer/views/collection_preview.dart';
 
-import '../../media_view_service/preview/media_preview.dart';
+import '../../media_view_service/media_viewer/views/media_preview.dart';
 import '../models/entity_actions.dart';
 import '../providers/active_collection.dart';
 import 'context_menu.dart';
