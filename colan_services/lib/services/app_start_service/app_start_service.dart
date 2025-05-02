@@ -18,7 +18,7 @@ class AppStartService extends StatelessWidget {
   Widget build(BuildContext context) {
     final app = appDescriptor;
     return StateProviderScope(
-      child: ShadApp(
+      child: ShadApp.material(
         title: app.title,
         initialRoute: '/',
         theme: ShadThemeData(

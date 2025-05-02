@@ -5,8 +5,7 @@ import 'package:colan_services/services/media_view_service/media_viewer/views/me
 import 'package:content_store/content_store.dart';
 
 import 'package:flutter/material.dart';
-
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
 import '../notifier/ui_state.dart' show uiStateManager;
@@ -114,33 +113,69 @@ class _ViewMediaState extends State<ViewMedia> {
         );
 
         if (!isPlayable) {
-          return Row(
-            children: [
-              MaterialApp(
-                home: SafeArea(
-                  child: GestureDetector(
-                    onTap: uiStateManager.notifier.toggleMenu,
-                    onDoubleTap: isPlayable
-                        ? () => widget.playerControls.onPlayPause(uri)
-                        : null,
-                    child: mediaViewer,
-                  ),
-                ),
-              ),
-            ],
+          return GestureDetector(
+            onTap: uiStateManager.notifier.toggleMenu,
+            onDoubleTap: isPlayable
+                ? () => widget.playerControls.onPlayPause(uri)
+                : null,
+            child: mediaViewer,
           );
         } else if (!stateManager.showMenu) {
           return GestureDetector(
-            onTap: () => widget.playerControls.onPlayPause(uri),
-            onDoubleTap: uiStateManager.notifier.toggleMenu,
-            child: SafeArea(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.black,
-                  border: Border.all(color: Colors.white),
-                ),
-                alignment: Alignment.center,
-                child: mediaViewer,
+            onTap: () {
+              widget.playerControls.onPlayPause(uri);
+              uiStateManager.notifier.showPlayerMenu();
+            },
+            child: Container(
+              decoration: const BoxDecoration(
+                color: Colors.black,
+                // border: Border.all(color: Colors.white),
+              ),
+              alignment: Alignment.center,
+              child: Stack(
+                children: [
+                  Center(
+                    child: Stack(
+                      children: [
+                        mediaViewer,
+                        if (stateManager.showPlayerMenu) ...[
+                          Positioned(
+                            top: 0,
+                            bottom: 0,
+                            left: 0,
+                            right: 0,
+                            child: OnTogglePlay(
+                              uri: currentItem.mediaUri!,
+                            ),
+                          ),
+                          Positioned(
+                            top: 0,
+                            left: 0,
+                            child:
+                                OnToggleAudioMute(uri: currentItem.mediaUri!),
+                          ),
+                          Positioned(
+                            bottom: 0,
+                            left: 0,
+                            right: 0,
+                            child: VideoProgress(uri: currentItem.mediaUri!),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.topRight,
+                    child: ShadButton.ghost(
+                      onPressed: uiStateManager.notifier.toggleMenu,
+                      child: const SvgIcon(
+                        SvgIcons.fullScreenExit,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           );
@@ -150,7 +185,7 @@ class _ViewMediaState extends State<ViewMedia> {
               children: [
                 GestureDetector(
                   onTap: () {
-                    uiStateManager.notifier.toggleMenu();
+                    uiStateManager.notifier.showPlayerMenu();
                     widget.playerControls.onPlayPause(uri);
                   },
                   onDoubleTap: isPlayable
@@ -178,6 +213,18 @@ class _ViewMediaState extends State<ViewMedia> {
                     left: 0,
                     right: 0,
                     child: VideoProgress(uri: currentItem.mediaUri!),
+                  ),
+                  Positioned(
+                    top: 0,
+                    right: 0,
+                    child: ShadButton.ghost(
+                      onPressed: uiStateManager.notifier.toggleMenu,
+                      child: const Icon(
+                        LucideIcons.maximize2,
+                        // color: Colors.white,
+                        size: 20,
+                      ),
+                    ),
                   ),
                 ],
               ],

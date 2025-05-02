@@ -77,73 +77,49 @@ class UIState {
 class MediaViewerUIStateNotifier extends MMNotifier<UIState> {
   MediaViewerUIStateNotifier() : super(const UIState());
   Timer? disableControls;
+  final Duration? defaultTimeOut = const Duration(seconds: 3);
 
   void lightTheme() => notify(state.copyWith(isDartTheme: false));
   void darkTheme() => notify(state.copyWith(isDartTheme: true));
   void toggleDarkTheme() =>
       notify(state.copyWith(isDartTheme: !state.isDartTheme));
 
-  void showMenu({Duration? timeout = const Duration(seconds: 2)}) {
+  void setupTimer([Duration? Function()? getTimeout]) {
     disableControls?.cancel();
-    notify(state.copyWith(showMenu: true, showPlayerMenu: true));
+    final Duration? timeout;
+
+    if (getTimeout != null) {
+      timeout = getTimeout();
+    } else {
+      timeout = defaultTimeOut;
+    }
     if (timeout != null) {
       disableControls = Timer(
         timeout,
         () {
-          notify(state.copyWith(showPlayerMenu: false));
+          super.notify(state.copyWith(showPlayerMenu: false));
         },
       );
     }
   }
 
-  void hideMenu({Duration? timeout = const Duration(seconds: 2)}) {
-    disableControls?.cancel();
-    notify(state.copyWith(showMenu: false, showPlayerMenu: true));
-    if (timeout != null) {
-      disableControls = Timer(
-        timeout,
-        () {
-          notify(state.copyWith(showPlayerMenu: false));
-        },
-      );
-    }
+  @override
+  void notify(UIState value, [Duration? Function()? timeout]) {
+    setupTimer(timeout);
+    super.notify(value);
   }
 
-  void toggleMenu({Duration? timeout = const Duration(seconds: 2)}) {
-    disableControls?.cancel();
+  void showMenu([Duration? Function()? timeout]) =>
+      notify(state.copyWith(showMenu: true, showPlayerMenu: true));
 
-    final newState = state.copyWith(
-      showMenu: !state.showMenu,
-      showPlayerMenu: true,
-    );
+  void hideMenu([Duration? Function()? timeout]) =>
+      notify(state.copyWith(showMenu: false, showPlayerMenu: true));
 
-    if (timeout != null) {
-      disableControls = Timer(
-        timeout,
-        () {
-          notify(state.copyWith(showPlayerMenu: false));
-        },
-      );
-    }
-    notify(newState);
-  }
+  void toggleMenu([Duration? Function()? timeout]) =>
+      notify(state.copyWith(showMenu: !state.showMenu, showPlayerMenu: true));
 
-  void showPlayerMenu({Duration? timeout = const Duration(seconds: 2)}) {
-    disableControls?.cancel();
-    notify(
-      state.copyWith(
-        showPlayerMenu: true,
-      ),
-    );
-    if (timeout != null) {
-      disableControls = Timer(
-        timeout,
-        () {
-          notify(state.copyWith(showPlayerMenu: false));
-        },
-      );
-    }
-  }
+  void showPlayerMenu([Duration? Function()? timeout]) =>
+      notify(state.copyWith(showPlayerMenu: true));
 
   set currIndex(int value) => notify(state.copyWith(currentIndex: value));
   int get currIndex => state.currentIndex;

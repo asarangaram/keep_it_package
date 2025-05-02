@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../notifier/ui_state.dart';
 import 'bottom_bar.dart';
 import 'media_viewer_core.dart';
 import 'top_bar.dart';
@@ -11,15 +12,24 @@ class MViewerMainScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const iconColor = Color.fromARGB(255, 80, 140, 224);
-    return Scaffold(
-      // backgroundColor:  Colors.white, // ShadTheme.of(context).colorScheme.background,
-      appBar: const TopBar(iconColor: iconColor),
-      // extendBodyBehindAppBar: true,
-      //extendBody: true,
-      body: MediaViewerCore(
+    final showMenu = uiStateManager.notifier.select((state) => state.showMenu);
+
+    const topBar = TopBar(iconColor: iconColor);
+    const bottomBar = BottomBar(iconColor: iconColor);
+
+    return ListenableBuilder(
+      listenable: showMenu,
+      child: MediaViewerCore(
         parentIdentifier: parentIdentifier,
       ),
-      bottomNavigationBar: const BottomBar(iconColor: iconColor),
+      builder: (_, child) {
+        return Scaffold(
+          backgroundColor: showMenu.value ? null : Colors.black,
+          appBar: showMenu.value ? topBar : null,
+          body: SafeArea(child: child!),
+          bottomNavigationBar: showMenu.value ? bottomBar : null,
+        );
+      },
     );
   }
 }
