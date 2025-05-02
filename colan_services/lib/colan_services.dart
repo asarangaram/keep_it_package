@@ -17,7 +17,10 @@ export '../providers/camera_provider.dart';
 export '../providers/captured_media.dart';
 export '../providers/incoming_media.dart';
 export '../providers/universal_media.dart';
-export 'services/app_start_service/app_start_service.dart' show AppStartService;
+export 'services/app_start_service/notifiers/app_preferences.dart'
+    show AppPreferences, appPreferenceManager;
+export 'services/app_start_service/views/app_start_service.dart'
+    show AppStartService;
 export 'services/basic_page_service/basic_page_service.dart'
     show BasicPageService;
 export 'services/basic_page_service/widgets/cl_error_view.dart'
