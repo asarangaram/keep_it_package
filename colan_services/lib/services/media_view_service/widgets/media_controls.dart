@@ -1,5 +1,3 @@
-import 'package:cl_media_viewers_flutter/cl_media_viewers_flutter.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -7,6 +5,8 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
 import '../../gallery_view_service/models/entity_actions.dart';
+import '../media_viewer/notifier/riverpod/builders/get_video_player_controls.dart';
+import '../media_viewer/notifier/riverpod/models/video_player_controls.dart';
 
 class MediaControls extends ConsumerWidget {
   const MediaControls({

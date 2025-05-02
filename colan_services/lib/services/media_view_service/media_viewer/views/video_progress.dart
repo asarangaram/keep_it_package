@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:cl_media_viewers_flutter/cl_media_viewers_flutter.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,6 +7,8 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 
 import 'package:video_player/video_player.dart';
 
+import '../models/cl_icons.dart';
+import '../notifier/riverpod/builders/get_uri_play_status.dart';
 import 'on_rotate.dart';
 
 double durationToDouble(Duration duration) => duration.inSeconds.toDouble();

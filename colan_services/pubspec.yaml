@@ -19,8 +19,6 @@ dependencies:
     path: ../cl_entity_viewers
   cl_media_tools:
     path: ../cl_media_tools
-  cl_media_viewers_flutter:
-    path: ../cl_media_viewers_flutter
   colan_widgets:
     path: ../colan_widgets
   collection: ^1.19.0
@@ -74,6 +72,7 @@ dependencies:
   share_plus: ^10.0.0
   shared_preferences: ^2.2.3
   shimmer: ^3.0.0
+  sqlite_async: ^0.11.4
   store:
     path: ../store
   stream_channel: ^2.1.2

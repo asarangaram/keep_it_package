@@ -1,7 +1,8 @@
-import 'package:cl_media_viewers_flutter/cl_media_viewers_flutter.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+
+import '../notifier/riverpod/builders/get_media_view_modifier.dart';
 
 class OnRotateLeft extends StatelessWidget {
   const OnRotateLeft({

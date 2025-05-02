@@ -2,13 +2,16 @@ import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:cl_media_tools/cl_media_tools.dart';
-import 'package:cl_media_viewers_flutter/cl_media_viewers_flutter.dart';
 
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
+
+import '../media_viewer/views/media_viewer.dart';
+import '../media_viewer/views/media_viewer_overlays.dart';
+import '../media_viewer/views/overlay_widget.dart';
 
 class MediaPreviewWithOverlays extends StatelessWidget {
   const MediaPreviewWithOverlays({

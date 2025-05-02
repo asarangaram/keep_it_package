@@ -1,5 +1,4 @@
 import 'package:cl_entity_viewers/cl_entity_viewers.dart';
-import 'package:cl_media_viewers_flutter/cl_media_viewers_flutter.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +7,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
 import '../../../internal/folder_clip.dart';
+import '../media_viewer/views/overlay_widget.dart';
 import 'media_preview.dart';
 
 class CollectionPreview extends ConsumerWidget {

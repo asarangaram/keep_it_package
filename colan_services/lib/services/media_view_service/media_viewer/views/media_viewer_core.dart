@@ -1,6 +1,5 @@
 import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:cl_media_tools/cl_media_tools.dart';
-import 'package:cl_media_viewers_flutter/cl_media_viewers_flutter.dart';
 import 'package:colan_services/services/media_view_service/media_viewer/views/media_viewer_page_view.dart';
 import 'package:colan_widgets/colan_widgets.dart' show SvgIcon, SvgIcons;
 import 'package:content_store/content_store.dart';
@@ -9,7 +8,11 @@ import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
+import '../models/cl_icons.dart';
+import '../notifier/riverpod/builders/get_video_player_controls.dart';
+import '../notifier/riverpod/models/video_player_controls.dart';
 import '../notifier/ui_state.dart' show uiStateManager;
+import 'media_viewer.dart';
 import 'on_toggle_audio_mute.dart';
 import 'on_toggle_play.dart';
 import 'video_progress.dart';
