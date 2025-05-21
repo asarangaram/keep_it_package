@@ -2,7 +2,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../notifier/riverpod/builders/get_uri_play_status.dart';
+import '../builders/get_uri_play_status.dart';
 
 class OnToggleAudioMute extends StatelessWidget {
   const OnToggleAudioMute({

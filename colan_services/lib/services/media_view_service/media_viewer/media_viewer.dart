@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'notifier/ui_state.dart';
+import 'providers/ui_state.dart' show mediaViewerUIStateProvider;
 
 import 'views/bottom_bar.dart';
 import 'views/media_viewer_core.dart';

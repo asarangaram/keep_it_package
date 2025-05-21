@@ -4,8 +4,8 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../notifier/riverpod/models/uri_config.dart';
-import '../notifier/riverpod/providers/uri_config.dart';
+import '../models/uri_config.dart';
+import '../providers/uri_config.dart';
 
 class ImageViewer extends ConsumerWidget {
   const ImageViewer({

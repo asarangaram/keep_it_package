@@ -3,16 +3,15 @@ import 'package:cl_media_tools/cl_media_tools.dart';
 import 'package:colan_services/services/media_view_service/media_viewer/views/media_viewer_page_view.dart';
 import 'package:colan_widgets/colan_widgets.dart' show SvgIcon, SvgIcons;
 import 'package:content_store/content_store.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
 import '../models/cl_icons.dart';
-import '../notifier/riverpod/builders/get_video_player_controls.dart';
-import '../notifier/riverpod/models/video_player_controls.dart';
-import '../notifier/ui_state.dart' show mediaViewerUIStateProvider;
+import '../models/video_player_controls.dart';
+import '../builders/get_video_player_controls.dart';
+import '../providers/ui_state.dart' show mediaViewerUIStateProvider;
 import 'media_viewer.dart';
 import 'on_toggle_audio_mute.dart';
 import 'on_toggle_play.dart';

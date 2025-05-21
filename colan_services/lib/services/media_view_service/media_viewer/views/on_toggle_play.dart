@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../models/cl_icons.dart';
-import '../notifier/riverpod/builders/get_uri_play_status.dart';
+import '../builders/get_uri_play_status.dart';
 import 'video_progress.dart' show MenuBackground2;
 
 class OnTogglePlay extends StatelessWidget {

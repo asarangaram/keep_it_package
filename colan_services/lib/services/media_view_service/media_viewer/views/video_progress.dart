@@ -8,7 +8,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:video_player/video_player.dart';
 
 import '../models/cl_icons.dart';
-import '../notifier/riverpod/builders/get_uri_play_status.dart';
+import '../builders/get_uri_play_status.dart';
 import 'on_rotate.dart';
 
 double durationToDouble(Duration duration) => duration.inSeconds.toDouble();

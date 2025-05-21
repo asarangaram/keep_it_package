@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart' as vplayer;
 
-import '../notifier/riverpod/providers/uri_config.dart';
-import '../notifier/riverpod/providers/video_player_state.dart';
+import '../providers/uri_config.dart';
+import '../providers/video_player_state.dart';
 
 class VideoPlayer extends ConsumerWidget {
   const VideoPlayer({
