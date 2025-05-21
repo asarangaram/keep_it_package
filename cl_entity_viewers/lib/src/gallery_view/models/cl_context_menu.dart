@@ -1,7 +1,7 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
-import '../widgets/actions_draggable_menu.dart';
+import '../views/actions_draggable_menu.dart';
 
 import 'viewer_entity_mixin.dart';
 
