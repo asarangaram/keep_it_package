@@ -105,7 +105,7 @@ class GalleryViewService0 extends ConsumerWidget {
                             filtersDisabled: false,
                             onSelectionChanged: null,
                             contextMenuBuilder: (context, entities) =>
-                                EntityActions.entitiesContextMenuBuilder(
+                                EntityActions.entities(
                               context,
                               ref,
                               entities,

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:minimal_mvn/minimal_mvn.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 @immutable
 class AppPreferences {
@@ -30,13 +30,15 @@ class AppPreferences {
   int get hashCode => themeMode.hashCode;
 }
 
-class ThemeNotifier extends MMNotifier<AppPreferences> {
-  ThemeNotifier() : super(const AppPreferences(themeMode: ThemeMode.light));
+class AppPreferenceNotifier extends StateNotifier<AppPreferences> {
+  AppPreferenceNotifier()
+      : super(const AppPreferences(themeMode: ThemeMode.light));
 
-  set themeMode(ThemeMode value) => notify(state.copyWith(themeMode: value));
+  set themeMode(ThemeMode value) => state = state.copyWith(themeMode: value);
   ThemeMode get themeMode => state.themeMode;
 }
 
-final MMManager<ThemeNotifier> appPreferenceManager = MMManager(
-  ThemeNotifier.new,
-);
+final appPreferenceProvider =
+    StateNotifierProvider<AppPreferenceNotifier, AppPreferences>((ref) {
+  return AppPreferenceNotifier();
+});

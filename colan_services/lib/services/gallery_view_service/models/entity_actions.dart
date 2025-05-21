@@ -32,6 +32,37 @@ class EntityActions extends CLContextMenu {
     required this.onDelete,
     required this.infoMap,
   });
+
+  factory EntityActions.entities(
+    BuildContext context,
+    WidgetRef ref,
+    List<ViewerEntityMixin> entities,
+  ) {
+    return switch (entities) {
+      final List<ViewerEntityMixin> e
+          when e.every(
+            (e) => e is StoreEntity && e.data.isCollection == false,
+          ) =>
+        () {
+          return EntityActions.ofMultipleMedia(
+            context,
+            ref,
+            items: e.map((e) => e as StoreEntity).toList(),
+            hasOnlineService: true,
+          );
+        }(),
+      final List<ViewerEntityMixin> e
+          when e.every(
+            (e) => e is StoreEntity && e.data.isCollection == true,
+          ) =>
+        () {
+          return EntityActions.empty();
+        }(),
+      _ => () {
+          return EntityActions.empty();
+        }()
+    };
+  }
   factory EntityActions.ofEntity(
     BuildContext context,
     WidgetRef ref,
@@ -270,36 +301,6 @@ class EntityActions extends CLContextMenu {
   List<CLMenuItem> get destructiveActions => [
         onDelete,
       ];
-
-  static EntityActions entitiesContextMenuBuilder(
-    BuildContext context,
-    WidgetRef ref,
-    List<ViewerEntityMixin> entities,
-  ) {
-    // FIXME
-    return switch (entities) {
-      final List<ViewerEntityMixin> e
-          when e.every(
-            (e) => e is StoreEntity && e.data.isCollection == false,
-          ) =>
-        () {
-          return EntityActions.ofMultipleMedia(
-            context,
-            ref,
-            items: e.map((e) => e as StoreEntity).toList(),
-            hasOnlineService: true,
-          );
-        }(),
-      final List<ViewerEntityMixin> e
-          when e.every(
-            (e) => e is StoreEntity && e.data.isCollection == true,
-          ) =>
-        () {
-          return EntityActions.empty();
-        }(),
-      _ => throw UnimplementedError('Mix of items not supported yet')
-    };
-  }
 
   static Future<bool?> share(
     BuildContext context,
