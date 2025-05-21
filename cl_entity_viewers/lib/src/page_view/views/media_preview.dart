@@ -4,14 +4,14 @@ import 'dart:math' as math;
 import 'package:cl_media_tools/cl_media_tools.dart';
 
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
-import 'package:store/store.dart';
 
+import '../../common/models/viewer_entity_mixin.dart' show ViewerEntityMixin;
+import '../../common/views/broken_image.dart' show BrokenImage;
+import '../../common/views/shimmer.dart' show GreyShimmer;
 import 'media_viewer.dart';
 import 'media_viewer_overlays.dart';
-import 'overlay_widget.dart';
 
 class MediaPreviewWithOverlays extends StatelessWidget {
   const MediaPreviewWithOverlays({
@@ -20,7 +20,7 @@ class MediaPreviewWithOverlays extends StatelessWidget {
     super.key,
   });
 
-  final StoreEntity media;
+  final ViewerEntityMixin media;
   final String parentIdentifier;
 
   @override
@@ -42,7 +42,7 @@ class MediaPreviewWithOverlays extends StatelessWidget {
                 .foreground
                 .withValues(alpha: 0.5),
             child: Text(
-              media.data.label ?? 'Unnamed',
+              media.label ?? 'Unnamed',
               textAlign: TextAlign.center,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -52,12 +52,12 @@ class MediaPreviewWithOverlays extends StatelessWidget {
             ),
           ),
         ),
-        if (media.data.pin != null)
+        if (media.pin != null)
           OverlayWidgets.dimension(
             alignment: Alignment.bottomRight,
             sizeFactor: 0.15,
             child: FutureBuilder(
-              future: isPinBroken(media.data.pin),
+              future: isPinBroken(media.pin),
               builder: (context, snapshot) {
                 return Transform.rotate(
                   angle: math.pi / 4,
@@ -71,7 +71,7 @@ class MediaPreviewWithOverlays extends StatelessWidget {
               },
             ),
           ),
-        if (media.data.mediaType == CLMediaType.video)
+        if (media.mediaType == CLMediaType.video)
           OverlayWidgets.dimension(
             alignment: Alignment.center,
             child: DecoratedBox(
@@ -100,7 +100,7 @@ class MediaThumbnail extends StatelessWidget {
     super.key,
   });
   final String parentIdentifier;
-  final StoreEntity media;
+  final ViewerEntityMixin media;
   final List<OverlayWidgets>? overlays;
 
   @override

@@ -175,4 +175,13 @@ class StoreEntity implements ViewerEntityMixin {
   @override
   String get searchableTexts =>
       [data.label, data.description].join(' ').toLowerCase();
+
+  @override
+  String? get label => data.label;
+
+  @override
+  String? get mimeType => data.mimeType;
+
+  @override
+  String? get pin => data.pin;
 }

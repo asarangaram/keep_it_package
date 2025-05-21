@@ -1,18 +1,20 @@
-import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:cl_media_tools/cl_media_tools.dart';
-import 'package:colan_services/services/media_view_service/media_viewer/views/media_viewer_page_view.dart';
+
 import 'package:colan_widgets/colan_widgets.dart' show SvgIcon, SvgIcons;
-import 'package:content_store/content_store.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
-import 'package:store/store.dart';
 
+import '../../common/models/viewer_entity_mixin.dart' show ViewerEntityMixin;
+import '../../common/views/broken_image.dart' show BrokenImage;
+import '../../common/views/shimmer.dart' show GreyShimmer;
 import '../models/cl_icons.dart';
 import '../models/video_player_controls.dart';
 import '../builders/get_video_player_controls.dart';
 import '../providers/ui_state.dart' show mediaViewerUIStateProvider;
 import 'media_viewer.dart';
+import 'media_viewer_page_view.dart' show MediaViewerPageView;
 import 'on_toggle_audio_mute.dart';
 import 'on_toggle_play.dart';
 import 'video_progress.dart';
@@ -84,7 +86,7 @@ class ViewMedia extends ConsumerWidget {
       heroTag: '$parentIdentifier /item/${currentItem.id}',
       uri: currentItem.mediaUri!,
       previewUri: currentItem.previewUri,
-      mime: (currentItem as StoreEntity).data.mimeType!,
+      mime: currentItem.mimeType!,
       onLockPage: ({required bool lock}) {},
       isLocked: false,
       autoStart: autoStart,

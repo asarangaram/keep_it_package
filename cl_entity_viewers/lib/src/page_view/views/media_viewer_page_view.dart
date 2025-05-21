@@ -1,9 +1,9 @@
-import 'package:colan_services/services/media_view_service/media_viewer/views/media_viewer_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/video_player_controls.dart';
 import '../providers/ui_state.dart' show mediaViewerUIStateProvider;
+import 'media_viewer_core.dart' show ViewMedia;
 
 class MediaViewerPageView extends ConsumerStatefulWidget {
   const MediaViewerPageView({

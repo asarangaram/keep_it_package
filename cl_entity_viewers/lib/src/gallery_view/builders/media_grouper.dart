@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 
-import '../models/viewer_entity_mixin.dart';
+import '../../common/models/viewer_entity_mixin.dart';
 import '../models/view_modifier.dart';
 import 'gallery_group.dart';
 

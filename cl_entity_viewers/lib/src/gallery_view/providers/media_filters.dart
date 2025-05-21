@@ -2,7 +2,7 @@ import 'package:cl_media_tools/cl_media_tools.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../models/viewer_entity_mixin.dart';
+import '../../common/models/viewer_entity_mixin.dart';
 import '../models/tab_identifier.dart';
 import '../models/filter/base_filter.dart';
 import '../models/filter/ddmmyyyy_filter.dart';

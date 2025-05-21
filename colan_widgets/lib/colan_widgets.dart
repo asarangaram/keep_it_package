@@ -12,6 +12,7 @@ export 'src/basics/cl_matrix.dart' show Matrix2D;
 export 'src/basics/cl_media_collage.dart' show CLDimension, CLMediaCollage;
 export 'src/basics/cl_text.dart' show CLLabel, CLText;
 export 'src/basics/overlay_icon.dart' show OverlayIcon;
+export 'src/basics/overlay_widget.dart' show OverlayWidgets;
 export 'src/basics/progress_bar.dart' show ProgressBar;
 export 'src/basics/svg_icon.dart' show SvgIcon, SvgIcons;
 export 'src/models/cl_menu_item.dart'

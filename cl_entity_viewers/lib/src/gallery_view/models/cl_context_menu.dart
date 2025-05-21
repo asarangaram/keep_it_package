@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../views/actions_draggable_menu.dart';
 
-import 'viewer_entity_mixin.dart';
+import '../../common/models/viewer_entity_mixin.dart';
 
 typedef DraggableMenuBuilderType = Widget Function(
   BuildContext, {

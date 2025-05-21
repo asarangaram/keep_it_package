@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers/menu_position.dart';
 import '../models/cl_context_menu.dart';
-import '../models/viewer_entity_mixin.dart';
+import '../../common/models/viewer_entity_mixin.dart';
 import '../models/tab_identifier.dart';
 import '../providers/selector.dart';
 import 'selection_control.dart';

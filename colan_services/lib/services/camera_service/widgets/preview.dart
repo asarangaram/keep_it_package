@@ -1,10 +1,10 @@
+import 'package:cl_entity_viewers/cl_entity_viewers.dart' show MediaThumbnail;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:store/store.dart';
 
 import '../../../providers/captured_media.dart';
-import '../../media_view_service/media_viewer/views/media_preview.dart';
 
 class PreviewCapturedMedia extends ConsumerWidget {
   const PreviewCapturedMedia({

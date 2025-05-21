@@ -1,3 +1,4 @@
+import 'package:cl_entity_viewers/cl_entity_viewers.dart' show MediaThumbnail;
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +7,6 @@ import 'package:store/store.dart';
 
 import '../../../models/cl_shared_media.dart';
 import '../../basic_page_service/basic_page_service.dart';
-import '../../media_view_service/media_viewer/views/media_preview.dart';
 
 class DuplicatePage extends StatelessWidget {
   const DuplicatePage({

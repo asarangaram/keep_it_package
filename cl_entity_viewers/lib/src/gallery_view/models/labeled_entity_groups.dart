@@ -1,7 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 
-import 'viewer_entity_mixin.dart';
+import '../../common/models/viewer_entity_mixin.dart';
 
 @immutable
 class ViewerEntityGroups {

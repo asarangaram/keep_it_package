@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import '../models/viewer_entity_mixin.dart';
+import '../../common/models/viewer_entity_mixin.dart';
 import '../../common/extensions/ext_datetime.dart';
 import '../../common/extensions/list_ext.dart';
 

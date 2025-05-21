@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../models/viewer_entity_mixin.dart';
+import '../../common/models/viewer_entity_mixin.dart';
 import '../models/selector.dart';
 
 class SelectorNotifier extends StateNotifier<CLSelector> {

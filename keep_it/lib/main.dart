@@ -87,7 +87,7 @@ class KeepItApp implements AppDescriptor {
               parentId = int.parse(parameters['parentId']!);
             }
 
-            return MediaViewer(
+            return MediaViewService(
               parentIdentifier: parentIdentifier,
             );
           },

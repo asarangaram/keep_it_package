@@ -38,12 +38,14 @@ export 'services/incoming_media_service/incoming_media_service.dart'
     show IncomingMediaService;
 export 'services/media_edit_service/media_edit_service.dart'
     show MediaEditService;
+export 'services/media_view_service/media_view_service.dart'
+    show MediaViewService;
 /* export 'services/media_view_service/media_view_service.dart'
     show MediaViewService; */
-export 'services/media_view_service/media_viewer/media_viewer.dart'
+/* export 'services/media_view_service/media_viewer/media_viewer.dart'
     show MediaViewer;
 export 'services/media_view_service/media_viewer/views/collection_preview.dart'
-    show CollectionPreview;
+    show CollectionPreview; */
 export 'services/media_wizard_service/media_wizard_service.dart'
     show MediaWizardService;
 export 'services/settings_service/settings_service.dart' show SettingsService;

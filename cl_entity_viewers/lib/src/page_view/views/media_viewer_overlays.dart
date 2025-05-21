@@ -1,7 +1,7 @@
+import 'package:colan_widgets/colan_widgets.dart' show OverlayWidgets;
 import 'package:flutter/material.dart';
 
 import 'media_viewer.dart';
-import 'overlay_widget.dart';
 
 class MediaViewerOverlays extends StatelessWidget {
   const MediaViewerOverlays({

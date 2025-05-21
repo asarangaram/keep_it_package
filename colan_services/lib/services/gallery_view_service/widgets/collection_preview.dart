@@ -1,14 +1,14 @@
 import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:content_store/content_store.dart';
+import 'package:content_store/content_store.dart'
+    show BrokenImage, GetEntities, GreyShimmer;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
-import 'package:store/store.dart';
+import 'package:store/store.dart' show StoreEntity;
 
-import '../../../../internal/folder_clip.dart';
-import 'media_preview.dart';
-import 'overlay_widget.dart';
+import 'folder_clip.dart';
 
 class CollectionPreview extends ConsumerWidget {
   const CollectionPreview.preview(

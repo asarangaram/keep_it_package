@@ -6,7 +6,7 @@ import '../builders/get_view_modifiers.dart';
 import '../builders/media_grouper.dart';
 import '../models/filter/filters.dart';
 import '../models/tab_identifier.dart';
-import '../models/viewer_entity_mixin.dart';
+import '../../common/models/viewer_entity_mixin.dart';
 import 'filters/filters_view.dart';
 import 'group_by_view.dart';
 

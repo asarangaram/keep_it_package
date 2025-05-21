@@ -4,13 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
 import '../../basic_page_service/widgets/page_manager.dart';
-import '../../media_view_service/media_viewer/providers/ui_state.dart'
-    show mediaViewerUIStateProvider;
-import '../../media_view_service/media_viewer/views/collection_preview.dart';
 
-import '../../media_view_service/media_viewer/views/media_preview.dart';
 import '../models/entity_actions.dart';
 import '../providers/active_collection.dart';
+import 'collection_preview.dart';
 import 'context_menu.dart';
 
 class EntityPreview extends ConsumerWidget {

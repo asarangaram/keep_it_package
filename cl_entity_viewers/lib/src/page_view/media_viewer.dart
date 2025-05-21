@@ -7,8 +7,8 @@ import 'views/bottom_bar.dart';
 import 'views/media_viewer_core.dart';
 import 'views/top_bar.dart';
 
-class MediaViewer extends ConsumerWidget {
-  const MediaViewer({required this.parentIdentifier, super.key});
+class CLMediaViewer extends ConsumerWidget {
+  const CLMediaViewer({required this.parentIdentifier, super.key});
   final String parentIdentifier;
 
   @override

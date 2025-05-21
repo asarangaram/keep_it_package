@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../models/viewer_entity_mixin.dart';
+import '../../../common/models/viewer_entity_mixin.dart';
 import '../../models/filter/base_filter.dart';
 import '../../providers/media_filters.dart';
 import 'ddmmyyyy_filter_view.dart';

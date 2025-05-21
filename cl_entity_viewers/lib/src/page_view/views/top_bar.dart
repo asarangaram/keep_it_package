@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'media_title.dart';
-import 'on_close_button.dart';
-import 'on_dark_mode.dart';
+
 import 'on_more_actions.dart';
 
 class TopBar extends StatelessWidget implements PreferredSizeWidget {
@@ -12,11 +11,11 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      leading: OnCloseButton(iconColor: iconColor),
+      // FIXME leading: OnCloseButton(iconColor: iconColor),
       title: const MediaTitle(),
       // centerTitle: true,
       actions: [
-        OnDarkMode(iconColor: iconColor),
+        // FIXME OnDarkMode(iconColor: iconColor),
         OnMoreActions(iconColor: iconColor),
       ],
     );

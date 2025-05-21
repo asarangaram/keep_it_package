@@ -15,6 +15,9 @@ abstract class ViewerEntityMixin {
   Uri? get previewUri;
   String get searchableTexts;
   CLMediaType get mediaType;
+  String? get mimeType;
+  String? get label;
+  String? get pin;
 }
 
 class ViewerEntityGroup<T extends ViewerEntityMixin> {

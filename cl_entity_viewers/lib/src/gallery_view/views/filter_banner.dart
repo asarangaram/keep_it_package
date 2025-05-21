@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../models/viewer_entity_mixin.dart';
+import '../../common/models/viewer_entity_mixin.dart';
 
 class FilterBanner extends StatelessWidget {
   const FilterBanner({

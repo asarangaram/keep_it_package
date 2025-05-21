@@ -4,7 +4,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 
 import 'package:yet_another_date_picker/yet_another_date_picker.dart';
 
-import '../../models/viewer_entity_mixin.dart';
+import '../../../common/models/viewer_entity_mixin.dart';
 import '../../models/filter/base_filter.dart';
 import '../../models/filter/ddmmyyyy_filter.dart';
 import '../../providers/media_filters.dart';
