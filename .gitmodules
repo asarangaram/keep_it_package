@@ -1,9 +1,7 @@
 [submodule "yet_another_date_picker"]
 	path = yet_another_date_picker
 	url = https://github.com/cloudonlanapps/yet_another_date_picker.git
-[submodule "cl_media_viewers_flutter"]
-	path = cl_media_viewers_flutter
-	url = https://github.com/asarangaram/cl_media_viewers_flutter.git
+
 [submodule "cl_media_tools"]
 	path = cl_media_tools
 	url = git@github.com:asarangaram/cl_media_tools.git
