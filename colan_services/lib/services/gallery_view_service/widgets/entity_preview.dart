@@ -5,7 +5,7 @@ import 'package:store/store.dart';
 
 import '../../basic_page_service/widgets/page_manager.dart';
 import '../../media_view_service/media_viewer/notifier/ui_state.dart'
-    show uiStateManager;
+    show mediaViewerUIStateProvider;
 import '../../media_view_service/media_viewer/views/collection_preview.dart';
 
 import '../../media_view_service/media_viewer/views/media_preview.dart';
@@ -65,8 +65,9 @@ class EntityPreview extends ConsumerWidget {
           // to avoid extra notification
           final supportedEntities =
               entities /* .where((e) => e.mediaType == CLMediaType.image).toList() */;
-          uiStateManager.notifier.entities = supportedEntities;
-          uiStateManager.notifier.currIndex =
+          ref.read(mediaViewerUIStateProvider.notifier).entities =
+              supportedEntities;
+          ref.read(mediaViewerUIStateProvider.notifier).currIndex =
               supportedEntities.indexWhere((e) => e.id == entity.data.id!);
 
           await PageManager.of(context).openMedia(

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../notifier/ui_state.dart';
 import 'media_title.dart';
 import 'on_close_button.dart';
 import 'on_dark_mode.dart';
@@ -12,21 +11,14 @@ class TopBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    final showMenu = uiStateManager.notifier.select((state) => state.showMenu);
-    return ListenableBuilder(
-      listenable: showMenu,
-      builder: (_, child) {
-        return Visibility(visible: showMenu.value, child: child!);
-      },
-      child: AppBar(
-        leading: OnCloseButton(iconColor: iconColor),
-        title: const MediaTitle(),
-        // centerTitle: true,
-        actions: [
-          OnDarkMode(iconColor: iconColor),
-          OnMoreActions(iconColor: iconColor),
-        ],
-      ),
+    return AppBar(
+      leading: OnCloseButton(iconColor: iconColor),
+      title: const MediaTitle(),
+      // centerTitle: true,
+      actions: [
+        OnDarkMode(iconColor: iconColor),
+        OnMoreActions(iconColor: iconColor),
+      ],
     );
   }
 

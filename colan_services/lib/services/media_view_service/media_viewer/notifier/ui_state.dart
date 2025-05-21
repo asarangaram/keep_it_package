@@ -3,11 +3,11 @@ import 'dart:async';
 import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:minimal_mvn/minimal_mvn.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 @immutable
-class UIState {
-  const UIState({
+class MediaViewerUIState {
+  const MediaViewerUIState({
     this.showMenu = false,
     this.showPlayerMenu = false,
     this.iconColor = const Color.fromARGB(255, 80, 140, 224),
@@ -21,14 +21,14 @@ class UIState {
   final List<ViewerEntityMixin> entities;
   final int currentIndex;
 
-  UIState copyWith({
+  MediaViewerUIState copyWith({
     bool? showMenu,
     bool? showPlayerMenu,
     Color? iconColor,
     List<ViewerEntityMixin>? entities,
     int? currentIndex,
   }) {
-    return UIState(
+    return MediaViewerUIState(
       showMenu: showMenu ?? this.showMenu,
       showPlayerMenu: showPlayerMenu ?? this.showPlayerMenu,
       iconColor: iconColor ?? this.iconColor,
@@ -38,7 +38,7 @@ class UIState {
   }
 
   @override
-  bool operator ==(covariant UIState other) {
+  bool operator ==(covariant MediaViewerUIState other) {
     if (identical(this, other)) return true;
     final listEquals = const DeepCollectionEquality().equals;
 
@@ -68,8 +68,8 @@ class UIState {
   int get length => entities.length;
 }
 
-class MediaViewerUIStateNotifier extends MMNotifier<UIState> {
-  MediaViewerUIStateNotifier() : super(const UIState());
+class MediaViewerUIStateNotifier extends StateNotifier<MediaViewerUIState> {
+  MediaViewerUIStateNotifier() : super(const MediaViewerUIState());
   Timer? disableControls;
   //final Duration? defaultTimeOut = const Duration(seconds: 3);
   final Duration? defaultTimeOut = null;
@@ -87,16 +87,15 @@ class MediaViewerUIStateNotifier extends MMNotifier<UIState> {
       disableControls = Timer(
         timeout,
         () {
-          super.notify(state.copyWith(showPlayerMenu: false));
+          state = state.copyWith(showPlayerMenu: false);
         },
       );
     }
   }
 
-  @override
-  void notify(UIState value, [Duration? Function()? timeout]) {
+  void notify(MediaViewerUIState value, [Duration? Function()? timeout]) {
     setupTimer(timeout);
-    super.notify(value);
+    state = value;
   }
 
   void showMenu([Duration? Function()? timeout]) =>
@@ -119,6 +118,8 @@ class MediaViewerUIStateNotifier extends MMNotifier<UIState> {
   List<ViewerEntityMixin> get entities => state.entities;
 }
 
-final MMManager<MediaViewerUIStateNotifier> uiStateManager = MMManager(
-  MediaViewerUIStateNotifier.new,
-);
+final mediaViewerUIStateProvider =
+    StateNotifierProvider<MediaViewerUIStateNotifier, MediaViewerUIState>(
+        (ref) {
+  return MediaViewerUIStateNotifier();
+});

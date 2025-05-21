@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../notifier/riverpod/models/video_player_controls.dart';
-import '../notifier/ui_state.dart' show uiStateManager;
+import '../notifier/ui_state.dart' show mediaViewerUIStateProvider;
 
 class MediaViewerPageView extends ConsumerStatefulWidget {
   const MediaViewerPageView({
@@ -24,9 +24,9 @@ class _MediaViewerPageViewState extends ConsumerState<MediaViewerPageView> {
 
   @override
   void initState() {
-    pageController = PageController(
-      initialPage: uiStateManager.notifier.state.currentIndex,
-    );
+    final currentIndex =
+        ref.read(mediaViewerUIStateProvider.select((e) => e.currentIndex));
+    pageController = PageController(initialPage: currentIndex);
 
     super.initState();
   }
@@ -39,26 +39,20 @@ class _MediaViewerPageViewState extends ConsumerState<MediaViewerPageView> {
 
   @override
   Widget build(BuildContext context) {
-    final stateManagerNotifier = uiStateManager.notifier;
+    final s = ref.watch(mediaViewerUIStateProvider);
 
-    return ListenableBuilder(
-      listenable: stateManagerNotifier,
-      builder: (_, __) {
-        final stateManager = stateManagerNotifier.state;
-        return PageView.builder(
-          controller: pageController,
-          itemCount: stateManager.entities.length,
-          onPageChanged: (index) {
-            stateManagerNotifier.currIndex = index;
-          },
-          itemBuilder: (context, index) {
-            return ViewMedia(
-              parentIdentifier: widget.parentIdentifier,
-              currentItem: stateManager.entities[index],
-              autoStart: index == stateManagerNotifier.state.currentIndex,
-              playerControls: widget.playerControls,
-            );
-          },
+    return PageView.builder(
+      controller: pageController,
+      itemCount: s.entities.length,
+      onPageChanged: (index) {
+        ref.read(mediaViewerUIStateProvider.notifier).currIndex = index;
+      },
+      itemBuilder: (context, index) {
+        return ViewMedia(
+          parentIdentifier: widget.parentIdentifier,
+          currentItem: s.entities[index],
+          autoStart: index == s.currentIndex,
+          playerControls: widget.playerControls,
         );
       },
     );
