@@ -40,7 +40,7 @@ PODS:
     - FlutterMacOS
   - permission_handler_apple (9.3.0):
     - Flutter
-  - photo_manager (2.0.0):
+  - photo_manager (3.7.0):
     - Flutter
     - FlutterMacOS
   - share_handler_ios (0.0.14):
@@ -179,7 +179,7 @@ SPEC CHECKSUMS:
   nsd_ios: 596ad79109ddd3e52d665f650f36428049e3653e
   path_provider_foundation: 080d55be775b7414fd5a5ef3ac137b97b097e564
   permission_handler_apple: 4ed2196e43d0651e8ff7ca3483a069d469701f2d
-  photo_manager: d2fbcc0f2d82458700ee6256a15018210a81d413
+  photo_manager: 07ebd7b0ba45c60d8d06110bebf9dc4f60380764
   share_handler_ios: e2244e990f826b2c8eaa291ac3831569438ba0fb
   share_handler_ios_models: fc638c9b4330dc7f082586c92aee9dfa0b87b871
   share_plus: 50da8cb520a8f0f65671c6c6a99b3617ed10a58a
