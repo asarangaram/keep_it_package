@@ -3,8 +3,6 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../providers/active_collection.dart';
-
 class WhenEmpty extends ConsumerWidget {
   const WhenEmpty({
     super.key,
@@ -14,15 +12,16 @@ class WhenEmpty extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final parentId = ref.watch(activeCollectionProvider);
-    final onRecover = parentId == null
+    final menuItem = onReset == null
         ? null
         : CLMenuItem(
             title: 'Reset',
             icon: clIcons.navigateHome,
             onTap: onReset ??
                 () async {
-                  ref.read(activeCollectionProvider.notifier).state = null;
+                  if (PageManager.of(context).canPop()) {
+                    PageManager.of(context).pop();
+                  }
                   return true;
                 },
           );
@@ -33,7 +32,7 @@ class WhenEmpty extends ConsumerWidget {
           'Import Photos and Videos from the Gallery or using Camera. '
           'Connect to server to view your home collections '
           "using 'Cloud on LAN' service.",
-      onRecover: onRecover,
+      onRecover: menuItem,
     );
   }
 }

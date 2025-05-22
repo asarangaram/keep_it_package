@@ -37,6 +37,7 @@ class DialogService {
                               viewId: 'PreviewInDialog',
                             ),
                             item: entity[index] as StoreEntity,
+                            parentId: entity[index].parentId,
                             entities: const [],
                           );
                         },

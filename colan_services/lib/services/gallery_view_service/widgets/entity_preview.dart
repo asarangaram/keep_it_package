@@ -6,7 +6,7 @@ import 'package:store/store.dart';
 import '../../basic_page_service/widgets/page_manager.dart';
 
 import '../models/entity_actions.dart';
-import '../providers/active_collection.dart';
+
 import 'collection_preview.dart';
 import 'context_menu.dart';
 
@@ -15,11 +15,13 @@ class EntityPreview extends ConsumerWidget {
     required this.viewIdentifier,
     required this.item,
     required this.entities,
+    required this.parentId,
     super.key,
   });
   final ViewIdentifier viewIdentifier;
   final ViewerEntityMixin item;
   final List<ViewerEntityMixin> entities;
+  final int? parentId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -52,11 +54,10 @@ class EntityPreview extends ConsumerWidget {
       viewIdentifier: viewIdentifier,
       onTap: () async {
         if (entity.isCollection) {
-          ref
-              .read(
-                activeCollectionProvider.notifier,
-              )
-              .state = entity;
+          await PageManager.of(context).openCollection(
+            entity,
+            parentIdentifier: viewIdentifier.parentID,
+          );
         } else {
           // Setup provider, it may be good idea to have a single function
           // to avoid extra notification
@@ -69,7 +70,7 @@ class EntityPreview extends ConsumerWidget {
 
           await PageManager.of(context).openMedia(
             entity.data.id!,
-            parentId: ref.read(activeCollectionProvider)?.id,
+            parentId: parentId,
             parentIdentifier:
                 viewIdentifier.parentID, // FIXME: Is this correct?
           );

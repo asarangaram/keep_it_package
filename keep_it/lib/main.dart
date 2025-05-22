@@ -20,10 +20,34 @@ class KeepItApp implements AppDescriptor {
   List<CLRouteDescriptor> get screens => [
         CLRouteDescriptor(
           name: '',
-          builder: (context, parameters) => const GalleryViewService(
+          builder: (context, parameters) => const EntityViewer(
             parentIdentifier: 'KeepIt Viewer',
             storeIdentity: 'local',
+            id: null,
           ),
+        ),
+        CLRouteDescriptor(
+          name: 'mediaNew',
+          builder: (context, parameters) {
+            final int? mediaId;
+            if (parameters.keys.contains('id')) {
+              mediaId = int.parse(parameters['id']!);
+            } else {
+              mediaId = null;
+            }
+            final String parentIdentifier;
+            if (parameters.keys.contains('parentIdentifier')) {
+              parentIdentifier = parameters['parentIdentifier']!;
+            } else {
+              throw Exception('parentIdentifier must be provided');
+            }
+
+            return EntityViewer(
+              parentIdentifier: parentIdentifier,
+              storeIdentity: 'local',
+              id: mediaId,
+            );
+          },
         ),
         CLRouteDescriptor(
           name: 'settings',

@@ -3,8 +3,6 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../providers/active_collection.dart';
-
 class WhenError extends ConsumerWidget {
   const WhenError({
     required this.errorMessage,
@@ -18,21 +16,22 @@ class WhenError extends ConsumerWidget {
   final CLMenuItem? onRecover;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final parentId = ref.watch(activeCollectionProvider);
-    final onRecover = parentId == null
+    final menuItem = onRecover == null
         ? null
         : CLMenuItem(
             title: 'Reset',
             icon: clIcons.navigateHome,
             onTap: () async {
-              ref.read(activeCollectionProvider.notifier).state = null;
-              return true;
+              if (PageManager.of(context).canPop()) {
+                PageManager.of(context).pop();
+              }
+              return null;
             },
           );
     return CLErrorView(
       errorMessage: errorMessage,
       errorDetails: errorDetails,
-      onRecover: onRecover,
+      onRecover: menuItem,
     );
   }
 }

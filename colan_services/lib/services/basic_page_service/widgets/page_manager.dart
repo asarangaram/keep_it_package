@@ -124,11 +124,12 @@ class PageManager {
   }
 
   Future<StoreEntity?> openCollection(
-    int parentId,
-  ) async {
+    StoreEntity collection, {
+    required String parentIdentifier,
+  }) async {
     await navigator.pushNamed(
       context,
-      '/items_by_collection?id=$parentId',
+      '/mediaNew?id=${collection.id}&parentIdentifier=$parentIdentifier',
     );
     return null;
   }

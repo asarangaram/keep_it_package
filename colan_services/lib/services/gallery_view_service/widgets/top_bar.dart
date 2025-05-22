@@ -10,17 +10,18 @@ import 'package:store/store.dart';
 
 import '../../../models/platform_support.dart';
 import '../../basic_page_service/widgets/page_manager.dart';
-import '../providers/active_collection.dart';
 import 'popover_menu.dart';
 
 class KeepItTopBar extends CLBanner {
   const KeepItTopBar({
     required this.viewIdentifier,
     required this.entities,
+    required this.title,
     super.key,
   });
   final ViewIdentifier viewIdentifier;
   final List<StoreEntity> entities;
+  final String title;
   @override
   String get widgetLabel => 'top bar';
   @override
@@ -32,8 +33,6 @@ class KeepItTopBar extends CLBanner {
     String msg = '',
     void Function()? onTap,
   }) {
-    final parentCollection = ref.watch(activeCollectionProvider);
-
     return Padding(
       padding: ColanPlatformSupport.isMobilePlatform
           ? EdgeInsets.zero
@@ -54,7 +53,9 @@ class KeepItTopBar extends CLBanner {
                     clIcons.pagePop,
                     onTap: () {
                       onUpdateSelectionmode(enable: false);
-                      ref.read(activeCollectionProvider.notifier).state = null;
+                      if (PageManager.of(context).canPop()) {
+                        PageManager.of(context).pop();
+                      }
                     },
                   );
                 },
@@ -66,8 +67,7 @@ class KeepItTopBar extends CLBanner {
                   child: Padding(
                     padding: const EdgeInsets.only(left: 8),
                     child: Text(
-                      parentCollection?.data.label!.capitalizeFirstLetter() ??
-                          'Keep It',
+                      title,
                       style: Theme.of(context).textTheme.headlineLarge,
                       overflow: TextOverflow.ellipsis,
                     ),
