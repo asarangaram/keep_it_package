@@ -1,4 +1,5 @@
 import 'package:cl_entity_viewers/cl_entity_viewers.dart';
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -61,8 +62,7 @@ class _PopoverPageState extends ConsumerState<PopOverMenu> {
           return ShadButton.ghost(
             padding: const EdgeInsets.only(right: 8),
             onPressed: popoverController.toggle,
-            child: Icon(
-              LucideIcons.menu,
+            child: clIcons.extraMenu.iconFormatted(
               color: items.any((e) => e.isActive)
                   ? ShadTheme.of(context).colorScheme.destructive
                   : null,

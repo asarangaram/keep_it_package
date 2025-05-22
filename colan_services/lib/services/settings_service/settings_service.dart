@@ -39,9 +39,9 @@ class SettingsService extends ConsumerWidget {
             children: [
               if (deletedMedia.isNotEmpty)
                 ListTile(
-                  leading: Icon(clIcons.recycleBin),
+                  leading: clIcons.recycleBin.iconFormatted(),
                   trailing: IconButton(
-                    icon: Icon(clIcons.gotoPage),
+                    icon: clIcons.gotoPage.iconFormatted(),
                     onPressed: () async {
                       await MediaWizardService.openWizard(
                         context,

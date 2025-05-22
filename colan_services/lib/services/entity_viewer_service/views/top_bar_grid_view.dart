@@ -28,9 +28,6 @@ class TopBarGridView extends ConsumerWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final iconColor =
-        ref.watch(appPreferenceProvider.select((e) => e.iconColor));
-    final iconSize = ref.watch(appPreferenceProvider.select((e) => e.iconSize));
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -47,11 +44,7 @@ class TopBarGridView extends ConsumerWidget implements PreferredSizeWidget {
             else
               ShadButton.ghost(
                 onPressed: () => PageManager.of(context).openSettings(),
-                child: Icon(
-                  clIcons.settings,
-                  color: iconColor,
-                  size: iconSize,
-                ),
+                child: clIcons.settings.iconFormatted(),
               ),
           ],
         ),

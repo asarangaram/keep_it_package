@@ -34,11 +34,7 @@ class BottomBarGridView extends ConsumerWidget implements PreferredSizeWidget {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           ShadButton.ghost(
-            child: Icon(
-              clIcons.insertItem,
-              color: iconColor,
-              size: iconSize,
-            ),
+            child: clIcons.insertItem.iconFormatted(),
             onPressed: () {
               IncomingMediaMonitor.onPickFiles(
                 context,
@@ -51,11 +47,7 @@ class BottomBarGridView extends ConsumerWidget implements PreferredSizeWidget {
             Align(
               alignment: Alignment.centerRight,
               child: ShadButton.ghost(
-                child: Icon(
-                  clIcons.camera,
-                  color: iconColor,
-                  size: iconSize,
-                ),
+                child: clIcons.camera.iconFormatted(),
                 onPressed: () {
                   PageManager.of(context).openCamera(
                     parentId: entity?.id,

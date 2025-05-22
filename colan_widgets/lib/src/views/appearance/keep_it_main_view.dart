@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../basics/cl_text.dart';
 import '../../models/cl_menu_item.dart';
+import '../../theme/models/cl_icons.dart';
 import 'cl_fullscreen_box.dart';
 
 class KeepItMainView extends StatelessWidget {
@@ -51,14 +52,14 @@ class KeepItMainView extends StatelessWidget {
                     PopupMenuItem<CLMenuItem>(
                       value: item,
                       child: ListTile(
-                        leading: Icon(item.icon),
+                        leading: item.icon.iconFormatted(),
                         title: Text(item.title),
                       ),
                     ),
                   ],
                 ];
               },
-              child: const Icon(Icons.more_vert),
+              child: Icons.more_vert.iconFormatted(),
             ),
         ],
       ),

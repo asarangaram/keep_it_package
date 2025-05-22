@@ -21,7 +21,7 @@ extension IconOnIconData on IconData {
   }) {
     return Icon(
       this,
-      size: size,
+      size: size ?? 25,
       fill: fill,
       weight: weight,
       grade: grade,
@@ -148,7 +148,7 @@ class CLIcons {
   final playerStop = Icons.stop;
   final mediaOrientation = Icons.image;
 
-  final extraMenu = Icons.more_vert;
+  final extraMenu = LucideIcons.menu;
   final cameraSettings = Icons.settings;
   final collectionsSelect = Symbols.list_alt;
   final searchRequest = Symbols.search;

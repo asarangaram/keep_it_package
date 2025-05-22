@@ -1,3 +1,4 @@
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -9,8 +10,6 @@ class OnDarkMode extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final iconColor =
-        ref.watch(appPreferenceProvider.select((e) => e.iconColor));
     final themeMode =
         ref.watch(appPreferenceProvider.select((e) => e.themeMode));
     return ShadButton.ghost(
@@ -25,15 +24,11 @@ class OnDarkMode extends ConsumerWidget {
                 ThemeMode.light;
         }
       },
-      child: Icon(
-        switch (themeMode) {
-          ThemeMode.system => throw UnimplementedError(),
-          ThemeMode.light => LucideIcons.sunMoon,
-          ThemeMode.dark => LucideIcons.moon,
-        },
-        color: iconColor,
-        size: 20,
-      ),
+      child: switch (themeMode) {
+        ThemeMode.system => throw UnimplementedError(),
+        ThemeMode.light => LucideIcons.sunMoon.iconFormatted(),
+        ThemeMode.dark => LucideIcons.moon.iconFormatted(),
+      },
     );
   }
 }

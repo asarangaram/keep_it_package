@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/cl_scale_type.dart';
+import '../theme/models/cl_icons.dart';
 import 'cl_text.dart';
 import 'svg_icon.dart';
 
@@ -39,8 +40,7 @@ class _CLIcon extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              iconData,
+            iconData.iconFormatted(
               color: color ?? Theme.of(context).textTheme.bodyLarge?.color,
               size: scaleType.iconSize,
             ),

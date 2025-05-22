@@ -37,7 +37,7 @@ class KeepItContextMenu extends ConsumerWidget {
             ShadContextMenuItem(
               leading: SizedBox.square(
                 dimension: 16,
-                child: Center(child: Icon(item.icon)),
+                child: Center(child: item.icon.iconFormatted()),
               ),
               enabled: item.onTap != null,
               onPressed: item.onTap,
