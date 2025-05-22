@@ -10,8 +10,8 @@ import '../gallery_view_service/widgets/when_error.dart';
 
 import 'views/entity_grid_view.dart';
 
-class EntityViewer extends ConsumerWidget {
-  const EntityViewer({
+class EntityViewerService extends ConsumerWidget {
+  const EntityViewerService({
     required this.parentIdentifier,
     required this.storeIdentity,
     required this.id,

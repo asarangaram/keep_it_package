@@ -1,9 +1,12 @@
-import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+
+import '../../models/cl_shared_media.dart';
+import '../../models/universal_media_source.dart';
+import '../media_wizard_service/media_wizard_service.dart';
 
 class SettingsService extends ConsumerWidget {
   const SettingsService({

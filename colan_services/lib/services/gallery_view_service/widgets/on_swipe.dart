@@ -1,6 +1,7 @@
-import 'package:colan_services/colan_services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../basic_page_service/widgets/page_manager.dart';
 
 class OnSwipe extends ConsumerWidget {
   const OnSwipe({required this.child, super.key});

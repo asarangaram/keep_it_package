@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:store/store.dart';
 
 import '../../../models/universal_media_source.dart';
-import '../../camera_service/cl_camera_service.dart';
+import '../../camera_service/camera_service.dart';
 import '../../camera_service/models/default_theme.dart';
 
 abstract class NavigatorAPI {
@@ -93,10 +93,11 @@ class PageManager {
       context,
       () async {
         if (context.mounted) {
-          await navigator.pushNamed(
-            context,
-            parentId == null ? '/camera' : '/camera?parentId=$parentId',
-          );
+          final queryMap = [
+            if (parentId != null) 'parentId=$parentId',
+          ];
+          final query = queryMap.isNotEmpty ? '?${queryMap.join('&')}' : '';
+          await navigator.pushNamed(context, '/camera?$query');
         }
       },
       themeData: DefaultCLCameraIcons(),
@@ -111,10 +112,13 @@ class PageManager {
     if (media.data.pin != null) {
       return media;
     } else {
-      final edittedMedia = await navigator.pushNamed(
-        context,
-        '/mediaEditor?id=${media.id}&canDuplicateMedia=${canDuplicateMedia ? '1' : '0'}',
-      );
+      final queryMap = [
+        'id=${media.id}',
+        'canDuplicateMedia=${canDuplicateMedia ? '1' : '0'}',
+      ];
+      final query = queryMap.isNotEmpty ? '?${queryMap.join('&')}' : '';
+
+      final edittedMedia = await navigator.pushNamed(context, '/edit?&$query');
       if (edittedMedia is StoreEntity?) {
         return edittedMedia ?? media;
       } else {
@@ -123,7 +127,7 @@ class PageManager {
     }
   }
 
-  Future<StoreEntity?> openEntity(
+  Future<void> openEntity(
     StoreEntity? entity, {
     required String parentIdentifier,
   }) async {
@@ -132,16 +136,15 @@ class PageManager {
       'parentIdentifier=$parentIdentifier',
     ];
     final query = queryMap.isNotEmpty ? '?${queryMap.join('&')}' : '';
-    await navigator.pushNamed(context, '/mediaNew$query');
-    return null;
+    await navigator.pushNamed(context, '/media$query');
   }
 
   Future<void> openWizard(UniversalMediaSource type) async {
-    await navigator.pushNamed(
-      context,
-      '/media_wizard?type='
-      '${type.name}',
-    );
+    final queryMap = [
+      '/wizard?type=${type.name}',
+    ];
+    final query = queryMap.isNotEmpty ? '?${queryMap.join('&')}' : '';
+    await navigator.pushNamed(context, '/wizard?$query');
   }
 
   Future<void> openSettings() async {

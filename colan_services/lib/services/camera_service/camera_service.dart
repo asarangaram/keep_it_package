@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:cl_camera/cl_camera.dart';
 import 'package:cl_media_tools/cl_media_tools.dart';
 
-import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
@@ -14,11 +13,17 @@ import 'package:store/store.dart';
 
 import '../../internal/fullscreen_layout.dart';
 
+import '../../models/cl_shared_media.dart';
+import '../../models/universal_media_source.dart';
+import '../../providers/captured_media.dart';
+import '../basic_page_service/widgets/page_manager.dart';
+import '../media_wizard_service/media_wizard_service.dart';
+import 'models/default_theme.dart';
 import 'widgets/get_cameras.dart';
 import 'widgets/preview.dart';
 
-class CLCameraService extends ConsumerWidget {
-  const CLCameraService({
+class CameraService extends ConsumerWidget {
+  const CameraService({
     required this.parentId,
     required this.storeIdentity,
     super.key,

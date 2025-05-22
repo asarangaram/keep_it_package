@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +7,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
+
+import '../../basic_page_service/widgets/page_manager.dart';
 
 class CollectionMetadataEditor extends StatefulWidget {
   factory CollectionMetadataEditor({

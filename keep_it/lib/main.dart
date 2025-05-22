@@ -2,10 +2,6 @@ import 'dart:io';
 
 import 'package:colan_services/colan_services.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-
-import 'package:fvp/fvp.dart' as fvp;
-
 import 'package:window_size/window_size.dart';
 
 class KeepItApp implements AppDescriptor {
@@ -22,7 +18,7 @@ class KeepItApp implements AppDescriptor {
         CLRouteDescriptor(
           name: '',
           builder: (context, parameters) {
-            return const EntityViewer(
+            return const EntityViewerService(
               parentIdentifier: 'KeepIt Viewer',
               storeIdentity: 'local',
               id: null,
@@ -30,7 +26,7 @@ class KeepItApp implements AppDescriptor {
           },
         ),
         CLRouteDescriptor(
-          name: 'mediaNew',
+          name: 'media',
           builder: (context, parameters) {
             final int? mediaId;
             if (parameters.keys.contains('id')) {
@@ -45,7 +41,7 @@ class KeepItApp implements AppDescriptor {
               throw Exception('parentIdentifier must be provided');
             }
 
-            return EntityViewer(
+            return EntityViewerService(
               parentIdentifier: parentIdentifier,
               storeIdentity: 'local',
               id: mediaId,
@@ -67,14 +63,14 @@ class KeepItApp implements AppDescriptor {
             } else {
               parentId = null;
             }
-            return CLCameraService(
+            return CameraService(
               parentId: parentId,
               storeIdentity: 'local',
             );
           },
         ),
         CLRouteDescriptor(
-          name: 'mediaEditor',
+          name: 'edit',
           builder: (context, parameters) {
             final int? mediaId;
             final bool canDuplicateMedia;
@@ -96,31 +92,8 @@ class KeepItApp implements AppDescriptor {
             );
           },
         ),
-        /* CLRouteDescriptor(
-          name: 'media',
-          builder: (context, parameters) {
-            final String parentIdentifier;
-            // ignore: unused_local_variable for now
-            final int? parentId;
-
-            if (!parameters.containsKey('parentIdentifier')) {
-              parentIdentifier = 'unknown';
-            } else {
-              parentIdentifier = parameters['parentIdentifier']!;
-            }
-            if (!parameters.containsKey('parentId')) {
-              parentId = 0;
-            } else {
-              parentId = int.parse(parameters['parentId']!);
-            }
-
-            return MediaViewService(
-              parentIdentifier: parentIdentifier,
-            );
-          },
-        ), */
         CLRouteDescriptor(
-          name: 'media_wizard',
+          name: 'wizard',
           builder: (context, parameters) {
             final typeString = parameters['type'];
             final UniversalMediaSource type;
@@ -141,8 +114,8 @@ class KeepItApp implements AppDescriptor {
   @override
   IncomingMediaViewBuilder get incomingMediaViewBuilder => (
         BuildContext context, {
-        required CLMediaFileGroup incomingMedia,
-        required void Function({required bool result}) onDiscard,
+        required incomingMedia,
+        required onDiscard,
       }) =>
           IncomingMediaService(
             storeIdentity: 'local',
@@ -210,22 +183,6 @@ void main() {
     setWindowMaxSize(const Size(900, 900 * 16 / 9));
     setWindowMinSize(const Size(450, 450 * 16 / 9));
   }
-  /* SystemChrome.setPreferredOrientations(
-    [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
-  ); */
-  SystemChrome.setSystemUIOverlayStyle(
-    const SystemUiOverlayStyle(
-      statusBarColor: Colors.blue, // Change to your desired color
-      systemNavigationBarColor: Colors.red,
-      statusBarIconBrightness: Brightness.light, // For white icons
-      statusBarBrightness: Brightness.dark, // For iOS
-    ),
-  );
-  //SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-  fvp.registerWith(
-    options: {
-      'global': {'logLevel': 'Error'},
-    },
-  );
+
   runApp(AppStartService(appDescriptor: KeepItApp()));
 }
