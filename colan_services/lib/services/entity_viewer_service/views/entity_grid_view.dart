@@ -1,11 +1,11 @@
 import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:colan_services/services/entity_viewer_service/models/entity_actions.dart';
-import 'package:colan_services/services/gallery_view_service/widgets/c_l_selectable_grid_scope.dart';
-import 'package:colan_services/services/gallery_view_service/widgets/entity_preview.dart';
-import 'package:colan_services/services/gallery_view_service/widgets/on_swipe.dart';
-import 'package:colan_services/services/gallery_view_service/widgets/refresh_button.dart';
-import 'package:colan_services/services/gallery_view_service/widgets/stale_media_banner.dart';
-import 'package:colan_services/services/gallery_view_service/widgets/when_empty.dart';
+import 'package:colan_services/services/entity_viewer_service/widgets/c_l_selectable_grid_scope.dart';
+import 'package:colan_services/services/entity_viewer_service/widgets/preview/entity_preview.dart';
+import 'package:colan_services/services/entity_viewer_service/widgets/on_swipe.dart';
+import 'package:colan_services/services/entity_viewer_service/widgets/refresh_button.dart';
+import 'package:colan_services/services/entity_viewer_service/widgets/stale_media_banner.dart';
+import 'package:colan_services/services/entity_viewer_service/widgets/when_empty.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

@@ -1,4 +1,4 @@
-import 'package:colan_services/services/gallery_view_service/widgets/cl_banner.dart';
+import 'package:colan_services/internal/cl_banner.dart';
 import 'package:colan_services/services/media_wizard_service/media_wizard_service.dart';
 
 import 'package:content_store/content_store.dart';

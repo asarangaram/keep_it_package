@@ -3,12 +3,12 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import '../../basic_page_service/widgets/page_manager.dart';
+import '../../../basic_page_service/widgets/page_manager.dart';
 
-import '../../entity_viewer_service/models/entity_actions.dart';
+import '../../models/entity_actions.dart';
 
 import 'collection_preview.dart';
-import 'context_menu.dart';
+import '../../views/context_menu.dart';
 
 class EntityPreview extends ConsumerWidget {
   const EntityPreview({
@@ -32,23 +32,6 @@ class EntityPreview extends ConsumerWidget {
       ref,
       entity,
     );
-    /* final label = Row(
-      children: [
-        Expanded(
-          child: Center(
-            child: Text(
-              entity.data.label?.capitalizeFirstLetter() ?? 'Unnamed',
-              style: const TextStyle(fontSize: 14),
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ),
-        EntityMetaData(
-          contextMenu: contextMenu,
-          child: const Icon(LucideIcons.ellipsis),
-        ),
-      ],
-    ); */
 
     return KeepItContextMenu(
       viewIdentifier: viewIdentifier,

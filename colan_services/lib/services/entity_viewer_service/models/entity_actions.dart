@@ -13,8 +13,8 @@ import '../../../models/platform_support.dart';
 import '../../../models/universal_media_source.dart';
 import '../../basic_page_service/widgets/dialogs.dart';
 import '../../basic_page_service/widgets/page_manager.dart';
-import '../../gallery_view_service/widgets/collection_metadata_editor.dart';
-import '../../gallery_view_service/widgets/media_metadata_editor.dart';
+import '../widgets/metadata_editors/collection_metadata_editor.dart';
+import '../widgets/metadata_editors/media_metadata_editor.dart';
 import '../../media_wizard_service/media_wizard_service.dart';
 
 @immutable

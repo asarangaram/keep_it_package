@@ -8,7 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart' show StoreEntity;
 
-import 'folder_clip.dart';
+import '../folder_clip.dart';
 
 class CollectionPreview extends ConsumerWidget {
   const CollectionPreview.preview(

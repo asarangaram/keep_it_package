@@ -8,8 +8,8 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import '../../../models/platform_support.dart';
 import '../../app_start_service/views/on_dark_mode.dart';
 import '../../basic_page_service/widgets/page_manager.dart';
-import '../../gallery_view_service/widgets/popover_menu.dart';
-import '../../gallery_view_service/widgets/refresh_button.dart';
+import 'popover_menu.dart';
+import '../widgets/refresh_button.dart';
 import '../widgets/media_title.dart';
 
 class TopBarGridView extends ConsumerWidget implements PreferredSizeWidget {

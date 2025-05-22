@@ -5,8 +5,8 @@ import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../gallery_view_service/widgets/on_swipe.dart';
-import '../gallery_view_service/widgets/when_error.dart';
+import 'widgets/on_swipe.dart';
+import 'widgets/when_error.dart';
 
 import 'views/entity_grid_view.dart';
 
