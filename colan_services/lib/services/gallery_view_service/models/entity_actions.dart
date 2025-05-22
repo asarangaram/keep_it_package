@@ -197,7 +197,7 @@ class EntityActions extends CLContextMenu {
         onTap: onPin,
       ),
       onDelete: CLMenuItem(
-        title: 'Move to Bin',
+        title: 'Remove',
         icon: clIcons.imageDelete,
         onTap: onDelete,
         isDestructive: true,
