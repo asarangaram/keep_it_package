@@ -10,7 +10,7 @@ dependencies:
   collection: ^1.19.0
   crypto: ^3.0.3
   event_bus: ^2.0.0
-  extended_image: ^9.1.0
+  extended_image: ^10.0.1
   flutter:
     sdk: flutter
 

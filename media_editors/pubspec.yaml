@@ -11,7 +11,7 @@ dependencies:
   colan_widgets:
     path: ../colan_widgets
   collection: ^1.19.0
-  extended_image: ^9.1.0
+  extended_image: ^10.0.1
   flutter:
     sdk: flutter
 

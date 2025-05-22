@@ -16,7 +16,7 @@ PODS:
   - path_provider_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
-  - photo_manager (2.0.0):
+  - photo_manager (3.7.0):
     - Flutter
     - FlutterMacOS
   - share_plus (0.0.1):
@@ -114,7 +114,7 @@ SPEC CHECKSUMS:
   mdk: 5b3a56ae10c666309c1796bd72968e91db4d670a
   nsd_macos: a472240e770b92f6c6df1022403aa29c90d012e3
   path_provider_foundation: 080d55be775b7414fd5a5ef3ac137b97b097e564
-  photo_manager: d2fbcc0f2d82458700ee6256a15018210a81d413
+  photo_manager: 07ebd7b0ba45c60d8d06110bebf9dc4f60380764
   share_plus: 510bf0af1a42cd602274b4629920c9649c52f4cc
   shared_preferences_foundation: 9e1978ff2562383bd5676f64ec4e9aa8fa06a6f7
   sqlite3: fc1400008a9b3525f5914ed715a5d1af0b8f4983
