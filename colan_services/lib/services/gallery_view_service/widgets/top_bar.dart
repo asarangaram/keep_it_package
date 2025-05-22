@@ -39,7 +39,7 @@ class KeepItTopBar extends CLBanner {
           : const EdgeInsets.only(top: 8),
       child: Column(
         children: [
-          Row(
+          /* Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               GetSelectionMode(
@@ -90,7 +90,7 @@ class KeepItTopBar extends CLBanner {
                   child: const Icon(LucideIcons.settings, size: 25),
                 ),
             ],
-          ),
+          ), */
           if (entities.isNotEmpty)
             TextFilterBox(parentIdentifier: viewIdentifier.parentID),
         ],
