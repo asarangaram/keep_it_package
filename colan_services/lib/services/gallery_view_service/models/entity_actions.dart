@@ -7,7 +7,6 @@ import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
 import '../../../models/cl_shared_media.dart';
@@ -174,12 +173,12 @@ class EntityActions extends CLContextMenu {
       logoImageAsset: logoImageAsset,
       onCrop: CLMenuItem(
         title: 'Edit',
-        icon: clIcons.imageEdit,
+        icon: clIcons.imageCrop,
         onTap: onCrop,
       ),
       onEdit: CLMenuItem(
         title: 'Info',
-        icon: LucideIcons.info,
+        icon: clIcons.imageEdit,
         onTap: onEdit,
       ),
       onMove: CLMenuItem(

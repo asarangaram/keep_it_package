@@ -9,7 +9,7 @@ class CLScaffold extends StatelessWidget {
     super.key,
   });
   final PreferredSizeWidget topMenu;
-  final PreferredSizeWidget bottomMenu;
+  final PreferredSizeWidget? bottomMenu;
   final List<Widget> banners;
   final Widget body;
 
@@ -23,15 +23,15 @@ class CLScaffold extends StatelessWidget {
           Expanded(child: body),
         ],
       ),
-      bottomNavigationBar: (MediaQuery.of(context).viewInsets.bottom == 0)
-          ? SizedBox.fromSize(
-              size: bottomMenu.preferredSize,
-              child: ColoredBox(
-                color: Colors.amber,
-                child: bottomMenu,
-              ),
-            )
-          : null,
+      bottomNavigationBar:
+          (MediaQuery.of(context).viewInsets.bottom == 0 && bottomMenu != null)
+              ? SafeArea(
+                  child: SizedBox.fromSize(
+                    size: bottomMenu!.preferredSize,
+                    child: bottomMenu,
+                  ),
+                )
+              : null,
     );
   }
 }

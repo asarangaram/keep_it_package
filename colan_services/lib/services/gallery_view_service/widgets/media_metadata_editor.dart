@@ -4,11 +4,14 @@ import 'package:cl_entity_viewers/cl_entity_viewers.dart' show MediaThumbnail;
 import 'package:colan_services/colan_services.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
+
+import 'context_menu_pulldown.dart';
 
 class MediaMetadataEditor extends StatelessWidget {
   factory MediaMetadataEditor({
@@ -229,9 +232,6 @@ class _StatefulMediaEditorState extends State<StatefulMediaEditor> {
                     ShadInputFormField(
                       controller: labelController,
                       id: 'label',
-                      // prefix: const Icon(LucideIcons.tag),
-                      //  label: const Text(' Media Name'),
-
                       placeholder: Text('Media #${widget.media.id}'),
                       validator: (value) => validateName(
                         newLabel: value,
@@ -243,27 +243,18 @@ class _StatefulMediaEditorState extends State<StatefulMediaEditor> {
                           RegExp(r'\n'),
                         ),
                       ],
-                      /* suffix: ShadButton.ghost(
-                        onPressed: labelController.clear,
-                        child: const Icon(LucideIcons.delete),
-                      ), */
                       padding: EdgeInsets.zero,
                       inputPadding: const EdgeInsets.all(4),
                     ),
                     ShadInputFormField(
                       id: 'description',
-                      // prefix: const Icon(LucideIcons.tag),
                       label: const Text(' About '),
                       controller: descriptionController,
                       placeholder: const Text('Write description'),
-                      /* suffix: ShadButton.ghost(
-                        onPressed: descriptionController.clear,
-                        child: const Icon(LucideIcons.delete),
-                      ), */
                       maxLines: 3,
                     ),
-                    /* if (kDebugMode)
-                      MapInfo(widget.media.data.toMapForDisplay()), */
+                    if (kDebugMode)
+                      MapInfo(widget.media.data.toMapForDisplay()),
                     if (formValue.isNotEmpty)
                       Padding(
                         padding: const EdgeInsets.only(top: 24, left: 12),

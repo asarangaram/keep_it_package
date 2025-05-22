@@ -5,12 +5,12 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import '../notifiers/app_preferences.dart' show appPreferenceProvider;
 
 class OnDarkMode extends ConsumerWidget {
-  const OnDarkMode({required this.iconColor, super.key});
-
-  final Color iconColor;
+  const OnDarkMode({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final iconColor =
+        ref.watch(appPreferenceProvider.select((e) => e.iconColor));
     final themeMode =
         ref.watch(appPreferenceProvider.select((e) => e.themeMode));
     return ShadButton.ghost(

@@ -1,6 +1,7 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../extensions/ext_directory.dart';
 import 'get_device_directories.dart';
@@ -29,14 +30,14 @@ class StorageMonitor extends ConsumerWidget {
             StorageInfoEntry(
               label: 'Cache',
               dirs: deviceDirectories.cacheDirs,
-              action: ElevatedButton.icon(
+              action: ShadButton.secondary(
                 onPressed: () async {
                   for (final dir in deviceDirectories.cacheDirs) {
                     dir.path.clear();
                   }
                 },
-                label: const Text('Clear'),
-                icon: Icon(clIcons.deleteItem),
+                leading: clIcons.deleteItem.iconFormatted(),
+                child: const Text('Clear'),
               ),
             ),
           ],

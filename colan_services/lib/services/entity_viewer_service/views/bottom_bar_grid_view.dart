@@ -4,7 +4,8 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
-import 'package:store/store.dart';
+
+import '../../app_start_service/notifiers/app_preferences.dart';
 
 class BottomBarGridView extends ConsumerWidget implements PreferredSizeWidget {
   const BottomBarGridView({
@@ -16,53 +17,50 @@ class BottomBarGridView extends ConsumerWidget implements PreferredSizeWidget {
   final ViewerEntityMixin? entity;
 
   @override
-  Widget build(
-    BuildContext context,
-    WidgetRef ref,
-  ) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final iconColor =
+        ref.watch(appPreferenceProvider.select((e) => e.iconColor));
+    final iconSize = ref.watch(appPreferenceProvider.select((e) => e.iconSize));
     return Padding(
       padding: EdgeInsets.only(
         bottom: (ColanPlatformSupport.isMobilePlatform ? 0 : 8) +
             MediaQuery.of(context).padding.bottom,
-        top: 4,
+        top: 8,
         left: 8,
-        right: 8,
+        right: 16,
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          Center(
-            child: ShadButton.secondary(
-              child: Icon(
-                clIcons.insertItem,
-                size: 30,
-              ),
-              onPressed: () {
-                IncomingMediaMonitor.onPickFiles(
-                  context,
-                  ref,
-                  collection: entity as StoreEntity?, // FIXME
-                );
-              },
+          ShadButton.ghost(
+            child: Icon(
+              clIcons.insertItem,
+              color: iconColor,
+              size: iconSize,
             ),
+            onPressed: () {
+              IncomingMediaMonitor.onPickFiles(
+                context,
+                ref,
+                collection: entity,
+              );
+            },
           ),
           if (ColanPlatformSupport.cameraSupported)
-            Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: ShadButton.secondary(
-                  child: Icon(
-                    clIcons.camera,
-                    size: 30,
-                  ),
-                  onPressed: () {
-                    PageManager.of(context).openCamera(
-                      parentId: entity?.id,
-                    );
-                  },
+            Align(
+              alignment: Alignment.centerRight,
+              child: ShadButton.ghost(
+                child: Icon(
+                  clIcons.camera,
+                  color: iconColor,
+                  size: iconSize,
                 ),
+                onPressed: () {
+                  PageManager.of(context).openCamera(
+                    parentId: entity?.id,
+                  );
+                },
               ),
             ),
         ],

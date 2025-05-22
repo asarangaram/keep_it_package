@@ -84,7 +84,7 @@ class CLFormState extends State<CLForm> {
               Align(
                 alignment: Alignment.topRight,
                 child: IconButton(
-                  icon: Icon(clIcons.down),
+                  icon: clIcons.down.iconFormatted(),
                   onPressed: () {
                     if (isMobilePlatform && FocusScope.of(context).hasFocus) {
                       FocusScope.of(context).unfocus();
@@ -161,7 +161,7 @@ class CLFormState extends State<CLForm> {
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: IconButton(
-                      icon: Icon(clIcons.hideKeyboard),
+                      icon: clIcons.hideKeyboard.iconFormatted(),
                       onPressed:
                           (isMobilePlatform && FocusScope.of(context).hasFocus)
                               ? () => FocusScope.of(context).unfocus()

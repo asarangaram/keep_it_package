@@ -1,12 +1,13 @@
 import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:colan_services/services/entity_viewer_service/views/bottom_bar_page_view.dart';
 import 'package:colan_services/services/entity_viewer_service/views/top_bar_page_view.dart';
+import 'package:colan_widgets/colan_widgets.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import '../../gallery_view_service/widgets/cl_scaffold.dart';
+import '../../gallery_view_service/models/entity_actions.dart';
 
 class EntityPageView extends StatelessWidget {
   const EntityPageView({
@@ -42,12 +43,15 @@ class EntityPageView0 extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    const iconColor = Color.fromARGB(255, 80, 140, 224);
     final showMenu =
         ref.watch(mediaViewerUIStateProvider.select((e) => e.showMenu));
+    final entity =
+        ref.read(mediaViewerUIStateProvider.select((e) => e.currentItem));
+    const topBar = TopBarPageView();
 
-    const topBar = TopBarPageView(iconColor: iconColor);
-    const bottomBar = BottomBarPageView(iconColor: iconColor);
+    final bottomBar = BottomBarPageView(
+      bottomMenu: EntityActions.ofEntity(context, ref, entity as StoreEntity),
+    );
 
     if (showMenu) {
       return CLScaffold(

@@ -4,16 +4,15 @@ import 'package:colan_services/services/media_view_service/on_more_actions.dart'
 import 'package:flutter/material.dart';
 
 class TopBarPageView extends StatelessWidget implements PreferredSizeWidget {
-  const TopBarPageView({required this.iconColor, super.key});
-  final Color iconColor;
+  const TopBarPageView({super.key});
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
       title: const MediaTitle(),
-      actions: [
-        OnDarkMode(iconColor: iconColor),
-        OnMoreActions(iconColor: iconColor),
+      actions: const [
+        OnDarkMode(),
+        OnMoreActions(),
       ],
     );
   }

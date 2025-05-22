@@ -101,16 +101,18 @@ class CLIcons {
   final openNotes = MdiIcons.notebookEdit;
   final closeNotes = MdiIcons.notebookCheck;
   final closeFullscreen = MdiIcons.close;
-  final imageEdit = MdiIcons.pencil;
-  final imageMove = MdiIcons.imageMove;
-  final imageMoveAll = MdiIcons.imageMove;
-  final imageShare = MdiIcons.share;
-  final imageShareAll = MdiIcons.shareAll;
-  final pin = MdiIcons.pin;
-  final unPin = MdiIcons.pinOff;
-  final pinned = MdiIcons.pin;
-  final notPinned = MdiIcons.pinOff;
-  final brokenPin = MdiIcons.pinOff;
+  final imageCrop = LucideIcons.crop;
+  final imageEdit = LucideIcons.pencil;
+  final imageMove = LucideIcons.folderInput;
+  final imageMoveAll = LucideIcons.folderInput;
+  final imageShare = LucideIcons.share2;
+  final imageShareAll = LucideIcons.share2;
+
+  final pin = LucideIcons.pin;
+  final unPin = LucideIcons.pinOff;
+  final pinned = LucideIcons.pin;
+  final notPinned = LucideIcons.pinOff;
+  final brokenPin = LucideIcons.pinOff;
   final editCollectionLabel = MdiIcons.pencil;
   final next = MdiIcons.arrowRight;
   final deleteNote = MdiIcons.delete;
@@ -153,6 +155,7 @@ class CLIcons {
   final searchOpened = Symbols.search_check_2;
   final selected = Symbols.select_check_box_rounded;
   final deselected = Symbols.check_box_outline_blank_rounded;
+  final settings = LucideIcons.settings2;
 }
 
 CLIcons clIcons = CLIcons();

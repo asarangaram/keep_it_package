@@ -19,7 +19,7 @@ export 'src/models/cl_menu_item.dart'
     show CLMenuItem, Ext1DCLMenuItem, Ext2DCLMenuItem;
 export 'src/models/cl_scale_type.dart' show CLScaleType;
 export 'src/theme/models/cl_colors.dart' show DefaultCLColors;
-export 'src/theme/models/cl_icons.dart' show CLIcons, clIcons;
+export 'src/theme/models/cl_icons.dart' show CLIcons, IconOnIconData, clIcons;
 export 'src/theme/models/note_theme.dart'
     show DefaultNotesInputTheme, DefaultNotesTheme;
 export 'src/theme/state/app_theme.dart' show AppTheme;
@@ -27,6 +27,7 @@ export 'src/theme/state/cl_theme.dart' show CLTheme;
 export 'src/utils/key_listener.dart' show CLKeyListener;
 export 'src/views/appearance/cl_fullscreen_box.dart'
     show CLDialogWrapper, CLFullscreenBox;
+export 'src/views/appearance/cl_scaffold.dart' show CLScaffold;
 export 'src/views/appearance/keep_it_main_view.dart' show KeepItMainView;
 export 'src/views/cl_loading_view.dart' show CLLoader;
 export 'src/views/stale_media_indicator_view.dart' show BannerView;

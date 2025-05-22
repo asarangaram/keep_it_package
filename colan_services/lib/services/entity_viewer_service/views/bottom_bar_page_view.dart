@@ -1,25 +1,37 @@
-import 'package:colan_services/services/media_view_service/on_crop_button.dart';
-import 'package:colan_services/services/media_view_service/on_edit_button.dart';
-import 'package:colan_services/services/media_view_service/on_move_button.dart';
-import 'package:colan_services/services/media_view_service/on_pin_button.dart';
-import 'package:colan_services/services/media_view_service/on_share_button.dart';
+import 'package:cl_entity_viewers/cl_entity_viewers.dart';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
-class BottomBarPageView extends StatelessWidget implements PreferredSizeWidget {
-  const BottomBarPageView({required this.iconColor, super.key});
+import '../../app_start_service/notifiers/app_preferences.dart';
 
-  final Color iconColor;
+class BottomBarPageView extends ConsumerWidget implements PreferredSizeWidget {
+  const BottomBarPageView({required this.bottomMenu, super.key});
+
+  final CLContextMenu bottomMenu;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final iconColor =
+        ref.watch(appPreferenceProvider.select((e) => e.iconColor));
+    final iconSize = ref.watch(appPreferenceProvider.select((e) => e.iconSize));
+
     return Row(
-      children: [
-        OnEditButton(iconColor: iconColor),
-        OnCropButton(iconColor: iconColor),
-        OnMoveButton(iconColor: iconColor),
-        OnShareButton(iconColor: iconColor),
-        OnPinButton(iconColor: iconColor),
-      ].map((e) => Expanded(child: e)).toList(),
+      children: bottomMenu.actions
+          .map(
+            (e) => Expanded(
+              child: ShadButton.ghost(
+                onPressed: e.onTap,
+                child: Icon(
+                  e.icon,
+                  color: iconColor,
+                  size: iconSize,
+                ),
+              ),
+            ),
+          )
+          .toList(),
     );
   }
 
