@@ -87,12 +87,12 @@ class SelectionContol extends ConsumerWidget {
         entities: entities,
       ),
       columns: 3,
-      draggableMenuBuilder: selector.items.isNotEmpty &&
-              contextMenuBuilder != null
-          ? contextMenuBuilder!(context, selector.items.toList())
-              .draggableMenuBuilder(context,
-                  ref.read(selectModeProvider(viewIdentifier).notifier).disable)
-          : null,
+      draggableMenuBuilder:
+          selector.items.isNotEmpty && contextMenuBuilder != null
+              ? contextMenuBuilder!(context, selector.items.toList())
+                  .draggableMenuBuilder(
+                      context, ref.read(selectModeProvider.notifier).disable)
+              : null,
       whenEmpty: whenEmpty,
     );
   }

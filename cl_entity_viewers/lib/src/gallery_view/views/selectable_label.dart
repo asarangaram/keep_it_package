@@ -28,7 +28,7 @@ class SelectableLabel extends ConsumerWidget {
       textAlign: TextAlign.start,
     );
 
-    final selectionMode = ref.watch(selectModeProvider(viewIdentifier));
+    final selectionMode = ref.watch(selectModeProvider);
     if (!selectionMode) {
       return labelWidget;
     }

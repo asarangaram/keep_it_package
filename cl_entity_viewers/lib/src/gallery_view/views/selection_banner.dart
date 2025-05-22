@@ -28,7 +28,7 @@ class SelectionBanner extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final selectionMode = ref.watch(selectModeProvider(viewIdentifier));
+    final selectionMode = ref.watch(selectModeProvider);
     if (!selectionMode) {
       return SizedBox.shrink();
     }
@@ -102,8 +102,7 @@ class SelectionBanner extends ConsumerWidget {
               ),
           ] else
             ShadButton.secondary(
-              onPressed:
-                  ref.read(selectModeProvider(viewIdentifier).notifier).disable,
+              onPressed: ref.read(selectModeProvider.notifier).disable,
               child: const Text(
                 'Done',
               ),

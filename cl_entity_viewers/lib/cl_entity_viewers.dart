@@ -22,3 +22,4 @@ export 'src/page_view/providers/ui_state.dart'
         MediaViewerUIStateNotifier,
         MediaViewerUIState;
 export 'src/page_view/media_viewer.dart' show CLMediaViewer;
+export 'src/gallery_view/providers/select_mode.dart';

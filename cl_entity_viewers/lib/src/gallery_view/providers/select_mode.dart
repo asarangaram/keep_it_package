@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/tab_identifier.dart';
 
 class SelectModeNotifier extends StateNotifier<bool> {
   SelectModeNotifier() : super(false);
@@ -10,7 +9,7 @@ class SelectModeNotifier extends StateNotifier<bool> {
 }
 
 final selectModeProvider =
-    StateNotifierProvider.family<SelectModeNotifier, bool, ViewIdentifier>(
-        (ref, identifier) {
-  return SelectModeNotifier();
+    StateNotifierProvider<SelectModeNotifier, bool>((ref) {
+  throw Exception("Must overide");
+  // return SelectModeNotifier();
 });

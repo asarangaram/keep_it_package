@@ -29,35 +29,40 @@ class GalleryViewService extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          parent?.data.label!.capitalizeFirstLetter() ?? 'Keep It',
-          style: ShadTheme.of(context).textTheme.h1,
+    return ProviderScope(
+      overrides: [
+        selectModeProvider.overrideWith((ref) => SelectModeNotifier()),
+      ],
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            parent?.data.label!.capitalizeFirstLetter() ?? 'Keep It',
+            style: ShadTheme.of(context).textTheme.h1,
+          ),
+          actions: [
+            if (!ColanPlatformSupport.isMobilePlatform)
+              ShadButton.ghost(
+                onPressed: ref.read(reloadProvider.notifier).reload,
+                child: const Icon(LucideIcons.refreshCcw),
+              ),
+            if (children.isNotEmpty)
+              PopOverMenu(viewIdentifier: viewIdentifier)
+            else
+              ShadButton.ghost(
+                onPressed: () => PageManager.of(context).openSettings(),
+                child: const Icon(LucideIcons.settings),
+              ),
+          ],
         ),
-        actions: [
-          if (!ColanPlatformSupport.isMobilePlatform)
-            ShadButton.ghost(
-              onPressed: ref.read(reloadProvider.notifier).reload,
-              child: const Icon(LucideIcons.refreshCcw),
+        body: OnSwipe(
+          child: SafeArea(
+            bottom: false,
+            child: GalleryViewService0(
+              parentIdentifier: viewIdentifier.parentID,
+              storeIdentity: storeIdentity,
+              parent: parent,
+              entities: children,
             ),
-          if (children.isNotEmpty)
-            PopOverMenu(viewIdentifier: viewIdentifier)
-          else
-            ShadButton.ghost(
-              onPressed: () => PageManager.of(context).openSettings(),
-              child: const Icon(LucideIcons.settings),
-            ),
-        ],
-      ),
-      body: OnSwipe(
-        child: SafeArea(
-          bottom: false,
-          child: GalleryViewService0(
-            parentIdentifier: viewIdentifier.parentID,
-            storeIdentity: storeIdentity,
-            parent: parent,
-            entities: children,
           ),
         ),
       ),

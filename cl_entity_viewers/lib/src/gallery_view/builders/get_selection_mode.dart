@@ -19,15 +19,15 @@ class GetSelectionMode extends ConsumerWidget {
   }) builder;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final selectionMode = ref.watch(selectModeProvider(viewIdentifier));
+    final selectionMode = ref.watch(selectModeProvider);
     return builder(
       selectionMode: selectionMode,
       viewIdentifier: viewIdentifier,
       onUpdateSelectionmode: ({required enable}) {
         if (enable) {
-          ref.read(selectModeProvider(viewIdentifier).notifier).enable();
+          ref.read(selectModeProvider.notifier).enable();
         } else {
-          ref.read(selectModeProvider(viewIdentifier).notifier).disable();
+          ref.read(selectModeProvider.notifier).disable();
         }
       },
     );

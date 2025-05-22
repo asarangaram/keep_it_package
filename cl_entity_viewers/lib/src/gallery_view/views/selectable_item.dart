@@ -25,7 +25,7 @@ class SelectableItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final selectionMode = ref.watch(selectModeProvider(viewIdentifier));
+    final selectionMode = ref.watch(selectModeProvider);
 
     final itemWidget = itemBuilder(context, item, entities);
     if (!selectionMode) {
