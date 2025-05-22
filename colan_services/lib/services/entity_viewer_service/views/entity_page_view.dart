@@ -47,7 +47,9 @@ class EntityPageView0 extends ConsumerWidget {
         ref.watch(mediaViewerUIStateProvider.select((e) => e.showMenu));
     final entity =
         ref.read(mediaViewerUIStateProvider.select((e) => e.currentItem));
-    const topBar = TopBarPageView();
+    final topBar = TopBarPageView(
+      entity: entity,
+    );
 
     final bottomBar = BottomBarPageView(
       bottomMenu: EntityActions.ofEntity(context, ref, entity as StoreEntity),

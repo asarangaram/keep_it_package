@@ -1,15 +1,20 @@
+import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:colan_services/services/app_start_service/views/on_dark_mode.dart';
-import 'package:colan_services/services/media_view_service/media_title.dart';
-import 'package:colan_services/services/media_view_service/on_more_actions.dart';
+import 'package:colan_services/services/entity_viewer_service/widgets/media_title.dart';
+import 'package:colan_services/services/entity_viewer_service/widgets/on_more_actions.dart';
 import 'package:flutter/material.dart';
 
 class TopBarPageView extends StatelessWidget implements PreferredSizeWidget {
-  const TopBarPageView({super.key});
+  const TopBarPageView({
+    required this.entity,
+    super.key,
+  });
+  final ViewerEntityMixin? entity;
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: const MediaTitle(),
+      title: MediaTitle(entity: entity),
       actions: const [
         OnDarkMode(),
         OnMoreActions(),

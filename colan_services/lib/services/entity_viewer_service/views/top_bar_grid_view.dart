@@ -4,13 +4,13 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
-import 'package:store/store.dart' show StoreExtensionOnString;
 
 import '../../../models/platform_support.dart';
 import '../../app_start_service/views/on_dark_mode.dart';
 import '../../basic_page_service/widgets/page_manager.dart';
 import '../../gallery_view_service/widgets/popover_menu.dart';
 import '../../gallery_view_service/widgets/refresh_button.dart';
+import '../widgets/media_title.dart';
 
 class TopBarGridView extends ConsumerWidget implements PreferredSizeWidget {
   const TopBarGridView({
@@ -31,10 +31,7 @@ class TopBarGridView extends ConsumerWidget implements PreferredSizeWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         AppBar(
-          title: Text(
-            parent?.label!.capitalizeFirstLetter() ?? 'Keep It',
-            style: ShadTheme.of(context).textTheme.h1,
-          ),
+          title: MediaTitle(entity: parent),
           actions: [
             if (!ColanPlatformSupport.isMobilePlatform) const RefreshButton(),
             const OnDarkMode(),
