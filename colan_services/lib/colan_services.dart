@@ -30,7 +30,7 @@ export 'services/basic_page_service/widgets/page_manager.dart' show PageManager;
 export 'services/camera_service/cl_camera_service.dart' show CLCameraService;
 export 'services/camera_service/models/default_theme.dart'
     show DefaultCLCameraIcons;
-export 'services/gallery_view_service/entity_viewer.dart' show EntityViewer;
+export 'services/entity_viewer_service/entity_viewer.dart' show EntityViewer;
 
 export 'services/incoming_media_service/incoming_media_monitor.dart'
     show IncomingMediaMonitor;
@@ -38,8 +38,7 @@ export 'services/incoming_media_service/incoming_media_service.dart'
     show IncomingMediaService;
 export 'services/media_edit_service/media_edit_service.dart'
     show MediaEditService;
-export 'services/media_view_service/media_view_service.dart'
-    show MediaViewService;
+
 /* export 'services/media_view_service/media_view_service.dart'
     show MediaViewService; */
 /* export 'services/media_view_service/media_viewer/media_viewer.dart'

@@ -6,8 +6,8 @@ import 'package:store/store.dart' show StoreExtensionOnString;
 
 import '../../../models/platform_support.dart';
 import '../../basic_page_service/widgets/page_manager.dart';
-import 'popover_menu.dart';
-import 'refresh_button.dart';
+import '../../gallery_view_service/widgets/popover_menu.dart';
+import '../../gallery_view_service/widgets/refresh_button.dart';
 
 class TopBarGridView extends StatelessWidget implements PreferredSizeWidget {
   const TopBarGridView({

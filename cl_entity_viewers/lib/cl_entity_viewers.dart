@@ -21,5 +21,6 @@ export 'src/page_view/providers/ui_state.dart'
         mediaViewerUIStateProvider,
         MediaViewerUIStateNotifier,
         MediaViewerUIState;
-export 'src/page_view/media_viewer.dart' show CLMediaViewer;
+
 export 'src/gallery_view/providers/select_mode.dart';
+export 'src/page_view/views/media_viewer_core.dart' show MediaViewerCore;

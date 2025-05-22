@@ -1,0 +1,75 @@
+import 'package:cl_entity_viewers/cl_entity_viewers.dart';
+import 'package:colan_services/colan_services.dart';
+import 'package:colan_widgets/colan_widgets.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+import 'package:store/store.dart';
+
+class BottomBarGridView extends ConsumerWidget implements PreferredSizeWidget {
+  const BottomBarGridView({
+    required this.storeIdentity,
+    required this.entity,
+    super.key,
+  });
+  final String storeIdentity;
+  final ViewerEntityMixin? entity;
+
+  @override
+  Widget build(
+    BuildContext context,
+    WidgetRef ref,
+  ) {
+    return Padding(
+      padding: EdgeInsets.only(
+        bottom: (ColanPlatformSupport.isMobilePlatform ? 0 : 8) +
+            MediaQuery.of(context).padding.bottom,
+        top: 4,
+        left: 8,
+        right: 8,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Center(
+            child: ShadButton.secondary(
+              child: Icon(
+                clIcons.insertItem,
+                size: 30,
+              ),
+              onPressed: () {
+                IncomingMediaMonitor.onPickFiles(
+                  context,
+                  ref,
+                  collection: entity as StoreEntity?, // FIXME
+                );
+              },
+            ),
+          ),
+          if (ColanPlatformSupport.cameraSupported)
+            Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: ShadButton.secondary(
+                  child: Icon(
+                    clIcons.camera,
+                    size: 30,
+                  ),
+                  onPressed: () {
+                    PageManager.of(context).openCamera(
+                      parentId: entity?.id,
+                    );
+                  },
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+}

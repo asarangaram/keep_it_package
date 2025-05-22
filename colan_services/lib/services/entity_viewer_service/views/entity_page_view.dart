@@ -1,0 +1,70 @@
+import 'package:cl_entity_viewers/cl_entity_viewers.dart';
+import 'package:colan_services/services/entity_viewer_service/views/bottom_bar_page_view.dart';
+import 'package:colan_services/services/entity_viewer_service/views/top_bar_page_view.dart';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:store/store.dart';
+
+import '../../gallery_view_service/widgets/cl_scaffold.dart';
+
+class EntityPageView extends StatelessWidget {
+  const EntityPageView({
+    required this.parentIdentifier,
+    required this.entities,
+    required this.currentIndex,
+    super.key,
+  });
+  final String parentIdentifier;
+  final List<StoreEntity> entities;
+  final int currentIndex;
+  @override
+  Widget build(BuildContext context) {
+    return ProviderScope(
+      overrides: [
+        mediaViewerUIStateProvider.overrideWith((ref) {
+          return MediaViewerUIStateNotifier(
+            MediaViewerUIState(
+              entities: entities,
+              currentIndex: currentIndex,
+            ),
+          );
+        }),
+      ],
+      child: EntityPageView0(parentIdentifier: parentIdentifier),
+    );
+  }
+}
+
+class EntityPageView0 extends ConsumerWidget {
+  const EntityPageView0({required this.parentIdentifier, super.key});
+  final String parentIdentifier;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    const iconColor = Color.fromARGB(255, 80, 140, 224);
+    final showMenu =
+        ref.watch(mediaViewerUIStateProvider.select((e) => e.showMenu));
+
+    const topBar = TopBarPageView(iconColor: iconColor);
+    const bottomBar = BottomBarPageView(iconColor: iconColor);
+
+    if (showMenu) {
+      return CLScaffold(
+        topMenu: topBar,
+        banners: const [],
+        body: SafeArea(
+          child: MediaViewerCore(parentIdentifier: parentIdentifier),
+        ),
+        bottomMenu: bottomBar,
+      );
+    } else {
+      return Scaffold(
+        backgroundColor: Colors.black,
+        body: SafeArea(
+          child: MediaViewerCore(parentIdentifier: parentIdentifier),
+        ),
+      );
+    }
+  }
+}

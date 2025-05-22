@@ -1,13 +1,14 @@
 import 'package:cl_entity_viewers/cl_entity_viewers.dart';
-import 'package:colan_services/services/gallery_view_service/widgets/on_swipe.dart';
+import 'package:colan_services/services/entity_viewer_service/views/entity_page_view.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../media_view_service/media_view_service.dart';
-import 'gallery_view_service.dart';
-import 'widgets/when_error.dart';
+import '../gallery_view_service/widgets/on_swipe.dart';
+import '../gallery_view_service/widgets/when_error.dart';
+
+import 'views/entity_grid_view.dart';
 
 class EntityViewer extends ConsumerWidget {
   const EntityViewer({
@@ -50,7 +51,7 @@ class EntityViewer extends ConsumerWidget {
                   body: CLLoader.widget(debugMessage: 'GetEntities'),
                 ),
                 builder: (children) {
-                  return GalleryViewService(
+                  return EntityGridView(
                     viewIdentifier: viewIdentifier,
                     storeIdentity: storeIdentity,
                     parent: entity,
@@ -67,7 +68,7 @@ class EntityViewer extends ConsumerWidget {
                   body: CLLoader.widget(debugMessage: 'GetEntities'),
                 ),
                 builder: (entities) {
-                  return MediaViewService(
+                  return EntityPageView(
                     parentIdentifier: parentIdentifier,
                     entities: entities,
                     currentIndex: entities.indexWhere((e) => e.id == entity.id),

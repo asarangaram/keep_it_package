@@ -12,6 +12,7 @@ import '../../../models/universal_media_source.dart';
 import '../../../providers/universal_media.dart';
 import '../../basic_page_service/widgets/dialogs.dart';
 import '../../basic_page_service/widgets/page_manager.dart';
+
 import 'create_collection_wizard.dart';
 import 'wizard_menu_items.dart';
 import 'wizard_preview.dart';
