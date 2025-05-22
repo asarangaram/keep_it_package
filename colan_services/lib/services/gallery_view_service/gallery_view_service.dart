@@ -99,67 +99,57 @@ class GalleryViewService0 extends ConsumerWidget {
         }
       });
     }
-    return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 300),
-      switchInCurve: Curves.easeInOut,
-      switchOutCurve: Curves.easeInOut,
-      transitionBuilder: (
-        Widget child,
-        Animation<double> animation,
-      ) =>
-          FadeTransition(opacity: animation, child: child),
-      child: Column(
-        children: [
-          KeepItTopBar(
-            viewIdentifier: viewIdentifier,
-            entities: entities,
-            title: parent?.label!.capitalizeFirstLetter() ?? 'Keep It',
-          ),
-          Expanded(
-            child: RefreshIndicator(
-              onRefresh: /* isSelectionMode ? null : */
-                  () async => ref.read(reloadProvider.notifier).reload(),
-              child: Column(
-                children: [
-                  if (parentId == null)
-                    StaleMediaBanner(
-                      storeIdentity: storeIdentity,
-                    ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: CLGalleryGridView(
-                        viewIdentifier: viewIdentifier,
-                        incoming: entities,
-                        filtersDisabled: false,
-                        onSelectionChanged: null,
-                        contextMenuBuilder: (context, entities) =>
-                            EntityActions.entities(
-                          context,
-                          ref,
-                          entities,
-                        ),
-                        itemBuilder: (context, item, entities) => EntityPreview(
-                          viewIdentifier: viewIdentifier,
-                          item: item,
-                          entities: entities,
-                          parentId: parentId,
-                        ),
-                        whenEmpty: const WhenEmpty(),
+    return Column(
+      children: [
+        KeepItTopBar(
+          viewIdentifier: viewIdentifier,
+          entities: entities,
+          title: parent?.label!.capitalizeFirstLetter() ?? 'Keep It',
+        ),
+        Expanded(
+          child: RefreshIndicator(
+            onRefresh: /* isSelectionMode ? null : */
+                () async => ref.read(reloadProvider.notifier).reload(),
+            child: Column(
+              children: [
+                if (parentId == null)
+                  StaleMediaBanner(
+                    storeIdentity: storeIdentity,
+                  ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: CLGalleryGridView(
+                      viewIdentifier: viewIdentifier,
+                      incoming: entities,
+                      filtersDisabled: false,
+                      onSelectionChanged: null,
+                      contextMenuBuilder: (context, entities) =>
+                          EntityActions.entities(
+                        context,
+                        ref,
+                        entities,
                       ),
+                      itemBuilder: (context, item, entities) => EntityPreview(
+                        viewIdentifier: viewIdentifier,
+                        item: item,
+                        entities: entities,
+                        parentId: parentId,
+                      ),
+                      whenEmpty: const WhenEmpty(),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
-          if (MediaQuery.of(context).viewInsets.bottom == 0)
-            KeepItBottomBar(
-              storeIdentity: storeIdentity,
-              id: parentId,
-            ),
-        ],
-      ),
+        ),
+        if (MediaQuery.of(context).viewInsets.bottom == 0)
+          KeepItBottomBar(
+            storeIdentity: storeIdentity,
+            id: parentId,
+          ),
+      ],
     );
   }
 }
