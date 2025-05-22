@@ -42,6 +42,7 @@ class _MediaViewerPageViewState extends ConsumerState<MediaViewerPageView> {
     final s = ref.watch(mediaViewerUIStateProvider);
 
     return PageView.builder(
+      physics: s.showMenu ? null : NeverScrollableScrollPhysics(),
       controller: pageController,
       itemCount: s.entities.length,
       onPageChanged: (index) {
