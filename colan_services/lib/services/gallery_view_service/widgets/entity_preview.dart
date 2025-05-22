@@ -5,7 +5,7 @@ import 'package:store/store.dart';
 
 import '../../basic_page_service/widgets/page_manager.dart';
 
-import '../models/entity_actions.dart';
+import '../../entity_viewer_service/models/entity_actions.dart';
 
 import 'collection_preview.dart';
 import 'context_menu.dart';

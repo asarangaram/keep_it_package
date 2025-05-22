@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../models/entity_actions.dart';
+import '../../entity_viewer_service/models/entity_actions.dart';
 
 class KeepItContextMenu extends ConsumerWidget {
   const KeepItContextMenu({

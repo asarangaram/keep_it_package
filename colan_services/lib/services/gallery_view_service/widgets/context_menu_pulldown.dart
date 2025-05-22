@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 
-import '../models/entity_actions.dart';
+import '../../entity_viewer_service/models/entity_actions.dart';
 
 extension PullDownExtOnCLMenuItem on CLMenuItem {
   PullDownMenuItem get pullDownMenuItem => PullDownMenuItem(

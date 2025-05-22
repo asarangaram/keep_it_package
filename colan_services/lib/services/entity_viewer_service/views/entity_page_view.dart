@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import '../../gallery_view_service/models/entity_actions.dart';
+import '../models/entity_actions.dart';
 
 class EntityPageView extends StatelessWidget {
   const EntityPageView({

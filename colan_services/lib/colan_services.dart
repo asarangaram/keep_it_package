@@ -15,8 +15,7 @@ export 'services/entity_viewer_service/entity_viewer_service.dart'
 
 export 'services/incoming_media_service/incoming_media_service.dart'
     show IncomingMediaService;
-export 'services/media_edit_service/media_edit_service.dart'
-    show MediaEditService;
+export 'services/other_services/media_edit_service.dart' show MediaEditService;
 export 'services/media_wizard_service/media_wizard_service.dart'
     show MediaWizardService;
-export 'services/settings_service/settings_service.dart' show SettingsService;
+export 'services/other_services/settings_service.dart' show SettingsService;

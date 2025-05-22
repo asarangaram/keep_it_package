@@ -1,5 +1,5 @@
 import 'package:cl_entity_viewers/cl_entity_viewers.dart';
-import 'package:colan_services/services/gallery_view_service/models/entity_actions.dart';
+import 'package:colan_services/services/entity_viewer_service/models/entity_actions.dart';
 import 'package:colan_services/services/gallery_view_service/widgets/c_l_selectable_grid_scope.dart';
 import 'package:colan_services/services/gallery_view_service/widgets/entity_preview.dart';
 import 'package:colan_services/services/gallery_view_service/widgets/on_swipe.dart';

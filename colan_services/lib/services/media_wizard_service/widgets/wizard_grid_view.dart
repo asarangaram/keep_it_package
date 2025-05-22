@@ -2,7 +2,7 @@ import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 
 import 'package:flutter/material.dart';
 
-import '../../gallery_view_service/models/entity_actions.dart';
+import '../../entity_viewer_service/models/entity_actions.dart';
 import '../../gallery_view_service/widgets/when_empty.dart';
 
 class CLGalleryView extends StatelessWidget {

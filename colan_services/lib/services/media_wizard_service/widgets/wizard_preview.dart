@@ -10,7 +10,7 @@ import '../../../providers/universal_media.dart';
 import '../../basic_page_service/widgets/cl_error_view.dart';
 import '../../basic_page_service/widgets/page_manager.dart';
 
-import '../../gallery_view_service/models/entity_actions.dart';
+import '../../entity_viewer_service/models/entity_actions.dart';
 
 import 'wizard_grid_view.dart';
 
