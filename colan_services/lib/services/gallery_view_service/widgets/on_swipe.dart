@@ -1,0 +1,24 @@
+import 'package:colan_services/colan_services.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+class OnSwipe extends ConsumerWidget {
+  const OnSwipe({required this.child, super.key});
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return GestureDetector(
+      onHorizontalDragEnd: (DragEndDetails details) {
+        if (details.primaryVelocity == null) return;
+        // pop on Swipe
+        if (details.primaryVelocity! > 0) {
+          if (PageManager.of(context).canPop()) {
+            PageManager.of(context).pop();
+          }
+        }
+      },
+      child: child,
+    );
+  }
+}

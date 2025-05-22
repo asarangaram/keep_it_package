@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-class KeepItBottomBar extends CLBanner {
+class KeepItBottomBar extends CLBanner implements PreferredSizeWidget {
   const KeepItBottomBar({
     required this.storeIdentity,
     required this.id,
@@ -85,4 +85,7 @@ class KeepItBottomBar extends CLBanner {
       },
     );
   }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight * 2);
 }
