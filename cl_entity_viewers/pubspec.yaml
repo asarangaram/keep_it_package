@@ -21,7 +21,7 @@ dependencies:
   material_design_icons_flutter: ^7.0.7296
   path: ^1.9.0
   path_provider: ^2.1.5
-  shadcn_ui: ^0.24.0
+  shadcn_ui: ^0.26.5
   shimmer: ^3.0.0
   sqlite_async: ^0.11.1
   video_player: ^2.9.1

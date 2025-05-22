@@ -24,7 +24,7 @@ dependencies:
   percent_indicator: ^4.2.3
 
   progress_indicators: ^1.0.0
-  shadcn_ui: ^0.24.0
+  shadcn_ui: ^0.26.5
   shimmer: ^3.0.0
 
   #scroll_to_index: ^3.0.1

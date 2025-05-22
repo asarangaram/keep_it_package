@@ -7,7 +7,6 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart' show StoreExtensionOnString;
 
 import '../../../models/platform_support.dart';
-import '../../app_start_service/notifiers/app_preferences.dart';
 import '../../app_start_service/views/on_dark_mode.dart';
 import '../../basic_page_service/widgets/page_manager.dart';
 import '../../gallery_view_service/widgets/popover_menu.dart';

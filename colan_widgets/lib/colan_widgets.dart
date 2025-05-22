@@ -22,7 +22,7 @@ export 'src/theme/models/cl_colors.dart' show DefaultCLColors;
 export 'src/theme/models/cl_icons.dart' show CLIcons, IconOnIconData, clIcons;
 export 'src/theme/models/note_theme.dart'
     show DefaultNotesInputTheme, DefaultNotesTheme;
-export 'src/theme/state/app_theme.dart' show AppTheme;
+
 export 'src/theme/state/cl_theme.dart' show CLTheme;
 export 'src/utils/key_listener.dart' show CLKeyListener;
 export 'src/views/appearance/cl_fullscreen_box.dart'

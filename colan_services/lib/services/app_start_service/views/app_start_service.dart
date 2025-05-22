@@ -34,7 +34,7 @@ class AppStart extends ConsumerWidget {
     final app = appDescriptor;
     final themeMode =
         ref.watch(appPreferenceProvider.select((e) => e.themeMode));
-    return ShadApp.material(
+    return ShadApp(
       title: app.title,
       initialRoute: '/',
       theme: ShadThemeData(

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:colan_services/colan_services.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:fvp/fvp.dart' as fvp;
 
@@ -20,11 +21,13 @@ class KeepItApp implements AppDescriptor {
   List<CLRouteDescriptor> get screens => [
         CLRouteDescriptor(
           name: '',
-          builder: (context, parameters) => const EntityViewer(
-            parentIdentifier: 'KeepIt Viewer',
-            storeIdentity: 'local',
-            id: null,
-          ),
+          builder: (context, parameters) {
+            return const EntityViewer(
+              parentIdentifier: 'KeepIt Viewer',
+              storeIdentity: 'local',
+              id: null,
+            );
+          },
         ),
         CLRouteDescriptor(
           name: 'mediaNew',
@@ -210,7 +213,15 @@ void main() {
   /* SystemChrome.setPreferredOrientations(
     [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
   ); */
-  // SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.blue, // Change to your desired color
+      systemNavigationBarColor: Colors.red,
+      statusBarIconBrightness: Brightness.light, // For white icons
+      statusBarBrightness: Brightness.dark, // For iOS
+    ),
+  );
+  //SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   fvp.registerWith(
     options: {
       'global': {'logLevel': 'Error'},

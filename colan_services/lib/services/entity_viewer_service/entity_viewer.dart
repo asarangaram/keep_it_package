@@ -33,51 +33,49 @@ class EntityViewer extends ConsumerWidget {
             errorMessage: e.toString(),
           ),
         );
-    return AppTheme(
-      child: OnSwipe(
-        child: GetEntity(
-          id: id,
-          storeIdentity: storeIdentity,
-          errorBuilder: errorBuilder,
-          loadingBuilder: () =>
-              Scaffold(body: CLLoader.widget(debugMessage: 'GetEntity')),
-          builder: (entity) {
-            if (entity?.isCollection ?? true) {
-              return GetEntities(
-                parentId: id,
-                storeIdentity: storeIdentity,
-                errorBuilder: errorBuilder,
-                loadingBuilder: () => Scaffold(
-                  body: CLLoader.widget(debugMessage: 'GetEntities'),
-                ),
-                builder: (children) {
-                  return EntityGridView(
-                    viewIdentifier: viewIdentifier,
-                    storeIdentity: storeIdentity,
-                    parent: entity,
-                    children: children,
-                  );
-                },
-              );
-            } else {
-              return GetEntities(
-                parentId: entity!.parentId,
-                storeIdentity: storeIdentity,
-                errorBuilder: errorBuilder,
-                loadingBuilder: () => Scaffold(
-                  body: CLLoader.widget(debugMessage: 'GetEntities'),
-                ),
-                builder: (entities) {
-                  return EntityPageView(
-                    parentIdentifier: parentIdentifier,
-                    entities: entities,
-                    currentIndex: entities.indexWhere((e) => e.id == entity.id),
-                  );
-                },
-              );
-            }
-          },
-        ),
+    return OnSwipe(
+      child: GetEntity(
+        id: id,
+        storeIdentity: storeIdentity,
+        errorBuilder: errorBuilder,
+        loadingBuilder: () =>
+            Scaffold(body: CLLoader.widget(debugMessage: 'GetEntity')),
+        builder: (entity) {
+          if (entity?.isCollection ?? true) {
+            return GetEntities(
+              parentId: id,
+              storeIdentity: storeIdentity,
+              errorBuilder: errorBuilder,
+              loadingBuilder: () => Scaffold(
+                body: CLLoader.widget(debugMessage: 'GetEntities'),
+              ),
+              builder: (children) {
+                return EntityGridView(
+                  viewIdentifier: viewIdentifier,
+                  storeIdentity: storeIdentity,
+                  parent: entity,
+                  children: children,
+                );
+              },
+            );
+          } else {
+            return GetEntities(
+              parentId: entity!.parentId,
+              storeIdentity: storeIdentity,
+              errorBuilder: errorBuilder,
+              loadingBuilder: () => Scaffold(
+                body: CLLoader.widget(debugMessage: 'GetEntities'),
+              ),
+              builder: (entities) {
+                return EntityPageView(
+                  parentIdentifier: parentIdentifier,
+                  entities: entities,
+                  currentIndex: entities.indexWhere((e) => e.id == entity.id),
+                );
+              },
+            );
+          }
+        },
       ),
     );
   }
