@@ -53,28 +53,10 @@ class EntityPreview extends ConsumerWidget {
     return KeepItContextMenu(
       viewIdentifier: viewIdentifier,
       onTap: () async {
-        if (entity.isCollection) {
-          await PageManager.of(context).openCollection(
-            entity,
-            parentIdentifier: viewIdentifier.parentID,
-          );
-        } else {
-          // Setup provider, it may be good idea to have a single function
-          // to avoid extra notification
-          final supportedEntities =
-              entities /* .where((e) => e.mediaType == CLMediaType.image).toList() */;
-          ref.read(mediaViewerUIStateProvider.notifier).entities =
-              supportedEntities;
-          ref.read(mediaViewerUIStateProvider.notifier).currIndex =
-              supportedEntities.indexWhere((e) => e.id == entity.data.id!);
-
-          await PageManager.of(context).openMedia(
-            entity.data.id!,
-            parentId: parentId,
-            parentIdentifier:
-                viewIdentifier.parentID, // FIXME: Is this correct?
-          );
-        }
+        await PageManager.of(context).openEntity(
+          entity,
+          parentIdentifier: viewIdentifier.parentID,
+        );
         return true;
       },
       contextMenu: contextMenu,

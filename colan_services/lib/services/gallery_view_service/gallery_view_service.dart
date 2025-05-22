@@ -1,42 +1,69 @@
 import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:colan_services/colan_services.dart';
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
 import 'models/entity_actions.dart';
 import 'widgets/bottom_bar.dart';
 import 'widgets/entity_preview.dart';
+import 'widgets/popover_menu.dart';
 import 'widgets/stale_media_banner.dart';
 import 'widgets/top_bar.dart';
 import 'widgets/when_empty.dart';
-import 'widgets/when_error.dart';
 
-/* class GalleryViewService extends StatelessWidget {
+class GalleryViewService extends ConsumerWidget {
   const GalleryViewService({
-    required this.parentIdentifier,
+    required this.viewIdentifier,
     required this.storeIdentity,
+    required this.parent,
+    required this.children,
     super.key,
   });
-  final String parentIdentifier;
+  final ViewIdentifier viewIdentifier;
   final String storeIdentity;
+  final StoreEntity? parent;
+  final List<StoreEntity> children;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      body: SafeArea(
-        child: OnSwipe(
+      appBar: AppBar(
+        title: Text(
+          parent?.data.label!.capitalizeFirstLetter() ?? 'Keep It',
+          style: ShadTheme.of(context).textTheme.h1,
+        ),
+        actions: [
+          if (!ColanPlatformSupport.isMobilePlatform)
+            ShadButton.ghost(
+              onPressed: ref.read(reloadProvider.notifier).reload,
+              child: const Icon(LucideIcons.refreshCcw),
+            ),
+          if (children.isNotEmpty)
+            PopOverMenu(viewIdentifier: viewIdentifier)
+          else
+            ShadButton.ghost(
+              onPressed: () => PageManager.of(context).openSettings(),
+              child: const Icon(LucideIcons.settings),
+            ),
+        ],
+      ),
+      body: OnSwipe(
+        child: SafeArea(
+          bottom: false,
           child: GalleryViewService0(
+            parentIdentifier: viewIdentifier.parentID,
             storeIdentity: storeIdentity,
-            parentIdentifier: parentIdentifier,
+            parent: parent,
+            entities: children,
           ),
         ),
       ),
     );
   }
-} */
+}
 
 class GalleryViewService0 extends ConsumerWidget {
   const GalleryViewService0({

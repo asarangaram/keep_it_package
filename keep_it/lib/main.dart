@@ -93,7 +93,7 @@ class KeepItApp implements AppDescriptor {
             );
           },
         ),
-        CLRouteDescriptor(
+        /* CLRouteDescriptor(
           name: 'media',
           builder: (context, parameters) {
             final String parentIdentifier;
@@ -115,7 +115,7 @@ class KeepItApp implements AppDescriptor {
               parentIdentifier: parentIdentifier,
             );
           },
-        ),
+        ), */
         CLRouteDescriptor(
           name: 'media_wizard',
           builder: (context, parameters) {

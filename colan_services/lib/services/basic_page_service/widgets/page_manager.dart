@@ -123,30 +123,16 @@ class PageManager {
     }
   }
 
-  Future<StoreEntity?> openCollection(
-    StoreEntity collection, {
+  Future<StoreEntity?> openEntity(
+    StoreEntity? entity, {
     required String parentIdentifier,
-  }) async {
-    await navigator.pushNamed(
-      context,
-      '/mediaNew?id=${collection.id}&parentIdentifier=$parentIdentifier',
-    );
-    return null;
-  }
-
-  Future<StoreEntity?> openMedia(
-    int mediaId, {
-    required String parentIdentifier,
-    int? parentId,
   }) async {
     final queryMap = [
-      'id=$mediaId',
+      if (entity != null) 'id=${entity.id}',
       'parentIdentifier=$parentIdentifier',
-      if (parentId != null) 'parentId=$parentId',
     ];
     final query = queryMap.isNotEmpty ? '?${queryMap.join('&')}' : '';
-
-    await navigator.pushNamed(context, '/media$query');
+    await navigator.pushNamed(context, '/mediaNew$query');
     return null;
   }
 

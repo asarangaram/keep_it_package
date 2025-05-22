@@ -16,5 +16,9 @@ export 'src/gallery_view/views/view_modifier_settings.dart'
 export 'src/page_view/views/media_preview.dart'
     show MediaThumbnail, MediaPreviewWithOverlays;
 
-export 'src/page_view/providers/ui_state.dart' show mediaViewerUIStateProvider;
+export 'src/page_view/providers/ui_state.dart'
+    show
+        mediaViewerUIStateProvider,
+        MediaViewerUIStateNotifier,
+        MediaViewerUIState;
 export 'src/page_view/media_viewer.dart' show CLMediaViewer;

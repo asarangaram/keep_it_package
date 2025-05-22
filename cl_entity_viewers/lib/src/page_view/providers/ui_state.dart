@@ -69,7 +69,8 @@ class MediaViewerUIState {
 }
 
 class MediaViewerUIStateNotifier extends StateNotifier<MediaViewerUIState> {
-  MediaViewerUIStateNotifier() : super(const MediaViewerUIState());
+  MediaViewerUIStateNotifier([MediaViewerUIState? mediaViewerUIState])
+      : super(mediaViewerUIState ?? const MediaViewerUIState());
   Timer? disableControls;
   //final Duration? defaultTimeOut = const Duration(seconds: 3);
   final Duration? defaultTimeOut = null;
