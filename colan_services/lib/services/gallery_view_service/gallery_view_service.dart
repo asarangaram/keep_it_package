@@ -42,115 +42,92 @@ class GalleryViewService0 extends ConsumerWidget {
   const GalleryViewService0({
     required this.storeIdentity,
     required this.parentIdentifier,
-    required this.id,
+    required this.parent,
+    required this.entities,
     super.key,
   });
 
   final String storeIdentity;
   final String parentIdentifier;
-  final int? id;
+  final StoreEntity? parent;
+  final List<StoreEntity> entities;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final parentId = id;
+    final parentId = parent?.id;
     final viewIdentifier = ViewIdentifier(
       parentID: parentIdentifier,
-      viewId: parentId.toString(),
+      viewId: (parent?.id).toString(),
     );
 
-    Widget errorBuilder(Object e, StackTrace st) => WhenError(
-          errorMessage: e.toString(),
-        );
-    return GetEntity(
-      id: parentId,
-      storeIdentity: storeIdentity,
-      errorBuilder: errorBuilder,
-      loadingBuilder: () => CLLoader.widget(debugMessage: 'GetEntity'),
-      builder: (parentCollection) {
-        return GetEntities(
-          parentId: parentId,
-          storeIdentity: storeIdentity,
-          loadingBuilder: () => CLLoader.widget(
-            debugMessage: 'GalleryViewService',
+    if (entities.isEmpty && parent?.id != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (PageManager.of(context).canPop()) {
+          PageManager.of(context).pop();
+        }
+      });
+    }
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 300),
+      switchInCurve: Curves.easeInOut,
+      switchOutCurve: Curves.easeInOut,
+      transitionBuilder: (
+        Widget child,
+        Animation<double> animation,
+      ) =>
+          FadeTransition(opacity: animation, child: child),
+      child: Column(
+        children: [
+          KeepItTopBar(
+            viewIdentifier: viewIdentifier,
+            entities: entities,
+            title: parent?.label!.capitalizeFirstLetter() ?? 'Keep It',
           ),
-          errorBuilder: errorBuilder,
-          builder: (entities) {
-            if (entities.isEmpty && parentId != null) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (PageManager.of(context).canPop()) {
-                  PageManager.of(context).pop();
-                }
-              });
-            }
-            return AnimatedSwitcher(
-              duration: const Duration(milliseconds: 300),
-              switchInCurve: Curves.easeInOut,
-              switchOutCurve: Curves.easeInOut,
-              transitionBuilder: (
-                Widget child,
-                Animation<double> animation,
-              ) =>
-                  FadeTransition(opacity: animation, child: child),
+          Expanded(
+            child: RefreshIndicator(
+              onRefresh: /* isSelectionMode ? null : */
+                  () async => ref.read(reloadProvider.notifier).reload(),
               child: Column(
                 children: [
-                  KeepItTopBar(
-                    viewIdentifier: viewIdentifier,
-                    entities: entities,
-                    title:
-                        parentCollection?.data.label!.capitalizeFirstLetter() ??
-                            'Keep It',
-                  ),
+                  if (parentId == null)
+                    StaleMediaBanner(
+                      storeIdentity: storeIdentity,
+                    ),
                   Expanded(
-                    child: RefreshIndicator(
-                      onRefresh: /* isSelectionMode ? null : */
-                          () async =>
-                              ref.read(reloadProvider.notifier).reload(),
-                      child: Column(
-                        children: [
-                          if (parentId == null)
-                            StaleMediaBanner(
-                              storeIdentity: storeIdentity,
-                            ),
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8),
-                              child: CLGalleryGridView(
-                                viewIdentifier: viewIdentifier,
-                                incoming: entities,
-                                filtersDisabled: false,
-                                onSelectionChanged: null,
-                                contextMenuBuilder: (context, entities) =>
-                                    EntityActions.entities(
-                                  context,
-                                  ref,
-                                  entities,
-                                ),
-                                itemBuilder: (context, item, entities) =>
-                                    EntityPreview(
-                                  viewIdentifier: viewIdentifier,
-                                  item: item,
-                                  entities: entities,
-                                  parentId: id,
-                                ),
-                                whenEmpty: const WhenEmpty(),
-                              ),
-                            ),
-                          ),
-                        ],
+                    child: Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: CLGalleryGridView(
+                        viewIdentifier: viewIdentifier,
+                        incoming: entities,
+                        filtersDisabled: false,
+                        onSelectionChanged: null,
+                        contextMenuBuilder: (context, entities) =>
+                            EntityActions.entities(
+                          context,
+                          ref,
+                          entities,
+                        ),
+                        itemBuilder: (context, item, entities) => EntityPreview(
+                          viewIdentifier: viewIdentifier,
+                          item: item,
+                          entities: entities,
+                          parentId: parentId,
+                        ),
+                        whenEmpty: const WhenEmpty(),
                       ),
                     ),
                   ),
-                  if (MediaQuery.of(context).viewInsets.bottom == 0)
-                    KeepItBottomBar(
-                      storeIdentity: storeIdentity,
-                      id: id,
-                    ),
                 ],
               ),
-            );
-          },
-        );
-      },
+            ),
+          ),
+          if (MediaQuery.of(context).viewInsets.bottom == 0)
+            KeepItBottomBar(
+              storeIdentity: storeIdentity,
+              id: parentId,
+            ),
+        ],
+      ),
     );
   }
 }

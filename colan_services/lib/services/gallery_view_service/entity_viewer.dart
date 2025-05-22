@@ -49,7 +49,7 @@ class EntityViewer extends ConsumerWidget {
               storeIdentity: storeIdentity,
               errorBuilder: errorBuilder,
               loadingBuilder: () =>
-                  Scaffold(body: CLLoader.widget(debugMessage: 'GetEntity')),
+                  Scaffold(body: CLLoader.widget(debugMessage: 'GetEntities')),
               builder: (childrens) {
                 return Scaffold(
                   appBar: AppBar(
@@ -61,7 +61,7 @@ class EntityViewer extends ConsumerWidget {
                       if (!ColanPlatformSupport.isMobilePlatform)
                         ShadButton.ghost(
                           onPressed: ref.read(reloadProvider.notifier).reload,
-                          child: const Icon(LucideIcons.refreshCcw, size: 25),
+                          child: const Icon(LucideIcons.refreshCcw),
                         ),
                       if (childrens.isNotEmpty)
                         PopOverMenu(viewIdentifier: viewIdentifier)
@@ -69,7 +69,7 @@ class EntityViewer extends ConsumerWidget {
                         ShadButton.ghost(
                           onPressed: () =>
                               PageManager.of(context).openSettings(),
-                          child: const Icon(LucideIcons.settings, size: 25),
+                          child: const Icon(LucideIcons.settings),
                         ),
                     ],
                   ),
@@ -79,7 +79,8 @@ class EntityViewer extends ConsumerWidget {
                       child: GalleryViewService0(
                         parentIdentifier: parentIdentifier,
                         storeIdentity: storeIdentity,
-                        id: id,
+                        parent: parent,
+                        entities: childrens,
                       ),
                     ),
                   ),
