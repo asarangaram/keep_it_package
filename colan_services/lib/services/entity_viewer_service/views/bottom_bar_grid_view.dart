@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../app_start_service/notifiers/app_preferences.dart';
-
 class BottomBarGridView extends ConsumerWidget implements PreferredSizeWidget {
   const BottomBarGridView({
     required this.storeIdentity,
@@ -18,9 +16,6 @@ class BottomBarGridView extends ConsumerWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final iconColor =
-        ref.watch(appPreferenceProvider.select((e) => e.iconColor));
-    final iconSize = ref.watch(appPreferenceProvider.select((e) => e.iconSize));
     return Padding(
       padding: EdgeInsets.only(
         bottom: (ColanPlatformSupport.isMobilePlatform ? 0 : 8) +
