@@ -88,31 +88,28 @@ class _DuplicatePageStatefulState extends State<DuplicatePageStateful> {
           child: WizardLayout(
             title: 'Already Imported',
             onCancel: widget.onCancel,
-            wizard: SizedBox(
-              height: kMinInteractiveDimension * 3,
-              child: WizardDialog(
-                content: Text('Do you want all the above media to be moved '
-                    'to $collectionLablel or skipped?'),
-                option1: CLMenuItem(
-                  icon: clIcons.placeHolder,
-                  title: 'Move',
-                  onTap: () async {
-                    widget.onDone(
-                      mg: await currentMedia.mergeMismatch(),
-                    );
-                    return true;
-                  },
-                ),
-                option2: CLMenuItem(
-                  icon: clIcons.placeHolder,
-                  title: 'Skip',
-                  onTap: () async {
-                    widget.onDone(
-                      mg: currentMedia.removeMismatch(),
-                    );
-                    return true;
-                  },
-                ),
+            wizard: WizardDialog(
+              content: Text('Do you want all the above media to be moved '
+                  'to $collectionLablel or skipped?'),
+              option1: CLMenuItem(
+                icon: clIcons.placeHolder,
+                title: 'Move',
+                onTap: () async {
+                  widget.onDone(
+                    mg: await currentMedia.mergeMismatch(),
+                  );
+                  return true;
+                },
+              ),
+              option2: CLMenuItem(
+                icon: clIcons.placeHolder,
+                title: 'Skip',
+                onTap: () async {
+                  widget.onDone(
+                    mg: currentMedia.removeMismatch(),
+                  );
+                  return true;
+                },
               ),
             ),
             child: Column(

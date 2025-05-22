@@ -3,6 +3,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 class SettingsService extends ConsumerWidget {
   const SettingsService({
@@ -13,17 +14,16 @@ class SettingsService extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return KeepItMainView(
-      title: 'Settings',
-      backButton: Padding(
-        padding: const EdgeInsets.only(right: 16),
-        child: CLButtonIcon.small(
-          clIcons.pagePop,
-          onTap: () => PageManager.of(context).pop(),
+    return CLScaffold(
+      topMenu: AppBar(
+        title: Text(
+          'Settings',
+          style: ShadTheme.of(context).textTheme.h1,
         ),
       ),
-      popupActionItems: const [],
-      child: GetEntities(
+      bottomMenu: null,
+      banners: const [],
+      body: GetEntities(
         isDeleted: true,
         isHidden: null,
         parentId: 0,

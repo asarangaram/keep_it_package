@@ -26,8 +26,8 @@ class OnDarkMode extends ConsumerWidget {
       },
       child: switch (themeMode) {
         ThemeMode.system => throw UnimplementedError(),
-        ThemeMode.light => LucideIcons.sunMoon.iconFormatted(),
-        ThemeMode.dark => LucideIcons.moon.iconFormatted(),
+        ThemeMode.light => clIcons.lightMode.iconFormatted(),
+        ThemeMode.dark => clIcons.darkMode.iconFormatted(),
       },
     );
   }

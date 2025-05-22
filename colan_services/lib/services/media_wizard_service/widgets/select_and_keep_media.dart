@@ -167,7 +167,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
     );
   }
 
-  Widget getCollection({required List<StoreEntity> currEntities}) {
+  PreferredSizeWidget getCollection({required List<StoreEntity> currEntities}) {
     return CreateCollectionWizard(
       storeIdentity: widget.storeIdentity,
       isValidSuggestion: (collection) {
@@ -275,7 +275,7 @@ class WizardView extends ConsumerWidget {
   final ViewIdentifier viewIdentifier;
   final WizardMenuItems menu;
   final bool canSelect;
-  final Widget? dialog;
+  final PreferredSizeWidget? dialog;
   final void Function(List<StoreEntity>)? onSelectionChanged;
   final bool freezeView; // Can this avoided?
   final String storeIdentity;
@@ -308,7 +308,7 @@ class WizardView extends ConsumerWidget {
   }
 }
 
-class KeepWithProgress extends StatelessWidget {
+class KeepWithProgress extends StatelessWidget implements PreferredSizeWidget {
   const KeepWithProgress({
     required this.media2Move,
     required this.newParent,
@@ -366,6 +366,9 @@ class KeepWithProgress extends StatelessWidget {
     yield const Progress(fractCompleted: 1, currentItem: 'All items are moved');
     await onDone(mediaMultiple: updatedItems);
   }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kMinInteractiveDimension * 3);
 }
 
 class SelectionControlIcon extends ConsumerWidget {

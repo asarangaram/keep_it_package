@@ -156,6 +156,9 @@ class CLIcons {
   final selected = Symbols.select_check_box_rounded;
   final deselected = Symbols.check_box_outline_blank_rounded;
   final settings = LucideIcons.settings2;
+  final darkMode = LucideIcons.moon;
+  final lightMode = LucideIcons.sun;
+  final textClear = LucideIcons.x;
 }
 
 CLIcons clIcons = CLIcons();

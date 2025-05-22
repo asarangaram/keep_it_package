@@ -67,8 +67,8 @@ class _TextFilterViewState extends ConsumerState<TextFilterView> {
                 secondaryBorder: ShadBorder.none,
                 secondaryFocusedBorder: ShadBorder.none,
               ),
-              child: const Icon(
-                LucideIcons.x,
+              child: Icon(
+                clIcons.textClear,
               ),
               onPressed: () {
                 controller.clear();

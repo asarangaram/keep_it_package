@@ -16,7 +16,7 @@ class WizardLayout extends StatelessWidget {
     super.key,
   });
   final Widget child;
-  final Widget? wizard;
+  final PreferredSizeWidget? wizard;
   final String? title;
   final List<Widget>? actions;
 
