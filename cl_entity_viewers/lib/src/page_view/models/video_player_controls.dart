@@ -1,8 +1,8 @@
 abstract class VideoPlayerControls {
   Future<void> setVideo(
     Uri uri, {
-    required bool autoPlay,
-    required bool forced,
+    bool autoPlay = true,
+    bool forced = false,
   });
   Future<void> resetVideo({
     required bool autoPlay,

@@ -1,14 +1,11 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-
 import 'package:video_player/video_player.dart';
 
 @immutable
 class VideoPlayerState {
-  const VideoPlayerState({
-    this.path,
-    this.controller,
-  });
+  const VideoPlayerState({this.path, this.controller});
   final Uri? path;
   final VideoPlayerController? controller;
 
@@ -24,11 +21,11 @@ class VideoPlayerState {
 
   VideoPlayerState copyWith({
     ValueGetter<Uri?>? path,
-    VideoPlayerController? controller,
+    ValueGetter<VideoPlayerController?>? controller,
   }) {
     return VideoPlayerState(
       path: path != null ? path.call() : this.path,
-      controller: controller ?? this.controller,
+      controller: controller != null ? controller.call() : this.controller,
     );
   }
 }

@@ -73,6 +73,15 @@ class ViewMedia extends ConsumerWidget {
         /* widget.playerControls.uri != widget.currentItem.mediaUri && */
         currentItem.mediaType == CLMediaType.video &&
         currentItem.mediaUri != null;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (isPlayable) {
+        playerControls.setVideo(uri);
+      } else {
+        playerControls.removeVideo();
+      }
+    });
+
     final mediaViewer = MediaViewer(
       heroTag: '$parentIdentifier /item/${currentItem.id}',
       uri: currentItem.mediaUri!,

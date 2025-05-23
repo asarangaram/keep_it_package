@@ -18,6 +18,12 @@ class UniversalConfigNotifier extends AsyncNotifier<UniversalConfiguration> {
     return UniversalConfiguration.fromJson(json);
   }
 
+  set isManuallyPaused(bool value) => state = AsyncValue.data(
+        state.value!.copyWith(
+          isManuallyPaused: value,
+        ),
+      );
+
   Future<void> onChange({
     bool? isAudioMuted,
     double? lastKnownVolume,

@@ -38,8 +38,8 @@ class VideoPlayerNotifier extends AutoDisposeAsyncNotifier<VideoPlayerState>
   @override
   Future<void> setVideo(
     Uri uri, {
-    required bool autoPlay,
-    required bool forced,
+    bool autoPlay = true,
+    bool forced = false,
   }) async {
     if (!forced && state.value?.path == uri) return;
     await removeVideo();
@@ -73,7 +73,7 @@ class VideoPlayerNotifier extends AutoDisposeAsyncNotifier<VideoPlayerState>
       await controller.seekTo(uriConfig.lastKnownPlayPosition);
       await controller.setLooping(true); // FIXME: from configuration
 
-      if (autoPlay) {
+      if (autoPlay && !universalConfig.isManuallyPaused) {
         await controller.play();
       }
       controller.addListener(timestampUpdater);
@@ -106,7 +106,7 @@ class VideoPlayerNotifier extends AutoDisposeAsyncNotifier<VideoPlayerState>
   @override
   Future<void> removeVideo() async {
     final controller = state.value?.controller;
-    state = const AsyncData(VideoPlayerState());
+    state = AsyncData(VideoPlayerState());
     state = const AsyncValue.loading();
 
     if (controller != null) {
@@ -117,12 +117,19 @@ class VideoPlayerNotifier extends AutoDisposeAsyncNotifier<VideoPlayerState>
   }
 
   @override
-  Future<void> play() async => state.value?.controller?.play();
+  Future<void> play() async {
+    ref.read(universalConfigProvider.notifier).isManuallyPaused = false;
+
+    return state.value?.controller?.play();
+  }
 
   @override
-  Future<void> pause() async => state.value?.controller?.pause();
+  Future<void> pause() async {
+    ref.read(universalConfigProvider.notifier).isManuallyPaused = true;
+    return state.value?.controller?.pause();
+  }
 
-  bool isPlaying(Uri uri) {
+  bool isActiveUri(Uri uri) {
     if (state.value?.controller == null) {
       return false;
     }
@@ -139,10 +146,10 @@ class VideoPlayerNotifier extends AutoDisposeAsyncNotifier<VideoPlayerState>
     bool autoPlay = true,
     bool forced = false,
   }) async {
-    if (!isPlaying(uri)) {
+    if (!isActiveUri(uri)) {
       await setVideo(uri, autoPlay: autoPlay, forced: forced);
     }
-    if (!isPlaying(uri)) {
+    if (!isActiveUri(uri)) {
       throw Exception('Unexpcted, unable to register uri with the player');
     }
     final controller = state.value!.controller!;
@@ -155,9 +162,7 @@ class VideoPlayerNotifier extends AutoDisposeAsyncNotifier<VideoPlayerState>
             .resetVideo(autoPlay: autoPlay);
       }
       await play();
-    }
-
-    if (videoplayerStatus.isPlaying) {
+    } else if (videoplayerStatus.isPlaying) {
       await pause();
     } else {
       await play();
