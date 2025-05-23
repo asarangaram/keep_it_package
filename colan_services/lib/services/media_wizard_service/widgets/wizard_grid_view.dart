@@ -42,7 +42,7 @@ class CLGalleryView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CLGalleryGridView(
+    return CLEntitiesGridView(
       viewIdentifier: viewIdentifier,
       incoming: entities,
       itemBuilder: itemBuilder,

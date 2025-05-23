@@ -3,8 +3,8 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class CLMediaViewer extends ConsumerWidget {
-  const CLMediaViewer({
+class CLEntitiesPageView extends ConsumerWidget {
+  const CLEntitiesPageView({
     required this.parentIdentifier,
     required this.topMenu,
     required this.bottomMenu,

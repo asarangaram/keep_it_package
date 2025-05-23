@@ -8,8 +8,8 @@ import '../models/tab_identifier.dart';
 import '../providers/selector.dart';
 import 'selection_control.dart';
 
-class CLGalleryGridView extends StatelessWidget {
-  const CLGalleryGridView(
+class CLEntitiesGridView extends StatelessWidget {
+  const CLEntitiesGridView(
       {required this.viewIdentifier,
       required this.incoming,
       required this.itemBuilder,
