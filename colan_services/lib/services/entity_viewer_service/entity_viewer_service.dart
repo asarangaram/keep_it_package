@@ -5,10 +5,9 @@ import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'views/entity_grid_view.dart';
 import 'widgets/on_swipe.dart';
 import 'widgets/when_error.dart';
-
-import 'views/entity_grid_view.dart';
 
 class EntityViewerService extends ConsumerWidget {
   const EntityViewerService({

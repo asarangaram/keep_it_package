@@ -4,11 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
 import '../../../basic_page_service/widgets/page_manager.dart';
-
 import '../../models/entity_actions.dart';
-
-import 'collection_preview.dart';
 import '../../views/context_menu.dart';
+import 'collection_preview.dart';
 
 class EntityPreview extends ConsumerWidget {
   const EntityPreview({

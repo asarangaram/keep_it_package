@@ -1,6 +1,5 @@
 import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:colan_widgets/colan_widgets.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -8,9 +7,9 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import '../../../models/platform_support.dart';
 import '../../app_start_service/views/on_dark_mode.dart';
 import '../../basic_page_service/widgets/page_manager.dart';
-import 'popover_menu.dart';
-import '../widgets/refresh_button.dart';
 import '../widgets/media_title.dart';
+import '../widgets/refresh_button.dart';
+import 'popover_menu.dart';
 
 class TopBarGridView extends ConsumerWidget implements PreferredSizeWidget {
   const TopBarGridView({
