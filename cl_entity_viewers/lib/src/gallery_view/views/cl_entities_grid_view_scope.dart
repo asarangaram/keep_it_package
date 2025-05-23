@@ -1,6 +1,7 @@
-import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../providers/select_mode.dart';
 
 class CLEntitiesGridViewScope extends ConsumerWidget {
   const CLEntitiesGridViewScope({required this.child, super.key});

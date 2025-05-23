@@ -1,6 +1,8 @@
-import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../common/models/viewer_entity_mixin.dart';
+import '../providers/ui_state.dart';
 
 class GetCurrentEntity extends ConsumerWidget {
   const GetCurrentEntity({required this.builder, super.key});

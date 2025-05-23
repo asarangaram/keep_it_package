@@ -1,9 +1,10 @@
 import 'dart:async';
 
-import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../common/models/viewer_entity_mixin.dart';
 
 @immutable
 class MediaViewerUIState {

@@ -68,10 +68,7 @@ class MediaWizardService extends ConsumerWidget {
     }
 
     return FullscreenLayout(
-      child: ProviderScope(
-        overrides: [
-          selectModeProvider.overrideWith((ref) => SelectModeNotifier()),
-        ],
+      child: CLEntitiesGridViewScope(
         child: SelectAndKeepMedia(
           viewIdentifier: ViewIdentifier(
             parentID: 'MediaWizardService',
