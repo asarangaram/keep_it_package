@@ -24,3 +24,5 @@ export 'src/page_view/providers/ui_state.dart'
 
 export 'src/gallery_view/providers/select_mode.dart';
 export 'src/page_view/views/media_viewer_core.dart' show MediaViewerCore;
+export 'src/page_view/builders/get_current_entity.dart' show GetCurrentEntity;
+export 'src/page_view/cl_media_viewer.dart' show CLMediaViewer;

@@ -10,14 +10,12 @@ class MediaViewerUIState {
   const MediaViewerUIState({
     this.showMenu = false,
     this.showPlayerMenu = false,
-    this.iconColor = const Color.fromARGB(255, 80, 140, 224),
     this.entities = const [],
     this.currentIndex = 0,
   });
   final bool showMenu;
   final bool showPlayerMenu;
 
-  final Color iconColor;
   final List<ViewerEntityMixin> entities;
   final int currentIndex;
 
@@ -31,7 +29,6 @@ class MediaViewerUIState {
     return MediaViewerUIState(
       showMenu: showMenu ?? this.showMenu,
       showPlayerMenu: showPlayerMenu ?? this.showPlayerMenu,
-      iconColor: iconColor ?? this.iconColor,
       entities: entities ?? this.entities,
       currentIndex: currentIndex ?? this.currentIndex,
     );
@@ -44,7 +41,6 @@ class MediaViewerUIState {
 
     return other.showMenu == showMenu &&
         other.showPlayerMenu == showPlayerMenu &&
-        other.iconColor == iconColor &&
         listEquals(other.entities, entities) &&
         other.currentIndex == currentIndex;
   }
@@ -53,14 +49,13 @@ class MediaViewerUIState {
   int get hashCode {
     return showMenu.hashCode ^
         showPlayerMenu.hashCode ^
-        iconColor.hashCode ^
         entities.hashCode ^
         currentIndex.hashCode;
   }
 
   @override
   String toString() {
-    return 'UIState(showMenu: $showMenu, showPlayerMenu: $showPlayerMenu, iconColor: $iconColor, entities: $entities, currentIndex: $currentIndex)';
+    return 'UIState(showMenu: $showMenu, showPlayerMenu: $showPlayerMenu, entities: $entities, currentIndex: $currentIndex)';
   }
 
   ViewerEntityMixin get currentItem => entities[currentIndex];

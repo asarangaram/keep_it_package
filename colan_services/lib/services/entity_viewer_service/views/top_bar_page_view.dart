@@ -6,15 +6,17 @@ import 'package:flutter/material.dart';
 
 class TopBarPageView extends StatelessWidget implements PreferredSizeWidget {
   const TopBarPageView({
-    required this.entity,
     super.key,
   });
-  final ViewerEntityMixin? entity;
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: MediaTitle(entity: entity),
+      title: GetCurrentEntity(
+        builder: (entity) {
+          return MediaTitle(entity: entity);
+        },
+      ),
       actions: const [
         OnDarkMode(),
         OnMoreActions(),
