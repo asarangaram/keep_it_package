@@ -16,7 +16,10 @@ class MediaTitle extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          entity?.label!.capitalizeFirstLetter() ?? 'Keep It',
+          entity == null
+              ? 'Keep It'
+              : entity!.label?.capitalizeFirstLetter() ??
+                  'media #${entity!.id ?? "New Media"}',
           style: entity != null
               ? ShadTheme.of(context).textTheme.h3
               : ShadTheme.of(context).textTheme.h1,

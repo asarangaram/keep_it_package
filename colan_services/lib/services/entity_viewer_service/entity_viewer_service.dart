@@ -68,8 +68,8 @@ class EntityViewerService extends ConsumerWidget {
               builder: (entities) {
                 return EntityPageView(
                   parentIdentifier: parentIdentifier,
-                  entities: entities,
-                  currentIndex: entities.indexWhere((e) => e.id == entity.id),
+                  siblings: entities,
+                  currentEntity: entity,
                 );
               },
             );

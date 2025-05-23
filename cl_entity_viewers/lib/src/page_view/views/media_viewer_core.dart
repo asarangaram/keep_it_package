@@ -65,15 +65,6 @@ class ViewMedia extends ConsumerWidget {
   final VideoPlayerControls playerControls;
   final bool autoStart;
 
-  Future<void> setVideo() async {
-    // This seems still required
-    await playerControls.setVideo(
-      currentItem.mediaUri!,
-      forced: false,
-      autoPlay: true,
-    );
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final stateManager = ref.watch(mediaViewerUIStateProvider);
@@ -99,7 +90,7 @@ class ViewMedia extends ConsumerWidget {
     if (!isPlayable) {
       return GestureDetector(
         onTap: ref.read(mediaViewerUIStateProvider.notifier).toggleMenu,
-        child: isPlayable ? Center(child: mediaViewer) : mediaViewer,
+        child: Center(child: mediaViewer),
       );
     }
 
@@ -121,27 +112,21 @@ class ViewMedia extends ConsumerWidget {
         children: [
           if (stateManager.showMenu)
             GestureDetector(
-              onTap: isPlayable
-                  ? () {
-                      ref
-                          .read(mediaViewerUIStateProvider.notifier)
-                          .showPlayerMenu();
-                      playerControls.onPlayPause(uri);
-                    }
-                  : null,
+              onTap: () {
+                ref.read(mediaViewerUIStateProvider.notifier).showPlayerMenu();
+                playerControls.onPlayPause(uri);
+              },
               child: mediaViewer,
             )
           else
             Center(
               child: GestureDetector(
-                onTap: isPlayable
-                    ? () {
-                        ref
-                            .read(mediaViewerUIStateProvider.notifier)
-                            .showPlayerMenu();
-                        playerControls.onPlayPause(uri);
-                      }
-                    : null,
+                onTap: () {
+                  ref
+                      .read(mediaViewerUIStateProvider.notifier)
+                      .showPlayerMenu();
+                  playerControls.onPlayPause(uri);
+                },
                 child: mediaViewer,
               ),
             ),

@@ -1,4 +1,5 @@
 import 'package:cl_entity_viewers/cl_entity_viewers.dart';
+import 'package:cl_media_tools/cl_media_tools.dart';
 import 'package:colan_services/services/entity_viewer_service/views/bottom_bar_page_view.dart';
 import 'package:colan_services/services/entity_viewer_service/views/top_bar_page_view.dart';
 import 'package:colan_widgets/colan_widgets.dart';
@@ -12,22 +13,31 @@ import '../models/entity_actions.dart';
 class EntityPageView extends StatelessWidget {
   const EntityPageView({
     required this.parentIdentifier,
-    required this.entities,
-    required this.currentIndex,
+    required this.siblings,
+    required this.currentEntity,
     super.key,
   });
   final String parentIdentifier;
-  final List<StoreEntity> entities;
-  final int currentIndex;
+  final List<StoreEntity> siblings;
+  final StoreEntity currentEntity;
   @override
   Widget build(BuildContext context) {
+    final supportedEntities = siblings
+        .where(
+          (e) => [
+            CLMediaType.image,
+            CLMediaType.video,
+          ].contains(e.mediaType),
+        )
+        .toList();
     return ProviderScope(
       overrides: [
         mediaViewerUIStateProvider.overrideWith((ref) {
           return MediaViewerUIStateNotifier(
             MediaViewerUIState(
-              entities: entities,
-              currentIndex: currentIndex,
+              entities: supportedEntities,
+              currentIndex:
+                  supportedEntities.indexWhere((e) => e.id == currentEntity.id),
             ),
           );
         }),
@@ -46,7 +56,7 @@ class EntityPageView0 extends ConsumerWidget {
     final showMenu =
         ref.watch(mediaViewerUIStateProvider.select((e) => e.showMenu));
     final entity =
-        ref.read(mediaViewerUIStateProvider.select((e) => e.currentItem));
+        ref.watch(mediaViewerUIStateProvider.select((e) => e.currentItem));
     final topBar = TopBarPageView(
       entity: entity,
     );
