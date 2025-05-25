@@ -17,8 +17,7 @@ dependencies:
 
   image: ^4.2.0
   shared_preferences: ^2.3.2
-  #video_trimmer:
-  #  path: /Users/anandasarangaram/Work/video_trimmer
+  video_trimmer: ^5.0.0
 
 dev_dependencies:
   flutter_lints: ^5.0.0
