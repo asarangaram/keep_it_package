@@ -141,10 +141,10 @@ class PageManager {
 
   Future<void> openWizard(UniversalMediaSource type) async {
     final queryMap = [
-      '/wizard?type=${type.name}',
+      'type=${type.name}',
     ];
     final query = queryMap.isNotEmpty ? '?${queryMap.join('&')}' : '';
-    await navigator.pushNamed(context, '/wizard?$query');
+    await navigator.pushNamed(context, '/wizard$query');
   }
 
   Future<void> openSettings() async {
