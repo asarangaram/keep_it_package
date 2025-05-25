@@ -284,7 +284,11 @@ class WizardView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return WizardLayout(
       title: menu.type.label,
-      onCancel: () => PageManager.of(context).pop(),
+      onCancel: () {
+        // Review
+        ref.read(reloadProvider.notifier).reload();
+        PageManager.of(context).pop();
+      },
       actions: [
         if (canSelect)
           // FIX ME: select ICon or text?
