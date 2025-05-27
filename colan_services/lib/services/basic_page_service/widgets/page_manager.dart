@@ -118,7 +118,7 @@ class PageManager {
       ];
       final query = queryMap.isNotEmpty ? '?${queryMap.join('&')}' : '';
 
-      final edittedMedia = await navigator.pushNamed(context, '/edit?&$query');
+      final edittedMedia = await navigator.pushNamed(context, '/edit$query');
       if (edittedMedia is StoreEntity?) {
         return edittedMedia ?? media;
       } else {
