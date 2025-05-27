@@ -1,6 +1,7 @@
 import 'package:cl_entity_viewers/cl_entity_viewers.dart' show MediaThumbnail;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 import 'package:store/store.dart';
 
@@ -20,19 +21,27 @@ class PreviewCapturedMedia extends ConsumerWidget {
     final capturedMedia = ref.watch(capturedMediaProvider);
     return capturedMedia.isEmpty
         ? const SizedBox.shrink()
-        : InkWell(
+        : GestureDetector(
             onTap: () {
               final capturedMediaCopy = [...capturedMedia];
               ref.read(capturedMediaProvider.notifier).clear();
               sendMedia(capturedMediaCopy);
             },
             child: CapturedMediaDecorator(
-              child: Badge(
-                label: Text(capturedMedia.length.toString()),
-                child: MediaThumbnail(
-                  parentIdentifier: parentIdentifier,
-                  media: capturedMedia.last,
-                ),
+              child: Stack(
+                children: [
+                  Positioned.fill(
+                    child: MediaThumbnail(
+                      parentIdentifier: parentIdentifier,
+                      media: capturedMedia.last,
+                    ),
+                  ),
+                  Center(
+                    child: ShadBadge.destructive(
+                      child: Text(capturedMedia.length.toString()),
+                    ),
+                  ),
+                ],
               ),
             ),
           );
