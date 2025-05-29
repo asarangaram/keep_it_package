@@ -8,7 +8,7 @@ environment:
   sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
-  background_downloader: ^8.9.4
+  #background_downloader: ^8.9.4
   cl_entity_viewers:
     path: ../cl_entity_viewers
   cl_media_tools:
@@ -37,8 +37,8 @@ dependencies:
   path_provider: ^2.1.4
   photo_manager: ^3.5.0
   pie_chart: ^5.4.0
-  shadcn_ui: ^0.26.5
-  share_plus: ^10.0.2
+  shadcn_ui: ^0.27.0
+  share_plus: ^11.0.0
   shared_preferences: ^2.3.2
   shimmer: ^3.0.0
   store:
@@ -49,7 +49,7 @@ dependencies:
     path: ../yet_another_date_picker
 
 dev_dependencies:
-  flutter_lints: ^5.0.0
+  flutter_lints: ^6.0.0
   flutter_test:
     sdk: flutter
-  very_good_analysis: ^7.0.0
+  very_good_analysis: ^8.0.0

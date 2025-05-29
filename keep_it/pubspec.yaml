@@ -15,14 +15,14 @@ dependencies:
     path: ../colan_widgets
   flutter:
     sdk: flutter
-  fvp: ^0.29.0
+  #fvp: ^0.29.0
 
   window_size: ^0.1.0
 
 dev_dependencies:
   flutter_launcher_icons: ^0.14.3
-  flutter_lints: ^5.0.0
-  very_good_analysis: ^7.0.0
+  flutter_lints: ^6.0.0
+  very_good_analysis: ^8.0.0
 
 flutter_icons:
   android: "launcher_icon"

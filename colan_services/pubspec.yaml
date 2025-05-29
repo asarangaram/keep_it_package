@@ -10,7 +10,7 @@ environment:
 dependencies:
   animated_icon: ^0.0.9
   # audio_waveforms: 1.0.5 # Upgrade has issues!
-  background_downloader: ^8.9.4
+  # background_downloader: ^8.9.4
   camera: ^0.11.0+1
 
   cl_camera:
@@ -65,9 +65,9 @@ dependencies:
   progress_indicators: ^1.0.0
   pull_down_button: ^0.10.2
 
-  shadcn_ui: ^0.26.5
+  shadcn_ui: ^0.27.0
   share_handler: ^0.0.21
-  share_plus: ^10.0.0
+  share_plus: ^11.0.0
   shared_preferences: ^2.2.3
   shimmer: ^3.0.0
   sqlite_async: ^0.11.4
@@ -81,11 +81,11 @@ dependencies:
   watcher: ^1.1.0
 
 dev_dependencies:
-  flutter_lints: ^5.0.0
+  flutter_lints: ^6.0.0
 
   path_provider_platform_interface: ^2.1.2
   plugin_platform_interface: ^2.1.8
-  very_good_analysis: ^7.0.0
+  very_good_analysis: ^8.0.0
 
 flutter:
   uses-material-design: true
