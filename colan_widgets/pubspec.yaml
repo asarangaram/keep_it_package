@@ -6,7 +6,7 @@ environment:
   sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
-  audio_waveforms: ^1.0.5
+  # audio_waveforms: ^1.0.5
   collection: ^1.19.0
   crypto: ^3.0.3
   event_bus: ^2.0.0

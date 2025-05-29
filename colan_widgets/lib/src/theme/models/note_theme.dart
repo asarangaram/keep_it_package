@@ -1,4 +1,4 @@
-import 'package:audio_waveforms/audio_waveforms.dart';
+/* import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:flutter/material.dart';
 
 @immutable
@@ -132,3 +132,4 @@ class DefaultNotesInputTheme extends NotesTheme {
           continuousWaveform: true,
         );
 }
+ */

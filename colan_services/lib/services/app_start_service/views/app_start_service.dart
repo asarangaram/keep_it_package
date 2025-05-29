@@ -53,7 +53,7 @@ class AppStart extends ConsumerWidget {
           transitionsBuilder: app.transitionBuilder,
           pageBuilder: (context, animation, secondaryAnimation) => CLTheme(
             colors: const DefaultCLColors(),
-            noteTheme: const DefaultNotesTheme(),
+            // noteTheme: const DefaultNotesTheme(),
             child: OnInitDone(
               app: app,
               uri: uri,
