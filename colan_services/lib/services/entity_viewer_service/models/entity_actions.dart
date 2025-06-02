@@ -120,6 +120,7 @@ class EntityActions extends CLContextMenu {
 
       if (confirmed && context.mounted) {
         await entity.delete();
+        ref.read(reloadProvider.notifier).reload();
         return true;
       }
       return false;
@@ -129,6 +130,7 @@ class EntityActions extends CLContextMenu {
 
     Future<bool> onPin() async {
       await entity.onPin();
+      ref.read(reloadProvider.notifier).reload();
       return true;
     }
 
