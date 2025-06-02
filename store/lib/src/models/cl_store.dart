@@ -244,7 +244,7 @@ class CLStore {
       }
       if (parentIdValue != null) {
         final parent = (await get(
-          EntityQuery(null, {'parentId': parentIdValue}),
+          EntityQuery(null, {'id': parentIdValue}),
         ))
             ?.data;
         if (parent == null) {

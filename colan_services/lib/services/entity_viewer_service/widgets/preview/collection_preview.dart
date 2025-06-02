@@ -57,10 +57,23 @@ class CollectionPreview extends ConsumerWidget {
                 filterredChildren.length,
                 hCount: 3,
                 vCount: 3,
-                itemBuilder: (context, index) => MediaThumbnail(
-                  parentIdentifier: viewIdentifier.parentID,
-                  media: filterredChildren[index],
-                ),
+                itemBuilder: (context, index) {
+                  if (filterredChildren[index].isCollection) {
+                    return LayoutBuilder(
+                      builder: (context, constrain) {
+                        return Image.asset(
+                          'assets/icon/icon.png',
+                          width: constrain.maxWidth,
+                          height: constrain.maxHeight,
+                        );
+                      },
+                    );
+                  }
+                  return MediaThumbnail(
+                    parentIdentifier: viewIdentifier.parentID,
+                    media: filterredChildren[index],
+                  );
+                },
                 whenNopreview: Center(
                   child: CLText.veryLarge(
                     collection.data.label!.characters.first,

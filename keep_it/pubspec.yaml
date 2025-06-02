@@ -39,6 +39,7 @@ flutter:
     - assets/audios/audio3.mp3
     - assets/audios/audio4.mp3
     - assets/icon/cloud_on_lan_128px_color.png
+    - assets/icon/icon.png
     - assets/icon/on_device.png
     - assets/icon/not_on_server.png
     - assets/icon/svg/minimize-svgrepo-com.svg
