@@ -10,7 +10,7 @@ import 'package:store/store.dart';
 
 import '../../../basic_page_service/widgets/page_manager.dart';
 
-class CollectionMetadataEditor extends StatefulWidget {
+class CollectionMetadataEditor extends ConsumerStatefulWidget {
   factory CollectionMetadataEditor({
     required String storeIdentity,
     required int? id,
@@ -60,7 +60,7 @@ class CollectionMetadataEditor extends StatefulWidget {
   final bool isDialog;
 
   @override
-  State<CollectionMetadataEditor> createState() =>
+  ConsumerState<CollectionMetadataEditor> createState() =>
       _CollectionMetadataEditorState();
 
   static Future<StoreEntity?> openSheet(
@@ -82,7 +82,8 @@ class CollectionMetadataEditor extends StatefulWidget {
   }
 }
 
-class _CollectionMetadataEditorState extends State<CollectionMetadataEditor> {
+class _CollectionMetadataEditorState
+    extends ConsumerState<CollectionMetadataEditor> {
   final formKey = GlobalKey<ShadFormState>();
   Map<Object, dynamic> formValue = {};
 
@@ -159,6 +160,8 @@ class _CollectionMetadataEditorState extends State<CollectionMetadataEditor> {
                           if (updated == null) {
                             throw Exception('update failed');
                           }
+                          ref.read(reloadProvider.notifier).reload();
+                          widget.onSubmit(updated);
                         }
                       },
                     ),

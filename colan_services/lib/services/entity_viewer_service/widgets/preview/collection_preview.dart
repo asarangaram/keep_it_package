@@ -114,10 +114,11 @@ class FolderItem extends StatelessWidget {
           ),
         OverlayWidgets(
           heightFactor: 0.2,
+          widthFactor: 0.9,
           alignment: Alignment.bottomCenter,
           fit: BoxFit.none,
           child: Container(
-            //alignment: Alignment.center,
+            alignment: Alignment.center,
             margin: const EdgeInsets.symmetric(horizontal: 4),
             color: ShadTheme.of(context)
                 .colorScheme

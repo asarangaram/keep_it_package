@@ -124,7 +124,7 @@ class MediaMetadataEditor extends StatelessWidget {
   }
 }
 
-class StatefulMediaEditor extends StatefulWidget {
+class StatefulMediaEditor extends ConsumerStatefulWidget {
   const StatefulMediaEditor({
     required this.media,
     required this.onSubmit,
@@ -138,10 +138,11 @@ class StatefulMediaEditor extends StatefulWidget {
   final void Function() onCancel;
 
   @override
-  State<StatefulMediaEditor> createState() => _StatefulMediaEditorState();
+  ConsumerState<StatefulMediaEditor> createState() =>
+      _StatefulMediaEditorState();
 }
 
-class _StatefulMediaEditorState extends State<StatefulMediaEditor> {
+class _StatefulMediaEditorState extends ConsumerState<StatefulMediaEditor> {
   final formKey = GlobalKey<ShadFormState>();
   Map<Object, dynamic> formValue = {};
   late final TextEditingController labelController;
@@ -189,9 +190,11 @@ class _StatefulMediaEditorState extends State<StatefulMediaEditor> {
                 media: widget.media,
               ),
             ),
-            Text(
-              widget.media.data.label?.capitalizeFirstLetter() ??
-                  'Media #${widget.media.id}',
+            Flexible(
+              child: Text(
+                widget.media.data.label?.capitalizeFirstLetter() ??
+                    'Media #${widget.media.id}',
+              ),
             ),
           ],
         ),
@@ -215,6 +218,7 @@ class _StatefulMediaEditorState extends State<StatefulMediaEditor> {
                 if (updated == null) {
                   throw Exception('updated should not be null!');
                 }
+                ref.read(reloadProvider.notifier).reload();
                 widget.onSubmit(updated);
               }
             },
