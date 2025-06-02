@@ -156,10 +156,9 @@ class _CollectionMetadataEditorState extends State<CollectionMetadataEditor> {
                                     ? null
                                     : desc,
                           );
-                          if (updated != null) {
-                            widget.onSubmit(updated);
+                          if (updated == null) {
+                            throw Exception('update failed');
                           }
-                          throw Exception('update failed');
                         }
                       },
                     ),
