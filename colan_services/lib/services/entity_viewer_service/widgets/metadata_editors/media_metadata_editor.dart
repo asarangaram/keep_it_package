@@ -218,7 +218,7 @@ class _StatefulMediaEditorState extends ConsumerState<StatefulMediaEditor> {
                 if (updated == null) {
                   throw Exception('updated should not be null!');
                 }
-                ref.read(reloadProvider.notifier).reload();
+
                 widget.onSubmit(updated);
               }
             },

@@ -81,6 +81,7 @@ class EntityActions extends CLContextMenu {
               ));
         if (updated != null && context.mounted) {
           await updated.dbSave();
+          ref.read(reloadProvider.notifier).reload();
         }
       }
 

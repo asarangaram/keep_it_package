@@ -160,7 +160,7 @@ class _CollectionMetadataEditorState
                           if (updated == null) {
                             throw Exception('update failed');
                           }
-                          ref.read(reloadProvider.notifier).reload();
+
                           widget.onSubmit(updated);
                         }
                       },
