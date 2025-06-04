@@ -3,12 +3,13 @@ import 'package:yet_another_date_picker/yet_another_date_picker.dart';
 import 'base_filter.dart';
 
 class DDMMYYYYFilter<T> extends BaseFilter<T, DateTime> {
-  const DDMMYYYYFilter({
-    required super.name,
-    required super.fieldSelector,
-    required super.enabled,
-    this.ddmmyyyy,
-  }) : super(filterType: FilterType.ddmmyyyyFilter);
+  const DDMMYYYYFilter(
+      {required super.name,
+      required super.fieldSelector,
+      required super.enabled,
+      this.ddmmyyyy,
+      required super.isByPassed})
+      : super(filterType: FilterType.ddmmyyyyFilter);
 
   final DDMMYYYY? ddmmyyyy;
 
@@ -17,6 +18,7 @@ class DDMMYYYYFilter<T> extends BaseFilter<T, DateTime> {
     if (!enabled) return items;
     if (ddmmyyyy == null) return items;
     final filterred = items.where((item) {
+      if (isByPassed(item)) return true;
       final date = fieldSelector(item);
       if (ddmmyyyy == null) {
         return true;
@@ -44,6 +46,7 @@ class DDMMYYYYFilter<T> extends BaseFilter<T, DateTime> {
       final ddmmyyyy = value as DDMMYYYY;
       updated = DDMMYYYYFilter<T>(
         fieldSelector: fieldSelector,
+        isByPassed: isByPassed,
         enabled: true,
         name: name,
         ddmmyyyy: ddmmyyyy,
@@ -55,6 +58,7 @@ class DDMMYYYYFilter<T> extends BaseFilter<T, DateTime> {
       } else {
         updated = DDMMYYYYFilter<T>(
           fieldSelector: fieldSelector,
+          isByPassed: isByPassed,
           enabled: enable,
           name: name,
           ddmmyyyy: ddmmyyyy ?? DDMMYYYY.fromDateTime(DateTime.now()),
@@ -63,6 +67,7 @@ class DDMMYYYYFilter<T> extends BaseFilter<T, DateTime> {
     } else if ('clear' == key) {
       updated = DDMMYYYYFilter<T>(
         fieldSelector: fieldSelector,
+        isByPassed: isByPassed,
         enabled: false,
         name: name,
       );

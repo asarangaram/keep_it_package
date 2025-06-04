@@ -1,13 +1,14 @@
 import 'base_filter.dart';
 
 class DateFilter<T> extends BaseFilter<T, DateTime> {
-  const DateFilter({
-    required super.name,
-    required super.fieldSelector,
-    required super.enabled,
-    this.startDate,
-    this.endDate,
-  }) : super(filterType: FilterType.dateFilter);
+  const DateFilter(
+      {required super.name,
+      required super.fieldSelector,
+      required super.enabled,
+      this.startDate,
+      this.endDate,
+      required super.isByPassed})
+      : super(filterType: FilterType.dateFilter);
 
   final DateTime? startDate;
   final DateTime? endDate;
@@ -18,6 +19,7 @@ class DateFilter<T> extends BaseFilter<T, DateTime> {
       return items;
     }
     return items.where((item) {
+      if (isByPassed(item)) return true;
       final date = fieldSelector(item);
       return date.isAfter(startDate!) && date.isBefore(endDate!);
     }).toList();

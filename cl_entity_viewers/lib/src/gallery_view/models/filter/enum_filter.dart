@@ -3,24 +3,26 @@ import 'package:collection/collection.dart';
 import 'base_filter.dart';
 
 class EnumFilter<T, E> extends BaseFilter<T, E> {
-  EnumFilter({
-    required super.name,
-    required this.labels,
-    required super.fieldSelector,
-    required super.enabled,
-  })  : selectedValues = [],
+  EnumFilter(
+      {required super.name,
+      required this.labels,
+      required super.fieldSelector,
+      required super.enabled,
+      required super.isByPassed})
+      : selectedValues = [],
         referenceIndex = {
           for (final (index, value) in labels.keys.indexed) value: index,
         },
         super(filterType: FilterType.enumFilter);
-  const EnumFilter._({
-    required super.name,
-    required this.labels,
-    required super.fieldSelector,
-    required this.selectedValues,
-    required this.referenceIndex,
-    required super.enabled,
-  }) : super(filterType: FilterType.enumFilter);
+  const EnumFilter._(
+      {required super.name,
+      required this.labels,
+      required super.fieldSelector,
+      required this.selectedValues,
+      required this.referenceIndex,
+      required super.enabled,
+      required super.isByPassed})
+      : super(filterType: FilterType.enumFilter);
   final List<E> selectedValues;
   final Map<E, String> labels;
   final Map<E, int> referenceIndex;
@@ -32,7 +34,8 @@ class EnumFilter<T, E> extends BaseFilter<T, E> {
     if (selectedValues.length == labels.entries.length) return items;
 
     return items
-        .where((item) => selectedValues.contains(fieldSelector(item)))
+        .where((item) =>
+            isByPassed(item) || selectedValues.contains(fieldSelector(item)))
         .toList();
   }
 
@@ -54,6 +57,7 @@ class EnumFilter<T, E> extends BaseFilter<T, E> {
     return EnumFilter<T, E>._(
       name: name,
       fieldSelector: fieldSelector,
+      isByPassed: isByPassed,
       labels: labels,
       referenceIndex: referenceIndex,
       selectedValues: selectedValues,
@@ -89,6 +93,7 @@ class EnumFilter<T, E> extends BaseFilter<T, E> {
       return EnumFilter<T, E>._(
         name: name,
         fieldSelector: fieldSelector,
+        isByPassed: isByPassed,
         labels: labels,
         referenceIndex: referenceIndex,
         selectedValues: selectedValues,
@@ -105,6 +110,7 @@ class EnumFilter<T, E> extends BaseFilter<T, E> {
       return EnumFilter<T, E>._(
         name: name,
         fieldSelector: fieldSelector,
+        isByPassed: isByPassed,
         labels: labels,
         referenceIndex: referenceIndex,
         selectedValues: selectedValues,
@@ -118,6 +124,7 @@ class EnumFilter<T, E> extends BaseFilter<T, E> {
     return EnumFilter<T, E>._(
       name: name,
       fieldSelector: fieldSelector,
+      isByPassed: isByPassed,
       labels: labels,
       referenceIndex: referenceIndex,
       selectedValues: const [],

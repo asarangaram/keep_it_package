@@ -4,19 +4,22 @@ import 'base_filter.dart';
 
 @immutable
 class StringFilter<T> extends BaseFilter<T, String> {
-  const StringFilter({
-    required super.name,
-    required super.fieldSelector,
-    required this.query,
-    required super.enabled,
-  }) : super(filterType: FilterType.stringFilter);
+  const StringFilter(
+      {required super.name,
+      required super.fieldSelector,
+      required this.query,
+      required super.enabled,
+      required super.isByPassed})
+      : super(filterType: FilterType.stringFilter);
 
   final String query;
 
   @override
   List<T> apply(List<T> items) {
     return items
-        .where((item) => fieldSelector(item).contains(query.toLowerCase()))
+        .where((item) =>
+            isByPassed(item) ||
+            fieldSelector(item).contains(query.toLowerCase()))
         .toList();
   }
 
@@ -38,6 +41,7 @@ class StringFilter<T> extends BaseFilter<T, String> {
     return StringFilter<T>(
       name: name,
       fieldSelector: fieldSelector,
+      isByPassed: isByPassed,
       query: query,
       enabled: value,
     );
@@ -47,6 +51,7 @@ class StringFilter<T> extends BaseFilter<T, String> {
     return StringFilter<T>(
       name: name,
       fieldSelector: fieldSelector,
+      isByPassed: isByPassed,
       query: value,
       enabled: enabled,
     );

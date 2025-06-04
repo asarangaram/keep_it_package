@@ -74,6 +74,7 @@ final List<CLFilter<ViewerEntityMixin>> allFilters = List.unmodifiable([
       for (var e in [CLMediaType.image, CLMediaType.video]) e: e.name,
     },
     fieldSelector: (media) => media.mediaType,
+    isByPassed: (media) => media.isCollection,
     enabled: true,
   ),
   EnumFilter<ViewerEntityMixin, MediaAvailability>(
@@ -84,11 +85,13 @@ final List<CLFilter<ViewerEntityMixin>> allFilters = List.unmodifiable([
     fieldSelector: (media) {
       return MediaAvailability.local;
     },
+    isByPassed: (media) => media.isCollection,
     enabled: true,
   ),
   DDMMYYYYFilter<ViewerEntityMixin>(
     name: 'Search by Date',
     fieldSelector: (media) => media.createDate ?? media.updatedDate,
+    isByPassed: (media) => media.isCollection,
     enabled: false,
   ),
 ]);
@@ -99,6 +102,7 @@ Map<String, CLFilter<ViewerEntityMixin>> get allFiltersMap =>
 final StringFilter<ViewerEntityMixin> textSearchFilter = StringFilter(
   name: 'TextSearch',
   fieldSelector: (media) => media.searchableTexts,
+  isByPassed: (media) => media.isCollection,
   query: '',
   enabled: true,
 );

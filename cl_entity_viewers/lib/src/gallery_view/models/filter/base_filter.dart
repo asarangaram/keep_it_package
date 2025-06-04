@@ -38,13 +38,14 @@ abstract class CLFilter<T> {
 
 @immutable
 abstract class BaseFilter<T, E> extends CLFilter<T> {
-  const BaseFilter({
-    required super.name,
-    required this.fieldSelector,
-    required super.filterType,
-    required super.enabled,
-  });
+  const BaseFilter(
+      {required super.name,
+      required this.fieldSelector,
+      required super.filterType,
+      required super.enabled,
+      required this.isByPassed});
   final E Function(T) fieldSelector;
+  final bool Function(T) isByPassed;
   @override
   List<T> apply(List<T> items);
 
