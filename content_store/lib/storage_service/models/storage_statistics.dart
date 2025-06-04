@@ -65,7 +65,8 @@ class StorageStatistics {
   }
 }
 
-final storageStatisticsProvider =
+final StreamProviderFamily<StorageStatistics, Directory>
+    storageStatisticsProvider =
     StreamProvider.family<StorageStatistics, Directory>((ref, dir) async* {
   final streamController = StreamController<StorageStatistics>();
   final watcher = DirectoryWatcher(

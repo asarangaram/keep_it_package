@@ -122,7 +122,7 @@ class ComputeSizeAndBuildState extends State<ComputeSizeAndBuild> {
     super.didChangeDependencies();
   }
 
-  void _computeSize(_) {
+  void _computeSize(Duration _) {
     final renderBox =
         _containerKey.currentContext?.findRenderObject()! as RenderBox?;
     if (renderBox != null) {

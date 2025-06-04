@@ -10,7 +10,7 @@ extension CLDirectoryInfoExt on CLDirectory {
   StreamProvider<CLDirectoryInfo> get infoStream => directoryInfoProvider(this);
 }
 
-final directoryInfoProvider =
+final StreamProviderFamily<CLDirectoryInfo, CLDirectory> directoryInfoProvider =
     StreamProvider.family<CLDirectoryInfo, CLDirectory>((ref, dir) async* {
   final streamController = StreamController<CLDirectoryInfo>();
   final watcher = DirectoryWatcher(

@@ -27,7 +27,7 @@ class SelectorNotifier extends StateNotifier<CLSelector> {
     state = state.clear();
   }
 
-  void updateSelection(candidates, {bool? deselect}) {
+  void updateSelection(List<ViewerEntityMixin>? candidates, {bool? deselect}) {
     if (candidates == null) {
       clear();
     } else if (deselect == null) {

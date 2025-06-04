@@ -177,4 +177,4 @@ String? prefixedMsg(String msg) {
 }
 
 // Use prefixedMsg to log!
-void _infoLogger(msg) {}
+void _infoLogger(String msg) {}

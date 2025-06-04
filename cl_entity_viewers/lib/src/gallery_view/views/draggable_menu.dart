@@ -58,7 +58,7 @@ class DraggableMenuState extends State<_DraggableMenu> {
     WidgetsBinding.instance.addPostFrameCallback(_setBoundary);
   }
 
-  void _setBoundary(_) {
+  void _setBoundary(Duration _) {
     final parentRenderBox =
         widget.parentKey.currentContext!.findRenderObject()! as RenderBox;
     final renderBox = _key.currentContext!.findRenderObject()! as RenderBox;
