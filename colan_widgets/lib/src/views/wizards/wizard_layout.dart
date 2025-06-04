@@ -4,7 +4,7 @@ import '../../basics/cl_circled_icon.dart';
 import '../../theme/models/cl_icons.dart';
 import '../../theme/state/cl_theme.dart';
 import '../appearance/cl_fullscreen_box.dart';
-import '../appearance/keep_it_main_view.dart';
+import '../appearance/cl_scaffold.dart';
 
 class WizardLayout extends StatelessWidget {
   const WizardLayout({
@@ -16,7 +16,7 @@ class WizardLayout extends StatelessWidget {
     super.key,
   });
   final Widget child;
-  final Widget? wizard;
+  final PreferredSizeWidget? wizard;
   final String? title;
   final List<Widget>? actions;
 
@@ -40,19 +40,23 @@ class WizardLayout extends StatelessWidget {
       child: ClipRRect(
         borderRadius: const BorderRadius.all(Radius.circular(16)),
         child: CLBackground(
-          child: KeepItMainView(
-            title: title ?? '',
-            backButton: null,
-            actions: [
-              if (actions != null) ...actions!.map((e) => e),
-              if (onCancel != null)
-                CircledIcon(
-                  clIcons.closeFullscreen,
-                  onTap: onCancel,
-                ),
-            ],
-            popupActionItems: const [],
-            child: Column(
+          child: CLScaffold(
+            bottomMenu: null,
+            topMenu: AppBar(
+              title: Text(
+                title ?? '',
+              ),
+              actions: [
+                if (actions != null) ...actions!.map((e) => e),
+                if (onCancel != null)
+                  CircledIcon(
+                    clIcons.closeFullscreen,
+                    onTap: onCancel,
+                  ),
+              ],
+            ),
+            banners: const [],
+            body: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Expanded(child: child),

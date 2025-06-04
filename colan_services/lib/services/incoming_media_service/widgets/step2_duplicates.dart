@@ -1,3 +1,4 @@
+import 'package:cl_entity_viewers/cl_entity_viewers.dart' show MediaThumbnail;
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +7,6 @@ import 'package:store/store.dart';
 
 import '../../../models/cl_shared_media.dart';
 import '../../basic_page_service/basic_page_service.dart';
-import '../../media_view_service/preview/media_preview.dart';
 
 class DuplicatePage extends StatelessWidget {
   const DuplicatePage({
@@ -88,31 +88,28 @@ class _DuplicatePageStatefulState extends State<DuplicatePageStateful> {
           child: WizardLayout(
             title: 'Already Imported',
             onCancel: widget.onCancel,
-            wizard: SizedBox(
-              height: kMinInteractiveDimension * 3,
-              child: WizardDialog(
-                content: Text('Do you want all the above media to be moved '
-                    'to $collectionLablel or skipped?'),
-                option1: CLMenuItem(
-                  icon: clIcons.placeHolder,
-                  title: 'Move',
-                  onTap: () async {
-                    widget.onDone(
-                      mg: await currentMedia.mergeMismatch(),
-                    );
-                    return true;
-                  },
-                ),
-                option2: CLMenuItem(
-                  icon: clIcons.placeHolder,
-                  title: 'Skip',
-                  onTap: () async {
-                    widget.onDone(
-                      mg: currentMedia.removeMismatch(),
-                    );
-                    return true;
-                  },
-                ),
+            wizard: WizardDialog(
+              content: Text('Do you want all the above media to be moved '
+                  'to $collectionLablel or skipped?'),
+              option1: CLMenuItem(
+                icon: clIcons.placeHolder,
+                title: 'Move',
+                onTap: () async {
+                  widget.onDone(
+                    mg: await currentMedia.mergeMismatch(),
+                  );
+                  return true;
+                },
+              ),
+              option2: CLMenuItem(
+                icon: clIcons.placeHolder,
+                title: 'Skip',
+                onTap: () async {
+                  widget.onDone(
+                    mg: currentMedia.removeMismatch(),
+                  );
+                  return true;
+                },
               ),
             ),
             child: Column(

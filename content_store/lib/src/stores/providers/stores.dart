@@ -4,7 +4,7 @@ import 'package:store/store.dart';
 import '../../../storage_service/providers/directories.dart';
 import 'local_store.dart';
 
-final storeProvider =
+final FutureProviderFamily<CLStore, String> storeProvider =
     FutureProvider.family<CLStore, String>((ref, storeIdentity) async {
   final stores = await ref.watch(storesProvider.future);
 

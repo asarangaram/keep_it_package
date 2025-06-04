@@ -7,7 +7,8 @@ import 'edit_collection_description.dart';
 import 'label_viewer.dart';
 import 'pick_collection.dart';
 
-class CreateCollectionWizard extends StatefulWidget {
+class CreateCollectionWizard extends StatefulWidget
+    implements PreferredSizeWidget {
   const CreateCollectionWizard({
     required this.onDone,
     required this.storeIdentity,
@@ -24,6 +25,9 @@ class CreateCollectionWizard extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() => PickCollectionState();
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kMinInteractiveDimension * 3);
 }
 
 class PickCollectionState extends State<CreateCollectionWizard> {

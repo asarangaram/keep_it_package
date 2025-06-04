@@ -4,7 +4,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:store/store.dart';
 
-import '../../gallery_view_service/widgets/entity_preview.dart';
+import '../../entity_viewer_service/widgets/preview/entity_preview.dart';
 import 'page_manager.dart';
 
 class DialogService {
@@ -37,6 +37,8 @@ class DialogService {
                               viewId: 'PreviewInDialog',
                             ),
                             item: entity[index] as StoreEntity,
+                            parentId: entity[index].parentId,
+                            entities: const [],
                           );
                         },
                         whenNopreview: const Center(),

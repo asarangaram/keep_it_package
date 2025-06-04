@@ -5,7 +5,7 @@ import '../../basics/cl_text.dart';
 import '../../models/cl_menu_item.dart';
 import '../../theme/state/cl_theme.dart';
 
-class WizardDialog extends StatelessWidget {
+class WizardDialog extends StatelessWidget implements PreferredSizeWidget {
   const WizardDialog({
     this.content,
     this.option1,
@@ -178,4 +178,7 @@ class WizardDialog extends StatelessWidget {
     }
     return child;
   }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kMinInteractiveDimension * 3);
 }

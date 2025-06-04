@@ -1,3 +1,4 @@
+import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:cl_media_tools/cl_media_tools.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -29,7 +30,7 @@ class IncomingMediaMonitor extends ConsumerWidget {
   static Future<bool> onPickFiles(
     BuildContext context,
     WidgetRef ref, {
-    StoreEntity? collection,
+    ViewerEntityMixin? collection,
   }) async {
     final picker = ImagePicker();
     final pickedFileList = await picker.pickMultipleMedia();
@@ -42,7 +43,7 @@ class IncomingMediaMonitor extends ConsumerWidget {
           .toList();
       final sharedMedia = CLMediaFileGroup(
         entries: items,
-        collection: collection,
+        collection: collection as StoreEntity?,
         type: UniversalMediaSource.filePick,
       );
 

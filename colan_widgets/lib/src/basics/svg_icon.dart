@@ -2,8 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 enum SvgIcons {
-  rotateLeft('rotate-left-19'),
-  rotateRight('rotate-right-18');
+  //rotateLeft('rotate-left-19'),
+  //rotateRight('rotate-right-18'),
+  fullScreenExit('minimize-svgrepo-com'),
+  fullScreen('maximize-svgrepo-com'),
+  audioOn('audio-svgrepo-com'),
+  audioOff('audio-off-svgrepo-com'),
+  rotateLeft('rotate-left-svgrepo-com'),
+  rotateRight('rotate-right-svgrepo-com');
 
   const SvgIcons(this.slug);
   final String slug;

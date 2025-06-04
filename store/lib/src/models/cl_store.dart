@@ -187,7 +187,7 @@ class CLStore {
       entity: CLEntity.media(
         label: label != null ? label() : null,
         description: description != null ? description() : null,
-        parentId: parentId,
+        parentId: parent.id,
         md5: mediaFile.md5,
         fileSize: mediaFile.fileSize,
         mimeType: mediaFile.mimeType,
@@ -244,7 +244,7 @@ class CLStore {
       }
       if (parentIdValue != null) {
         final parent = (await get(
-          EntityQuery(null, {'parentId': parentIdValue}),
+          EntityQuery(null, {'id': parentIdValue}),
         ))
             ?.data;
         if (parent == null) {

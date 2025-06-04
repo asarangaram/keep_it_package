@@ -6,8 +6,9 @@ import 'package:store/store.dart';
 
 import 'refresh_cache.dart';
 
-final entitiesProvider = StreamProvider.family<List<StoreEntity>, EntityQuery>(
-    (ref, dbQuery) async* {
+final StreamProviderFamily<List<StoreEntity>, EntityQuery> entitiesProvider =
+    StreamProvider.family<List<StoreEntity>, EntityQuery>(
+        (ref, dbQuery) async* {
   final identity = dbQuery.storeIdentity;
   Future<List<StoreEntity>> Function() getentities;
   if (identity != 'local') {

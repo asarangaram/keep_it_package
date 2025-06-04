@@ -10,8 +10,9 @@ import '../../../providers/universal_media.dart';
 import '../../basic_page_service/widgets/cl_error_view.dart';
 import '../../basic_page_service/widgets/page_manager.dart';
 
-import '../../gallery_view_service/models/entity_actions.dart';
-import '../../media_view_service/preview/media_preview.dart';
+import '../../entity_viewer_service/models/entity_actions.dart';
+
+import '../../entity_viewer_service/widgets/preview/collection_preview.dart';
 import 'wizard_grid_view.dart';
 
 class WizardPreview extends ConsumerStatefulWidget {
@@ -71,7 +72,13 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
           ? null
           : (items) => onSelectionChanged
               ?.call(items.map((e) => e as StoreEntity).toList()),
-      itemBuilder: (context, item) {
+      itemBuilder: (context, item, entities) {
+        if (item.isCollection) {
+          return CollectionPreview.preview(
+            item as StoreEntity,
+            viewIdentifier: widget.viewIdentifier,
+          );
+        }
         return MediaThumbnail(
           parentIdentifier: widget.viewIdentifier.parentID,
           media: item as StoreEntity,

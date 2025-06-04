@@ -13,18 +13,24 @@ dependencies:
   colan_widgets:
     path: ../colan_widgets
   collection: ^1.19.0
+  extended_image: ^10.0.1
   flutter:
     sdk: flutter
   flutter_riverpod: 2.5.1
-  intl: ^0.19.0
-  shadcn_ui: ^0.24.0
+  intl: ^0.20.2
+  path: ^1.9.0
+  path_provider: ^2.1.5
+  shadcn_ui: ^0.27.0
+  shimmer: ^3.0.0
+  sqlite_async: ^0.11.1
+  video_player: ^2.9.1
   yet_another_date_picker:
     path: ../yet_another_date_picker
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0
+  flutter_lints: ^6.0.0
 
 flutter:
   uses-material-design: true

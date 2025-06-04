@@ -9,3 +9,4 @@ export 'src/models/entity_store.dart';
 export 'src/models/progress.dart' show Progress;
 export 'src/models/store_entity.dart' show StoreEntity;
 export 'src/models/store_query.dart' show NotNullValues, Shortcuts, StoreQuery;
+export 'src/models/utils.dart' show Utils;

@@ -29,9 +29,9 @@ class UniversalMediaNotifier extends StateNotifier<CLSharedMedia> {
   }
 }
 
-final universalMediaProvider = StateNotifierProvider.family<
-    UniversalMediaNotifier,
-    CLSharedMedia,
-    UniversalMediaSource>((ref, mediaTypes) {
+final StateNotifierProviderFamily<UniversalMediaNotifier, CLSharedMedia,
+        UniversalMediaSource> universalMediaProvider =
+    StateNotifierProvider.family<UniversalMediaNotifier, CLSharedMedia,
+        UniversalMediaSource>((ref, mediaTypes) {
   return UniversalMediaNotifier(mediaTypes);
 });

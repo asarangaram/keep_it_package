@@ -2,8 +2,8 @@ import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 
 import 'package:flutter/material.dart';
 
-import '../../gallery_view_service/models/entity_actions.dart';
-import '../../gallery_view_service/widgets/when_empty.dart';
+import '../../entity_viewer_service/models/entity_actions.dart';
+import '../../entity_viewer_service/widgets/when_empty.dart';
 
 class CLGalleryView extends StatelessWidget {
   const CLGalleryView({
@@ -26,7 +26,11 @@ class CLGalleryView extends StatelessWidget {
   final List<ViewerEntityMixin> entities;
   final Widget Function() loadingBuilder;
   final Widget Function(Object, StackTrace) errorBuilder;
-  final Widget Function(BuildContext, ViewerEntityMixin) itemBuilder;
+  final Widget Function(
+    BuildContext,
+    ViewerEntityMixin,
+    List<ViewerEntityMixin>,
+  ) itemBuilder;
   final int columns;
 
   final Widget emptyWidget;
@@ -38,7 +42,7 @@ class CLGalleryView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CLGalleryGridView(
+    return CLEntitiesGridView(
       viewIdentifier: viewIdentifier,
       incoming: entities,
       itemBuilder: itemBuilder,

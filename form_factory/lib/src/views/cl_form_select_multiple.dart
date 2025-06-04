@@ -101,7 +101,7 @@ class CLFormSelectMultiple extends StatelessWidget {
                               canvasColor: Colors.transparent,
                             ),
                             child: ActionChip(
-                              avatar: Icon(clIcons.insertItem),
+                              avatar: clIcons.insertItem.iconFormatted(),
                               label: Text(
                                 fieldState.value!.isEmpty ? 'Add' : 'Add',
                               ),

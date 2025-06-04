@@ -2,9 +2,6 @@ import 'dart:io';
 
 import 'package:colan_services/colan_services.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:fvp/fvp.dart' as fvp;
-
 import 'package:window_size/window_size.dart';
 
 class KeepItApp implements AppDescriptor {
@@ -20,10 +17,36 @@ class KeepItApp implements AppDescriptor {
   List<CLRouteDescriptor> get screens => [
         CLRouteDescriptor(
           name: '',
-          builder: (context, parameters) => const GalleryViewService(
-            parentIdentifier: 'KeepIt Viewer',
-            storeIdentity: 'local',
-          ),
+          builder: (context, parameters) {
+            return const EntityViewerService(
+              parentIdentifier: 'KeepIt Viewer',
+              storeIdentity: 'local',
+              id: null,
+            );
+          },
+        ),
+        CLRouteDescriptor(
+          name: 'media',
+          builder: (context, parameters) {
+            final int? mediaId;
+            if (parameters.keys.contains('id')) {
+              mediaId = int.parse(parameters['id']!);
+            } else {
+              mediaId = null;
+            }
+            final String parentIdentifier;
+            if (parameters.keys.contains('parentIdentifier')) {
+              parentIdentifier = parameters['parentIdentifier']!;
+            } else {
+              throw Exception('parentIdentifier must be provided');
+            }
+
+            return EntityViewerService(
+              parentIdentifier: parentIdentifier,
+              storeIdentity: 'local',
+              id: mediaId,
+            );
+          },
         ),
         CLRouteDescriptor(
           name: 'settings',
@@ -40,14 +63,14 @@ class KeepItApp implements AppDescriptor {
             } else {
               parentId = null;
             }
-            return CLCameraService(
+            return CameraService(
               parentId: parentId,
               storeIdentity: 'local',
             );
           },
         ),
         CLRouteDescriptor(
-          name: 'mediaEditor',
+          name: 'edit',
           builder: (context, parameters) {
             final int? mediaId;
             final bool canDuplicateMedia;
@@ -70,32 +93,7 @@ class KeepItApp implements AppDescriptor {
           },
         ),
         CLRouteDescriptor(
-          name: 'media',
-          builder: (context, parameters) {
-            final String parentIdentifier;
-            final int? parentId;
-
-            if (!parameters.containsKey('parentIdentifier')) {
-              parentIdentifier = 'unknown';
-            } else {
-              parentIdentifier = parameters['parentIdentifier']!;
-            }
-            if (!parameters.containsKey('parentId')) {
-              parentId = 0;
-            } else {
-              parentId = int.parse(parameters['parentId']!);
-            }
-
-            return MediaViewService(
-              storeIdentity: 'local',
-              parentId: parentId,
-              id: int.parse(parameters['id']!),
-              parentIdentifier: parentIdentifier,
-            );
-          },
-        ),
-        CLRouteDescriptor(
-          name: 'media_wizard',
+          name: 'wizard',
           builder: (context, parameters) {
             final typeString = parameters['type'];
             final UniversalMediaSource type;
@@ -116,8 +114,8 @@ class KeepItApp implements AppDescriptor {
   @override
   IncomingMediaViewBuilder get incomingMediaViewBuilder => (
         BuildContext context, {
-        required CLMediaFileGroup incomingMedia,
-        required void Function({required bool result}) onDiscard,
+        required incomingMedia,
+        required onDiscard,
       }) =>
           IncomingMediaService(
             storeIdentity: 'local',
@@ -185,14 +183,6 @@ void main() {
     setWindowMaxSize(const Size(900, 900 * 16 / 9));
     setWindowMinSize(const Size(450, 450 * 16 / 9));
   }
-  SystemChrome.setPreferredOrientations(
-    [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
-  );
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
-  fvp.registerWith(
-    options: {
-      'global': {'logLevel': 'Error'},
-    },
-  );
+
   runApp(AppStartService(appDescriptor: KeepItApp()));
 }

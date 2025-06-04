@@ -12,6 +12,7 @@ import '../../../models/universal_media_source.dart';
 import '../../../providers/universal_media.dart';
 import '../../basic_page_service/widgets/dialogs.dart';
 import '../../basic_page_service/widgets/page_manager.dart';
+
 import 'create_collection_wizard.dart';
 import 'wizard_menu_items.dart';
 import 'wizard_preview.dart';
@@ -166,7 +167,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
     );
   }
 
-  Widget getCollection({required List<StoreEntity> currEntities}) {
+  PreferredSizeWidget getCollection({required List<StoreEntity> currEntities}) {
     return CreateCollectionWizard(
       storeIdentity: widget.storeIdentity,
       isValidSuggestion: (collection) {
@@ -274,7 +275,7 @@ class WizardView extends ConsumerWidget {
   final ViewIdentifier viewIdentifier;
   final WizardMenuItems menu;
   final bool canSelect;
-  final Widget? dialog;
+  final PreferredSizeWidget? dialog;
   final void Function(List<StoreEntity>)? onSelectionChanged;
   final bool freezeView; // Can this avoided?
   final String storeIdentity;
@@ -283,7 +284,11 @@ class WizardView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return WizardLayout(
       title: menu.type.label,
-      onCancel: () => PageManager.of(context).pop(),
+      onCancel: () {
+        // Review
+        ref.read(reloadProvider.notifier).reload();
+        PageManager.of(context).pop();
+      },
       actions: [
         if (canSelect)
           // FIX ME: select ICon or text?
@@ -307,7 +312,7 @@ class WizardView extends ConsumerWidget {
   }
 }
 
-class KeepWithProgress extends StatelessWidget {
+class KeepWithProgress extends StatelessWidget implements PreferredSizeWidget {
   const KeepWithProgress({
     required this.media2Move,
     required this.newParent,
@@ -365,6 +370,9 @@ class KeepWithProgress extends StatelessWidget {
     yield const Progress(fractCompleted: 1, currentItem: 'All items are moved');
     await onDone(mediaMultiple: updatedItems);
   }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kMinInteractiveDimension * 3);
 }
 
 class SelectionControlIcon extends ConsumerWidget {

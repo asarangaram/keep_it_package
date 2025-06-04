@@ -65,7 +65,10 @@ class StoreEntity implements ViewerEntityMixin {
       );
     }
     if (updated != null && autoSave) {
-      return dbSave(mediaFile?.path);
+      return StoreEntity(
+        entity: updated.data,
+        store: store,
+      ).dbSave(mediaFile?.path);
     }
     return updated;
   }
@@ -175,4 +178,13 @@ class StoreEntity implements ViewerEntityMixin {
   @override
   String get searchableTexts =>
       [data.label, data.description].join(' ').toLowerCase();
+
+  @override
+  String? get label => data.label;
+
+  @override
+  String? get mimeType => data.mimeType;
+
+  @override
+  String? get pin => data.pin;
 }

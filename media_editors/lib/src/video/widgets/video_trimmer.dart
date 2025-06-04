@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-//import 'package:video_trimmer/video_trimmer.dart';
+import 'package:media_editors/src/editor_finalizer.dart';
+import 'package:video_trimmer/video_trimmer.dart';
 
 class VideoTrimmerView extends StatefulWidget {
   const VideoTrimmerView(
@@ -27,13 +29,6 @@ class VideoTrimmerView extends StatefulWidget {
 }
 
 class _VideoTrimmerViewState extends State<VideoTrimmerView> {
-  @override
-  Widget build(BuildContext context) {
-    // TODO(anandas): implement build
-    throw UnimplementedError();
-  }
-
-  /* 
   final Trimmer _trimmer = Trimmer();
 
   double? _startValue;
@@ -208,5 +203,5 @@ class _VideoTrimmerViewState extends State<VideoTrimmerView> {
         ],
       ),
     );
-  } */
+  }
 }

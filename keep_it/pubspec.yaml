@@ -15,14 +15,14 @@ dependencies:
     path: ../colan_widgets
   flutter:
     sdk: flutter
-  fvp: ^0.29.0
+  #fvp: ^0.29.0
 
   window_size: ^0.1.0
 
 dev_dependencies:
   flutter_launcher_icons: ^0.14.3
-  flutter_lints: ^5.0.0
-  very_good_analysis: ^7.0.0
+  flutter_lints: ^6.0.0
+  very_good_analysis: ^8.0.0
 
 flutter_icons:
   android: "launcher_icon"
@@ -39,7 +39,12 @@ flutter:
     - assets/audios/audio3.mp3
     - assets/audios/audio4.mp3
     - assets/icon/cloud_on_lan_128px_color.png
+    - assets/icon/icon.png
     - assets/icon/on_device.png
     - assets/icon/not_on_server.png
-    - assets/icon/svg/rotate-left-19.svg
-    - assets/icon/svg/rotate-right-18.svg
+    - assets/icon/svg/minimize-svgrepo-com.svg
+    - assets/icon/svg/maximize-svgrepo-com.svg
+    - assets/icon/svg/audio-svgrepo-com.svg
+    - assets/icon/svg/audio-off-svgrepo-com.svg
+    - assets/icon/svg/rotate-left-svgrepo-com.svg
+    - assets/icon/svg/rotate-right-svgrepo-com.svg
