@@ -65,7 +65,10 @@ class StoreEntity implements ViewerEntityMixin {
       );
     }
     if (updated != null && autoSave) {
-      return dbSave(mediaFile?.path);
+      return StoreEntity(
+        entity: updated.data,
+        store: store,
+      ).dbSave(mediaFile?.path);
     }
     return updated;
   }

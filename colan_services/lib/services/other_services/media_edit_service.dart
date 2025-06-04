@@ -80,8 +80,7 @@ class MediaEditService extends ConsumerWidget {
                               false;
                           if (confirmed && context.mounted) {
                             resultMedia = await media.updateWith(
-                                  mediaFile: mediaFile,
-                                ) ??
+                                    mediaFile: mediaFile, autoSave: true) ??
                                 media;
                           }
                         } else if (context.mounted) {
@@ -93,8 +92,7 @@ class MediaEditService extends ConsumerWidget {
                                   false;
                           if (confirmed && context.mounted) {
                             resultMedia = await media.cloneWith(
-                                  mediaFile: mediaFile,
-                                ) ??
+                                    mediaFile: mediaFile, autoSave: true) ??
                                 media;
                           } else {
                             resultMedia = media;
@@ -102,6 +100,9 @@ class MediaEditService extends ConsumerWidget {
                         }
 
                         if (context.mounted) {
+                          if (resultMedia != media) {
+                            ref.read(reloadProvider.notifier).reload();
+                          }
                           PageManager.of(context).pop(resultMedia);
                         }
                       },

@@ -27,6 +27,7 @@ class CLEntitiesPageViewScope extends ConsumerWidget {
         )
         .toList();
     return ProviderScope(
+      key: ValueKey(supportedEntities.hashCode),
       overrides: [
         mediaViewerUIStateProvider.overrideWith((ref) {
           return MediaViewerUIStateNotifier(
