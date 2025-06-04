@@ -33,54 +33,91 @@ class CollectionPreview extends ConsumerWidget {
           errorBuilder: (_, __) => const BrokenImage(),
           loadingBuilder: () => const GreyShimmer(),
           builder: (children) {
-            final filterredChildren = children; // FIXME Introduce filter
-            return FolderItem(
-              name: collection.data.label!,
-              borderColor: borderColor,
-              avatarAsset: 'assets/icon/not_on_server.png',
-              counter: (filters.isActive || filters.isTextFilterActive)
-                  ? Container(
-                      margin: const EdgeInsets.all(4),
-                      alignment: Alignment.bottomCenter,
-                      child: FittedBox(
-                        child: ShadBadge(
-                          backgroundColor:
-                              ShadTheme.of(context).colorScheme.mutedForeground,
-                          child: Text(
-                            '${filterredChildren.length}/${children.length} matches',
-                          ),
+            return GetFilterred(
+                viewIdentifier: viewIdentifier,
+                candidates: children,
+                builder: (filterredChildren) {
+                  return FolderItem(
+                    name: collection.data.label!,
+                    borderColor: borderColor,
+                    avatarAsset: 'assets/icon/not_on_server.png',
+                    counter: (filters.isActive || filters.isTextFilterActive)
+                        ? Container(
+                            margin: const EdgeInsets.all(4),
+                            alignment: Alignment.bottomCenter,
+                            child: FittedBox(
+                              child: ShadBadge(
+                                backgroundColor: ShadTheme.of(context)
+                                    .colorScheme
+                                    .mutedForeground,
+                                child: Text(
+                                  '${filterredChildren.where((e) => !e.isCollection).length}/${children.length} matches',
+                                ),
+                              ),
+                            ),
+                          )
+                        : null,
+                    child: CLMediaCollage.byMatrixSize(
+                      children.length,
+                      hCount: 3,
+                      vCount: 3,
+                      itemBuilder: (context, index) {
+                        final Widget widget;
+                        if (children[index].isCollection) {
+                          widget = LayoutBuilder(
+                            builder: (context, constrain) {
+                              return Image.asset(
+                                'assets/icon/icon.png',
+                                width: constrain.maxWidth,
+                                height: constrain.maxHeight,
+                              );
+                            },
+                          );
+                        } else {
+                          widget = MediaThumbnail(
+                            parentIdentifier: viewIdentifier.parentID,
+                            media: children[index],
+                          );
+                        }
+                        final grayOut = !filterredChildren
+                            .map((e) => e.id)
+                            .contains(children[index].id);
+                        if (grayOut) {
+                          return ColorFiltered(
+                              colorFilter: const ColorFilter.matrix(<double>[
+                                0.2126,
+                                0.7152,
+                                0.0722,
+                                0,
+                                0,
+                                0.2126,
+                                0.7152,
+                                0.0722,
+                                0,
+                                0,
+                                0.2126,
+                                0.7152,
+                                0.0722,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                1,
+                                0,
+                              ]),
+                              child: widget);
+                        }
+                        return widget;
+                      },
+                      whenNopreview: Center(
+                        child: CLText.veryLarge(
+                          collection.data.label!.characters.first,
                         ),
                       ),
-                    )
-                  : null,
-              child: CLMediaCollage.byMatrixSize(
-                filterredChildren.length,
-                hCount: 3,
-                vCount: 3,
-                itemBuilder: (context, index) {
-                  if (filterredChildren[index].isCollection) {
-                    return LayoutBuilder(
-                      builder: (context, constrain) {
-                        return Image.asset(
-                          'assets/icon/icon.png',
-                          width: constrain.maxWidth,
-                          height: constrain.maxHeight,
-                        );
-                      },
-                    );
-                  }
-                  return MediaThumbnail(
-                    parentIdentifier: viewIdentifier.parentID,
-                    media: filterredChildren[index],
+                    ),
                   );
-                },
-                whenNopreview: Center(
-                  child: CLText.veryLarge(
-                    collection.data.label!.characters.first,
-                  ),
-                ),
-              ),
-            );
+                });
           },
         );
       },

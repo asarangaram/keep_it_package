@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../builders/get_filterred.dart';
 import '../models/cl_context_menu.dart';
 import '../../common/models/viewer_entity_mixin.dart';
 import '../models/tab_identifier.dart';
 
 import 'cl_raw_gallery_grid_view.dart';
-import '../providers/media_filters.dart';
 
 import '../providers/select_mode.dart';
 import '../providers/selector.dart';
@@ -42,13 +42,6 @@ class SelectionContol extends ConsumerWidget {
       onSelectionChanged?.call(curr.items.toList());
     });
     final incoming = selector.entities;
-    final List<ViewerEntityMixin> filterred;
-    if (filtersDisabled) {
-      filterred = incoming;
-    } else {
-      filterred =
-          ref.watch(filterredMediaProvider(MapEntry(viewIdentifier, incoming)));
-    }
 
     /* return MediaViewService1.pageView(
           media: filterred.map((e) => e as StoreEntity).toList(),
@@ -61,39 +54,45 @@ class SelectionContol extends ConsumerWidget {
           ),
         ); */
 
-    return CLRawGalleryGridView(
-      viewIdentifier: viewIdentifier,
-      incoming: filterred,
-      bannersBuilder: (context, galleryMap) {
-        return [
-          FilterBanner(filterred: filterred, incoming: incoming),
-          if (incoming.isNotEmpty)
-            SelectionBanner(
+    return GetFilterred(
+        viewIdentifier: viewIdentifier,
+        candidates: incoming,
+        isDisabled: filtersDisabled,
+        builder: (filterred) {
+          return CLRawGalleryGridView(
+            viewIdentifier: viewIdentifier,
+            incoming: filterred,
+            bannersBuilder: (context, galleryMap) {
+              return [
+                FilterBanner(filterred: filterred, incoming: incoming),
+                if (incoming.isNotEmpty)
+                  SelectionBanner(
+                    viewIdentifier: viewIdentifier,
+                    incoming: incoming,
+                    galleryMap: galleryMap,
+                  ),
+              ];
+            },
+            labelBuilder: (context, galleryMap, gallery) => SelectableLabel(
               viewIdentifier: viewIdentifier,
-              incoming: incoming,
+              gallery: gallery,
               galleryMap: galleryMap,
             ),
-        ];
-      },
-      labelBuilder: (context, galleryMap, gallery) => SelectableLabel(
-        viewIdentifier: viewIdentifier,
-        gallery: gallery,
-        galleryMap: galleryMap,
-      ),
-      itemBuilder: (context, item, entities) => SelectableItem(
-        viewIdentifier: viewIdentifier,
-        item: item,
-        itemBuilder: itemBuilder,
-        entities: entities,
-      ),
-      columns: 3,
-      draggableMenuBuilder:
-          selector.items.isNotEmpty && contextMenuBuilder != null
-              ? contextMenuBuilder!(context, selector.items.toList())
-                  .draggableMenuBuilder(
-                      context, ref.read(selectModeProvider.notifier).disable)
-              : null,
-      whenEmpty: whenEmpty,
-    );
+            itemBuilder: (context, item, entities) => SelectableItem(
+              viewIdentifier: viewIdentifier,
+              item: item,
+              itemBuilder: itemBuilder,
+              entities: entities,
+            ),
+            columns: 3,
+            draggableMenuBuilder: selector.items.isNotEmpty &&
+                    contextMenuBuilder != null
+                ? contextMenuBuilder!(context, selector.items.toList())
+                    .draggableMenuBuilder(
+                        context, ref.read(selectModeProvider.notifier).disable)
+                : null,
+            whenEmpty: whenEmpty,
+          );
+        });
   }
 }
