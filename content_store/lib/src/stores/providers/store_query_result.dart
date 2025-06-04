@@ -11,9 +11,7 @@ final StreamProviderFamily<List<StoreEntity>, EntityQuery> entitiesProvider =
         (ref, dbQuery) async* {
   final identity = dbQuery.storeIdentity;
   Future<List<StoreEntity>> Function() getentities;
-  if (identity != 'local') {
-    throw Exception('Unknown store!');
-  }
+
   if (identity != null) {
     final store = await ref.watch(storeProvider(identity).future);
 

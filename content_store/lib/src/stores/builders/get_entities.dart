@@ -25,9 +25,6 @@ class GetEntity extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (storeIdentity != 'local') {
-      throw Exception('Unknown store!');
-    }
     if ([id, md5, label].every((e) => e == null)) {
       return builder(null);
     }
@@ -92,9 +89,6 @@ class GetEntities extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (storeIdentity != 'local') {
-      throw Exception('Unknown store!');
-    }
     final query = EntityQuery(
       storeIdentity,
       {
