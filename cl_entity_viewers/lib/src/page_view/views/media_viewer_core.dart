@@ -99,7 +99,10 @@ class ViewMedia extends ConsumerWidget {
     if (!isPlayable) {
       return GestureDetector(
         onTap: ref.read(mediaViewerUIStateProvider.notifier).toggleMenu,
-        child: Center(child: mediaViewer),
+        // To get the gesture for the entire region, we need
+        // this dummy container
+        child: Container(
+            decoration: BoxDecoration(), child: Center(child: mediaViewer)),
       );
     }
 
