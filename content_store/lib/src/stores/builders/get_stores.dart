@@ -2,23 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
+import '../models/available_stores.dart';
 import '../providers/stores.dart';
 
-class GetStores extends ConsumerWidget {
-  const GetStores({
+class GetStore extends ConsumerWidget {
+  const GetStore({
     required this.builder,
     required this.errorBuilder,
     required this.loadingBuilder,
     super.key,
   });
-  final Widget Function(Map<String, CLStore>) builder;
+
+  final Widget Function(CLStore) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final stores = ref.watch(storesProvider);
-    return stores.when(
+    final storeAsync = ref.watch(storeProvider);
+
+    return storeAsync.when(
       data: builder,
       error: errorBuilder,
       loading: loadingBuilder,
@@ -26,34 +29,24 @@ class GetStores extends ConsumerWidget {
   }
 }
 
-class GetStore extends ConsumerWidget {
-  const GetStore({
-    required this.storeIdentity,
+class GetAvailableStores extends ConsumerWidget {
+  const GetAvailableStores({
     required this.builder,
     required this.errorBuilder,
     required this.loadingBuilder,
     super.key,
   });
-  final String storeIdentity;
-  final Widget Function(CLStore) builder;
+
+  final Widget Function(AvailableStores availableStores) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final storesAsync = ref.watch(storesProvider);
+    final availableStores = ref.watch(availableStoresProvider);
 
-    return storesAsync.when(
-      data: (stores) {
-        try {
-          if (stores.keys.contains(storeIdentity)) {
-            return builder(stores[storeIdentity]!);
-          }
-          throw Exception('store not found');
-        } catch (e, st) {
-          return errorBuilder(e, st);
-        }
-      },
+    return availableStores.when(
+      data: builder,
       error: errorBuilder,
       loading: loadingBuilder,
     );

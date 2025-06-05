@@ -11,7 +11,6 @@ class CreateCollectionWizard extends StatefulWidget
     implements PreferredSizeWidget {
   const CreateCollectionWizard({
     required this.onDone,
-    required this.storeIdentity,
     this.fixedHeight = true,
     super.key,
     this.isValidSuggestion,
@@ -21,7 +20,6 @@ class CreateCollectionWizard extends StatefulWidget
     required StoreEntity collection,
   }) onDone;
   final bool Function(StoreEntity collection)? isValidSuggestion;
-  final String storeIdentity;
 
   @override
   State<StatefulWidget> createState() => PickCollectionState();
@@ -54,7 +52,6 @@ class PickCollectionState extends State<CreateCollectionWizard> {
     final Widget child;
     if (collection == null || onEditLabel) {
       child = PickCollection(
-        storeIdentity: widget.storeIdentity,
         collection: collection,
         isValidSuggestion: widget.isValidSuggestion,
         onDone: (collection) {

@@ -1,27 +1,43 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
 import '../../../storage_service/providers/directories.dart';
+import '../models/available_stores.dart';
 import 'local_store.dart';
 
-final FutureProviderFamily<CLStore, String> storeProvider =
-    FutureProvider.family<CLStore, String>((ref, storeIdentity) async {
-  final stores = await ref.watch(storesProvider.future);
+class StoreNotifier extends AsyncNotifier<CLStore> {
+  @override
+  FutureOr<CLStore> build() async {
+    final directories = await ref.watch(deviceDirectoriesProvider.future);
+    final availableStores = await ref.watch(availableStoresProvider.future);
+    final storeURL = availableStores.activeStore;
 
-  if (stores.containsKey(storeIdentity)) {
-    return stores[storeIdentity]!;
-  } else {
-    throw Exception('Store with identity $storeIdentity not found');
+    final scheme = storeURL.scheme; // local or https
+
+    final store = switch (scheme) {
+      'local' => await ref.watch(localStoreProvider(storeURL).future),
+      _ => throw Exception('Unexpected')
+    };
+    return CLStore(store: store, tempFilePath: directories.temp.pathString);
   }
-});
+}
 
-final storesProvider = FutureProvider<Map<String, CLStore>>((ref) async {
-  final localStore = await ref.watch(localStoreProvider.future);
+final storeProvider =
+    AsyncNotifierProvider<StoreNotifier, CLStore>(StoreNotifier.new);
 
-  // add online store here..
-  final directories = await ref.watch(deviceDirectoriesProvider.future);
-  return {
-    localStore.identity:
-        CLStore(store: localStore, tempFilePath: directories.temp.pathString),
-  };
-});
+class AvailableStoresNotifier extends AsyncNotifier<AvailableStores> {
+  @override
+  FutureOr<AvailableStores> build() {
+    return AvailableStores();
+  }
+
+  StoreURL get activeStore => state.value!.activeStore;
+  set activeStore(StoreURL storeURL) =>
+      state = AsyncValue.data(state.value!.setActiveStore(storeURL));
+}
+
+final availableStoresProvider =
+    AsyncNotifierProvider<AvailableStoresNotifier, AvailableStores>(
+        AvailableStoresNotifier.new);

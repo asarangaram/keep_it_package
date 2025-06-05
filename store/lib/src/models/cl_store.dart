@@ -450,7 +450,7 @@ class CLStore {
                 if (newEntity != null) {
                   final saved = await newEntity.dbSave(item.path);
                   if (saved != null) {
-                    newEntities.add(newEntity);
+                    newEntities.add(saved);
                     return true;
                   }
                 }

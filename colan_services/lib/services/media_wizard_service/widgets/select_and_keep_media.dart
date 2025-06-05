@@ -22,13 +22,11 @@ class SelectAndKeepMedia extends ConsumerStatefulWidget {
     required this.viewIdentifier,
     required this.media,
     required this.type,
-    required this.storeIdentity,
     super.key,
   });
   final CLSharedMedia media;
   final UniversalMediaSource type;
   final ViewIdentifier viewIdentifier;
-  final String storeIdentity;
 
   @override
   ConsumerState<SelectAndKeepMedia> createState() => SelectAndKeepMediaState();
@@ -169,7 +167,6 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
 
   PreferredSizeWidget getCollection({required List<StoreEntity> currEntities}) {
     return CreateCollectionWizard(
-      storeIdentity: widget.storeIdentity,
       isValidSuggestion: (collection) {
         return !collection.data.isDeleted;
       },
@@ -192,7 +189,6 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
             (selectionMode ? selectedMedia.entries : widget.media.entries);
         return WizardView(
           viewIdentifier: widget.viewIdentifier,
-          storeIdentity: widget.storeIdentity,
           canSelect: !actionConfirmed && widget.media.entries.length > 1,
           menu: WizardMenuItems.moveOrCancel(
             type: widget.type,
@@ -269,7 +265,6 @@ class WizardView extends ConsumerWidget {
     required this.canSelect,
     required this.onSelectionChanged,
     required this.dialog,
-    required this.storeIdentity,
     super.key,
   });
   final ViewIdentifier viewIdentifier;
@@ -278,7 +273,6 @@ class WizardView extends ConsumerWidget {
   final PreferredSizeWidget? dialog;
   final void Function(List<StoreEntity>)? onSelectionChanged;
   final bool freezeView; // Can this avoided?
-  final String storeIdentity;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -303,7 +297,6 @@ class WizardView extends ConsumerWidget {
           ),
       child: WizardPreview(
         viewIdentifier: viewIdentifier,
-        storeIdentity: storeIdentity,
         type: menu.type,
         onSelectionChanged: onSelectionChanged,
         freezeView: freezeView,

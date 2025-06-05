@@ -19,19 +19,16 @@ class IncomingMediaService extends StatelessWidget {
     required this.incomingMedia,
     required this.parentIdentifier,
     required this.onDiscard,
-    required this.storeIdentity,
     super.key,
   });
   final CLMediaFileGroup incomingMedia;
   final String parentIdentifier;
   final void Function({required bool result}) onDiscard;
-  final String storeIdentity;
 
   @override
   Widget build(BuildContext context) {
     return FullscreenLayout(
       child: IncomingMediaHandler0(
-        storeIdentity: storeIdentity,
         errorBuilder: (e, st) => CLErrorView(errorMessage: e.toString()),
         loadingBuilder: () =>
             CLLoader.widget(debugMessage: 'IncomingMediaService'),
@@ -48,7 +45,6 @@ class IncomingMediaHandler0 extends ConsumerStatefulWidget {
     required this.parentIdentifier,
     required this.incomingMedia,
     required this.onDiscard,
-    required this.storeIdentity,
     required this.errorBuilder,
     required this.loadingBuilder,
     super.key,
@@ -56,7 +52,7 @@ class IncomingMediaHandler0 extends ConsumerStatefulWidget {
   final CLMediaFileGroup incomingMedia;
   final String parentIdentifier;
   final void Function({required bool result}) onDiscard;
-  final String storeIdentity;
+
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
   @override
@@ -85,7 +81,6 @@ class _IncomingMediaHandler0State extends ConsumerState<IncomingMediaHandler0> {
           ? const Center(child: CircularProgressIndicator())
           : (duplicateCandidates == null)
               ? AnalysePage(
-                  storeIdentity: widget.storeIdentity,
                   errorBuilder: widget.errorBuilder,
                   loadingBuilder: widget.loadingBuilder,
                   incomingMedia: widget.incomingMedia,
@@ -93,7 +88,6 @@ class _IncomingMediaHandler0State extends ConsumerState<IncomingMediaHandler0> {
                   onCancel: () => onDiscard(result: false),
                 )
               : DuplicatePage(
-                  storeIdentity: widget.storeIdentity,
                   incomingMedia: duplicateCandidates!,
                   parentIdentifier: widget.parentIdentifier,
                   onDone: ({required CLSharedMedia? mg}) {

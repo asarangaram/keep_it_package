@@ -79,7 +79,10 @@ class LocalSQLiteEntityStore extends EntityStore
   Future<bool> createMediaFiles(CLEntity media, String path) async {
     final mediaPath = absoluteMediaPath(media);
     final previewPath = absolutePreviewPath(media);
-
+    if (previewPath != null) {
+      final previewDirPath = p.dirname(previewPath);
+      Directory(previewDirPath).createSync(recursive: true);
+    }
     if (mediaPath != null) {
       final f = File(mediaPath);
       final dirPath = p.dirname(f.path);

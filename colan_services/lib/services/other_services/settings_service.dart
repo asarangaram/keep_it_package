@@ -10,10 +10,8 @@ import '../media_wizard_service/media_wizard_service.dart';
 
 class SettingsService extends ConsumerWidget {
   const SettingsService({
-    required this.storeIdentity,
     super.key,
   });
-  final String storeIdentity;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -30,7 +28,6 @@ class SettingsService extends ConsumerWidget {
         isDeleted: true,
         isHidden: null,
         parentId: 0,
-        storeIdentity: storeIdentity,
         errorBuilder: (_, __) {
           throw UnimplementedError('errorBuilder');
         },

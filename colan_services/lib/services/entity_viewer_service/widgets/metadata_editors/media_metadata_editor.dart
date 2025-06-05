@@ -15,14 +15,12 @@ import '../map_info.dart';
 
 class MediaMetadataEditor extends StatelessWidget {
   factory MediaMetadataEditor({
-    required String storeIdentity,
     required int mediaId,
     required void Function(StoreEntity media) onSubmit,
     required void Function() onCancel,
     Key? key,
   }) {
     return MediaMetadataEditor._(
-      storeIdentity: storeIdentity,
       mediaId: mediaId,
       onSubmit: onSubmit,
       onCancel: onCancel,
@@ -31,14 +29,12 @@ class MediaMetadataEditor extends StatelessWidget {
     );
   }
   factory MediaMetadataEditor.dialog({
-    required String storeIdentity,
     required int mediaId,
     required void Function(StoreEntity media) onSubmit,
     required void Function() onCancel,
     Key? key,
   }) {
     return MediaMetadataEditor._(
-      storeIdentity: storeIdentity,
       mediaId: mediaId,
       onSubmit: onSubmit,
       onCancel: onCancel,
@@ -47,7 +43,6 @@ class MediaMetadataEditor extends StatelessWidget {
     );
   }
   const MediaMetadataEditor._({
-    required this.storeIdentity,
     required this.mediaId,
     required this.isDialog,
     required this.onSubmit,
@@ -55,7 +50,6 @@ class MediaMetadataEditor extends StatelessWidget {
     super.key,
   });
 
-  final String storeIdentity;
   final int mediaId;
 
   final void Function(StoreEntity media) onSubmit;
@@ -70,7 +64,6 @@ class MediaMetadataEditor extends StatelessWidget {
     return showShadSheet<StoreEntity>(
       context: context,
       builder: (BuildContext context) => MediaMetadataEditor.dialog(
-        storeIdentity: media.store.store.identity,
         mediaId: media.id!,
         onSubmit: (media) {
           PageManager.of(context).pop(media);
@@ -101,7 +94,6 @@ class MediaMetadataEditor extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: GetEntity(
-        storeIdentity: storeIdentity,
         id: mediaId,
         errorBuilder: errorBuilder,
         loadingBuilder: () => loading(context, 'GetCollection'),

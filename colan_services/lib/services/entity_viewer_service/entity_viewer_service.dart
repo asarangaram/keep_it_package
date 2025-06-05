@@ -14,12 +14,11 @@ import 'widgets/when_error.dart';
 class EntityViewerService extends ConsumerWidget {
   const EntityViewerService({
     required this.parentIdentifier,
-    required this.storeIdentity,
     required this.id,
     super.key,
   });
   final String parentIdentifier;
-  final String storeIdentity;
+
   final int? id;
 
   @override
@@ -37,7 +36,6 @@ class EntityViewerService extends ConsumerWidget {
     return OnSwipe(
       child: GetEntity(
         id: id,
-        storeIdentity: storeIdentity,
         errorBuilder: errorBuilder,
         loadingBuilder: () =>
             Scaffold(body: CLLoader.widget(debugMessage: 'GetEntity')),
@@ -45,7 +43,6 @@ class EntityViewerService extends ConsumerWidget {
           if (entity?.isCollection ?? true) {
             return GetEntities(
               parentId: id,
-              storeIdentity: storeIdentity,
               errorBuilder: errorBuilder,
               loadingBuilder: () => Scaffold(
                 body: CLLoader.widget(debugMessage: 'GetEntities'),
@@ -54,7 +51,6 @@ class EntityViewerService extends ConsumerWidget {
                 return CLEntitiesGridViewScope(
                   child: EntityGridView(
                     viewIdentifier: viewIdentifier,
-                    storeIdentity: storeIdentity,
                     parent: entity,
                     children: children,
                   ),
@@ -64,7 +60,6 @@ class EntityViewerService extends ConsumerWidget {
           } else {
             return GetEntities(
               parentId: entity!.parentId,
-              storeIdentity: storeIdentity,
               errorBuilder: errorBuilder,
               loadingBuilder: () => Scaffold(
                 body: CLLoader.widget(debugMessage: 'GetEntities'),

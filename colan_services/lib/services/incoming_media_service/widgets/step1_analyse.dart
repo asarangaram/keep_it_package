@@ -11,7 +11,6 @@ import 'stream_progress_view.dart';
 
 class AnalysePage extends StatelessWidget {
   const AnalysePage({
-    required this.storeIdentity,
     required this.errorBuilder,
     required this.loadingBuilder,
     required this.incomingMedia,
@@ -26,7 +25,7 @@ class AnalysePage extends StatelessWidget {
     required List<CLMediaContent> invalidContent,
   })? onDone;
   final void Function() onCancel;
-  final String storeIdentity;
+
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
 
@@ -35,7 +34,6 @@ class AnalysePage extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8),
       child: GetStore(
-        storeIdentity: storeIdentity,
         errorBuilder: errorBuilder,
         loadingBuilder: loadingBuilder,
         builder: (store) {

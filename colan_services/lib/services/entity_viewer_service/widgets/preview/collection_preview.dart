@@ -28,7 +28,6 @@ class CollectionPreview extends ConsumerWidget {
       identifier: viewIdentifier.parentID,
       builder: (filters) {
         return GetEntities(
-          storeIdentity: collection.store.store.identity,
           parentId: collection.id,
           errorBuilder: (_, __) => const BrokenImage(),
           loadingBuilder: () => const GreyShimmer(),

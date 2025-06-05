@@ -10,10 +10,9 @@ import '../../../models/universal_media_source.dart';
 
 class StaleMediaBanner extends CLBanner {
   const StaleMediaBanner({
-    required this.storeIdentity,
     super.key,
   });
-  final String storeIdentity;
+
   @override
   String get widgetLabel => 'StaleMediaBanner';
 
@@ -30,7 +29,6 @@ class StaleMediaBanner extends CLBanner {
       isHidden: true,
       isCollection: false,
       parentId: 0,
-      storeIdentity: storeIdentity,
       errorBuilder: errorBuilder,
       loadingBuilder: loadingBuilder,
       builder: (staleMedia) {
