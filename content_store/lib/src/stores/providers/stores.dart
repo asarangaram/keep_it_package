@@ -27,15 +27,15 @@ class StoreNotifier extends AsyncNotifier<CLStore> {
 final storeProvider =
     AsyncNotifierProvider<StoreNotifier, CLStore>(StoreNotifier.new);
 
-/* final activeStoreURLProvider = StateProvider<String>((ref) {
-  return 'local://default';
-}); */
-
 class AvailableStoresNotifier extends AsyncNotifier<AvailableStores> {
   @override
   FutureOr<AvailableStores> build() {
     return AvailableStores();
   }
+
+  StoreURL get activeStore => state.value!.activeStore;
+  set activeStore(StoreURL storeURL) =>
+      state = AsyncValue.data(state.value!.setActiveStore(storeURL));
 }
 
 final availableStoresProvider =

@@ -31,7 +31,8 @@ final defaultStore = StoreURL.fromString('local://default');
 class AvailableStores {
   factory AvailableStores(
       {List<StoreURL>? availableStores, int activeStoreIndex = 0}) {
-    final stores = availableStores ?? [defaultStore];
+    final stores = availableStores ??
+        [defaultStore, StoreURL.fromString('local://QuotesCollection')];
 
     if (activeStoreIndex >= stores.length) {
       activeStoreIndex = 0;

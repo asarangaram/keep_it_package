@@ -42,20 +42,44 @@ class SourceSelectionMenuState extends ConsumerState<SourceSelectionMenu> {
     return ShadPopover(
         controller: popoverController,
         popover: (_) => SizedBox(
-              width: 288,
-              child: Column(
+            width: 288,
+            child: ShadRadioGroupFormField<StoreURL>(
+              items: widget.availableStores.availableStores
+                  .map((server) => ShadRadio(
+                        value: server,
+                        label: Text(server.toString()),
+                      )),
+              onChanged: (value) {
+                if (value != null) {
+                  ref.read(availableStoresProvider.notifier).activeStore =
+                      value;
+                }
+              },
+              initialValue: widget.availableStores.activeStore,
+            )
+
+            /* Column(
                   mainAxisSize: MainAxisSize.min,
-                  children: widget.availableStores.availableStores
-                      .map((e) => ListTile(
-                            title: Text(
-                              e.name,
-                              style: ShadTheme.of(context)
-                                  .textTheme
-                                  .small
-                                  .copyWith(fontWeight: FontWeight.bold),
-                            ),
-                          ))
-                      .toList()),
+                  children: widget.availableStores.availableStores.map((e) {
+                    return ListTile(
+                      title: Text(
+                        e.name.capitalizeFirstLetter(),
+                        style: ShadTheme.of(context).textTheme.small.copyWith(
+                            fontSize: widget.availableStores.isActiveStore(e)
+                                ? 20
+                                : 14,
+                            fontWeight: widget.availableStores.isActiveStore(e)
+                                ? FontWeight.bold
+                                : null),
+                      ),
+                      subtitle: Padding(
+                        padding: const EdgeInsets.only(left: 8),
+                        child: Text(e.scheme,
+                            style: ShadTheme.of(context).textTheme.list),
+                      ),
+                      enabled: false,
+                    );
+                  }).toList()), */
             ),
         child: ShadButton.ghost(
           onPressed: popoverController.toggle,
