@@ -6,6 +6,7 @@ import 'package:path/path.dart' as p;
 import 'package:store/store.dart';
 
 import '../../../../storage_service/providers/directories.dart';
+import '../models/available_stores.dart';
 
 final FutureProviderFamily<DBModel, String> _dbProvider =
     FutureProvider.family<DBModel, String>((ref, dbName) async {
@@ -14,19 +15,18 @@ final FutureProviderFamily<DBModel, String> _dbProvider =
   return createSQLiteDBInstance(fullPath);
 });
 
-final FutureProviderFamily<EntityStore, String> localStoreProvider =
-    FutureProvider.family<EntityStore, String>((ref, url) async {
-  final uri = Uri.parse(url);
-  final scheme = uri.scheme; // local or https
+final FutureProviderFamily<EntityStore, StoreURL> localStoreProvider =
+    FutureProvider.family<EntityStore, StoreURL>((ref, storeURL) async {
+  final scheme = storeURL.scheme; // local or https
   if (scheme != 'local') {
     throw Exception('scheme $scheme is not supported by local Store');
   }
-  final name = uri.host.isNotEmpty ? uri.host : uri.path;
-  final db = await ref.watch(_dbProvider('$name.db').future);
+
+  final db = await ref.watch(_dbProvider('${storeURL.name}.db').future);
   final directories = await ref.watch(deviceDirectoriesProvider.future);
 
-  final mediaPath = p.join(directories.media.pathString, name);
-  final previewPath = p.join(directories.thumbnail.pathString, name);
+  final mediaPath = p.join(directories.media.pathString, storeURL.name);
+  final previewPath = p.join(directories.thumbnail.pathString, storeURL.name);
   if (!Directory(mediaPath).existsSync()) {
     Directory(mediaPath).createSync(recursive: true);
   }
@@ -35,7 +35,7 @@ final FutureProviderFamily<EntityStore, String> localStoreProvider =
   }
   return createEntityStore(
     db,
-    url,
+    storeURL.uri.toString(),
     mediaPath: mediaPath,
     previewPath: previewPath,
   );

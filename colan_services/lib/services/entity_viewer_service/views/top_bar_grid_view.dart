@@ -9,6 +9,7 @@ import '../../app_start_service/views/on_dark_mode.dart';
 import '../../basic_page_service/widgets/page_manager.dart';
 import '../widgets/media_title.dart';
 import '../widgets/refresh_button.dart';
+import '../widgets/source_select.dart';
 import 'popover_menu.dart';
 
 class TopBarGridView extends ConsumerWidget implements PreferredSizeWidget {
@@ -31,6 +32,7 @@ class TopBarGridView extends ConsumerWidget implements PreferredSizeWidget {
         AppBar(
           title: MediaTitle(entity: parent),
           actions: [
+            const SourceSelection(),
             if (!ColanPlatformSupport.isMobilePlatform) const RefreshButton(),
             const OnDarkMode(),
             if (children.isNotEmpty)

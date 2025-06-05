@@ -15,7 +15,7 @@ class EntitiesNotifier
 
     ref.watch(reloadProvider);
     if (identity != null) {
-      final store = await ref.watch(storeProvider(identity).future);
+      final store = await ref.watch(storeProvider.future);
       return store.getAll(dbQuery);
     } else {
       throw UnimplementedError();

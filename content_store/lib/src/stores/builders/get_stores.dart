@@ -2,29 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
+import '../models/available_stores.dart';
 import '../providers/stores.dart';
-
-/* class GetStores extends ConsumerWidget {
-  const GetStores({
-    required this.builder,
-    required this.errorBuilder,
-    required this.loadingBuilder,
-    super.key,
-  });
-  final Widget Function(Map<String, CLStore>) builder;
-  final Widget Function(Object, StackTrace) errorBuilder;
-  final Widget Function() loadingBuilder;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final stores = ref.watch(storesProvider);
-    return stores.when(
-      data: builder,
-      error: errorBuilder,
-      loading: loadingBuilder,
-    );
-  }
-} */
 
 class GetStore extends ConsumerWidget {
   const GetStore({
@@ -40,10 +19,33 @@ class GetStore extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final activeStoreURL = ref.watch(activeStoreURLProvider);
-    final storeAsync = ref.watch(storeProvider(activeStoreURL));
+    final storeAsync = ref.watch(storeProvider);
 
     return storeAsync.when(
+      data: builder,
+      error: errorBuilder,
+      loading: loadingBuilder,
+    );
+  }
+}
+
+class GetAvailableStores extends ConsumerWidget {
+  const GetAvailableStores({
+    required this.builder,
+    required this.errorBuilder,
+    required this.loadingBuilder,
+    super.key,
+  });
+
+  final Widget Function(AvailableStores availableStores) builder;
+  final Widget Function(Object, StackTrace) errorBuilder;
+  final Widget Function() loadingBuilder;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final availableStores = ref.watch(availableStoresProvider);
+
+    return availableStores.when(
       data: builder,
       error: errorBuilder,
       loading: loadingBuilder,
