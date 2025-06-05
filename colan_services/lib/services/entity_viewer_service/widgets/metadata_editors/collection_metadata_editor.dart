@@ -12,14 +12,12 @@ import '../../../basic_page_service/widgets/page_manager.dart';
 
 class CollectionMetadataEditor extends ConsumerStatefulWidget {
   factory CollectionMetadataEditor({
-    required String storeIdentity,
     required int? id,
     required void Function(StoreEntity collection) onSubmit,
     required void Function() onCancel,
     Key? key,
   }) {
     return CollectionMetadataEditor._(
-      storeIdentity: storeIdentity,
       id: id,
       onSubmit: onSubmit,
       onCancel: onCancel,
@@ -28,14 +26,12 @@ class CollectionMetadataEditor extends ConsumerStatefulWidget {
     );
   }
   factory CollectionMetadataEditor.dialog({
-    required String storeIdentity,
     required int id,
     required void Function(StoreEntity collection) onSubmit,
     required void Function() onCancel,
     Key? key,
   }) {
     return CollectionMetadataEditor._(
-      storeIdentity: storeIdentity,
       id: id,
       onSubmit: onSubmit,
       onCancel: onCancel,
@@ -44,7 +40,6 @@ class CollectionMetadataEditor extends ConsumerStatefulWidget {
     );
   }
   const CollectionMetadataEditor._({
-    required this.storeIdentity,
     required this.id,
     required this.isDialog,
     required this.onSubmit,
@@ -52,7 +47,6 @@ class CollectionMetadataEditor extends ConsumerStatefulWidget {
     super.key,
   });
 
-  final String storeIdentity;
   final int? id;
 
   final void Function(StoreEntity collection) onSubmit;
@@ -71,7 +65,6 @@ class CollectionMetadataEditor extends ConsumerStatefulWidget {
     return showShadSheet<StoreEntity>(
       context: context,
       builder: (BuildContext context) => CollectionMetadataEditor.dialog(
-        storeIdentity: collection.store.store.identity,
         id: collection.id!,
         onSubmit: (collection) {
           PageManager.of(context).pop(collection);
@@ -110,7 +103,6 @@ class _CollectionMetadataEditorState
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: GetEntity(
-        storeIdentity: widget.storeIdentity,
         id: widget.id,
         errorBuilder: errorBuilder,
         loadingBuilder: () => loading('GetCollection'),
@@ -125,7 +117,6 @@ class _CollectionMetadataEditorState
           return GetEntities(
             isHidden: null,
             isDeleted: null,
-            storeIdentity: widget.storeIdentity,
             errorBuilder: errorBuilder,
             loadingBuilder: () => loading('GetAllCollection'),
             builder: (allCollections) {

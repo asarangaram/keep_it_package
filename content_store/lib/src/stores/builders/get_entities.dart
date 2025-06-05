@@ -3,13 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
 import '../providers/store_query_result.dart';
+import '../providers/stores.dart';
 
 class GetEntity extends ConsumerWidget {
   const GetEntity({
     required this.builder,
     required this.errorBuilder,
     required this.loadingBuilder,
-    required this.storeIdentity,
     this.id,
     super.key,
     this.label, // Searches only collection
@@ -18,13 +18,14 @@ class GetEntity extends ConsumerWidget {
   final Widget Function(StoreEntity? item) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
-  final String storeIdentity;
+
   final int? id;
   final int? label;
   final int? md5;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final activeStoreURL = ref.watch(activeStoreURLProvider);
     if ([id, md5, label].every((e) => e == null)) {
       return builder(null);
     }
@@ -36,7 +37,7 @@ class GetEntity extends ConsumerWidget {
         );
       }
       query = EntityQuery(
-        storeIdentity,
+        activeStoreURL,
         {
           if (id != null)
             'id': id
@@ -69,7 +70,6 @@ class GetEntities extends ConsumerWidget {
     required this.builder,
     required this.errorBuilder,
     required this.loadingBuilder,
-    required this.storeIdentity,
     this.parentId, // parentID = 0 ignores parentId, null is a valid parentId
     this.isCollection, // isCollection = null ignores isCollection
     super.key,
@@ -80,7 +80,6 @@ class GetEntities extends ConsumerWidget {
   final Widget Function(List<StoreEntity> items) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
-  final String storeIdentity;
   final int? parentId;
   final bool? isCollection;
   final bool? isHidden;
@@ -89,8 +88,9 @@ class GetEntities extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final activeStoreURL = ref.watch(activeStoreURLProvider);
     final query = EntityQuery(
-      storeIdentity,
+      activeStoreURL,
       {
         if (isHidden != null) 'isHidden': isHidden! ? 1 : 0,
         if (isDeleted != null) 'isDeleted': isDeleted! ? 1 : 0,

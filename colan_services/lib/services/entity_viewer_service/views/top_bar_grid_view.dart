@@ -14,13 +14,12 @@ import 'popover_menu.dart';
 class TopBarGridView extends ConsumerWidget implements PreferredSizeWidget {
   const TopBarGridView({
     required this.viewIdentifier,
-    required this.storeIdentity,
     required this.parent,
     required this.children,
     super.key,
   });
   final ViewIdentifier viewIdentifier;
-  final String storeIdentity;
+
   final ViewerEntityMixin? parent;
   final List<ViewerEntityMixin> children;
 

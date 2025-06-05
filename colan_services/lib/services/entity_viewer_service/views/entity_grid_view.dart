@@ -15,13 +15,12 @@ import 'top_bar_grid_view.dart';
 class EntityGridView extends ConsumerWidget {
   const EntityGridView({
     required this.viewIdentifier,
-    required this.storeIdentity,
     required this.parent,
     required this.children,
     super.key,
   });
   final ViewIdentifier viewIdentifier;
-  final String storeIdentity;
+
   final ViewerEntityMixin? parent;
   final List<ViewerEntityMixin> children;
 
@@ -29,20 +28,13 @@ class EntityGridView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final topMenu = TopBarGridView(
       viewIdentifier: viewIdentifier,
-      storeIdentity: storeIdentity,
       parent: parent,
       children: children,
     );
     final banners = [
-      if (parent == null)
-        StaleMediaBanner(
-          storeIdentity: storeIdentity,
-        ),
+      if (parent == null) const StaleMediaBanner(),
     ];
-    final bottomMenu = BottomBarGridView(
-      storeIdentity: storeIdentity,
-      entity: parent,
-    );
+    final bottomMenu = BottomBarGridView(entity: parent);
 
     return CLScaffold(
       topMenu: topMenu,

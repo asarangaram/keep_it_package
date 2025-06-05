@@ -14,19 +14,16 @@ class DuplicatePage extends StatelessWidget {
     required this.parentIdentifier,
     required this.onDone,
     required this.onCancel,
-    required this.storeIdentity,
     super.key,
   });
   final CLSharedMedia incomingMedia;
   final String parentIdentifier;
   final void Function({required CLSharedMedia? mg}) onDone;
   final void Function() onCancel;
-  final String storeIdentity;
 
   @override
   Widget build(BuildContext context) {
     return DuplicatePageStateful(
-      storeIdentity: storeIdentity,
       incomingMedia: incomingMedia,
       parentIdentifier: parentIdentifier,
       onDone: onDone,
@@ -41,14 +38,12 @@ class DuplicatePageStateful extends StatefulWidget {
     required this.parentIdentifier,
     required this.onDone,
     required this.onCancel,
-    required this.storeIdentity,
     super.key,
   });
   final CLSharedMedia incomingMedia;
   final String parentIdentifier;
   final void Function({required CLSharedMedia? mg}) onDone;
   final void Function() onCancel;
-  final String storeIdentity;
 
   @override
   State<StatefulWidget> createState() => _DuplicatePageStatefulState();
@@ -72,7 +67,6 @@ class _DuplicatePageStatefulState extends State<DuplicatePageStateful> {
     }
     return GetEntity(
       id: widget.incomingMedia.collection?.id,
-      storeIdentity: widget.storeIdentity,
       errorBuilder: (_, __) {
         throw UnimplementedError('errorBuilder');
       },
@@ -118,7 +112,6 @@ class _DuplicatePageStatefulState extends State<DuplicatePageStateful> {
                 Flexible(
                   child: ExistInDifferentCollection(
                     parentIdentifier: widget.parentIdentifier,
-                    storeIdentity: widget.storeIdentity,
                     media: currentMedia,
                     onRemove: (m) {
                       final updated = currentMedia.remove(m);
@@ -144,7 +137,6 @@ class _DuplicatePageStatefulState extends State<DuplicatePageStateful> {
 class ExistInDifferentCollection extends StatelessWidget {
   const ExistInDifferentCollection({
     required this.media,
-    required this.storeIdentity,
     required this.parentIdentifier,
     required this.onRemove,
     super.key,
@@ -152,7 +144,6 @@ class ExistInDifferentCollection extends StatelessWidget {
 
   final CLSharedMedia media;
   final String parentIdentifier;
-  final String storeIdentity;
 
   final void Function(StoreEntity media) onRemove;
 
@@ -188,7 +179,6 @@ class ExistInDifferentCollection extends StatelessWidget {
 
                 return GetEntity(
                   id: m.parentId,
-                  storeIdentity: storeIdentity,
                   errorBuilder: (_, __) {
                     throw UnimplementedError('errorBuilder');
                   },

@@ -20,7 +20,6 @@ class KeepItApp implements AppDescriptor {
           builder: (context, parameters) {
             return const EntityViewerService(
               parentIdentifier: 'KeepIt Viewer',
-              storeIdentity: 'local',
               id: null,
             );
           },
@@ -43,16 +42,13 @@ class KeepItApp implements AppDescriptor {
 
             return EntityViewerService(
               parentIdentifier: parentIdentifier,
-              storeIdentity: 'local',
               id: mediaId,
             );
           },
         ),
         CLRouteDescriptor(
           name: 'settings',
-          builder: (context, parameters) => const SettingsService(
-            storeIdentity: 'local',
-          ),
+          builder: (context, parameters) => const SettingsService(),
         ),
         CLRouteDescriptor(
           name: 'camera',
@@ -65,7 +61,6 @@ class KeepItApp implements AppDescriptor {
             }
             return CameraService(
               parentId: parentId,
-              storeIdentity: 'local',
             );
           },
         ),
@@ -86,7 +81,6 @@ class KeepItApp implements AppDescriptor {
             }
 
             return MediaEditService(
-              storeIdentity: 'local',
               mediaId: mediaId,
               canDuplicateMedia: canDuplicateMedia,
             );
@@ -103,10 +97,7 @@ class KeepItApp implements AppDescriptor {
             } else {
               type = UniversalMediaSource.unclassified;
             }
-            return MediaWizardService(
-              type: type,
-              storeIdentity: 'local',
-            );
+            return MediaWizardService(type: type);
           },
         ),
       ];
@@ -118,7 +109,6 @@ class KeepItApp implements AppDescriptor {
         required onDiscard,
       }) =>
           IncomingMediaService(
-            storeIdentity: 'local',
             parentIdentifier: 'IncomingMediaService',
             incomingMedia: incomingMedia,
             onDiscard: onDiscard,

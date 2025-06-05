@@ -25,11 +25,9 @@ import 'widgets/preview.dart';
 class CameraService extends ConsumerWidget {
   const CameraService({
     required this.parentId,
-    required this.storeIdentity,
     super.key,
   });
 
-  final String storeIdentity;
   final int? parentId;
 
   @override
@@ -37,7 +35,6 @@ class CameraService extends ConsumerWidget {
     return FullscreenLayout(
       useSafeArea: false,
       child: GetStore(
-        storeIdentity: storeIdentity,
         errorBuilder: (_, __) {
           throw UnimplementedError('errorBuilder');
         },
@@ -46,7 +43,6 @@ class CameraService extends ConsumerWidget {
         ),
         builder: (theStore) {
           return GetEntity(
-            storeIdentity: storeIdentity,
             id: parentId,
             errorBuilder: (_, __) {
               throw UnimplementedError('errorBuilder');

@@ -1,27 +1,31 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
 import '../../../storage_service/providers/directories.dart';
 import 'local_store.dart';
 
-final FutureProviderFamily<CLStore, String> storeProvider =
-    FutureProvider.family<CLStore, String>((ref, storeIdentity) async {
-  final stores = await ref.watch(storesProvider.future);
+class StoreNotifier extends FamilyAsyncNotifier<CLStore, String> {
+  @override
+  FutureOr<CLStore> build(String arg) async {
+    final directories = await ref.watch(deviceDirectoriesProvider.future);
+    final url = ref.watch(activeStoreURLProvider);
+    final uri = Uri.parse(url);
+    final scheme = uri.scheme; // local or https
 
-  if (stores.containsKey(storeIdentity)) {
-    return stores[storeIdentity]!;
-  } else {
-    throw Exception('Store with identity $storeIdentity not found');
+    final store = switch (scheme) {
+      'local' => await ref.watch(localStoreProvider(url).future),
+      _ => throw Exception('Unexpected')
+    };
+    return CLStore(store: store, tempFilePath: directories.temp.pathString);
   }
-});
+}
 
-final storesProvider = FutureProvider<Map<String, CLStore>>((ref) async {
-  final localStore = await ref.watch(localStoreProvider.future);
+final storeProvider =
+    AsyncNotifierProviderFamily<StoreNotifier, CLStore, String>(
+        StoreNotifier.new);
 
-  // add online store here..
-  final directories = await ref.watch(deviceDirectoriesProvider.future);
-  return {
-    localStore.identity:
-        CLStore(store: localStore, tempFilePath: directories.temp.pathString),
-  };
+final activeStoreURLProvider = StateProvider<String>((ref) {
+  return 'local://default';
 });

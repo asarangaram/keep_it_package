@@ -11,11 +11,10 @@ import '../../incoming_media_service/incoming_media_monitor.dart';
 
 class BottomBarGridView extends ConsumerWidget implements PreferredSizeWidget {
   const BottomBarGridView({
-    required this.storeIdentity,
     required this.entity,
     super.key,
   });
-  final String storeIdentity;
+
   final ViewerEntityMixin? entity;
 
   @override

@@ -14,13 +14,11 @@ import '../basic_page_service/widgets/page_manager.dart';
 
 class MediaEditService extends ConsumerWidget {
   const MediaEditService({
-    required this.storeIdentity,
     required this.mediaId,
     required this.canDuplicateMedia,
     super.key,
   });
 
-  final String storeIdentity;
   final int? mediaId;
   final bool canDuplicateMedia;
 
@@ -31,7 +29,6 @@ class MediaEditService extends ConsumerWidget {
       child: (mediaId == null)
           ? BasicPageService.nothingToShow(message: 'No Media Provided')
           : GetEntity(
-              storeIdentity: storeIdentity,
               id: mediaId,
               errorBuilder: (_, __) {
                 throw UnimplementedError('errorBuilder');
@@ -45,7 +42,6 @@ class MediaEditService extends ConsumerWidget {
                 }
 
                 return GetStore(
-                  storeIdentity: storeIdentity,
                   errorBuilder: (_, __) {
                     throw UnimplementedError('errorBuilder');
                   },

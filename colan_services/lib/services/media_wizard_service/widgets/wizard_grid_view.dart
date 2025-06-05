@@ -16,13 +16,12 @@ class CLGalleryView extends StatelessWidget {
     required this.emptyWidget,
     required this.contextMenuBuilder,
     required this.viewableAsCollection,
-    required this.storeIdentity,
     this.filterDisabled = false,
     this.onSelectionChanged,
     super.key,
   });
   final ViewIdentifier viewIdentifier;
-  final String storeIdentity;
+
   final List<ViewerEntityMixin> entities;
   final Widget Function() loadingBuilder;
   final Widget Function(Object, StackTrace) errorBuilder;
