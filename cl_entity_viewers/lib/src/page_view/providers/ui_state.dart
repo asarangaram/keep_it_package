@@ -68,8 +68,8 @@ class MediaViewerUIStateNotifier extends StateNotifier<MediaViewerUIState> {
   MediaViewerUIStateNotifier([MediaViewerUIState? mediaViewerUIState])
       : super(mediaViewerUIState ?? const MediaViewerUIState());
   Timer? disableControls;
-  //final Duration? defaultTimeOut = const Duration(seconds: 3);
-  final Duration? defaultTimeOut = null;
+  final Duration? defaultTimeOut = const Duration(seconds: 3);
+  //final Duration? defaultTimeOut = null;
 
   void setupTimer([Duration? Function()? getTimeout]) {
     disableControls?.cancel();
@@ -118,5 +118,10 @@ class MediaViewerUIStateNotifier extends StateNotifier<MediaViewerUIState> {
 final mediaViewerUIStateProvider =
     StateNotifierProvider<MediaViewerUIStateNotifier, MediaViewerUIState>(
         (ref) {
+  ref.listenSelf(
+    (previous, next) {
+      print(next.showPlayerMenu);
+    },
+  );
   return MediaViewerUIStateNotifier();
 });
