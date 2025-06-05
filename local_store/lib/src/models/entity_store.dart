@@ -245,7 +245,7 @@ class LocalSQLiteEntityStore extends EntityStore
 Future<EntityStore> createEntityStore(
   StoreURL url, {
   required String storePath,
-}) {
+}) async {
   final dbPath = p.join(storePath, 'db');
   final mediaPath = p.join(storePath, 'media');
   final previewPath = p.join(storePath, 'thumbnails');
@@ -255,7 +255,7 @@ Future<EntityStore> createEntityStore(
   }
 
   final fullPath = p.join(dbPath, '${url.name}.db');
-  final db = createSQLiteDBInstance(fullPath);
+  final db = await createSQLiteDBInstance(fullPath);
 
   if (!Directory(mediaPath).existsSync()) {
     Directory(mediaPath).createSync(recursive: true);
