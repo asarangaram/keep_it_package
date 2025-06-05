@@ -118,10 +118,5 @@ class MediaViewerUIStateNotifier extends StateNotifier<MediaViewerUIState> {
 final mediaViewerUIStateProvider =
     StateNotifierProvider<MediaViewerUIStateNotifier, MediaViewerUIState>(
         (ref) {
-  ref.listenSelf(
-    (previous, next) {
-      print(next.showPlayerMenu);
-    },
-  );
   return MediaViewerUIStateNotifier();
 });
