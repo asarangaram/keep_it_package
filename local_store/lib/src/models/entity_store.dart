@@ -6,6 +6,7 @@ import 'package:path/path.dart' as p;
 import 'package:sqlite_async/sqlite_async.dart';
 import 'package:store/store.dart';
 
+import '../implementations/sqlite_db.dart' show createSQLiteDBInstance;
 import '../implementations/sqlite_db/db_store.dart';
 import '../implementations/sqlite_db/db_table_mixin.dart';
 import '../implementations/sqlite_db/table_agent.dart';
@@ -242,15 +243,31 @@ class LocalSQLiteEntityStore extends EntityStore
 }
 
 Future<EntityStore> createEntityStore(
-  DBModel db,
-  String name, {
-  required String mediaPath,
-  required String previewPath,
+  StoreURL url, {
+  required String storePath,
 }) {
+  final dbPath = p.join(storePath, 'db');
+  final mediaPath = p.join(storePath, 'media');
+  final previewPath = p.join(storePath, 'thumbnails');
+
+  for (final path in [dbPath, mediaPath, previewPath]) {
+    Directory(path).createSync(recursive: true);
+  }
+
+  final fullPath = p.join(dbPath, '${url.name}.db');
+  final db = createSQLiteDBInstance(fullPath);
+
+  if (!Directory(mediaPath).existsSync()) {
+    Directory(mediaPath).createSync(recursive: true);
+  }
+  if (!Directory(previewPath).existsSync()) {
+    Directory(previewPath).createSync(recursive: true);
+  }
+
   return switch (db) {
     (final SQLiteDB db) => LocalSQLiteEntityStore.createStore(
         db,
-        name,
+        url.name,
         mediaPath: mediaPath,
         previewPath: previewPath,
       ),
