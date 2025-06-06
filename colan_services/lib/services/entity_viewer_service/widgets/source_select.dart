@@ -1,5 +1,6 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -10,7 +11,7 @@ class SourceSelection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return GetAvailableStores(
+    return GetRegisterredURLs(
         errorBuilder: (_, __) => const SizedBox.shrink(),
         loadingBuilder: CircularProgressIndicator.new,
         builder: (availableStores) => SourceSelectionMenu(
@@ -52,11 +53,10 @@ class SourceSelectionMenuState extends ConsumerState<SourceSelectionMenu> {
                       )),
               onChanged: (value) {
                 if (value != null) {
-                  ref.read(availableStoresProvider.notifier).activeStore =
-                      value;
+                  ref.read(registeredURLsProvider.notifier).activeStore = value;
                 }
               },
-              initialValue: widget.availableStores.activeStore,
+              initialValue: widget.availableStores.activeStoreURL,
             )
 
             /* Column(

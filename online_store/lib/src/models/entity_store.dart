@@ -69,7 +69,7 @@ class OnlineEntityStore extends EntityStore {
   }
 }
 
-Future<EntityStore> createEntityStore(
+Future<EntityStore> createOnlineEntityStore(
   StoreURL url, {
   required String storePath,
 }) async {

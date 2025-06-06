@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:content_store/src/stores/providers/stores.dart';
+import 'package:content_store/src/stores/providers/active_store_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
@@ -15,7 +15,7 @@ class EntitiesNotifier
 
     ref.watch(reloadProvider);
     if (identity != null) {
-      final store = await ref.watch(storeProvider.future);
+      final store = await ref.watch(activeStoreProvider.future);
       return store.getAll(dbQuery);
     } else {
       throw UnimplementedError();

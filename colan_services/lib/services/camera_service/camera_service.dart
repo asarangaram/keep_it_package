@@ -34,7 +34,7 @@ class CameraService extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return FullscreenLayout(
       useSafeArea: false,
-      child: GetStore(
+      child: GetActiveStore(
         errorBuilder: (_, __) {
           throw UnimplementedError('errorBuilder');
         },

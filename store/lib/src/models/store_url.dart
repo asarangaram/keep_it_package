@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
 import 'package:meta/meta.dart';
@@ -6,6 +5,15 @@ import 'package:meta/meta.dart';
 @immutable
 class StoreURL {
   const StoreURL(this.uri);
+
+  factory StoreURL.fromMap(Map<String, dynamic> map) {
+    return StoreURL(
+      Uri.parse(map['uri'] as String),
+    );
+  }
+
+  factory StoreURL.fromJson(String source) =>
+      StoreURL.fromMap(json.decode(source) as Map<String, dynamic>);
   factory StoreURL.fromString(String url) {
     return StoreURL(Uri.parse(url));
   }
@@ -16,7 +24,6 @@ class StoreURL {
   @override
   bool operator ==(covariant StoreURL other) {
     if (identical(this, other)) return true;
-
     return other.uri == uri;
   }
 
@@ -40,14 +47,5 @@ class StoreURL {
     };
   }
 
-  factory StoreURL.fromMap(Map<String, dynamic> map) {
-    return StoreURL(
-      Uri.parse(map['uri'] as String),
-    );
-  }
-
   String toJson() => json.encode(toMap());
-
-  factory StoreURL.fromJson(String source) =>
-      StoreURL.fromMap(json.decode(source) as Map<String, dynamic>);
 }

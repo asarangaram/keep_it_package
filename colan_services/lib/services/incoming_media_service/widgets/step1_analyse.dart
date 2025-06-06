@@ -33,7 +33,7 @@ class AnalysePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8),
-      child: GetStore(
+      child: GetActiveStore(
         errorBuilder: errorBuilder,
         loadingBuilder: loadingBuilder,
         builder: (store) {

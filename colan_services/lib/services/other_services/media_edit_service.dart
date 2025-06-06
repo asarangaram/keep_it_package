@@ -41,7 +41,7 @@ class MediaEditService extends ConsumerWidget {
                   return BasicPageService.message(message: ' Media not found');
                 }
 
-                return GetStore(
+                return GetActiveStore(
                   errorBuilder: (_, __) {
                     throw UnimplementedError('errorBuilder');
                   },

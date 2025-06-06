@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
+import '../providers/registerred_urls.dart';
 import '../providers/store_query_result.dart';
-import '../providers/stores.dart';
 
 class GetEntity extends ConsumerWidget {
   const GetEntity({
@@ -25,11 +25,11 @@ class GetEntity extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final availableStores = ref.watch(availableStoresProvider);
+    final availableStores = ref.watch(registeredURLsProvider);
 
     return availableStores.when(
       data: (availableStores) {
-        final activeStoreURL = availableStores.activeStore;
+        final activeStoreURL = availableStores.activeStoreURL;
         if ([id, md5, label].every((e) => e == null)) {
           return builder(null);
         }
@@ -96,11 +96,11 @@ class GetEntities extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final availableStoresAsync = ref.watch(availableStoresProvider);
+    final registerredURLsAsync = ref.watch(registeredURLsProvider);
 
-    return availableStoresAsync.when(
-      data: (availableStores) {
-        final activeStoreURL = availableStores.activeStore;
+    return registerredURLsAsync.when(
+      data: (registerredURLs) {
+        final activeStoreURL = registerredURLs.activeStoreURL;
         final query = EntityQuery(
           activeStoreURL.toString(),
           {

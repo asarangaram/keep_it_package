@@ -18,7 +18,7 @@ class PickCollection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetStore(
+    return GetActiveStore(
       errorBuilder: (_, __) {
         throw UnimplementedError('errorBuilder');
       },

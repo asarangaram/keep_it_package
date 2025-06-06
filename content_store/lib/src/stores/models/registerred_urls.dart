@@ -91,5 +91,5 @@ class RegisteredURLs {
     return storeURL == availableStores[activeStoreIndex];
   }
 
-  StoreURL get activeStore => availableStores[activeStoreIndex];
+  StoreURL get activeStoreURL => availableStores[activeStoreIndex];
 }
