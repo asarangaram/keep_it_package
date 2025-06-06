@@ -5,8 +5,8 @@ import 'package:store/store.dart';
 final defaultStore = StoreURL.fromString('local://default');
 
 @immutable
-class AvailableStores {
-  factory AvailableStores(
+class RegisteredURLs {
+  factory RegisteredURLs(
       {List<StoreURL>? availableStores, int activeStoreIndex = 0}) {
     final stores = availableStores ??
         [defaultStore, StoreURL.fromString('local://QuotesCollection')];
@@ -14,28 +14,28 @@ class AvailableStores {
     if (activeStoreIndex >= stores.length) {
       activeStoreIndex = 0;
     }
-    return AvailableStores._(
+    return RegisteredURLs._(
         availableStores: stores, activeStoreIndex: activeStoreIndex);
   }
-  const AvailableStores._({
+  const RegisteredURLs._({
     required this.availableStores,
     required this.activeStoreIndex,
   });
   final List<StoreURL> availableStores;
   final int activeStoreIndex;
 
-  AvailableStores copyWith({
+  RegisteredURLs copyWith({
     List<StoreURL>? availableStores,
     int? activeStoreIndex,
   }) {
-    return AvailableStores._(
+    return RegisteredURLs._(
       availableStores: availableStores ?? this.availableStores,
       activeStoreIndex: activeStoreIndex ?? this.activeStoreIndex,
     );
   }
 
   @override
-  bool operator ==(covariant AvailableStores other) {
+  bool operator ==(covariant RegisteredURLs other) {
     if (identical(this, other)) return true;
     final listEquals = const DeepCollectionEquality().equals;
 
@@ -50,7 +50,7 @@ class AvailableStores {
   String toString() =>
       'AvailableStores(availableStores: $availableStores, activeStoreIndex: $activeStoreIndex)';
 
-  AvailableStores setActiveStore(StoreURL storeURL) {
+  RegisteredURLs setActiveStore(StoreURL storeURL) {
     if (!availableStores.contains(storeURL)) {
       throw Exception('Store is not registered');
     }
@@ -58,7 +58,7 @@ class AvailableStores {
         activeStoreIndex: availableStores.indexWhere((e) => e == storeURL));
   }
 
-  AvailableStores addStore(StoreURL storeURL) {
+  RegisteredURLs addStore(StoreURL storeURL) {
     if (availableStores.contains(storeURL)) {
       throw Exception('Store already exists');
     }
@@ -70,7 +70,7 @@ class AvailableStores {
     return copyWith(availableStores: stores, activeStoreIndex: index);
   }
 
-  AvailableStores removeStore(StoreURL storeURL) {
+  RegisteredURLs removeStore(StoreURL storeURL) {
     if (!availableStores.contains(storeURL)) {
       throw Exception('Store is not registered');
     }

@@ -22,7 +22,7 @@ class SourceSelection extends ConsumerWidget {
 
 class SourceSelectionMenu extends ConsumerStatefulWidget {
   const SourceSelectionMenu({required this.availableStores, super.key});
-  final AvailableStores availableStores;
+  final RegisteredURLs availableStores;
 
   @override
   ConsumerState<SourceSelectionMenu> createState() =>

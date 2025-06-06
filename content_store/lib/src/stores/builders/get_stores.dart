@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import '../models/available_stores.dart';
+import '../models/registerred_urls.dart';
 import '../providers/stores.dart';
 
 class GetStore extends ConsumerWidget {
@@ -37,7 +37,7 @@ class GetAvailableStores extends ConsumerWidget {
     super.key,
   });
 
-  final Widget Function(AvailableStores availableStores) builder;
+  final Widget Function(RegisteredURLs availableStores) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
 

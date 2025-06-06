@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
 import '../../../storage_service/providers/directories.dart';
-import '../models/available_stores.dart';
+import '../models/registerred_urls.dart';
 import 'local_store.dart';
 
 class StoreNotifier extends AsyncNotifier<CLStore> {
@@ -27,10 +27,10 @@ class StoreNotifier extends AsyncNotifier<CLStore> {
 final storeProvider =
     AsyncNotifierProvider<StoreNotifier, CLStore>(StoreNotifier.new);
 
-class AvailableStoresNotifier extends AsyncNotifier<AvailableStores> {
+class AvailableStoresNotifier extends AsyncNotifier<RegisteredURLs> {
   @override
-  FutureOr<AvailableStores> build() {
-    return AvailableStores();
+  FutureOr<RegisteredURLs> build() {
+    return RegisteredURLs();
   }
 
   StoreURL get activeStore => state.value!.activeStore;
@@ -39,5 +39,5 @@ class AvailableStoresNotifier extends AsyncNotifier<AvailableStores> {
 }
 
 final availableStoresProvider =
-    AsyncNotifierProvider<AvailableStoresNotifier, AvailableStores>(
+    AsyncNotifierProvider<AvailableStoresNotifier, RegisteredURLs>(
         AvailableStoresNotifier.new);
