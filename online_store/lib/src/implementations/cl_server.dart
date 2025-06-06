@@ -11,25 +11,25 @@ import 'rest_api.dart';
 @immutable
 class CLServer {
   const CLServer({
-    required this.url,
+    required this.storeURL,
     this.label,
     this.id,
     this.status,
   });
 
-  final StoreURL url;
+  final StoreURL storeURL;
   final String? label;
   final int? id;
   final ServerTimeStamps? status;
 
   CLServer copyWith({
-    StoreURL? url,
+    StoreURL? storeURL,
     ValueGetter<String?>? label,
     ValueGetter<int?>? id,
     ValueGetter<ServerTimeStamps?>? status,
   }) {
     return CLServer(
-      url: url ?? this.url,
+      storeURL: storeURL ?? this.storeURL,
       label: label != null ? label.call() : this.label,
       id: id != null ? id.call() : this.id,
       status: status != null ? status.call() : this.status,
@@ -38,7 +38,7 @@ class CLServer {
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'url': url.toMap(),
+      'url': storeURL.toMap(),
       'label': label,
       'id': id,
       'status': status?.toMap(),
@@ -47,7 +47,7 @@ class CLServer {
 
   factory CLServer.fromMap(Map<String, dynamic> map) {
     return CLServer(
-      url: StoreURL.fromMap(map['url'] as Map<String, dynamic>),
+      storeURL: StoreURL.fromMap(map['url'] as Map<String, dynamic>),
       label: map['label'] != null ? map['label'] as String : null,
       id: map['id'] != null ? map['id'] as int : null,
       status: map['status'] != null
@@ -63,14 +63,14 @@ class CLServer {
 
   @override
   String toString() {
-    return 'CLServer(url: $url, label: $label, id: $id, status: $status)';
+    return 'CLServer(url: $storeURL, label: $label, id: $id, status: $status)';
   }
 
   @override
   bool operator ==(covariant CLServer other) {
     if (identical(this, other)) return true;
 
-    return other.url == url &&
+    return other.storeURL == storeURL &&
         other.label == label &&
         other.id == id &&
         other.status == status;
@@ -78,7 +78,7 @@ class CLServer {
 
   @override
   int get hashCode {
-    return url.hashCode ^ label.hashCode ^ id.hashCode ^ status.hashCode;
+    return storeURL.hashCode ^ label.hashCode ^ id.hashCode ^ status.hashCode;
   }
 
   void log(
@@ -96,31 +96,20 @@ class CLServer {
     ); */
   }
 
-  Future<CLServer?> withId({http.Client? client}) async {
+  Future<CLServer> withId({http.Client? client}) async {
     try {
       final map = await RestApi(baseURL, client: client).getURLStatus();
+
       final serverMap = toMap()..addAll(map);
       final server = CLServer.fromMap(serverMap);
-      if (server.hasID) {
-        return server;
-      }
-      throw Exception('Missing id');
+      return server;
     } catch (e) {
-      return null;
+      return copyWith(id: () => null);
     }
   }
 
-  Future<CLServer?> getServerLiveStatus({http.Client? client}) async {
-    try {
-      final server = await withId(client: client);
-      final hasId = server != null && id != null && id == server.id;
-      log('has id: $hasId');
-      return hasId ? server : null;
-    } catch (e) {
-      log('has id: failed $e');
-      return null;
-    }
-  }
+  Future<CLServer> getServerLiveStatus({http.Client? client}) async =>
+      await withId(client: client);
 
   bool get hasID => id != null;
 
@@ -214,5 +203,5 @@ class CLServer {
     return [];
   }
 
-  String get baseURL => "$url";
+  String get baseURL => "${storeURL.uri}";
 }

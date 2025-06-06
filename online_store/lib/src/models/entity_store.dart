@@ -12,7 +12,27 @@ class OnlineEntityStore extends EntityStore {
   OnlineEntityStore(super.identity, {required this.server});
   final CLServer server;
   final String path = '/entity';
-  final validQueryKeys = const <String>{};
+  final validQueryKeys = const <String>{
+    "id",
+    "isCollection",
+    "label",
+    "parentId",
+    "addedDate",
+    "updatedDate",
+    "isDeleted",
+    "CreateDate",
+    "FileSize",
+    "ImageHeight",
+    "ImageWidth",
+    "Duration",
+    "MIMEType",
+    "md5",
+    "type",
+    "extension",
+  };
+
+  @override
+  bool get isAlive => server.hasID;
 
   @override
   Future<CLEntity?> get([StoreQuery<CLEntity>? query]) async {
@@ -27,13 +47,24 @@ class OnlineEntityStore extends EntityStore {
 
   @override
   Future<List<CLEntity>> getAll([StoreQuery<CLEntity>? query]) async {
+    if (query != null) {
+      if (query.map.keys.contains('isHidden') && query.map['isHidden'] == 1) {
+        // Servers don't support isHidden
+        return [];
+      }
+    }
     final serverQuery = ServerQuery.fromStoreQuery(path, validQueryKeys, query);
-    final map = jsonDecode(await server.getEndpoint(serverQuery.requestTarget))
-        as List<dynamic>;
-    final mediaMapList =
-        map.map((e) => CLEntity.fromMap(e as Map<String, dynamic>)).toList();
+    final map = jsonDecode(await server.getEndpoint(serverQuery.requestTarget));
+    try {
+      final items = ((map as Map<String, dynamic>)["items"]) as List<dynamic>;
 
-    return mediaMapList;
+      final mediaMapList = items
+          .map((e) => CLEntity.fromMap(e as Map<String, dynamic>))
+          .toList();
+      return mediaMapList;
+    } catch (e) {
+      throw Exception(e);
+    }
   }
 
   @override
@@ -44,14 +75,12 @@ class OnlineEntityStore extends EntityStore {
 
   @override
   Uri? mediaUri(CLEntity media) {
-    // TODO: implement mediaUri
-    throw UnimplementedError();
+    return Uri.parse("${server.baseURL}/entity/${media.id}/download");
   }
 
   @override
   Uri? previewUri(CLEntity media) {
-    // TODO: implement previewUri
-    throw UnimplementedError();
+    return Uri.parse("${server.baseURL}/entity/${media.id}/preview");
   }
 
   @override
@@ -60,12 +89,10 @@ class OnlineEntityStore extends EntityStore {
     throw UnimplementedError();
   }
 
-  static Future<EntityStore> createStore(
-    String name, {
-    required String mediaPath,
-    required String previewPath,
-  }) async {
-    throw UnimplementedError();
+  static Future<EntityStore> createStore(StoreURL url) async {
+    final server = await CLServer(storeURL: url).getServerLiveStatus();
+
+    return OnlineEntityStore(url.toString(), server: server);
   }
 }
 
@@ -73,5 +100,5 @@ Future<EntityStore> createOnlineEntityStore(
   StoreURL url, {
   required String storePath,
 }) async {
-  throw UnimplementedError();
+  return OnlineEntityStore.createStore(url);
 }

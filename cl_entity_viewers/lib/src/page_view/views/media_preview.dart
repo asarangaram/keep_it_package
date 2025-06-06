@@ -108,8 +108,10 @@ class MediaThumbnail extends StatelessWidget {
     if (media.previewUri == null) {
       return const BrokenImage();
     }
-    if (!File(media.mediaUri!.toFilePath()).existsSync()) {
-      return const BrokenImage();
+    if (media.mediaUri!.scheme == 'file') {
+      if (!File(media.mediaUri!.toFilePath()).existsSync()) {
+        return const BrokenImage();
+      }
     }
     try {
       return MediaViewerOverlays(

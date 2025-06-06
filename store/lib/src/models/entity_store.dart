@@ -8,6 +8,8 @@ import 'store_query.dart';
 abstract class EntityStore {
   const EntityStore(this.identity);
   final String identity;
+
+  bool get isAlive;
   Future<CLEntity?> get([StoreQuery<CLEntity>? query]);
   Future<List<CLEntity>> getAll([StoreQuery<CLEntity>? query]);
   Future<CLEntity?> upsert(

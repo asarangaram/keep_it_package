@@ -9,7 +9,11 @@ class RegisteredURLs {
   factory RegisteredURLs(
       {List<StoreURL>? availableStores, int activeStoreIndex = 0}) {
     final stores = availableStores ??
-        [defaultStore, StoreURL.fromString('local://QuotesCollection')];
+        [
+          defaultStore,
+          StoreURL.fromString('local://QuotesCollection'),
+          StoreURL.fromString('http://127.0.0.1:5001')
+        ];
 
     if (activeStoreIndex >= stores.length) {
       activeStoreIndex = 0;

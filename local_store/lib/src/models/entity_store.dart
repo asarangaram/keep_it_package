@@ -26,6 +26,9 @@ class LocalSQLiteEntityStore extends EntityStore
   final String previewPath;
 
   @override
+  bool get isAlive => true;
+
+  @override
   Future<bool> delete(CLEntity item) async {
     Future<void> cb(SqliteWriteContext tx) async {
       await dbDelete(tx, agent, item);

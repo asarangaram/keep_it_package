@@ -17,6 +17,9 @@ class ServerQuery<T> {
         if (validKeys.contains(key)) {
           switch (value) {
             case null:
+              if (key == 'parentId') {
+                keyValuePair[key] = "0";
+              }
               break;
             case (final List<dynamic> _) when value.isNotEmpty:
               keyValuePair[key] = value.join(',');
