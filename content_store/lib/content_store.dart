@@ -13,6 +13,7 @@ export 'src/stores/providers/registerred_urls.dart'
 export 'src/widgets/broken_image.dart';
 export 'src/widgets/content_store_selector_icon.dart'
     show ContentSourceSelectorIcon;
+export 'src/widgets/search_server.dart' show SearchServers;
 export 'src/widgets/shimmer.dart';
 export 'storage_service/extensions/ext_file.dart';
 export 'storage_service/widgets/storage_monitor.dart' show StorageMonitor;

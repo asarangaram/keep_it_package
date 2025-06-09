@@ -99,7 +99,6 @@ class CLServer {
   Future<CLServer> withId({http.Client? client}) async {
     try {
       final map = await RestApi(baseURL, client: client).getURLStatus();
-
       final serverMap = toMap()..addAll(map);
       final server = CLServer.fromMap(serverMap);
       return server;
