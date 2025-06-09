@@ -1,6 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
-import 'package:online_store/online_store.dart';
+import 'package:store/store.dart';
 
 @immutable
 class NetworkScanner {
@@ -16,11 +16,11 @@ class NetworkScanner {
     );
   }
   final bool lanStatus;
-  final Set<CLServer>? servers;
+  final Set<StoreURL>? servers;
 
   NetworkScanner copyWith({
     bool? lanStatus,
-    Set<CLServer>? servers,
+    Set<StoreURL>? servers,
   }) {
     return NetworkScanner(
       lanStatus: lanStatus ?? this.lanStatus,

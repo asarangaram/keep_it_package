@@ -2,19 +2,14 @@ import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:store/store.dart';
 
-final defaultStore = StoreURL.fromString('local://default');
+final defaultStore = StoreURL.fromString('local://default', identity: null);
 
 @immutable
 class RegisteredURLs {
   factory RegisteredURLs(
-      {List<StoreURL>? availableStores, int activeStoreIndex = 0}) {
-    final stores = availableStores ??
-        [
-          defaultStore,
-          StoreURL.fromString('local://QuotesCollection'),
-          // StoreURL.fromString('http://192.168.0.220:5001')
-        ];
-
+      {required List<StoreURL> availableStores, int activeStoreIndex = 0}) {
+    final stores = availableStores;
+    // Not a good idea when network involved. need more checks
     if (activeStoreIndex >= stores.length) {
       activeStoreIndex = 0;
     }

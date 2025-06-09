@@ -7,31 +7,16 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:store/store.dart';
 
-class ContentSourceSelectorIcon extends ConsumerWidget {
+class ContentSourceSelectorIcon extends ConsumerStatefulWidget {
   const ContentSourceSelectorIcon({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return GetRegisterredURLs(
-        errorBuilder: (_, __) => const SizedBox.shrink(),
-        loadingBuilder: CircularProgressIndicator.new,
-        builder: (availableStores) => SourceSelectionMenu(
-              availableStores: availableStores,
-              key: ValueKey(availableStores),
-            ));
-  }
+  ConsumerState<ContentSourceSelectorIcon> createState() =>
+      ContentSourceSelectorIconState();
 }
 
-class SourceSelectionMenu extends ConsumerStatefulWidget {
-  const SourceSelectionMenu({required this.availableStores, super.key});
-  final RegisteredURLs availableStores;
-
-  @override
-  ConsumerState<SourceSelectionMenu> createState() =>
-      SourceSelectionMenuState();
-}
-
-class SourceSelectionMenuState extends ConsumerState<SourceSelectionMenu> {
+class ContentSourceSelectorIconState
+    extends ConsumerState<ContentSourceSelectorIcon> {
   final popoverController = ShadPopoverController();
 
   @override
@@ -44,16 +29,8 @@ class SourceSelectionMenuState extends ConsumerState<SourceSelectionMenu> {
   Widget build(BuildContext context) {
     return ShadPopover(
         controller: popoverController,
-        popover: (_) => SizedBox(
-            width: 288,
-            child: Column(
-              children: [
-                KnownServersList(
-                  availableStores: widget.availableStores,
-                ),
-                const SearchServers()
-              ],
-            )),
+        popover: (context) =>
+            const SizedBox(width: 288, child: ShowAvailableServers()),
         child: ShadButton.ghost(
           onPressed: popoverController.toggle,
           child: clIcons.connectToServer.iconFormatted(),
@@ -61,53 +38,96 @@ class SourceSelectionMenuState extends ConsumerState<SourceSelectionMenu> {
   }
 }
 
-class KnownServersList extends ConsumerWidget {
-  const KnownServersList({
-    required this.availableStores,
-    super.key,
-  });
-  final RegisteredURLs availableStores;
+class ShowAvailableServers extends ConsumerWidget {
+  const ShowAvailableServers({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ShadRadioGroupFormField<StoreURL>(
-      items: availableStores.availableStores.map((serverURL) => GetStore(
-          errorBuilder: (p0, p1) => Shimmer.fromColors(
-                baseColor: Colors.grey[500]!,
-                highlightColor: Colors.grey[800]!,
-                child: ShadRadio(
-                  value: serverURL,
-                  label: Text(
-                    serverURL.toString(),
-                    style: ShadTheme.of(context)
-                        .textTheme
-                        .small
-                        .copyWith(color: Colors.red),
-                  ),
-                  enabled: false,
-                ),
-              ),
-          loadingBuilder: GreyShimmer.show, // Relace with loading widget
-          storeURL: serverURL,
-          builder: (store) {
-            return ShadRadio(
-              value: serverURL,
-              enabled: store.store.isAlive,
-              label: Text(
-                serverURL.toString(),
-                style: ShadTheme.of(context)
-                    .textTheme
-                    .small
-                    .copyWith(color: store.store.isAlive ? null : Colors.red),
-              ),
-            );
-          })),
-      onChanged: (value) {
-        if (value != null) {
-          ref.read(registeredURLsProvider.notifier).activeStore = value;
-        }
-      },
-      initialValue: availableStores.activeStoreURL,
+    const loadingWidget = Center(child: CircularProgressIndicator.adaptive());
+    const errorWidget = Center(
+      child: Icon(LucideIcons.triangleAlert),
     );
+    return GetRegisterredURLs(
+        loadingBuilder: () => loadingWidget,
+        errorBuilder: (p0, p1) => errorWidget,
+        builder: (availableStores) {
+          return KnownServersList(
+            servers: availableStores,
+          );
+        });
+  }
+}
+
+class KnownServersList extends ConsumerWidget {
+  const KnownServersList({
+    required this.servers,
+    super.key,
+  });
+  final RegisteredURLs servers;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ListView(
+      shrinkWrap: true,
+      children: servers.availableStores
+          .map((storeURL) => GetStore(
+              storeURL: storeURL,
+              errorBuilder: (p0, p1) => ServerTile(
+                    storeURL: storeURL,
+                    isLoading: false,
+                    isActive: servers.isActiveStore(storeURL),
+                  ),
+              loadingBuilder: () => ServerTile(
+                    storeURL: storeURL,
+                    isLoading: true,
+                    isActive: servers.isActiveStore(storeURL),
+                  ),
+              builder: (store) => ServerTile(
+                    storeURL: storeURL,
+                    store: store,
+                    isLoading: false,
+                    isActive: servers.isActiveStore(storeURL),
+                  )))
+          .toList(),
+    );
+  }
+}
+
+class ServerTile extends ConsumerWidget {
+  const ServerTile(
+      {required this.storeURL,
+      required this.isLoading,
+      required this.isActive,
+      super.key,
+      this.store});
+  final StoreURL storeURL;
+  final CLStore? store;
+  final bool isLoading;
+  final bool isActive;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final child = ListTile(
+        leading: Icon(isActive ? LucideIcons.circleCheck : LucideIcons.circle),
+        //enabled: store?.store.isAlive ?? false,
+        title: Text(
+          storeURL.name,
+          style: ShadTheme.of(context).textTheme.small.copyWith(
+              color: (isLoading || (store?.store.isAlive ?? false))
+                  ? null
+                  : Colors.red),
+        ),
+        onTap: (!isLoading && store != null)
+            ? () =>
+                ref.read(registeredURLsProvider.notifier).activeStore = storeURL
+            : null);
+
+    if (isLoading) {
+      return Shimmer.fromColors(
+          baseColor: Colors.grey[500]!,
+          highlightColor: Colors.grey[800]!,
+          child: child);
+    }
+    return child;
   }
 }

@@ -4,7 +4,6 @@ import 'dart:developer' as dev;
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nsd/nsd.dart';
-import 'package:online_store/online_store.dart';
 import 'package:store/store.dart';
 
 import '../models/network_scanner.dart';
@@ -95,13 +94,11 @@ class NetworkScannerNotifier extends StateNotifier<NetworkScanner> {
   }
 
   Future<void> listener() async {
-    final servers = <CLServer>{};
+    final servers = <StoreURL>{};
     for (final e in discovery?.services ?? <Service>[]) {
       if (e.name != null && e.name!.endsWith('cloudonlapapps')) {
-        final serverFound = CLServer(
-            storeURL: StoreURL(Uri.parse('http://${e.host}:${e.port}')));
-        final serverWithStatus = await serverFound.withId();
-        servers.add(serverWithStatus);
+        servers.add(StoreURL(Uri.parse('http://${e.host}:${e.port}'),
+            identity: e.name));
       }
     }
 
