@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:content_store/src/stores/providers/server_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:local_store/local_store.dart';
 import 'package:online_store/online_store.dart';
@@ -20,7 +21,7 @@ class StoreNotifier extends FamilyAsyncNotifier<CLStore, StoreURL> {
           storePath: directories.db.pathString,
         ),
       'http' => await createOnlineEntityStore(
-          storeURL,
+          await ref.watch(serverProvider(storeURL).future),
           storePath: directories.db.pathString,
         ),
       'https' => await createEntityStore(

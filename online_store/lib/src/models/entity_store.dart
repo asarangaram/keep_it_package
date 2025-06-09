@@ -47,6 +47,8 @@ class OnlineEntityStore extends EntityStore {
 
   @override
   Future<List<CLEntity>> getAll([StoreQuery<CLEntity>? query]) async {
+    print('GET Entity Query: ${query.hashCode}');
+    print('GET Entity Query: $query');
     if (query != null) {
       if (query.map.keys.contains('isHidden') && query.map['isHidden'] == 1) {
         // Servers don't support isHidden
@@ -89,16 +91,14 @@ class OnlineEntityStore extends EntityStore {
     throw UnimplementedError();
   }
 
-  static Future<EntityStore> createStore(StoreURL url) async {
-    final server = await CLServer(storeURL: url).getServerLiveStatus();
-
-    return OnlineEntityStore(url.toString(), server: server);
+  static Future<EntityStore> createStore(CLServer server) async {
+    return OnlineEntityStore(server.baseURL, server: server);
   }
 }
 
 Future<EntityStore> createOnlineEntityStore(
-  StoreURL url, {
+  CLServer server, {
   required String storePath,
 }) async {
-  return OnlineEntityStore.createStore(url);
+  return OnlineEntityStore.createStore(server);
 }
