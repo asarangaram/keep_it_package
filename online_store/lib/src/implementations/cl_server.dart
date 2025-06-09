@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
@@ -16,6 +15,20 @@ class CLServer {
     this.id,
     this.status,
   });
+
+  factory CLServer.fromMap(Map<String, dynamic> map) {
+    return CLServer(
+      storeURL: StoreURL.fromMap(map['url'] as Map<String, dynamic>),
+      label: map['label'] != null ? map['label'] as String : null,
+      id: map['id'] != null ? map['id'] as int : null,
+      status: map['status'] != null
+          ? ServerTimeStamps.fromMap(map['status'] as Map<String, dynamic>)
+          : null,
+    );
+  }
+
+  factory CLServer.fromJson(String source) =>
+      CLServer.fromMap(json.decode(source) as Map<String, dynamic>);
 
   final StoreURL storeURL;
   final String? label;
@@ -45,21 +58,7 @@ class CLServer {
     };
   }
 
-  factory CLServer.fromMap(Map<String, dynamic> map) {
-    return CLServer(
-      storeURL: StoreURL.fromMap(map['url'] as Map<String, dynamic>),
-      label: map['label'] != null ? map['label'] as String : null,
-      id: map['id'] != null ? map['id'] as int : null,
-      status: map['status'] != null
-          ? ServerTimeStamps.fromMap(map['status'] as Map<String, dynamic>)
-          : null,
-    );
-  }
-
   String toJson() => json.encode(toMap());
-
-  factory CLServer.fromJson(String source) =>
-      CLServer.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   String toString() {
@@ -108,7 +107,7 @@ class CLServer {
   }
 
   Future<CLServer> getServerLiveStatus({http.Client? client}) async =>
-      await withId(client: client);
+      withId(client: client);
 
   bool get hasID => id != null;
 
@@ -202,5 +201,5 @@ class CLServer {
     return [];
   }
 
-  String get baseURL => "${storeURL.uri}";
+  String get baseURL => '${storeURL.uri}';
 }

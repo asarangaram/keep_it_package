@@ -9,7 +9,7 @@ class ServerQuery<T> {
     Set<String> validKeys, [
     StoreQuery<T>? storeQuery,
   ]) {
-    Map<String, String> keyValuePair = {};
+    final keyValuePair = <String, String>{};
     if (storeQuery != null) {
       for (final query in storeQuery.map.entries) {
         final key = query.key;
@@ -18,14 +18,13 @@ class ServerQuery<T> {
           switch (value) {
             case null:
               if (key == 'parentId') {
-                keyValuePair[key] = "0";
+                keyValuePair[key] = '0';
               }
-              break;
             case (final List<dynamic> _) when value.isNotEmpty:
               keyValuePair[key] = value.join(',');
 
             case (final NotNullValues _):
-              keyValuePair[key] = "Unset";
+              keyValuePair[key] = 'Unset';
             default:
               keyValuePair[key] = value.toString();
           }
@@ -34,12 +33,12 @@ class ServerQuery<T> {
     }
 
     final queryString =
-        keyValuePair.entries.map((e) => "${e.key}=${e.value}").join('&');
+        keyValuePair.entries.map((e) => '${e.key}=${e.value}').join('&');
     final String requestTarget;
     if (queryString.isEmpty) {
       requestTarget = path;
     } else {
-      requestTarget = "$path?$queryString";
+      requestTarget = '$path?$queryString';
     }
 
     return ServerQuery(requestTarget);

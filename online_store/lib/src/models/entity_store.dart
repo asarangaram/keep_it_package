@@ -9,27 +9,31 @@ import 'server_query.dart';
 
 @immutable
 class OnlineEntityStore extends EntityStore {
-  OnlineEntityStore(super.identity, {required this.server});
+  OnlineEntityStore(super.identity, {required this.server}) {
+    path = '/entity';
+    validQueryKeys = const <String>{
+      'id',
+      'isCollection',
+      'label',
+      'parentId',
+      'addedDate',
+      'updatedDate',
+      'isDeleted',
+      'CreateDate',
+      'FileSize',
+      'ImageHeight',
+      'ImageWidth',
+      'Duration',
+      'MIMEType',
+      'md5',
+      'type',
+      'extension',
+    };
+  }
+
   final CLServer server;
-  final String path = '/entity';
-  final validQueryKeys = const <String>{
-    "id",
-    "isCollection",
-    "label",
-    "parentId",
-    "addedDate",
-    "updatedDate",
-    "isDeleted",
-    "CreateDate",
-    "FileSize",
-    "ImageHeight",
-    "ImageWidth",
-    "Duration",
-    "MIMEType",
-    "md5",
-    "type",
-    "extension",
-  };
+  late final String path;
+  late final Set<String> validQueryKeys;
 
   @override
   bool get isAlive => server.hasID;
@@ -47,8 +51,6 @@ class OnlineEntityStore extends EntityStore {
 
   @override
   Future<List<CLEntity>> getAll([StoreQuery<CLEntity>? query]) async {
-    print('GET Entity Query: ${query.hashCode}');
-    print('GET Entity Query: $query');
     if (query != null) {
       if (query.map.keys.contains('isHidden') && query.map['isHidden'] == 1) {
         // Servers don't support isHidden
@@ -58,7 +60,7 @@ class OnlineEntityStore extends EntityStore {
     final serverQuery = ServerQuery.fromStoreQuery(path, validQueryKeys, query);
     final map = jsonDecode(await server.getEndpoint(serverQuery.requestTarget));
     try {
-      final items = ((map as Map<String, dynamic>)["items"]) as List<dynamic>;
+      final items = ((map as Map<String, dynamic>)['items']) as List<dynamic>;
 
       final mediaMapList = items
           .map((e) => CLEntity.fromMap(e as Map<String, dynamic>))
@@ -71,23 +73,23 @@ class OnlineEntityStore extends EntityStore {
 
   @override
   Future<bool> delete(CLEntity item) {
-    // TODO: implement delete
+    // TODO(anandas): implement delete
     throw UnimplementedError();
   }
 
   @override
   Uri? mediaUri(CLEntity media) {
-    return Uri.parse("${server.baseURL}/entity/${media.id}/download");
+    return Uri.parse('${server.baseURL}/entity/${media.id}/download');
   }
 
   @override
   Uri? previewUri(CLEntity media) {
-    return Uri.parse("${server.baseURL}/entity/${media.id}/preview");
+    return Uri.parse('${server.baseURL}/entity/${media.id}/preview');
   }
 
   @override
   Future<CLEntity?> upsert(CLEntity curr, {String? path}) {
-    // TODO: implement upsert
+    // TODO(anandas): implement upsert
     throw UnimplementedError();
   }
 

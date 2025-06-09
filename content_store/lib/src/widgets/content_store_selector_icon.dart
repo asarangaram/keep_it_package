@@ -109,7 +109,7 @@ class ServerTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final child = ListTile(
         leading: Icon(isActive ? LucideIcons.circleCheck : LucideIcons.circle),
-        //enabled: store?.store.isAlive ?? false,
+        enabled: store?.store.isAlive ?? false,
         title: Text(
           storeURL.name,
           style: ShadTheme.of(context).textTheme.small.copyWith(

@@ -7,11 +7,12 @@ final defaultStore = StoreURL.fromString('local://default', identity: null);
 @immutable
 class RegisteredURLs {
   factory RegisteredURLs(
-      {required List<StoreURL> availableStores, int activeStoreIndex = 0}) {
+      {required List<StoreURL> availableStores,
+      required int activeStoreIndex}) {
     final stores = availableStores;
     // Not a good idea when network involved. need more checks
     if (activeStoreIndex >= stores.length) {
-      activeStoreIndex = 0;
+      throw Exception('Invalid index on avaiablelStore');
     }
     return RegisteredURLs._(
         availableStores: stores, activeStoreIndex: activeStoreIndex);
