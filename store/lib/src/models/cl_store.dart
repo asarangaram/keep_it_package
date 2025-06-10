@@ -64,7 +64,7 @@ class CLStore {
   }
 
   Future<bool> delete(int entityId) async {
-    final entity = await store.get(EntityQuery(null, {'id': entityId}));
+    final entity = await store.get(StoreQuery<CLEntity>({'id': entityId}));
 
     if (entity == null) {
       return false;
@@ -72,8 +72,8 @@ class CLStore {
     return store.delete(entity);
   }
 
-  Future<StoreEntity?> get([EntityQuery? query]) async {
-    final entityFromDB = await store.get(query as StoreQuery<CLEntity>?);
+  Future<StoreEntity?> get([StoreQuery<CLEntity>? query]) async {
+    final entityFromDB = await store.get(query);
     if (entityFromDB == null) {
       return null;
     }
@@ -83,8 +83,8 @@ class CLStore {
     );
   }
 
-  Future<List<StoreEntity>> getAll([EntityQuery? query]) async {
-    final entititesFromDB = await store.getAll(query as StoreQuery<CLEntity>?);
+  Future<List<StoreEntity>> getAll([StoreQuery<CLEntity>? query]) async {
+    final entititesFromDB = await store.getAll(query);
     return entititesFromDB
         .cast<CLEntity>()
         .map(
@@ -99,8 +99,8 @@ class CLStore {
     ValueGetter<int?>? parentId,
     UpdateStrategy strategy = UpdateStrategy.skip,
   }) async {
-    final collectionInDB =
-        await store.get(EntityQuery(null, {'label': label, 'isCollection': 1}));
+    final collectionInDB = await store
+        .get(StoreQuery<CLEntity>({'label': label, 'isCollection': 1}));
 
     if (collectionInDB != null && collectionInDB.id != null) {
       if (!collectionInDB.isCollection) {
@@ -138,12 +138,12 @@ class CLStore {
     UpdateStrategy strategy = UpdateStrategy.skip,
   }) async {
     final mediaInDB = await store.get(
-      EntityQuery(null, {'md5': mediaFile.md5, 'isCollection': 1}),
+      StoreQuery<CLEntity>({'md5': mediaFile.md5, 'isCollection': 1}),
     );
     final CLEntity? parent;
 
     if (parentId != null) {
-      parent = (await get(EntityQuery(null, {'id': parentId})))?.data;
+      parent = (await get(StoreQuery<CLEntity>({'id': parentId})))?.data;
 
       if (parent == null) {
         throw Exception(
@@ -220,7 +220,8 @@ class CLStore {
     }
 
     if (entity.id != null) {
-      final entityInDB = await store.get(EntityQuery(null, {'id': entity.id}));
+      final entityInDB =
+          await store.get(StoreQuery<CLEntity>({'id': entity.id}));
       if (entityInDB == null) {
         throw Exception('entity with id ${entity.id} not found');
       }
@@ -244,7 +245,7 @@ class CLStore {
       }
       if (parentIdValue != null) {
         final parent = (await get(
-          EntityQuery(null, {'id': parentIdValue}),
+          StoreQuery<CLEntity>({'id': parentIdValue}),
         ))
             ?.data;
         if (parent == null) {
@@ -294,7 +295,8 @@ class CLStore {
     }
 
     if (entity.id != null) {
-      final entityInDB = await store.get(EntityQuery(null, {'id': entity.id}));
+      final entityInDB =
+          await store.get(StoreQuery<CLEntity>({'id': entity.id}));
       if (entityInDB == null) {
         throw Exception('entity with id ${entity.id} not found');
       }
@@ -320,7 +322,7 @@ class CLStore {
       }
       if (parentIdValue != null) {
         final parent =
-            await store.get(EntityQuery(null, {'id': parentIdValue}));
+            await store.get(StoreQuery<CLEntity>({'id': parentIdValue}));
         if (parent == null) {
           throw Exception('Parent entity does not exist.');
         }
@@ -437,7 +439,7 @@ class CLStore {
           Future<bool> processSupportedMediaContent() async {
             if ([CLMediaType.image, CLMediaType.video].contains(item.type)) {
               final mediaInDB = await get(
-                EntityQuery(null, {'md5': item.md5, 'isCollection': 0}),
+                StoreQuery<CLEntity>({'md5': item.md5, 'isCollection': 0}),
               );
               if (mediaInDB != null) {
                 existingEntities.add(mediaInDB);

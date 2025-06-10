@@ -134,7 +134,7 @@ class LocalSQLiteEntityStore extends EntityStore
         final timeNow = DateTime.now();
         updated = curr.copyWith(addedDate: timeNow, updatedDate: timeNow);
       } else {
-        prev = await get(EntityQuery(null, {'id': curr.id}));
+        prev = await get(StoreQuery<CLEntity>({'id': curr.id}));
         if (prev == null) {
           throw Exception('media with id ${curr.id} not found');
         }
@@ -170,8 +170,8 @@ class LocalSQLiteEntityStore extends EntityStore
     }
 
     Future<CLEntity?> cb(SqliteWriteContext tx) async {
-      final parent =
-          await dbGet(tx, agent, EntityQuery(null, {'id': updated.parentId}));
+      final parent = await dbGet(
+          tx, agent, StoreQuery<CLEntity>({'id': updated.parentId}));
 
       final entityFromDB = await dbUpsert(
         tx,

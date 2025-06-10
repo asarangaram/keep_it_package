@@ -113,6 +113,12 @@ class MediaViewerUIStateNotifier extends StateNotifier<MediaViewerUIState> {
   set entities(List<ViewerEntityMixin> entities) =>
       notify(state.copyWith(entities: entities));
   List<ViewerEntityMixin> get entities => state.entities;
+
+  @override
+  void dispose() {
+    disableControls?.cancel();
+    super.dispose();
+  }
 }
 
 final mediaViewerUIStateProvider =

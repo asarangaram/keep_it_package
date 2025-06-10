@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import '../providers/registerred_urls.dart';
 import '../providers/store_query_result.dart';
 
 class GetEntity extends ConsumerWidget {
@@ -25,50 +24,40 @@ class GetEntity extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final availableStores = ref.watch(registeredURLsProvider);
-
-    return availableStores.when(
-      data: (availableStores) {
-        final activeStoreURL = availableStores.activeStoreURL;
-        if ([id, md5, label].every((e) => e == null)) {
-          return builder(null);
-        }
-        final EntityQuery query;
-        try {
-          if ([id, md5, label].where((x) => x != null).length != 1) {
-            throw Exception(
-              'Incorrect usage. Use one, only one of id, md5 or label',
-            );
-          }
-          query = EntityQuery(
-            activeStoreURL.toString(),
-            {
-              if (id != null)
-                'id': id
-              else if (md5 != null) ...{
-                'isCollection': 0,
-                'md5': md5,
-              } else if (label != null) ...{
-                'isCollection': 1,
-                'label': label,
-              },
-            },
-          );
-        } catch (e, st) {
-          return errorBuilder(e, st);
-        }
-        final dataAsync = ref.watch(entitiesProvider(query));
-        return dataAsync.when(
-          error: errorBuilder,
-          loading: loadingBuilder,
-          data: (entities) {
-            final entity = entities.where((e) => e.id == id).firstOrNull;
-            return builder(entity);
-          },
+    if ([id, md5, label].every((e) => e == null)) {
+      return builder(null);
+    }
+    final StoreQuery<CLEntity> query;
+    try {
+      if ([id, md5, label].where((x) => x != null).length != 1) {
+        throw Exception(
+          'Incorrect usage. Use one, only one of id, md5 or label',
         );
-      },
+      }
+      query = StoreQuery<CLEntity>(
+        {
+          if (id != null)
+            'id': id
+          else if (md5 != null) ...{
+            'isCollection': 0,
+            'md5': md5,
+          } else if (label != null) ...{
+            'isCollection': 1,
+            'label': label,
+          },
+        },
+      );
+    } catch (e, st) {
+      return errorBuilder(e, st);
+    }
+    final dataAsync = ref.watch(entitiesProvider(query));
+    return dataAsync.when(
       error: errorBuilder,
       loading: loadingBuilder,
+      data: (entities) {
+        final entity = entities.where((e) => e.id == id).firstOrNull;
+        return builder(entity);
+      },
     );
   }
 }
@@ -96,31 +85,21 @@ class GetEntities extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final registerredURLsAsync = ref.watch(registeredURLsProvider);
-
-    return registerredURLsAsync.when(
-      data: (registerredURLs) {
-        final activeStoreURL = registerredURLs.activeStoreURL;
-        final query = EntityQuery(
-          activeStoreURL.toString(),
-          {
-            if (isHidden != null) 'isHidden': isHidden! ? 1 : 0,
-            if (isDeleted != null) 'isDeleted': isDeleted! ? 1 : 0,
-            if (parentId != 0) 'parentId': parentId,
-            if (isCollection != null) 'isCollection': isCollection! ? 1 : 0,
-            if (hasPin != null) 'pin': hasPin! ? NotNullValues : null,
-          },
-        );
-
-        final dataAsync = ref.watch(entitiesProvider(query));
-        return dataAsync.when(
-          error: errorBuilder,
-          loading: loadingBuilder,
-          data: builder,
-        );
+    final query = StoreQuery<CLEntity>(
+      {
+        if (isHidden != null) 'isHidden': isHidden! ? 1 : 0,
+        if (isDeleted != null) 'isDeleted': isDeleted! ? 1 : 0,
+        if (parentId != 0) 'parentId': parentId,
+        if (isCollection != null) 'isCollection': isCollection! ? 1 : 0,
+        if (hasPin != null) 'pin': hasPin! ? NotNullValues : null,
       },
+    );
+
+    final dataAsync = ref.watch(entitiesProvider(query));
+    return dataAsync.when(
       error: errorBuilder,
       loading: loadingBuilder,
+      data: builder,
     );
   }
 }

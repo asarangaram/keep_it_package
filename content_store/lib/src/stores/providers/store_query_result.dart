@@ -7,21 +7,25 @@ import 'package:store/store.dart';
 import 'refresh_cache.dart';
 
 class EntitiesNotifier
-    extends FamilyAsyncNotifier<List<StoreEntity>, EntityQuery> {
+    extends FamilyAsyncNotifier<List<StoreEntity>, StoreQuery<CLEntity>> {
   @override
-  FutureOr<List<StoreEntity>> build(EntityQuery arg) async {
+  FutureOr<List<StoreEntity>> build(StoreQuery<CLEntity> arg) async {
     final dbQuery = arg;
-    final identity = dbQuery.storeIdentity;
 
     ref.watch(reloadProvider);
-    if (identity != null) {
-      final store = await ref.watch(activeStoreProvider.future);
+    final store = await ref.watch(activeStoreProvider.future);
+    try {
       return store.getAll(dbQuery);
-    } else {
-      throw UnimplementedError();
+    } catch (e) {
+      /// FIXME : Implement here
+      /// When failed, the issue could be that the server become inaccessible.
+      /// Need to act here...
+
+      print('getAll failed');
+      return [];
     }
   }
 }
 
 final entitiesProvider = AsyncNotifierProviderFamily<EntitiesNotifier,
-    List<StoreEntity>, EntityQuery>(EntitiesNotifier.new);
+    List<StoreEntity>, StoreQuery<CLEntity>>(EntitiesNotifier.new);
