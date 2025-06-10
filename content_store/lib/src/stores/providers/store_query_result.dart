@@ -23,9 +23,6 @@ class EntitiesNotifier
         try {
           return store.getAll(dbQuery);
         } catch (e) {
-          /// FIXME : Implement here
-          /// When failed, the issue could be that the server become inaccessible.
-          /// Need to act here...
           ref.invalidate(registeredURLsProvider);
           return [];
         }
