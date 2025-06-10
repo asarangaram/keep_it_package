@@ -1,11 +1,11 @@
 import 'dart:async';
-import 'dart:developer' as dev;
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nsd/nsd.dart';
 import 'package:store/store.dart';
 
+import '../models/cl_logger.dart';
 import '../models/network_scanner.dart';
 import 'list_ext.dart';
 
@@ -13,27 +13,15 @@ extension ServiceExtDiscovery on Discovery {
   Future<void> stop() async => stopDiscovery(this);
 }
 
-class NetworkScannerNotifier extends StateNotifier<NetworkScanner> {
+class NetworkScannerNotifier extends StateNotifier<NetworkScanner>
+    with CLLogger {
   NetworkScannerNotifier({required this.serviceName})
       : super(NetworkScanner.unknown()) {
     log('Instance created ');
     _initialize();
   }
-
-  void log(
-    String message, {
-    int level = 0,
-    Object? error,
-    StackTrace? stackTrace,
-  }) {
-    dev.log(
-      message,
-      level: level,
-      error: error,
-      stackTrace: stackTrace,
-      name: 'Online Service: Network Scanner',
-    );
-  }
+  @override
+  String get logPrefix => 'NetworkScannerNotifier';
 
   final String serviceName;
 

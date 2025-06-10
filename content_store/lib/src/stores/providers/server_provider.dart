@@ -1,41 +1,36 @@
 import 'dart:async';
-import 'dart:developer' as dev;
 
+import 'package:content_store/src/stores/models/cl_logger.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:online_store/online_store.dart';
 
 import 'package:store/store.dart';
 
-class ServerNotifier extends FamilyAsyncNotifier<CLServer, StoreURL> {
+class ServerNotifier extends FamilyAsyncNotifier<CLServer, StoreURL>
+    with CLLogger {
+  @override
+  String get logPrefix => 'ServerNotifier';
+
   Timer? timer;
+
   @override
   FutureOr<CLServer> build(StoreURL arg) async {
-    final clServer = await CLServer(storeURL: arg).getServerLiveStatus();
+    try {
+      final clServer = await CLServer(storeURL: arg).getServerLiveStatus();
 
-    timer = Timer.periodic(const Duration(seconds: 5), monitorServer);
+      timer = Timer.periodic(const Duration(seconds: 5), monitorServer);
 
-    ref.onDispose(() {
-      timer?.cancel();
-      timer = null;
-    });
+      ref.onDispose(() {
+        timer?.cancel();
+        timer = null;
+      });
 
-    state = AsyncData(clServer);
-    return clServer;
-  }
-
-  void log(
-    String message, {
-    int level = 0,
-    Object? error,
-    StackTrace? stackTrace,
-  }) {
-    dev.log(
-      message,
-      level: level,
-      error: error,
-      stackTrace: stackTrace,
-      name: 'Online Service | Server',
-    );
+      state = AsyncData(clServer);
+      return clServer;
+    } catch (e) {
+      log(e.toString());
+      rethrow;
+    }
   }
 
   Future<void> monitorServer(Timer _) async {
