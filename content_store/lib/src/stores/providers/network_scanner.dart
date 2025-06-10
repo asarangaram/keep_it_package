@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nsd/nsd.dart';
 import 'package:store/store.dart';
 
-import '../models/cl_logger.dart';
 import '../models/network_scanner.dart';
 import 'list_ext.dart';
 

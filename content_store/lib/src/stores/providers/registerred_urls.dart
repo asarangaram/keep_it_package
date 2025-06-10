@@ -5,7 +5,6 @@ import 'package:content_store/src/stores/providers/store_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import '../models/cl_logger.dart';
 import '../models/registerred_urls.dart';
 
 class RegisteredURLsNotifier extends AsyncNotifier<RegisteredURLs>

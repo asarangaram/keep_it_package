@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cl_media_tools/cl_media_tools.dart';
 import 'package:meta/meta.dart';
+import 'package:store/src/models/cl_logger.dart';
 
 import 'cl_entity.dart';
 import 'data_types.dart';
@@ -13,7 +14,7 @@ import 'store_query.dart';
 class ClStoreInterface {}
 
 @immutable
-class CLStore {
+class CLStore with CLLogger {
   const CLStore({
     required this.store,
     required this.tempFilePath,
@@ -22,6 +23,9 @@ class CLStore {
   final EntityStore store;
   final String tempCollectionName;
   final String tempFilePath;
+
+  @override
+  String get logPrefix => 'CLStore';
 
   CLStore copyWith({
     EntityStore? store,
@@ -84,13 +88,18 @@ class CLStore {
   }
 
   Future<List<StoreEntity>> getAll([StoreQuery<CLEntity>? query]) async {
-    final entititesFromDB = await store.getAll(query);
-    return entititesFromDB
-        .cast<CLEntity>()
-        .map(
-          (entityFromDB) => StoreEntity(entity: entityFromDB, store: this),
-        )
-        .toList();
+    try {
+      final entititesFromDB = await store.getAll(query);
+      return entititesFromDB
+          .cast<CLEntity>()
+          .map(
+            (entityFromDB) => StoreEntity(entity: entityFromDB, store: this),
+          )
+          .toList();
+    } catch (e, st) {
+      log('$e $st');
+      rethrow;
+    }
   }
 
   Future<StoreEntity?> createCollection({
@@ -143,6 +152,7 @@ class CLStore {
     final CLEntity? parent;
 
     if (parentId != null) {
+      /// FIXME: Handle failure due to network
       parent = (await get(StoreQuery<CLEntity>({'id': parentId})))?.data;
 
       if (parent == null) {
@@ -244,6 +254,7 @@ class CLStore {
         );
       }
       if (parentIdValue != null) {
+        /// FIXME: Handle failure due to network
         final parent = (await get(
           StoreQuery<CLEntity>({'id': parentIdValue}),
         ))
@@ -438,6 +449,7 @@ class CLStore {
         if (item != null) {
           Future<bool> processSupportedMediaContent() async {
             if ([CLMediaType.image, CLMediaType.video].contains(item.type)) {
+              /// FIXME: Handle failure due to network
               final mediaInDB = await get(
                 StoreQuery<CLEntity>({'md5': item.md5, 'isCollection': 0}),
               );

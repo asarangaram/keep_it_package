@@ -5,7 +5,6 @@ import 'package:store/src/models/cl_store.dart';
 
 import 'cl_entity.dart';
 import 'data_types.dart';
-import 'store_query.dart';
 
 @immutable
 class StoreEntity implements ViewerEntityMixin {
@@ -125,18 +124,6 @@ class StoreEntity implements ViewerEntityMixin {
   Future<StoreEntity?> onUnpin() async {
     // remove Pin here, if not pinned
     return updateWith(pin: () => null);
-  }
-
-  Future<StoreEntity?> getParent() async {
-    final entity = await store.get(StoreQuery<CLEntity>({'id': parentId}));
-    return entity;
-  }
-
-  Future<List<StoreEntity>?> getChildren() async {
-    if (!data.isCollection) return null;
-    final entities =
-        await store.getAll(StoreQuery<CLEntity>({'parentId': parentId}));
-    return entities;
   }
 
   @override

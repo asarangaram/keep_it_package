@@ -6,7 +6,6 @@ import 'package:online_store/online_store.dart';
 import 'package:store/store.dart';
 
 import '../../../storage_service/providers/directories.dart';
-import '../models/cl_logger.dart';
 import 'server_provider.dart';
 
 class StoreNotifier extends FamilyAsyncNotifier<CLStore, StoreURL>

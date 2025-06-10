@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:content_store/src/stores/models/cl_logger.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:online_store/online_store.dart';
 
@@ -34,11 +33,16 @@ class ServerNotifier extends FamilyAsyncNotifier<CLServer, StoreURL>
   }
 
   Future<void> monitorServer(Timer _) async {
-    final clServer = await CLServer(storeURL: arg).getServerLiveStatus();
-    final server = state.value;
+    try {
+      final clServer = await CLServer(storeURL: arg).getServerLiveStatus();
+      final server = state.value;
 
-    if (server != clServer) {
-      state = AsyncData(clServer);
+      if (server != clServer) {
+        state = AsyncData(clServer);
+      }
+    } catch (e) {
+      log('monitorServer: $e');
+      rethrow;
     }
   }
 }

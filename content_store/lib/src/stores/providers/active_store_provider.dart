@@ -5,8 +5,6 @@ import 'package:content_store/src/stores/providers/store_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-import '../models/cl_logger.dart';
-
 class ActiveStoreNotifier extends AsyncNotifier<CLStore> with CLLogger {
   @override
   String get logPrefix => 'ActiveStoreNotifier';
