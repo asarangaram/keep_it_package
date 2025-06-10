@@ -26,8 +26,8 @@ class EntitiesNotifier
           /// FIXME : Implement here
           /// When failed, the issue could be that the server become inaccessible.
           /// Need to act here...
-
-          rethrow;
+          ref.invalidate(registeredURLsProvider);
+          return [];
         }
       } else {
         ref.invalidate(registeredURLsProvider);
