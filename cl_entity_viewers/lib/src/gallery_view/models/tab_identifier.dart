@@ -5,32 +5,23 @@ import 'package:flutter/material.dart';
 class ViewIdentifier {
   const ViewIdentifier({
     required this.parentID,
-    required this.viewId,
+    required this.viewIdDELETED,
   });
 
   final String parentID;
-  final String viewId;
-
-  ViewIdentifier copyWith({
-    String? parentID,
-    String? viewId,
-  }) {
-    return ViewIdentifier(
-      parentID: parentID ?? this.parentID,
-      viewId: viewId ?? this.viewId,
-    );
-  }
+  final String viewIdDELETED;
 
   @override
-  String toString() => 'ViewIdentifier(parentID: $parentID, viewId: $viewId)';
+  String toString() =>
+      'ViewIdentifier(parentID: $parentID, viewId: $viewIdDELETED)';
 
   @override
   bool operator ==(covariant ViewIdentifier other) {
     if (identical(this, other)) return true;
 
-    return other.parentID == parentID && other.viewId == viewId;
+    return other.parentID == parentID && other.viewIdDELETED == viewIdDELETED;
   }
 
   @override
-  int get hashCode => parentID.hashCode ^ viewId.hashCode;
+  int get hashCode => parentID.hashCode ^ viewIdDELETED.hashCode;
 }

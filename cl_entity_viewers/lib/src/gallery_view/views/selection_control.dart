@@ -55,7 +55,7 @@ class SelectionContol extends ConsumerWidget {
         ); */
 
     return GetFilterred(
-        viewIdentifier: viewIdentifier,
+        parentIdentifier: viewIdentifier.parentID,
         candidates: incoming,
         isDisabled: filtersDisabled,
         builder: (filterred) {

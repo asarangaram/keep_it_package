@@ -70,7 +70,7 @@ class MediaWizardService extends ConsumerWidget {
         child: SelectAndKeepMedia(
           viewIdentifier: ViewIdentifier(
             parentID: 'MediaWizardService',
-            viewId: type.name,
+            viewIdDELETED: type.name,
           ),
           media: media,
           type: type,

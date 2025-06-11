@@ -34,7 +34,7 @@ class DialogService {
                           return EntityPreview(
                             viewIdentifier: const ViewIdentifier(
                               parentID: 'Dialog Service',
-                              viewId: 'PreviewInDialog',
+                              viewIdDELETED: 'PreviewInDialog',
                             ),
                             item: entity[index] as StoreEntity,
                             parentId: entity[index].parentId,

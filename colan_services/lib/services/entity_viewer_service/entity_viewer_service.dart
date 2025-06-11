@@ -32,15 +32,15 @@ class EntityViewerService extends ConsumerWidget {
       builder: (entity, children, siblings) {
         if (entity?.isCollection ?? true) {
           return KeepItGridView(
-            viewIdentifier:
-                ViewIdentifier(parentID: parentIdentifier, viewId: '$id'),
+            viewIdentifier: ViewIdentifier(
+                parentID: parentIdentifier, viewIdDELETED: '$id'),
             parent: entity,
             children: children,
           );
         } else {
           return KeepItPageView(
-            viewIdentifier:
-                ViewIdentifier(parentID: parentIdentifier, viewId: '$id'),
+            viewIdentifier: ViewIdentifier(
+                parentID: parentIdentifier, viewIdDELETED: '$id'),
             entity: entity!,
             siblings: siblings,
           );

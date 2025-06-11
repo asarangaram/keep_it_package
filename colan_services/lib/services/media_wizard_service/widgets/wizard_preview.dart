@@ -75,7 +75,7 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
         if (item.isCollection) {
           return CollectionPreview.preview(
             item as StoreEntity,
-            viewIdentifier: widget.viewIdentifier,
+            parentIdentifier: widget.viewIdentifier.parentID,
           );
         }
         return MediaThumbnail(

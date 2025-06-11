@@ -13,10 +13,10 @@ import '../folder_clip.dart';
 class CollectionPreview extends ConsumerWidget {
   const CollectionPreview.preview(
     this.collection, {
-    required this.viewIdentifier,
+    required this.parentIdentifier,
     super.key,
   });
-  final ViewIdentifier viewIdentifier;
+  final String parentIdentifier;
   final StoreEntity collection;
 
   @override
@@ -25,7 +25,7 @@ class CollectionPreview extends ConsumerWidget {
     final borderColor = ShadTheme.of(context).colorScheme.foreground;
 
     return GetFilters(
-      identifier: viewIdentifier.parentID,
+      identifier: parentIdentifier,
       builder: (filters) {
         return GetEntities(
           parentId: collection.id,
@@ -33,7 +33,7 @@ class CollectionPreview extends ConsumerWidget {
           loadingBuilder: () => const GreyShimmer(),
           builder: (children) {
             return GetFilterred(
-                viewIdentifier: viewIdentifier,
+                parentIdentifier: parentIdentifier,
                 candidates: children,
                 builder: (filterredChildren) {
                   return FolderItem(
@@ -74,7 +74,7 @@ class CollectionPreview extends ConsumerWidget {
                           );
                         } else {
                           widget = MediaThumbnail(
-                            parentIdentifier: viewIdentifier.parentID,
+                            parentIdentifier: parentIdentifier,
                             media: children[index],
                           );
                         }

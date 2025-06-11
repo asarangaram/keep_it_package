@@ -24,8 +24,8 @@ class KeepItErrorView extends ConsumerWidget {
     final menuItems = <CLMenuItem>[];
     return CLScaffold(
       topMenu: TopBar(
-          viewIdentifier:
-              ViewIdentifier(parentID: parentIdentifier, viewId: 'Error'),
+          viewIdentifier: ViewIdentifier(
+              parentID: parentIdentifier, viewIdDELETED: 'Error'),
           entityAsync: AsyncError(e, st),
           children: null),
       banners: const [],

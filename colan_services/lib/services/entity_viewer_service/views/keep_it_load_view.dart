@@ -15,8 +15,8 @@ class KeepItLoadView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return CLScaffold(
         topMenu: TopBar(
-            viewIdentifier:
-                ViewIdentifier(parentID: parentIdentifier, viewId: 'Loading'),
+            viewIdentifier: ViewIdentifier(
+                parentID: parentIdentifier, viewIdDELETED: 'Loading'),
             entityAsync: const AsyncLoading(),
             children: null),
         bottomMenu: null,
