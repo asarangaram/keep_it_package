@@ -8,19 +8,19 @@ import '../widgets/on_swipe.dart';
 import 'top_bar.dart';
 
 class KeepItLoadView extends ConsumerWidget {
-  const KeepItLoadView({super.key});
+  const KeepItLoadView({required this.parentIdentifier, super.key});
+  final String parentIdentifier;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return OnSwipe(
-        child: CLScaffold(
-            topMenu: const TopBar(
-                viewIdentifier:
-                    ViewIdentifier(parentID: 'Test', viewId: 'Loading'),
-                entityAsync: AsyncLoading(),
-                children: null),
-            bottomMenu: null,
-            banners: const [],
-            body: CLLoader.widget(debugMessage: null)));
+    return CLScaffold(
+        topMenu: TopBar(
+            viewIdentifier:
+                ViewIdentifier(parentID: parentIdentifier, viewId: 'Loading'),
+            entityAsync: const AsyncLoading(),
+            children: null),
+        bottomMenu: null,
+        banners: const [],
+        body: OnSwipe(child: CLLoader.widget(debugMessage: null)));
   }
 }

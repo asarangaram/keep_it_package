@@ -21,13 +21,11 @@ class EntityViewerService extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final parentId = id;
-    final viewIdentifier = ViewIdentifier(
-      parentID: parentIdentifier,
-      viewId: parentId.toString(),
-    );
-
-    return const KeepItLoadView();
+    try {
+      throw Exception('This is an error');
+    } catch (e, st) {
+      return KeepItErrorView(parentIdentifier: parentIdentifier, e: e, st: st);
+    }
 
     /* return GetContent(
       id: id,

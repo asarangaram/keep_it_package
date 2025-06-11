@@ -27,7 +27,7 @@ class MediaEditService extends ConsumerWidget {
     return FullscreenLayout(
       backgroundColor: CLTheme.of(context).colors.editorBackgroundColor,
       child: (mediaId == null)
-          ? BasicPageService.nothingToShow(message: 'No Media Provided')
+          ? BasicPageService.message(message: 'No Media Provided')
           : GetEntity(
               id: mediaId,
               errorBuilder: (_, __) {

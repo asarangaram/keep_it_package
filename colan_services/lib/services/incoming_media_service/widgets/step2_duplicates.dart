@@ -61,7 +61,7 @@ class _DuplicatePageStatefulState extends State<DuplicatePageStateful> {
   @override
   Widget build(BuildContext context) {
     if (currentMedia.isEmpty) {
-      return BasicPageService.nothingToShow(
+      return BasicPageService.message(
         message: 'Should not have seen this.',
       );
     }
