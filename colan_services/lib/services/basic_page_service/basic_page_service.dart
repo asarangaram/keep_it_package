@@ -57,7 +57,7 @@ class BasicPageService extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             spacing: 8,
             children: [
-              ...[
+              if (menuItems == null) ...[
                 if (PageManager.of(context).canPop())
                   CLButtonIconLabelled.standard(
                     clIcons.pagePop,
@@ -68,17 +68,16 @@ class BasicPageService extends StatelessWidget {
                   clIcons.navigateHome,
                   'Home',
                   onTap: () => PageManager.of(context).home(),
-                ),
-                if (menuItems != null)
-                  ...menuItems!.map((e) {
-                    return CLButtonIconLabelled.standard(
-                      e.icon,
-                      e.title,
-                      onTap: e.onTap,
-                    );
-                  }),
-              ],
-            ].map((e) => e).toList(),
+                )
+              ] else
+                ...menuItems!.map((e) {
+                  return CLButtonIconLabelled.standard(
+                    e.icon,
+                    e.title,
+                    onTap: e.onTap,
+                  );
+                }),
+            ],
           ),
         ],
       ),

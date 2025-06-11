@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../basic_page_service/widgets/cl_error_view.dart';
-import '../../basic_page_service/widgets/page_manager.dart';
 import 'top_bar.dart';
 
 class KeepItErrorView extends ConsumerWidget {
@@ -22,15 +21,7 @@ class KeepItErrorView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final menuItems = [
-      CLMenuItem(
-        title: 'Disconnect',
-        icon: clIcons.noNetwork,
-        onTap: () async {
-          return null;
-        },
-      )
-    ];
+    final menuItems = <CLMenuItem>[];
     return CLScaffold(
       topMenu: TopBar(
           viewIdentifier:
@@ -40,21 +31,16 @@ class KeepItErrorView extends ConsumerWidget {
       banners: const [],
       bottomMenu: null,
       body: GetStoreStatus(
-        builder: ({required isConnected, required storeAsync}) {
-          if (!isConnected) {
-            return CLErrorView(
-              errorMessage: 'Connection error',
-              errorDetails: 'You are not connected to any home network',
-              menuItems: menuItems,
-            );
-          }
-          return storeAsync.when(
+        builder: (
+            {required activeURL,
+            required bool isConnected,
+            required storeAsync}) {
+          final storeError = storeAsync.when(
               data: (store) {
                 if (!store.store.isAlive) {
                   return CLErrorView(
-                    errorMessage: 'Store found but is not accessible',
-                    errorDetails:
-                        "Store is not responding, couldn't determine the id",
+                    errorMessage: 'Connection Error',
+                    errorDetails: 'Lost Connection to ${store.store.identity}',
                     menuItems: menuItems,
                   );
                 } else {
@@ -70,6 +56,36 @@ class KeepItErrorView extends ConsumerWidget {
                   errorMessage: 'Store is not accessible',
                   errorDetails:
                       "$e\n${st.toString().split("\n").take(2).join("\n")}",
+                  menuItems: menuItems,
+                );
+              },
+              loading: () => CLLoader.widget(debugMessage: null));
+
+          return activeURL.when(
+              data: (activeURLValue) {
+                return switch (activeURLValue.scheme) {
+                  'local' => CLErrorView(
+                      errorMessage: e.toString(),
+                      errorDetails: st.toString(),
+                      menuItems: menuItems,
+                    ),
+                  (final String scheme)
+                      when ['http', 'https'].contains(scheme) =>
+                    isConnected
+                        ? storeError
+                        : CLErrorView(
+                            errorMessage: 'Connection error',
+                            errorDetails:
+                                'You are not connected to any home network',
+                            menuItems: menuItems,
+                          ),
+                  _ => throw Exception('Unsupported URL') // should never occur
+                };
+              },
+              error: (activeURLErr, activeURLST) {
+                return CLErrorView(
+                  errorMessage: activeURLErr.toString(),
+                  errorDetails: activeURLST.toString(),
                   menuItems: menuItems,
                 );
               },
