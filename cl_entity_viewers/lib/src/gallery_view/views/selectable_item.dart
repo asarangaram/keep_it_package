@@ -4,20 +4,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../common/models/viewer_entity_mixin.dart';
 import '../models/selector.dart';
-import '../models/tab_identifier.dart';
 
 import '../providers/select_mode.dart';
 import '../providers/selector.dart';
 
 class SelectableItem extends ConsumerWidget {
   const SelectableItem({
-    required this.viewIdentifier,
     required this.item,
     required this.itemBuilder,
     super.key,
     required this.entities,
   });
-  final ViewIdentifier viewIdentifier;
+
   final ViewerEntityMixin item;
   final List<ViewerEntityMixin> entities;
   final Widget Function(

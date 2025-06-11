@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../common/models/viewer_entity_mixin.dart';
-import '../models/tab_identifier.dart';
 import '../models/selector.dart';
 
 import '../providers/select_mode.dart';
@@ -11,12 +10,11 @@ import '../providers/selector.dart';
 
 class SelectableLabel extends ConsumerWidget {
   const SelectableLabel({
-    required this.viewIdentifier,
     super.key,
     required this.galleryMap,
     required this.gallery,
   });
-  final ViewIdentifier viewIdentifier;
+
   final List<ViewerEntityGroup<ViewerEntityMixin>> galleryMap;
   final ViewerEntityGroup<ViewerEntityMixin> gallery;
 

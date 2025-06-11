@@ -44,7 +44,7 @@ class EntityPreview extends ConsumerWidget {
       child: entity.isCollection
           ? CollectionPreview.preview(
               entity,
-              viewIdentifier: viewIdentifier,
+              parentIdentifier: viewIdentifier.toString(),
             )
           : MediaPreviewWithOverlays(
               media: entity,

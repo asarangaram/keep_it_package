@@ -67,19 +67,16 @@ class SelectionContol extends ConsumerWidget {
                 FilterBanner(filterred: filterred, incoming: incoming),
                 if (incoming.isNotEmpty)
                   SelectionBanner(
-                    viewIdentifier: viewIdentifier,
                     incoming: incoming,
                     galleryMap: galleryMap,
                   ),
               ];
             },
             labelBuilder: (context, galleryMap, gallery) => SelectableLabel(
-              viewIdentifier: viewIdentifier,
               gallery: gallery,
               galleryMap: galleryMap,
             ),
             itemBuilder: (context, item, entities) => SelectableItem(
-              viewIdentifier: viewIdentifier,
               item: item,
               itemBuilder: itemBuilder,
               entities: entities,

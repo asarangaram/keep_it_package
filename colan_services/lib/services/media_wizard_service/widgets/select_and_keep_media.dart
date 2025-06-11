@@ -219,7 +219,6 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                       currEntities: currEntities,
                     ),
           ),
-          freezeView: actionConfirmed,
           onSelectionChanged: (List<StoreEntity> items) {
             selectedMedia = selectedMedia.copyWith(entries: items);
             setState(() {});
@@ -261,7 +260,6 @@ class WizardView extends ConsumerWidget {
   const WizardView({
     required this.viewIdentifier,
     required this.menu,
-    required this.freezeView,
     required this.canSelect,
     required this.onSelectionChanged,
     required this.dialog,
@@ -272,7 +270,6 @@ class WizardView extends ConsumerWidget {
   final bool canSelect;
   final PreferredSizeWidget? dialog;
   final void Function(List<StoreEntity>)? onSelectionChanged;
-  final bool freezeView; // Can this avoided?
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -299,7 +296,6 @@ class WizardView extends ConsumerWidget {
         viewIdentifier: viewIdentifier,
         type: menu.type,
         onSelectionChanged: onSelectionChanged,
-        freezeView: freezeView,
       ),
     );
   }
