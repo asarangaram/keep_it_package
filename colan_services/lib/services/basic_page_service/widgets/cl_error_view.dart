@@ -18,32 +18,32 @@ class CLErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BasicPageService.nothingToShow(
+    return BasicPageService.withNavBar(
       menuItems: [
         if (onRecover != null) onRecover!,
       ],
-      message: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CLIcon.veryLarge(
-              LucideIcons.folder,
-              color: Theme.of(context).colorScheme.error,
+      message: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CLIcon.veryLarge(
+            LucideIcons.folder,
+            color: Theme.of(context).colorScheme.error,
+          ),
+          CLText.large(trim(errorMessage)),
+          ...[
+            const SizedBox(
+              height: 32,
             ),
-            CLText.large(trim(errorMessage)),
-            ...[
-              const SizedBox(
-                height: 32,
+            if (errorDetails != null)
+              Text(
+                errorDetails!,
+                textAlign: TextAlign.justify,
+                style: ShadTheme.of(context).textTheme.muted,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 4,
               ),
-              if (errorDetails != null)
-                Text(
-                  errorDetails!,
-                  textAlign: TextAlign.justify,
-                  style: ShadTheme.of(context).textTheme.muted,
-                ),
-            ],
           ],
-        ),
+        ],
       ),
     );
   }
@@ -51,29 +51,5 @@ class CLErrorView extends StatelessWidget {
   String trim(String msg) {
     final parts = msg.split(':');
     return parts.last;
-  }
-}
-
-class CLErrorPage extends StatelessWidget {
-  const CLErrorPage({
-    required this.errorMessage,
-    super.key,
-    this.errorDetails,
-    this.onRecover,
-  });
-
-  final String errorMessage;
-  final String? errorDetails;
-  final CLMenuItem? onRecover;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: CLErrorView(
-        errorMessage: errorMessage,
-        errorDetails: errorDetails,
-        onRecover: onRecover,
-      ),
-    );
   }
 }
