@@ -54,30 +54,31 @@ class BasicPageService extends StatelessWidget {
                     : throw Exception('must be either widget or a string'),
           ),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            spacing: 8,
             children: [
-              if (menuItems != null)
-                ...menuItems!.map((e) {
-                  return CLButtonIcon.large(
-                    e.icon,
-                    color: Theme.of(context).colorScheme.primary,
-                    onTap: e.onTap,
-                  );
-                }),
               ...[
                 if (PageManager.of(context).canPop())
-                  CLButtonIcon.large(
+                  CLButtonIconLabelled.standard(
                     clIcons.pagePop,
-                    color: Theme.of(context).colorScheme.primary,
+                    'Back',
                     onTap: PageManager.of(context).pop,
                   ),
-                CLButtonIcon.large(
+                CLButtonIconLabelled.standard(
                   clIcons.navigateHome,
-                  color: Theme.of(context).colorScheme.primary,
+                  'Home',
                   onTap: () => PageManager.of(context).home(),
                 ),
+                if (menuItems != null)
+                  ...menuItems!.map((e) {
+                    return CLButtonIconLabelled.standard(
+                      e.icon,
+                      e.title,
+                      onTap: e.onTap,
+                    );
+                  }),
               ],
-            ].map((e) => Expanded(child: Center(child: e))).toList(),
+            ].map((e) => e).toList(),
           ),
         ],
       ),

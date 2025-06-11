@@ -9,19 +9,18 @@ class CLErrorView extends StatelessWidget {
     required this.errorMessage,
     super.key,
     this.errorDetails,
-    this.onRecover,
+    this.menuItems,
   });
 
   final String errorMessage;
   final String? errorDetails;
-  final CLMenuItem? onRecover;
+
+  final List<CLMenuItem>? menuItems;
 
   @override
   Widget build(BuildContext context) {
     return BasicPageService.withNavBar(
-      menuItems: [
-        if (onRecover != null) onRecover!,
-      ],
+      menuItems: menuItems,
       message: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
