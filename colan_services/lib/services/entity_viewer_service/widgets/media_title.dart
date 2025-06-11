@@ -14,7 +14,10 @@ class MediaTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return entityAsync.when(
-        loading: () => const Text(''),
+        loading: () => Text(
+              'Keep It',
+              style: ShadTheme.of(context).textTheme.h3,
+            ),
         error: (e, st) => Text(
               'Error',
               style: ShadTheme.of(context).textTheme.muted,

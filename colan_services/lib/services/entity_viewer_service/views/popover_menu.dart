@@ -5,17 +5,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../basic_page_service/widgets/page_manager.dart';
-
-class PopOverMenu extends ConsumerStatefulWidget {
-  const PopOverMenu({required this.viewIdentifier, super.key});
+class FilterPopOverMenu extends ConsumerStatefulWidget {
+  const FilterPopOverMenu({required this.viewIdentifier, super.key});
   final ViewIdentifier viewIdentifier;
 
   @override
-  ConsumerState<PopOverMenu> createState() => _PopoverPageState();
+  ConsumerState<FilterPopOverMenu> createState() => _PopoverPageState();
 }
 
-class _PopoverPageState extends ConsumerState<PopOverMenu> {
+class _PopoverPageState extends ConsumerState<FilterPopOverMenu> {
   final popoverController = ShadPopoverController();
 
   @override

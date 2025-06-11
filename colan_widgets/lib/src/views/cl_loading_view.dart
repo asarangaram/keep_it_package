@@ -2,13 +2,14 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:progress_indicators/progress_indicators.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:shimmer/shimmer.dart';
 
 enum CLLoaderKind { hidden, widget, shimmer }
 
 class CLLoader extends StatelessWidget {
   factory CLLoader.hide({
-    required String debugMessage,
+    required String? debugMessage,
     Key? key,
     String? message,
   }) {
@@ -20,7 +21,7 @@ class CLLoader extends StatelessWidget {
     );
   }
   factory CLLoader.widget({
-    required String debugMessage,
+    required String? debugMessage,
     Key? key,
     String? message,
   }) {
@@ -32,7 +33,7 @@ class CLLoader extends StatelessWidget {
     );
   }
   factory CLLoader.shimmer({
-    required String debugMessage,
+    required String? debugMessage,
     Key? key,
     String? message,
   }) {
@@ -51,7 +52,7 @@ class CLLoader extends StatelessWidget {
   });
   final CLLoaderKind kind;
   final String? message;
-  final String debugMessage;
+  final String? debugMessage;
 
   @override
   Widget build(BuildContext context) {
@@ -80,25 +81,15 @@ class CLLoaderWidget extends StatelessWidget {
     super.key,
   });
   final String? message;
-  final String debugMessage;
+  final String? debugMessage;
   @override
   Widget build(BuildContext context) {
     final Widget child;
 
-    if (kDebugMode) {
-      child = Center(child: CLText.standard(debugMessage));
+    if (kDebugMode && debugMessage != null) {
+      child = Center(child: CLText.standard(debugMessage!));
     } else {
-      child = Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ScalingText(
-              message ?? 'Loading ...',
-              style: Theme.of(context).textTheme.displayMedium,
-            ),
-          ],
-        ),
-      );
+      child = Center(child: ScalingText(message ?? 'Loading ...'));
     }
     if (hasScaffold(context)) {
       return child;
@@ -113,7 +104,7 @@ class CLLoaderWidget extends StatelessWidget {
 
 class CLLoaderShimmer extends StatelessWidget {
   const CLLoaderShimmer({required this.debugMessage, super.key});
-  final String debugMessage;
+  final String? debugMessage;
 
   @override
   Widget build(BuildContext context) {
@@ -133,7 +124,9 @@ class CLLoaderShimmer extends StatelessWidget {
             ),
           ],
         ),
-        child: kDebugMode ? Center(child: CLText.standard(debugMessage)) : null,
+        child: kDebugMode && debugMessage != null
+            ? Center(child: CLText.standard(debugMessage!))
+            : null,
       ),
     );
   }

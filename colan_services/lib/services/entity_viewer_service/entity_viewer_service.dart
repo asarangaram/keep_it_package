@@ -27,7 +27,9 @@ class EntityViewerService extends ConsumerWidget {
       viewId: parentId.toString(),
     );
 
-    return GetContent(
+    return const KeepItLoadView();
+
+    /* return GetContent(
       id: id,
       loadingBuilder: KeepItLoadView.new,
       errorBuilder: (e, st) => KeepItErrorView(e: e, st: st),
@@ -46,6 +48,6 @@ class EntityViewerService extends ConsumerWidget {
           );
         }
       },
-    );
+    ); */
   }
 }

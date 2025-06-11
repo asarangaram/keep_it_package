@@ -26,9 +26,9 @@ class KeepItPageView extends StatelessWidget {
         currentEntity: entity,
         child: CLEntitiesPageView(
           parentIdentifier: viewIdentifier.parentID,
-          topMenu: TopBar(
+          topMenuBuilder: (currentEntity) => TopBar(
             viewIdentifier: viewIdentifier,
-            entityAsync: AsyncData(entity),
+            entityAsync: AsyncData(currentEntity),
             children: const [],
           ),
           bottomMenu: const BottomBarPageView(),
