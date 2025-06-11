@@ -40,12 +40,6 @@ class _PopoverPageState extends ConsumerState<PopOverMenu> {
                   onPressed: popoverController.hide,
                   child: const Icon(LucideIcons.check, size: 25),
                 ),
-                ShadButton.ghost(
-                  onPressed: () => PageManager.of(context)
-                      .openSettings()
-                      .then((val) => popoverController.hide()),
-                  child: const Icon(LucideIcons.settings, size: 25),
-                ),
               ],
             ),
             SingleChildScrollView(
@@ -62,7 +56,7 @@ class _PopoverPageState extends ConsumerState<PopOverMenu> {
           return ShadButton.ghost(
             padding: const EdgeInsets.only(right: 8),
             onPressed: popoverController.toggle,
-            child: clIcons.extraMenu.iconFormatted(
+            child: clIcons.filter.iconFormatted(
               color: items.any((e) => e.isActive)
                   ? ShadTheme.of(context).colorScheme.destructive
                   : null,

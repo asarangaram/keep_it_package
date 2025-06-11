@@ -10,7 +10,7 @@ import '../widgets/refresh_button.dart';
 import '../widgets/stale_media_banner.dart';
 import '../widgets/when_empty.dart';
 import 'bottom_bar_grid_view.dart';
-import 'top_bar_grid_view.dart';
+import 'top_bar.dart';
 
 class EntityGridView extends ConsumerWidget {
   const EntityGridView({
@@ -20,15 +20,14 @@ class EntityGridView extends ConsumerWidget {
     super.key,
   });
   final ViewIdentifier viewIdentifier;
-
   final ViewerEntityMixin? parent;
   final List<ViewerEntityMixin> children;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final topMenu = TopBarGridView(
+    final topMenu = TopBar(
       viewIdentifier: viewIdentifier,
-      parent: parent,
+      entityAsync: AsyncData(parent),
       children: children,
     );
     final banners = [

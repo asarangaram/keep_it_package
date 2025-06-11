@@ -30,8 +30,11 @@ class GetContent extends ConsumerWidget {
           errorBuilder: errorBuilder,
           loadingBuilder: loadingBuilder,
           builder: (children) {
+            if (entity == null) {
+              return builder(entity, children, []);
+            }
             return GetEntities(
-                parentId: entity!.parentId,
+                parentId: entity.parentId,
                 errorBuilder: errorBuilder,
                 loadingBuilder: loadingBuilder,
                 builder: (siblings) {

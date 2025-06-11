@@ -1,8 +1,11 @@
 import 'package:cl_entity_viewers/cl_entity_viewers.dart';
-import 'package:colan_services/services/entity_viewer_service/views/entity_page_view.dart';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../widgets/on_swipe.dart';
+import 'bottom_bar_page_view.dart';
+import 'top_bar.dart';
 
 class KeepItPageView extends StatelessWidget {
   const KeepItPageView(
@@ -21,8 +24,14 @@ class KeepItPageView extends StatelessWidget {
       child: CLEntitiesPageViewScope(
         siblings: siblings,
         currentEntity: entity,
-        child: EntityPageView(
+        child: CLEntitiesPageView(
           parentIdentifier: viewIdentifier.parentID,
+          topMenu: TopBar(
+            viewIdentifier: viewIdentifier,
+            entityAsync: AsyncData(entity),
+            children: const [],
+          ),
+          bottomMenu: const BottomBarPageView(),
         ),
       ),
     );
