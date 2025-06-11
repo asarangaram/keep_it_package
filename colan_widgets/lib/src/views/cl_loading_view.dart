@@ -2,7 +2,6 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:progress_indicators/progress_indicators.dart';
-import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:shimmer/shimmer.dart';
 
 enum CLLoaderKind { hidden, widget, shimmer }
