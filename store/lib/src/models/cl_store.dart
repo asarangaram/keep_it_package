@@ -384,6 +384,15 @@ class CLStore with CLLogger {
       required List<CLMediaContent> invalidContent,
     })? onDone,
   }) async* {
+    /// Valid Media can only be pushed into a local store
+    /// Rationale:
+    ///   handling the id for server and managing the network situation when
+    ///   processing the media files is complicated.
+    ///   We always receive the content into a local server and then push to
+    ///   the appropriate server.
+    if (store.storeURL.scheme != 'local') {
+      throw Exception("Can't directly push media files into non-local servers");
+    }
     final existingEntities = <StoreEntity>[];
     final newEntities = <StoreEntity>[];
     final invalidContent = <CLMediaContent>[];
