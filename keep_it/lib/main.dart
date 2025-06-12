@@ -33,11 +33,6 @@ class KeepItApp implements AppDescriptor {
               mediaId = null;
             }
 
-            if (parameters.keys.contains('parentIdentifier')) {
-            } else {
-              throw Exception('parentIdentifier must be provided');
-            }
-
             return EntityViewerService(
               id: mediaId,
             );
