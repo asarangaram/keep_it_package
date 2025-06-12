@@ -94,7 +94,10 @@ class _IncomingMediaHandler0State extends ConsumerState<IncomingMediaHandler0> {
               ? AnalysePage(
                   errorBuilder: widget.errorBuilder,
                   loadingBuilder: widget.loadingBuilder,
-                  incomingMedia: widget.incomingMedia,
+                  // Hide the Collection from Analysis so that all goes into default
+                  incomingMedia: CLMediaFileGroup(
+                      entries: widget.incomingMedia.entries,
+                      type: widget.incomingMedia.type),
                   onDone: segretated,
                   onCancel: () => onDiscard(result: false),
                 )
