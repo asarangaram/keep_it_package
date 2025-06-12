@@ -14,12 +14,10 @@ import 'popover_menu.dart';
 
 class TopBar extends ConsumerWidget implements PreferredSizeWidget {
   const TopBar({
-    required this.viewIdentifier,
     required this.entityAsync,
     required this.children,
     super.key,
   });
-  final ViewIdentifier viewIdentifier;
 
   final AsyncValue<ViewerEntityMixin?> entityAsync;
   final List<ViewerEntityMixin>? children;
@@ -44,14 +42,9 @@ class TopBar extends ConsumerWidget implements PreferredSizeWidget {
           ],
         ),
         if (entityAsync.hasValue && (children?.isNotEmpty ?? false))
-          Row(
+          const Row(
             spacing: 8,
-            children: [
-              Flexible(
-                  child:
-                      TextFilterBox(parentIdentifier: viewIdentifier.parentID)),
-              FilterPopOverMenu(viewIdentifier: viewIdentifier)
-            ],
+            children: [Flexible(child: TextFilterBox()), FilterPopOverMenu()],
           ),
       ],
     );

@@ -7,11 +7,10 @@ import 'media_viewer_core.dart' show ViewMedia;
 
 class MediaViewerPageView extends ConsumerStatefulWidget {
   const MediaViewerPageView({
-    required this.parentIdentifier,
     required this.playerControls,
     super.key,
   });
-  final String parentIdentifier;
+
   final VideoPlayerControls playerControls;
 
   @override
@@ -50,7 +49,6 @@ class _MediaViewerPageViewState extends ConsumerState<MediaViewerPageView> {
       },
       itemBuilder: (context, index) {
         return ViewMedia(
-          parentIdentifier: widget.parentIdentifier,
           currentItem: s.entities[index],
           autoStart: index == s.currentIndex,
           playerControls: widget.playerControls,

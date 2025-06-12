@@ -5,14 +5,13 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import '../builders/get_view_modifiers.dart';
 import '../builders/media_grouper.dart';
 import '../models/filter/filters.dart';
-import '../models/tab_identifier.dart';
+
 import '../../common/models/viewer_entity_mixin.dart';
 import 'filters/filters_view.dart';
 import 'group_by_view.dart';
 
 class ViewModifierSettings extends StatefulWidget {
-  const ViewModifierSettings({required this.viewIdentifier, super.key});
-  final ViewIdentifier viewIdentifier;
+  const ViewModifierSettings({super.key});
 
   @override
   State<StatefulWidget> createState() => _ViewModifierSettingsState();
@@ -23,7 +22,6 @@ class _ViewModifierSettingsState extends State<ViewModifierSettings> {
   @override
   Widget build(BuildContext context) {
     return GetViewModifiers(
-      viewIdentifier: widget.viewIdentifier,
       builder: (items) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -68,12 +66,10 @@ class _ViewModifierSettingsState extends State<ViewModifierSettings> {
               constraints: const BoxConstraints(minHeight: 100),
               child: switch (currIndex) {
                 0 => FiltersView(
-                    parentIdentifier: widget.viewIdentifier.parentID,
                     filters:
                         (items[0] as SearchFilters<ViewerEntityMixin>).filters,
                   ),
                 1 => GroupByView(
-                    viewIdentifier: widget.viewIdentifier,
                     groupBy: items[1] as GroupBy,
                   ),
                 _ => throw UnimplementedError(),

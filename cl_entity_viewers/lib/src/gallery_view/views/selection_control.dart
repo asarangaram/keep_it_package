@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../builders/get_filterred.dart';
 import '../models/cl_context_menu.dart';
 import '../../common/models/viewer_entity_mixin.dart';
-import '../models/tab_identifier.dart';
 
 import 'cl_raw_gallery_grid_view.dart';
 
@@ -17,14 +16,13 @@ import 'selection_banner.dart';
 
 class SelectionContol extends ConsumerWidget {
   const SelectionContol(
-      {required this.viewIdentifier,
-      required this.itemBuilder,
+      {required this.itemBuilder,
       required this.contextMenuBuilder,
       required this.onSelectionChanged,
       super.key,
       required this.filtersDisabled,
       required this.whenEmpty});
-  final ViewIdentifier viewIdentifier;
+
   final bool filtersDisabled;
   final Widget whenEmpty;
 
@@ -45,7 +43,7 @@ class SelectionContol extends ConsumerWidget {
 
     /* return MediaViewService1.pageView(
           media: filterred.map((e) => e as StoreEntity).toList(),
-          parentIdentifier: viewIdentifier.toString(),
+          parentIdentifier: .toString(),
           initialMediaIndex:
               filterred.indexWhere((e) => e.id == initialMediaIndex),
           errorBuilder: errorBuilder,
@@ -55,12 +53,10 @@ class SelectionContol extends ConsumerWidget {
         ); */
 
     return GetFilterred(
-        parentIdentifier: viewIdentifier.parentID,
         candidates: incoming,
         isDisabled: filtersDisabled,
         builder: (filterred) {
           return CLRawGalleryGridView(
-            viewIdentifier: viewIdentifier,
             incoming: filterred,
             bannersBuilder: (context, galleryMap) {
               return [

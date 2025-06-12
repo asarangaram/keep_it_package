@@ -52,7 +52,6 @@ class CameraService extends ConsumerWidget {
             ),
             builder: (collection) {
               return CLCameraService0(
-                parentIdentifier: 'CLCameraService',
                 onCancel: () => PageManager.of(context).pop(),
                 onNewMedia: (path, {required isVideo}) async {
                   final mediaFile = await CLMediaFile.fromPath(path);
@@ -94,14 +93,13 @@ class CameraService extends ConsumerWidget {
 
 class CLCameraService0 extends ConsumerWidget {
   const CLCameraService0({
-    required this.parentIdentifier,
     required this.onDone,
     required this.onNewMedia,
     this.onCancel,
     super.key,
     this.onError,
   });
-  final String parentIdentifier;
+
   final VoidCallback? onCancel;
   final Future<void> Function(List<StoreEntity> mediaList) onDone;
   final Future<StoreEntity?> Function(String, {required bool isVideo})
@@ -152,7 +150,6 @@ class CLCameraService0 extends ConsumerWidget {
           },
           previewWidget: PreviewCapturedMedia(
             sendMedia: onDone,
-            parentIdentifier: parentIdentifier,
           ),
           themeData: DefaultCLCameraIcons(),
           onError: onError,

@@ -1,4 +1,3 @@
-import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
@@ -9,25 +8,16 @@ import 'top_bar.dart';
 
 class KeepItErrorView extends ConsumerWidget {
   const KeepItErrorView(
-      {required this.e,
-      required this.st,
-      required this.parentIdentifier,
-      super.key,
-      this.onRecover});
+      {required this.e, required this.st, super.key, this.onRecover});
   final Object e;
   final StackTrace st;
   final CLMenuItem? onRecover;
-  final String parentIdentifier;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final menuItems = <CLMenuItem>[];
     return CLScaffold(
-      topMenu: TopBar(
-          viewIdentifier: ViewIdentifier(
-              parentID: parentIdentifier, viewIdDELETED: 'Error'),
-          entityAsync: AsyncError(e, st),
-          children: null),
+      topMenu: TopBar(entityAsync: AsyncError(e, st), children: null),
       banners: const [],
       bottomMenu: null,
       body: GetStoreStatus(

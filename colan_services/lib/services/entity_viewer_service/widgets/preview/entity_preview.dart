@@ -10,13 +10,12 @@ import 'collection_preview.dart';
 
 class EntityPreview extends ConsumerWidget {
   const EntityPreview({
-    required this.viewIdentifier,
     required this.item,
     required this.entities,
     required this.parentId,
     super.key,
   });
-  final ViewIdentifier viewIdentifier;
+
   final ViewerEntityMixin item;
   final List<ViewerEntityMixin> entities;
   final int? parentId;
@@ -32,11 +31,9 @@ class EntityPreview extends ConsumerWidget {
     );
 
     return KeepItContextMenu(
-      viewIdentifier: viewIdentifier,
       onTap: () async {
         await PageManager.of(context).openEntity(
           entity,
-          parentIdentifier: viewIdentifier.parentID,
         );
         return true;
       },
@@ -44,11 +41,9 @@ class EntityPreview extends ConsumerWidget {
       child: entity.isCollection
           ? CollectionPreview.preview(
               entity,
-              parentIdentifier: viewIdentifier.toString(),
             )
           : MediaPreviewWithOverlays(
               media: entity,
-              parentIdentifier: viewIdentifier.toString(),
             ),
     );
   }

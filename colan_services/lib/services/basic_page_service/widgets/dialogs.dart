@@ -32,10 +32,6 @@ class DialogService {
                         vCount: 3,
                         itemBuilder: (context, index) {
                           return EntityPreview(
-                            viewIdentifier: const ViewIdentifier(
-                              parentID: 'Dialog Service',
-                              viewIdDELETED: 'PreviewInDialog',
-                            ),
                             item: entity[index] as StoreEntity,
                             parentId: entity[index].parentId,
                             entities: const [],

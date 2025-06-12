@@ -8,12 +8,11 @@ import 'views/media_viewer_core.dart';
 
 class CLEntitiesPageView extends ConsumerWidget {
   const CLEntitiesPageView({
-    required this.parentIdentifier,
     required this.topMenuBuilder,
     required this.bottomMenu,
     super.key,
   });
-  final String parentIdentifier;
+
   final PreferredSizeWidget Function(ViewerEntityMixin? entity) topMenuBuilder;
   final PreferredSizeWidget bottomMenu;
   @override
@@ -27,7 +26,7 @@ class CLEntitiesPageView extends ConsumerWidget {
         topMenu: topMenuBuilder(currentItem),
         banners: const [],
         body: SafeArea(
-          child: MediaViewerCore(parentIdentifier: parentIdentifier),
+          child: MediaViewerCore(),
         ),
         bottomMenu: bottomMenu,
       );
@@ -35,7 +34,7 @@ class CLEntitiesPageView extends ConsumerWidget {
       return Scaffold(
         backgroundColor: Colors.black,
         body: SafeArea(
-          child: MediaViewerCore(parentIdentifier: parentIdentifier),
+          child: MediaViewerCore(),
         ),
       );
     }

@@ -14,12 +14,8 @@ import 'top_bar.dart';
 
 class KeepItGridView extends StatelessWidget {
   const KeepItGridView(
-      {required this.viewIdentifier,
-      required this.parent,
-      required this.children,
-      super.key});
+      {required this.parent, required this.children, super.key});
 
-  final ViewIdentifier viewIdentifier;
   final ViewerEntityMixin? parent;
   final List<ViewerEntityMixin> children;
 
@@ -28,7 +24,6 @@ class KeepItGridView extends StatelessWidget {
     return OnSwipe(
       child: CLEntitiesGridViewScope(
         child: KeepItGridView0(
-          viewIdentifier: viewIdentifier,
           parent: parent,
           children: children,
         ),
@@ -39,19 +34,17 @@ class KeepItGridView extends StatelessWidget {
 
 class KeepItGridView0 extends ConsumerWidget {
   const KeepItGridView0({
-    required this.viewIdentifier,
     required this.parent,
     required this.children,
     super.key,
   });
-  final ViewIdentifier viewIdentifier;
+
   final ViewerEntityMixin? parent;
   final List<ViewerEntityMixin> children;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final topMenu = TopBar(
-      viewIdentifier: viewIdentifier,
       entityAsync: AsyncData(parent),
       children: children,
     );
@@ -69,7 +62,6 @@ class KeepItGridView0 extends ConsumerWidget {
           child: Padding(
             padding: const EdgeInsets.all(8),
             child: CLEntitiesGridView(
-              viewIdentifier: viewIdentifier,
               incoming: children,
               filtersDisabled: false,
               onSelectionChanged: null,
@@ -79,7 +71,6 @@ class KeepItGridView0 extends ConsumerWidget {
                 entities,
               ),
               itemBuilder: (context, item, entities) => EntityPreview(
-                viewIdentifier: viewIdentifier,
                 item: item,
                 entities: entities,
                 parentId: parent?.id,

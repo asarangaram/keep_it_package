@@ -12,11 +12,9 @@ import '../../providers/media_filters.dart';
 class TextFilterView extends ConsumerStatefulWidget {
   const TextFilterView({
     required this.filter,
-    required this.parentIdentifier,
     super.key,
   });
   final CLFilter<ViewerEntityMixin> filter;
-  final String parentIdentifier;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _TextFilterViewState();
@@ -38,9 +36,7 @@ class _TextFilterViewState extends ConsumerState<TextFilterView> {
   }
 
   void updateFilter() {
-    ref
-        .read(mediaFiltersProvider(widget.parentIdentifier).notifier)
-        .updateDefautTextSearchFilter(
+    ref.read(mediaFiltersProvider.notifier).updateDefautTextSearchFilter(
           controller.text,
         );
   }

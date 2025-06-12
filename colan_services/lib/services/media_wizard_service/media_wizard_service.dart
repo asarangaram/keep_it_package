@@ -68,10 +68,6 @@ class MediaWizardService extends ConsumerWidget {
     return FullscreenLayout(
       child: CLEntitiesGridViewScope(
         child: SelectAndKeepMedia(
-          viewIdentifier: ViewIdentifier(
-            parentID: 'MediaWizardService',
-            viewIdDELETED: type.name,
-          ),
           media: media,
           type: type,
         ),

@@ -4,15 +4,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../common/models/viewer_entity_mixin.dart';
 
 import '../providers/grouped_media_provider.dart';
-import '../models/tab_identifier.dart';
 
 import '../providers/scroll_position.dart';
 import 'cl_grid.dart';
 
 class CLRawGalleryGridView extends ConsumerStatefulWidget {
   const CLRawGalleryGridView(
-      {required this.viewIdentifier,
-      required this.incoming,
+      {required this.incoming,
       required this.itemBuilder,
       required this.labelBuilder,
       required this.bannersBuilder,
@@ -20,7 +18,7 @@ class CLRawGalleryGridView extends ConsumerStatefulWidget {
       required this.whenEmpty,
       super.key,
       this.draggableMenuBuilder});
-  final ViewIdentifier viewIdentifier;
+
   final List<ViewerEntityMixin> incoming;
   final int columns;
   final Widget Function(BuildContext context, ViewerEntityMixin item,
@@ -54,15 +52,13 @@ class CLRawGalleryGridViewState extends ConsumerState<CLRawGalleryGridView> {
   void initState() {
     super.initState();
     _scrollController = ScrollController(
-      initialScrollOffset:
-          ref.read(tabScrollPositionProvider(widget.viewIdentifier)),
+      initialScrollOffset: ref.read(tabScrollPositionProvider),
     );
 
     // Listen for scroll changes
     _scrollController.addListener(() {
-      ref
-          .read(tabScrollPositionProvider(widget.viewIdentifier).notifier)
-          .state = _scrollController.offset;
+      ref.read(tabScrollPositionProvider.notifier).state =
+          _scrollController.offset;
     });
   }
 
@@ -70,10 +66,7 @@ class CLRawGalleryGridViewState extends ConsumerState<CLRawGalleryGridView> {
   Widget build(BuildContext context) {
     final galleryGroups = ref.watch(
       groupedMediaProvider(
-        MapEntry(
-          widget.viewIdentifier,
-          widget.incoming,
-        ),
+        widget.incoming,
       ),
     );
     final child = Column(

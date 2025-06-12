@@ -127,13 +127,9 @@ class PageManager {
     }
   }
 
-  Future<void> openEntity(
-    StoreEntity? entity, {
-    required String parentIdentifier,
-  }) async {
+  Future<void> openEntity(StoreEntity? entity) async {
     final queryMap = [
       if (entity != null) 'id=${entity.id}',
-      'parentIdentifier=$parentIdentifier',
     ];
     final query = queryMap.isNotEmpty ? '?${queryMap.join('&')}' : '';
     await navigator.pushNamed(context, '/media$query');

@@ -8,13 +8,12 @@ import '../models/entity_actions.dart';
 
 class KeepItContextMenu extends ConsumerWidget {
   const KeepItContextMenu({
-    required this.viewIdentifier,
     required this.child,
     super.key,
     this.onTap,
     this.contextMenu,
   });
-  final ViewIdentifier viewIdentifier;
+
   final Widget child;
   final Future<bool?> Function()? onTap;
   final EntityActions? contextMenu;
@@ -51,7 +50,7 @@ class KeepItContextMenu extends ConsumerWidget {
         const Divider(
           height: 8,
         ),
-        SelectMenuItem(viewIdentifier: viewIdentifier),
+        const SelectMenuItem(),
         const Divider(
           height: 8,
         ),
@@ -97,20 +96,15 @@ class KeepItContextMenu extends ConsumerWidget {
 
 class SelectMenuItem extends ConsumerWidget {
   const SelectMenuItem({
-    required this.viewIdentifier,
     super.key,
   });
-
-  final ViewIdentifier viewIdentifier;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GetSelectionMode(
-      viewIdentifier: viewIdentifier,
       builder: ({
         required void Function({required bool enable}) onUpdateSelectionmode,
         required bool selectionMode,
-        required ViewIdentifier viewIdentifier,
       }) {
         return ShadContextMenuItem(
           leading: SizedBox.square(

@@ -12,15 +12,12 @@ import '../../entity_viewer_service/widgets/when_empty.dart';
 
 class WizardPreview extends ConsumerStatefulWidget {
   const WizardPreview({
-    required this.viewIdentifier,
     required this.type,
     required this.onSelectionChanged,
     super.key,
   });
   final UniversalMediaSource type;
   final void Function(List<StoreEntity>)? onSelectionChanged;
-
-  final ViewIdentifier viewIdentifier;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _WizardPreviewState();
@@ -45,7 +42,6 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
     }
 
     return CLEntitiesGridView(
-      viewIdentifier: widget.viewIdentifier,
       incoming: media0.entries,
       filtersDisabled: true,
       whenEmpty: const WhenEmpty(),
@@ -60,11 +56,9 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
         if (item.isCollection) {
           return CollectionPreview.preview(
             item as StoreEntity,
-            parentIdentifier: widget.viewIdentifier.parentID,
           );
         }
         return MediaThumbnail(
-          parentIdentifier: widget.viewIdentifier.parentID,
           media: item as StoreEntity,
         );
       },

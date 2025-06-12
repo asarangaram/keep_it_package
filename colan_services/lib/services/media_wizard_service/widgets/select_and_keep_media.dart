@@ -19,14 +19,12 @@ import 'wizard_preview.dart';
 
 class SelectAndKeepMedia extends ConsumerStatefulWidget {
   const SelectAndKeepMedia({
-    required this.viewIdentifier,
     required this.media,
     required this.type,
     super.key,
   });
   final CLSharedMedia media;
   final UniversalMediaSource type;
-  final ViewIdentifier viewIdentifier;
 
   @override
   ConsumerState<SelectAndKeepMedia> createState() => SelectAndKeepMediaState();
@@ -179,16 +177,14 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
   @override
   Widget build(BuildContext context) {
     return GetSelectionMode(
-      viewIdentifier: widget.viewIdentifier,
       builder: ({
         required onUpdateSelectionmode,
         required selectionMode,
-        required viewIdentifier,
+        required,
       }) {
         final currEntities =
             (selectionMode ? selectedMedia.entries : widget.media.entries);
         return WizardView(
-          viewIdentifier: widget.viewIdentifier,
           canSelect: !actionConfirmed && widget.media.entries.length > 1,
           menu: WizardMenuItems.moveOrCancel(
             type: widget.type,
@@ -258,14 +254,13 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
 
 class WizardView extends ConsumerWidget {
   const WizardView({
-    required this.viewIdentifier,
     required this.menu,
     required this.canSelect,
     required this.onSelectionChanged,
     required this.dialog,
     super.key,
   });
-  final ViewIdentifier viewIdentifier;
+
   final WizardMenuItems menu;
   final bool canSelect;
   final PreferredSizeWidget? dialog;
@@ -283,9 +278,7 @@ class WizardView extends ConsumerWidget {
       actions: [
         if (canSelect)
           // FIX ME: select ICon or text?
-          SelectionControlIcon(
-            viewIdentifier: viewIdentifier,
-          ),
+          const SelectionControlIcon(),
       ],
       wizard: dialog ??
           WizardDialog(
@@ -293,7 +286,6 @@ class WizardView extends ConsumerWidget {
             option2: menu.option2,
           ),
       child: WizardPreview(
-        viewIdentifier: viewIdentifier,
         type: menu.type,
         onSelectionChanged: onSelectionChanged,
       ),
@@ -365,18 +357,14 @@ class KeepWithProgress extends StatelessWidget implements PreferredSizeWidget {
 }
 
 class SelectionControlIcon extends ConsumerWidget {
-  const SelectionControlIcon({required this.viewIdentifier, super.key});
-
-  final ViewIdentifier viewIdentifier;
+  const SelectionControlIcon({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GetSelectionMode(
-      viewIdentifier: viewIdentifier,
       builder: ({
         required void Function({required bool enable}) onUpdateSelectionmode,
         required bool selectionMode,
-        required ViewIdentifier viewIdentifier,
       }) {
         return ShadButton.ghost(
           padding: const EdgeInsets.only(right: 8),

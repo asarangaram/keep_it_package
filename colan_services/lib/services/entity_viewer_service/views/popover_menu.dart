@@ -6,8 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 class FilterPopOverMenu extends ConsumerStatefulWidget {
-  const FilterPopOverMenu({required this.viewIdentifier, super.key});
-  final ViewIdentifier viewIdentifier;
+  const FilterPopOverMenu({super.key});
 
   @override
   ConsumerState<FilterPopOverMenu> createState() => _PopoverPageState();
@@ -40,16 +39,13 @@ class _PopoverPageState extends ConsumerState<FilterPopOverMenu> {
                 ),
               ],
             ),
-            SingleChildScrollView(
-              child: ViewModifierSettings(
-                viewIdentifier: widget.viewIdentifier,
-              ),
+            const SingleChildScrollView(
+              child: ViewModifierSettings(),
             ),
           ],
         ),
       ),
       child: GetViewModifiers(
-        viewIdentifier: widget.viewIdentifier,
         builder: (items) {
           return ShadButton.ghost(
             padding: const EdgeInsets.only(right: 8),

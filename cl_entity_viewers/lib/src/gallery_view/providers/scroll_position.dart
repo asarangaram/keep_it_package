@@ -1,8 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../models/tab_identifier.dart';
-
-final tabScrollPositionProvider =
-    StateProvider.family<double, ViewIdentifier>((ref, identifier) {
+final tabScrollPositionProvider = StateProvider<double>((ref) {
   return 0;
 });

@@ -20,8 +20,7 @@ import 'on_toggle_play.dart';
 import 'video_progress.dart';
 
 class MediaViewerCore extends ConsumerWidget {
-  const MediaViewerCore({required this.parentIdentifier, super.key});
-  final String parentIdentifier;
+  const MediaViewerCore({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -37,12 +36,10 @@ class MediaViewerCore extends ConsumerWidget {
           0 => Container(),
           1 => ViewMedia(
               currentItem: currentItem,
-              parentIdentifier: parentIdentifier,
               autoStart: true,
               playerControls: controls,
             ),
           _ => MediaViewerPageView(
-              parentIdentifier: parentIdentifier,
               playerControls: controls,
             )
         };
@@ -54,13 +51,11 @@ class MediaViewerCore extends ConsumerWidget {
 class ViewMedia extends ConsumerWidget {
   const ViewMedia({
     required this.currentItem,
-    required this.parentIdentifier,
     required this.playerControls,
     super.key,
     this.autoStart = false,
   });
 
-  final String parentIdentifier;
   final ViewerEntityMixin currentItem;
   final VideoPlayerControls playerControls;
   final bool autoStart;
@@ -83,7 +78,7 @@ class ViewMedia extends ConsumerWidget {
     });
 
     final mediaViewer = MediaViewer(
-      heroTag: '$parentIdentifier /item/${currentItem.id}',
+      heroTag: '/item/${currentItem.id}',
       uri: currentItem.mediaUri!,
       previewUri: currentItem.previewUri,
       mime: currentItem.mimeType!,

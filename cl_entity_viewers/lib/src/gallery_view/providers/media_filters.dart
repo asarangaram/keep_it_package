@@ -61,8 +61,8 @@ class MediaFiltersNotifier
       );
 }
 
-final mediaFiltersProvider = StateNotifierProvider.family<MediaFiltersNotifier,
-    SearchFilters<ViewerEntityMixin>, String>((ref, identifier) {
+final mediaFiltersProvider = StateNotifierProvider<MediaFiltersNotifier,
+    SearchFilters<ViewerEntityMixin>>((ref) {
   return MediaFiltersNotifier();
 });
 
@@ -106,8 +106,9 @@ final StringFilter<ViewerEntityMixin> textSearchFilter = StringFilter(
   enabled: true,
 );
 
-final filterredMediaProvider = StateProvider.family<List<ViewerEntityMixin>,
-    MapEntry<String, List<ViewerEntityMixin>>>((ref, mediaMap) {
-  final mediaFilters = ref.watch(mediaFiltersProvider(mediaMap.key));
-  return mediaFilters.apply(mediaMap.value);
+final filterredMediaProvider =
+    StateProvider.family<List<ViewerEntityMixin>, List<ViewerEntityMixin>>(
+        (ref, entities) {
+  final mediaFilters = ref.watch(mediaFiltersProvider);
+  return mediaFilters.apply(entities);
 });

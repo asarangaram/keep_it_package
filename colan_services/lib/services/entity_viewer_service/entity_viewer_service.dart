@@ -1,5 +1,3 @@
-import 'package:cl_entity_viewers/cl_entity_viewers.dart';
-
 import 'package:colan_services/services/entity_viewer_service/views/keep_it_error_view.dart';
 import 'package:colan_services/services/entity_viewer_service/views/keep_it_grid_view.dart';
 import 'package:colan_services/services/entity_viewer_service/views/keep_it_load_view.dart';
@@ -11,36 +9,27 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class EntityViewerService extends ConsumerWidget {
   const EntityViewerService({
-    required this.parentIdentifier,
     required this.id,
     super.key,
   });
-  final String parentIdentifier;
 
   final int? id;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    KeepItLoadView loadBuilder() => KeepItLoadView(
-          parentIdentifier: parentIdentifier,
-        );
+    KeepItLoadView loadBuilder() => const KeepItLoadView();
     return GetContent(
       id: id,
       loadingBuilder: loadBuilder,
-      errorBuilder: (e, st) =>
-          KeepItErrorView(parentIdentifier: parentIdentifier, e: e, st: st),
+      errorBuilder: (e, st) => KeepItErrorView(e: e, st: st),
       builder: (entity, children, siblings) {
         if (entity?.isCollection ?? true) {
           return KeepItGridView(
-            viewIdentifier: ViewIdentifier(
-                parentID: parentIdentifier, viewIdDELETED: '$id'),
             parent: entity,
             children: children,
           );
         } else {
           return KeepItPageView(
-            viewIdentifier: ViewIdentifier(
-                parentID: parentIdentifier, viewIdDELETED: '$id'),
             entity: entity!,
             siblings: siblings,
           );

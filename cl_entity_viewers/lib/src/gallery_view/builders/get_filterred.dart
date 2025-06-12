@@ -7,12 +7,11 @@ import '../providers/media_filters.dart' show mediaFiltersProvider;
 class GetFilterred extends ConsumerWidget {
   const GetFilterred(
       {super.key,
-      required this.parentIdentifier,
       required this.candidates,
       required this.builder,
       this.isDisabled = false});
   final bool isDisabled;
-  final String parentIdentifier;
+
   final List<ViewerEntityMixin> candidates;
   final Widget Function(List<ViewerEntityMixin> filterred) builder;
 
@@ -22,7 +21,7 @@ class GetFilterred extends ConsumerWidget {
     if (isDisabled) {
       filterred = candidates;
     } else {
-      final mediaFilters = ref.watch(mediaFiltersProvider(parentIdentifier));
+      final mediaFilters = ref.watch(mediaFiltersProvider);
       filterred = mediaFilters.apply(candidates);
     }
     return builder(filterred);

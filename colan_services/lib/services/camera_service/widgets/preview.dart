@@ -10,10 +10,9 @@ import '../../../providers/captured_media.dart';
 class PreviewCapturedMedia extends ConsumerWidget {
   const PreviewCapturedMedia({
     required this.sendMedia,
-    required this.parentIdentifier,
     super.key,
   });
-  final String parentIdentifier;
+
   final Future<void> Function(List<StoreEntity>) sendMedia;
 
   @override
@@ -32,7 +31,6 @@ class PreviewCapturedMedia extends ConsumerWidget {
                 children: [
                   Positioned.fill(
                     child: MediaThumbnail(
-                      parentIdentifier: parentIdentifier,
                       media: capturedMedia.last,
                     ),
                   ),

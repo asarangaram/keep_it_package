@@ -16,17 +16,14 @@ import 'media_viewer_overlays.dart';
 class MediaPreviewWithOverlays extends StatelessWidget {
   const MediaPreviewWithOverlays({
     required this.media,
-    required this.parentIdentifier,
     super.key,
   });
 
   final ViewerEntityMixin media;
-  final String parentIdentifier;
 
   @override
   Widget build(BuildContext context) {
     return MediaThumbnail(
-      parentIdentifier: parentIdentifier,
       media: media,
       overlays: [
         OverlayWidgets(
@@ -94,12 +91,11 @@ class MediaPreviewWithOverlays extends StatelessWidget {
 
 class MediaThumbnail extends StatelessWidget {
   const MediaThumbnail({
-    required this.parentIdentifier,
     required this.media,
     this.overlays,
     super.key,
   });
-  final String parentIdentifier;
+
   final ViewerEntityMixin media;
   final List<OverlayWidgets>? overlays;
 
@@ -119,7 +115,7 @@ class MediaThumbnail extends StatelessWidget {
         mime: 'image/jpeg',
         overlays: overlays ?? const [],
         child: MediaViewer(
-          heroTag: '$parentIdentifier /item/${media.id}',
+          heroTag: '/item/${media.id}',
           uri: media.previewUri!,
           mime: 'image/jpeg',
           errorBuilder: (_, __) => const BrokenImage(),

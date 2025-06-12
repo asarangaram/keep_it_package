@@ -19,7 +19,6 @@ class KeepItApp implements AppDescriptor {
           name: '',
           builder: (context, parameters) {
             return const EntityViewerService(
-              parentIdentifier: 'KeepIt Viewer',
               id: null,
             );
           },
@@ -33,15 +32,13 @@ class KeepItApp implements AppDescriptor {
             } else {
               mediaId = null;
             }
-            final String parentIdentifier;
+
             if (parameters.keys.contains('parentIdentifier')) {
-              parentIdentifier = parameters['parentIdentifier']!;
             } else {
               throw Exception('parentIdentifier must be provided');
             }
 
             return EntityViewerService(
-              parentIdentifier: parentIdentifier,
               id: mediaId,
             );
           },
@@ -109,7 +106,6 @@ class KeepItApp implements AppDescriptor {
         required onDiscard,
       }) =>
           IncomingMediaService(
-            parentIdentifier: 'IncomingMediaService',
             incomingMedia: incomingMedia,
             onDiscard: onDiscard,
           );

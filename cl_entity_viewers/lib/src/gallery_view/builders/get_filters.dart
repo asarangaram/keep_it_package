@@ -7,16 +7,15 @@ import '../providers/media_filters.dart';
 
 class GetFilters extends ConsumerWidget {
   const GetFilters({
-    required this.identifier,
     required this.builder,
     super.key,
   });
-  final String identifier;
+
   final Widget Function(SearchFilters<ViewerEntityMixin> filters) builder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final filters = ref.watch(mediaFiltersProvider(identifier));
+    final filters = ref.watch(mediaFiltersProvider);
     return builder(filters);
   }
 }
