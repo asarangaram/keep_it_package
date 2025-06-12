@@ -11,8 +11,8 @@ class GetContent extends ConsumerWidget {
       required this.loadingBuilder,
       super.key});
   final int? id;
-  final Widget Function(ViewerEntity? entity, List<ViewerEntity> children,
-      List<ViewerEntity> siblings) builder;
+  final Widget Function(ViewerEntity? entity, ViewerEntities children,
+      ViewerEntities siblings) builder;
   final Widget Function() loadingBuilder;
   final Widget Function(Object, StackTrace) errorBuilder;
 
@@ -29,7 +29,7 @@ class GetContent extends ConsumerWidget {
           loadingBuilder: loadingBuilder,
           builder: (children) {
             if (entity == null) {
-              return builder(entity, children, []);
+              return builder(entity, children, const ViewerEntities([]));
             }
             return GetEntities(
                 parentId: entity.parentId,

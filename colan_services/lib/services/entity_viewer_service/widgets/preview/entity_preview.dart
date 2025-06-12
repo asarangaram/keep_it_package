@@ -17,7 +17,7 @@ class EntityPreview extends ConsumerWidget {
   });
 
   final ViewerEntity item;
-  final List<ViewerEntity> entities;
+  final ViewerEntities entities;
   final int? parentId;
 
   @override

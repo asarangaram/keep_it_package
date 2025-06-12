@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../common/models/viewer_entities.dart';
 import '../builders/get_filterred.dart';
 import '../models/cl_context_menu.dart';
 import '../../common/models/viewer_entity_mixin.dart';
@@ -26,18 +27,17 @@ class SelectionContol extends ConsumerWidget {
   final bool filtersDisabled;
   final Widget whenEmpty;
 
-  final Widget Function(BuildContext, ViewerEntity, List<ViewerEntity>)
-      itemBuilder;
+  final Widget Function(BuildContext, ViewerEntity, ViewerEntities) itemBuilder;
 
-  final CLContextMenu Function(BuildContext, List<ViewerEntity>)?
+  final CLContextMenu Function(BuildContext, ViewerEntities)?
       contextMenuBuilder;
-  final void Function(List<ViewerEntity>)? onSelectionChanged;
+  final void Function(ViewerEntities)? onSelectionChanged;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selector = ref.watch(selectorProvider);
     ref.listen(selectorProvider, (prev, curr) {
-      onSelectionChanged?.call(curr.items.toList());
+      onSelectionChanged?.call(ViewerEntities(curr.items.toList()));
     });
     final incoming = selector.entities;
 
@@ -62,7 +62,7 @@ class SelectionContol extends ConsumerWidget {
             bannersBuilder: (context, galleryMap) {
               return [
                 FilterBanner(filterred: filterred, incoming: incoming),
-                if (incoming.isNotEmpty)
+                if (incoming.entities.isNotEmpty)
                   SelectionBanner(
                     incoming: incoming,
                     galleryMap: galleryMap,
@@ -81,7 +81,8 @@ class SelectionContol extends ConsumerWidget {
             columns: 3,
             draggableMenuBuilder: selector.items.isNotEmpty &&
                     contextMenuBuilder != null
-                ? contextMenuBuilder!(context, selector.items.toList())
+                ? contextMenuBuilder!(
+                        context, ViewerEntities(selector.items.toList()))
                     .draggableMenuBuilder(
                         context, ref.read(selectModeProvider.notifier).disable)
                 : null,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../common/models/viewer_entities.dart';
 import '../providers/menu_position.dart';
 import '../models/cl_context_menu.dart';
 import '../../common/models/viewer_entity_mixin.dart';
@@ -18,12 +19,11 @@ class CLEntitiesGridView extends StatelessWidget {
       super.key,
       required this.whenEmpty});
 
-  final List<ViewerEntity> incoming;
-  final Widget Function(BuildContext, ViewerEntity, List<ViewerEntity>)
-      itemBuilder;
-  final CLContextMenu Function(BuildContext, List<ViewerEntity>)?
+  final ViewerEntities incoming;
+  final Widget Function(BuildContext, ViewerEntity, ViewerEntities) itemBuilder;
+  final CLContextMenu Function(BuildContext, ViewerEntities)?
       contextMenuBuilder;
-  final void Function(List<ViewerEntity>)? onSelectionChanged;
+  final void Function(ViewerEntities)? onSelectionChanged;
   final bool filtersDisabled;
   final Widget whenEmpty;
 

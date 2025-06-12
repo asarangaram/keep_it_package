@@ -1,21 +1,22 @@
 import 'dart:developer' as dev;
 
+import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
-class CapturedMediaNotifier extends StateNotifier<List<StoreEntity>> {
-  CapturedMediaNotifier() : super([]);
+class CapturedMediaNotifier extends StateNotifier<ViewerEntities> {
+  CapturedMediaNotifier() : super(const ViewerEntities([]));
 
   void add(StoreEntity media) {
     log('adding media with id ${media.id}');
-    state = [...state, media];
+    state = ViewerEntities([...state.entities, media]);
   }
 
   void clear() {
     // Called after handing over the files to some other module.
     // We can ignore as deleting those files is the new owners responsibility
     log('clear the list');
-    state = [];
+    state = const ViewerEntities([]);
   }
 
   void log(
@@ -35,6 +36,6 @@ class CapturedMediaNotifier extends StateNotifier<List<StoreEntity>> {
 }
 
 final capturedMediaProvider =
-    StateNotifierProvider<CapturedMediaNotifier, List<StoreEntity>>((ref) {
+    StateNotifierProvider<CapturedMediaNotifier, ViewerEntities>((ref) {
   return CapturedMediaNotifier();
 });

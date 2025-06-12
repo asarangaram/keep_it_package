@@ -34,23 +34,23 @@ class EntityActions extends CLContextMenu {
   factory EntityActions.entities(
     BuildContext context,
     WidgetRef ref,
-    List<ViewerEntity> entities,
+    ViewerEntities entities,
   ) {
     return switch (entities) {
-      final List<ViewerEntity> e
-          when e.every(
+      final ViewerEntities e
+          when e.entities.every(
             (e) => e is StoreEntity && e.data.isCollection == false,
           ) =>
         () {
           return EntityActions.ofMultipleMedia(
             context,
             ref,
-            items: e.map((e) => e as StoreEntity).toList(),
+            items: e,
             hasOnlineService: true,
           );
         }(),
-      final List<ViewerEntity> e
-          when e.every(
+      final ViewerEntities e
+          when e.entities.every(
             (e) => e is StoreEntity && e.data.isCollection == true,
           ) =>
         () {
@@ -108,7 +108,7 @@ class EntityActions extends CLContextMenu {
           context,
           ref,
           CLSharedMedia(
-            entries: [entity],
+            entries: ViewerEntities([entity]),
             type: UniversalMediaSource.move,
           ),
         );
@@ -127,7 +127,7 @@ class EntityActions extends CLContextMenu {
       return false;
     }
 
-    Future<bool?> onShare() => share(context, [entity]);
+    Future<bool?> onShare() => share(context, ViewerEntities([entity]));
 
     Future<bool> onPin() async {
       await entity.onPin();
@@ -212,7 +212,7 @@ class EntityActions extends CLContextMenu {
   factory EntityActions.ofMultipleMedia(
     BuildContext context,
     WidgetRef ref, {
-    required List<StoreEntity> items,
+    required ViewerEntities items,
     // ignore: avoid_unused_constructor_parameters For now, not required
     required bool hasOnlineService,
     ValueGetter<Future<bool?> Function()?>? onCrop,
@@ -234,7 +234,7 @@ class EntityActions extends CLContextMenu {
         );
     Future<bool?> onShare0() => share(context, items);
     Future<bool> onPin0() async {
-      for (final item in items) {
+      for (final item in items.entities.cast<StoreEntity>()) {
         await item.onPin();
       }
       return true;
@@ -248,7 +248,7 @@ class EntityActions extends CLContextMenu {
           false;
       if (!confirmed) return confirmed;
       if (context.mounted) {
-        for (final item in items) {
+        for (final item in items.entities.cast<StoreEntity>()) {
           await item.delete();
         }
         return true;
@@ -266,7 +266,9 @@ class EntityActions extends CLContextMenu {
       onPin: onPin != null ? onPin() : onPin0,
       onDelete: onDelete != null ? onDelete() : onDelete0,
       infoMap: const {},
-      isPinned: items.any((media) => media.data.pin != null),
+      isPinned: items.entities
+          .cast<StoreEntity>()
+          .any((media) => media.data.pin != null),
     );
   }
 
@@ -305,9 +307,9 @@ class EntityActions extends CLContextMenu {
 
   static Future<bool?> share(
     BuildContext context,
-    List<StoreEntity> media,
+    ViewerEntities media,
   ) {
-    final files = media
+    final files = media.entities
         .where((e) => e.mediaUri != null)
         .map((e) => e.mediaUri!.toFilePath())
         .where((e) => File(e).existsSync());

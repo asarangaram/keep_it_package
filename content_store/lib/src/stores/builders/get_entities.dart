@@ -1,3 +1,4 @@
+import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
@@ -55,8 +56,8 @@ class GetEntity extends ConsumerWidget {
       error: errorBuilder,
       loading: loadingBuilder,
       data: (entities) {
-        final entity = entities.where((e) => e.id == id).firstOrNull;
-        return builder(entity);
+        final entity = entities.entities.where((e) => e.id == id).firstOrNull;
+        return builder(entity as StoreEntity?);
       },
     );
   }
@@ -74,7 +75,7 @@ class GetEntities extends ConsumerWidget {
     this.isDeleted = false, // isDeleted = null ignores isDeleted
     this.hasPin,
   });
-  final Widget Function(List<StoreEntity> items) builder;
+  final Widget Function(ViewerEntities items) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
   final int? parentId;

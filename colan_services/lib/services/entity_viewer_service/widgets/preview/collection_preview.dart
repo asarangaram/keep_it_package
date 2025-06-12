@@ -47,7 +47,7 @@ class CollectionPreview extends ConsumerWidget {
                                     .colorScheme
                                     .mutedForeground,
                                 child: Text(
-                                  '${filterredChildren.where((e) => !e.isCollection).length}/${children.length} matches',
+                                  '${filterredChildren.entities.where((e) => !e.isCollection).length}/${children.length} matches',
                                 ),
                               ),
                             ),
@@ -59,7 +59,7 @@ class CollectionPreview extends ConsumerWidget {
                       vCount: 3,
                       itemBuilder: (context, index) {
                         final Widget widget;
-                        if (children[index].isCollection) {
+                        if (children.entities[index].isCollection) {
                           widget = LayoutBuilder(
                             builder: (context, constrain) {
                               return Image.asset(
@@ -71,12 +71,12 @@ class CollectionPreview extends ConsumerWidget {
                           );
                         } else {
                           widget = MediaThumbnail(
-                            media: children[index],
+                            media: children.entities[index],
                           );
                         }
-                        final grayOut = !filterredChildren
+                        final grayOut = !filterredChildren.entities
                             .map((e) => e.id)
-                            .contains(children[index].id);
+                            .contains(children.entities[index].id);
                         if (grayOut) {
                           return ColorFiltered(
                               colorFilter: const ColorFilter.matrix(<double>[

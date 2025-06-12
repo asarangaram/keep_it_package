@@ -12,7 +12,7 @@ class DialogService {
     BuildContext context, {
     required String title,
     required String message,
-    List<ViewerEntity>? entity,
+    ViewerEntities? entity,
   }) async =>
       showDialog<bool?>(
         context: context,
@@ -22,8 +22,8 @@ class DialogService {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              if (entity != null && entity.isNotEmpty)
-                switch (entity.first) {
+              if (entity != null && entity.entities.isNotEmpty)
+                switch (entity.entities.first) {
                   final StoreEntity e when !e.isCollection => SizedBox.square(
                       dimension: 100,
                       child: CLMediaCollage.byMatrixSize(
@@ -32,9 +32,9 @@ class DialogService {
                         vCount: 3,
                         itemBuilder: (context, index) {
                           return EntityPreview(
-                            item: entity[index] as StoreEntity,
-                            parentId: entity[index].parentId,
-                            entities: const [],
+                            item: entity.entities[index] as StoreEntity,
+                            parentId: entity.entities[index].parentId,
+                            entities: const ViewerEntities([]),
                           );
                         },
                         whenNopreview: const Center(),
@@ -79,12 +79,12 @@ class DialogService {
                 '"${entity.data.label}" and its content?'
             : 'Are you sure you want to delete '
                 'this ${entity.data.mediaType}?',
-        entity: [entity],
+        entity: ViewerEntities([entity]),
       );
 
   static Future<bool?> deleteMultipleEntities(
     BuildContext context, {
-    required List<StoreEntity> media,
+    required ViewerEntities media,
   }) async {
     if (media.isEmpty) {
       return false;
@@ -93,7 +93,7 @@ class DialogService {
     if (media.length == 1) {
       return DialogService.deleteEntity(
         context,
-        entity: media[0],
+        entity: media.entities[0] as StoreEntity,
       );
     } else {
       final String msg;
@@ -121,7 +121,7 @@ class DialogService {
 
   static Future<bool?> permanentlyDeleteMediaMultiple(
     BuildContext context, {
-    required List<StoreEntity> media,
+    required ViewerEntities media,
   }) async {
     if (media.isEmpty) {
       return false;
@@ -130,7 +130,7 @@ class DialogService {
     if (media.length == 1) {
       return DialogService.permanentlyDeleteMedia(
         context,
-        media: media[0],
+        media: media.entities[0] as StoreEntity,
       );
     } else {
       msg =
@@ -157,7 +157,7 @@ class DialogService {
 
   static Future<bool?> restoreMediaMultiple(
     BuildContext context, {
-    required List<StoreEntity> media,
+    required ViewerEntities media,
   }) async {
     if (media.isEmpty) {
       return false;
@@ -165,7 +165,7 @@ class DialogService {
     if (media.length == 1) {
       return DialogService.restoreMedia(
         context,
-        media: media[0],
+        media: media.entities[0] as StoreEntity,
       );
     }
     return template(

@@ -1,3 +1,4 @@
+import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -30,8 +31,8 @@ class SelectableLabel extends ConsumerWidget {
     if (!selectionMode) {
       return labelWidget;
     }
-    final candidates =
-        galleryMap.getEntitiesByGroup(gallery.groupIdentifier).toList();
+    final candidates = ViewerEntities(
+        galleryMap.getEntitiesByGroup(gallery.groupIdentifier).toList());
     final selectionStatus =
         ref.watch(selectorProvider.select((e) => e.isSelected(candidates)));
     return Padding(

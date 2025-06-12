@@ -49,7 +49,7 @@ class _MediaViewerPageViewState extends ConsumerState<MediaViewerPageView> {
       },
       itemBuilder: (context, index) {
         return ViewMedia(
-          currentItem: s.entities[index],
+          currentItem: s.entities.entities[index],
           autoStart: index == s.currentIndex,
           playerControls: widget.playerControls,
         );

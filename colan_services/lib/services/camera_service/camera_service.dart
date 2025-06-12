@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cl_camera/cl_camera.dart';
+import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:cl_media_tools/cl_media_tools.dart';
 
 import 'package:colan_widgets/colan_widgets.dart';
@@ -101,7 +102,7 @@ class CLCameraService0 extends ConsumerWidget {
   });
 
   final VoidCallback? onCancel;
-  final Future<void> Function(List<StoreEntity> mediaList) onDone;
+  final Future<void> Function(ViewerEntities mediaList) onDone;
   final Future<StoreEntity?> Function(String, {required bool isVideo})
       onNewMedia;
 

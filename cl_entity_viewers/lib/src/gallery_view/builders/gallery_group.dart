@@ -1,13 +1,14 @@
 import 'package:flutter/foundation.dart';
+import '../../common/models/viewer_entities.dart';
 import '../../common/models/viewer_entity_mixin.dart';
 import '../../common/extensions/ext_datetime.dart';
 import '../../common/extensions/list_ext.dart';
 
-extension EntityGrouper on List<ViewerEntity> {
+extension EntityGrouper on ViewerEntities {
   Map<String, List<ViewerEntity>> filterByDate() {
     final filterredMedia = <String, List<ViewerEntity>>{};
     final noDate = <ViewerEntity>[];
-    for (final entry in this) {
+    for (final entry in entities) {
       final String formattedDate;
 
       if (entry.createDate != null) {
@@ -63,7 +64,7 @@ extension EntityGrouper on List<ViewerEntity> {
   List<ViewerEntityGroup<ViewerEntity>> group(int columns) {
     final galleryGroups = <ViewerEntityGroup<ViewerEntity>>[];
 
-    for (final rows in convertTo2D(columns)) {
+    for (final rows in entities.convertTo2D(columns)) {
       galleryGroups.add(
         ViewerEntityGroup(
           rows,

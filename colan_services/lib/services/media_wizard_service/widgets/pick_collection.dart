@@ -52,9 +52,10 @@ class PickCollection extends StatelessWidget {
                 descriptionBuilder: (e) => (e as StoreEntity).data.description,
                 suggestionsAvailable: [
                   if (isValidSuggestion != null)
-                    ...collections.where((e) => isValidSuggestion!(e))
+                    ...collections.entities
+                        .where((e) => isValidSuggestion!(e as StoreEntity))
                   else
-                    ...collections,
+                    ...collections.entities,
                 ],
                 initialValues: collection,
                 onSelectSuggestion: (item) async => item,

@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 
+import '../../common/models/viewer_entities.dart';
 import '../../common/models/viewer_entity_mixin.dart';
 
 enum SelectionStatus { selectedNone, selectedPartial, selectedAll }
@@ -11,11 +12,11 @@ class CLSelector {
     required this.entities,
     this.items = const {},
   });
-  final List<ViewerEntity> entities;
+  final ViewerEntities entities;
   final Set<ViewerEntity> items;
 
   CLSelector copyWith({
-    List<ViewerEntity>? entities,
+    ViewerEntities? entities,
     Set<ViewerEntity>? items,
   }) {
     return CLSelector(
@@ -36,29 +37,30 @@ class CLSelector {
   @override
   int get hashCode => entities.hashCode ^ items.hashCode;
 
-  SelectionStatus isSelected(List<ViewerEntity> candidates) {
-    if (candidates.every(items.contains)) {
+  SelectionStatus isSelected(ViewerEntities candidates) {
+    if (candidates.entities.every(items.contains)) {
       return SelectionStatus.selectedAll;
     }
-    if (candidates.any(items.contains)) {
+    if (candidates.entities.any(items.contains)) {
       return SelectionStatus.selectedPartial;
     }
     return SelectionStatus.selectedNone;
   }
 
-  List<ViewerEntity> selectedItems(List<ViewerEntity> candidates) {
-    return candidates.where(items.contains).toList();
+  ViewerEntities selectedItems(ViewerEntities candidates) {
+    return ViewerEntities(candidates.entities.where(items.contains).toList());
   }
 
-  CLSelector select(List<ViewerEntity> candidates) {
-    return copyWith(items: {...items, ...candidates});
+  CLSelector select(ViewerEntities candidates) {
+    return copyWith(items: {...items, ...candidates.entities});
   }
 
-  CLSelector deselect(List<ViewerEntity> candidates) {
-    return copyWith(items: {...items.where((e) => !candidates.contains(e))});
+  CLSelector deselect(ViewerEntities candidates) {
+    return copyWith(
+        items: {...items.where((e) => !candidates.entities.contains(e))});
   }
 
-  CLSelector toggle(List<ViewerEntity> candidates) {
+  CLSelector toggle(ViewerEntities candidates) {
     if (isSelected(candidates) == SelectionStatus.selectedNone) {
       return select(candidates);
     }

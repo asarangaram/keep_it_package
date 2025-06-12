@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:cl_media_tools/cl_media_tools.dart';
 import 'package:meta/meta.dart';
 import 'package:store/src/models/cl_logger.dart';
@@ -87,15 +88,15 @@ class CLStore with CLLogger {
     );
   }
 
-  Future<List<StoreEntity>> getAll([StoreQuery<CLEntity>? query]) async {
+  Future<ViewerEntities> getAll([StoreQuery<CLEntity>? query]) async {
     try {
       final entititesFromDB = await store.getAll(query);
-      return entititesFromDB
+      return ViewerEntities(entititesFromDB
           .cast<CLEntity>()
           .map(
             (entityFromDB) => StoreEntity(entity: entityFromDB, store: this),
           )
-          .toList();
+          .toList());
     } catch (e, st) {
       log('$e $st');
       rethrow;
@@ -378,8 +379,8 @@ class CLStore with CLLogger {
     required List<CLMediaContent> contentList,
     required StoreEntity? collection,
     void Function({
-      required List<StoreEntity> existingEntities,
-      required List<StoreEntity> newEntities,
+      required ViewerEntities existingEntities,
+      required ViewerEntities newEntities,
       required List<CLMediaContent> invalidContent,
     })? onDone,
   }) async* {
@@ -488,8 +489,8 @@ class CLStore with CLLogger {
       // Need to check and add items into invalidContent
     }
     onDone?.call(
-      existingEntities: existingEntities,
-      newEntities: newEntities,
+      existingEntities: ViewerEntities(existingEntities),
+      newEntities: ViewerEntities(newEntities),
       invalidContent: invalidContent,
     );
   }

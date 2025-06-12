@@ -2,6 +2,7 @@ import 'package:cl_media_tools/cl_media_tools.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../common/models/viewer_entities.dart';
 import '../../common/models/viewer_entity_mixin.dart';
 import '../models/filter/base_filter.dart';
 import '../models/filter/ddmmyyyy_filter.dart';
@@ -106,8 +107,7 @@ final StringFilter<ViewerEntity> textSearchFilter = StringFilter(
 );
 
 final filterredMediaProvider =
-    StateProvider.family<List<ViewerEntity>, List<ViewerEntity>>(
-        (ref, entities) {
+    StateProvider.family<ViewerEntities, ViewerEntities>((ref, entities) {
   final mediaFilters = ref.watch(mediaFiltersProvider);
-  return mediaFilters.apply(entities);
+  return ViewerEntities(mediaFilters.apply(entities.entities));
 });

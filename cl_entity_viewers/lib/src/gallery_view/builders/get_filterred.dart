@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../common/models/viewer_entity_mixin.dart';
+import '../../common/models/viewer_entities.dart';
 import '../providers/media_filters.dart' show mediaFiltersProvider;
 
 class GetFilterred extends ConsumerWidget {
@@ -12,17 +12,17 @@ class GetFilterred extends ConsumerWidget {
       this.isDisabled = false});
   final bool isDisabled;
 
-  final List<ViewerEntity> candidates;
-  final Widget Function(List<ViewerEntity> filterred) builder;
+  final ViewerEntities candidates;
+  final Widget Function(ViewerEntities filterred) builder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final List<ViewerEntity> filterred;
+    final ViewerEntities filterred;
     if (isDisabled) {
       filterred = candidates;
     } else {
       final mediaFilters = ref.watch(mediaFiltersProvider);
-      filterred = mediaFilters.apply(candidates);
+      filterred = ViewerEntities(mediaFilters.apply(candidates.entities));
     }
     return builder(filterred);
   }

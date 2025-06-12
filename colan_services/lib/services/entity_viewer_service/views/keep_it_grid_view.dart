@@ -17,7 +17,7 @@ class KeepItGridView extends StatelessWidget {
       {required this.parent, required this.children, super.key});
 
   final ViewerEntity? parent;
-  final List<ViewerEntity> children;
+  final ViewerEntities children;
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +40,7 @@ class KeepItGridView0 extends ConsumerWidget {
   });
 
   final ViewerEntity? parent;
-  final List<ViewerEntity> children;
+  final ViewerEntities children;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

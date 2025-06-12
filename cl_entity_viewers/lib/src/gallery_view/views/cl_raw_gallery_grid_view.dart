@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../common/models/viewer_entities.dart';
 import '../../common/models/viewer_entity_mixin.dart';
 
 import '../providers/grouped_media_provider.dart';
@@ -20,10 +21,10 @@ class CLRawGalleryGridView extends ConsumerStatefulWidget {
       super.key,
       this.draggableMenuBuilder});
   final String galleryIdentifier;
-  final List<ViewerEntity> incoming;
+  final ViewerEntities incoming;
   final int columns;
   final Widget Function(
-          BuildContext context, ViewerEntity item, List<ViewerEntity> entities)
+          BuildContext context, ViewerEntity item, ViewerEntities entities)
       itemBuilder;
 
   final Widget? Function(

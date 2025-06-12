@@ -4,6 +4,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../common/models/viewer_entities.dart';
 import '../../common/models/viewer_entity_mixin.dart';
 
 @immutable
@@ -11,20 +12,20 @@ class MediaViewerUIState {
   const MediaViewerUIState({
     this.showMenu = false,
     this.showPlayerMenu = false,
-    this.entities = const [],
+    this.entities = const ViewerEntities([]),
     this.currentIndex = 0,
   });
   final bool showMenu;
   final bool showPlayerMenu;
 
-  final List<ViewerEntity> entities;
+  final ViewerEntities entities;
   final int currentIndex;
 
   MediaViewerUIState copyWith({
     bool? showMenu,
     bool? showPlayerMenu,
     Color? iconColor,
-    List<ViewerEntity>? entities,
+    ViewerEntities? entities,
     int? currentIndex,
   }) {
     return MediaViewerUIState(
@@ -59,7 +60,7 @@ class MediaViewerUIState {
     return 'UIState(showMenu: $showMenu, showPlayerMenu: $showPlayerMenu, entities: $entities, currentIndex: $currentIndex)';
   }
 
-  ViewerEntity get currentItem => entities[currentIndex];
+  ViewerEntity get currentItem => entities.entities[currentIndex];
 
   int get length => entities.length;
 }
@@ -110,9 +111,9 @@ class MediaViewerUIStateNotifier extends StateNotifier<MediaViewerUIState> {
   set currIndex(int value) => notify(state.copyWith(currentIndex: value));
   int get currIndex => state.currentIndex;
 
-  set entities(List<ViewerEntity> entities) =>
+  set entities(ViewerEntities entities) =>
       notify(state.copyWith(entities: entities));
-  List<ViewerEntity> get entities => state.entities;
+  ViewerEntities get entities => state.entities;
 
   @override
   void dispose() {

@@ -1,12 +1,12 @@
+import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:store/store.dart';
 
 import '../models/cl_shared_media.dart';
 import '../models/universal_media_source.dart';
 
 class UniversalMediaNotifier extends StateNotifier<CLSharedMedia> {
   UniversalMediaNotifier(this.mediaTypes)
-      : super(const CLSharedMedia(entries: []));
+      : super(const CLSharedMedia(entries: ViewerEntities([])));
   UniversalMediaSource mediaTypes;
 
   set mediaGroup(CLSharedMedia sharedMedia) {
@@ -19,12 +19,13 @@ class UniversalMediaNotifier extends StateNotifier<CLSharedMedia> {
 
   CLSharedMedia get mediaGroup => state;
 
-  void clear() => state = const CLSharedMedia(entries: []);
+  void clear() => state = const CLSharedMedia(entries: ViewerEntities([]));
 
-  Future<void> remove(List<StoreEntity> mediaList) async {
-    final ids = mediaList.map((e) => e.id);
+  Future<void> remove(ViewerEntities mediaList) async {
+    final ids = mediaList.entities.map((e) => e.id);
     state = state.copyWith(
-      entries: state.entries.where((e) => !ids.contains(e.id)).toList(),
+      entries: ViewerEntities(
+          state.entries.entities.where((e) => !ids.contains(e.id)).toList()),
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
@@ -7,12 +8,12 @@ import 'active_store_provider.dart';
 import 'refresh_cache.dart';
 
 class EntitiesNotifier
-    extends FamilyAsyncNotifier<List<StoreEntity>, StoreQuery<CLEntity>>
+    extends FamilyAsyncNotifier<ViewerEntities, StoreQuery<CLEntity>>
     with CLLogger {
   @override
   String get logPrefix => 'EntitiesNotifier';
   @override
-  FutureOr<List<StoreEntity>> build(StoreQuery<CLEntity> arg) async {
+  FutureOr<ViewerEntities> build(StoreQuery<CLEntity> arg) async {
     final dbQuery = arg;
 
     ref.watch(reloadProvider);
@@ -22,4 +23,4 @@ class EntitiesNotifier
 }
 
 final entitiesProvider = AsyncNotifierProviderFamily<EntitiesNotifier,
-    List<StoreEntity>, StoreQuery<CLEntity>>(EntitiesNotifier.new);
+    ViewerEntities, StoreQuery<CLEntity>>(EntitiesNotifier.new);

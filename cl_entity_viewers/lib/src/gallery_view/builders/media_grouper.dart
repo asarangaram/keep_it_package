@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 
+import '../../common/models/viewer_entities.dart';
 import '../../common/models/viewer_entity_mixin.dart';
 import '../models/view_modifier.dart';
 import 'gallery_group.dart';
@@ -52,7 +53,7 @@ class GroupBy implements ViewModifier {
   String get name => 'Group By';
 
   List<ViewerEntityGroup<ViewerEntity>> getGrouped(
-    List<ViewerEntity> entities,
+    ViewerEntities entities,
   ) {
     return switch (method) {
       GroupTypes.none => entities.group(columns),

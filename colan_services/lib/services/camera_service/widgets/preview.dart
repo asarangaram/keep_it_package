@@ -1,9 +1,8 @@
-import 'package:cl_entity_viewers/cl_entity_viewers.dart' show MediaThumbnail;
+import 'package:cl_entity_viewers/cl_entity_viewers.dart'
+    show MediaThumbnail, ViewerEntities;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
-
-import 'package:store/store.dart';
 
 import '../../../providers/captured_media.dart';
 
@@ -13,7 +12,7 @@ class PreviewCapturedMedia extends ConsumerWidget {
     super.key,
   });
 
-  final Future<void> Function(List<StoreEntity>) sendMedia;
+  final Future<void> Function(ViewerEntities) sendMedia;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -22,16 +21,16 @@ class PreviewCapturedMedia extends ConsumerWidget {
         ? const SizedBox.shrink()
         : GestureDetector(
             onTap: () {
-              final capturedMediaCopy = [...capturedMedia];
+              final capturedMediaCopy = [...capturedMedia.entities];
               ref.read(capturedMediaProvider.notifier).clear();
-              sendMedia(capturedMediaCopy);
+              sendMedia(ViewerEntities(capturedMediaCopy));
             },
             child: CapturedMediaDecorator(
               child: Stack(
                 children: [
                   Positioned.fill(
                     child: MediaThumbnail(
-                      media: capturedMedia.last,
+                      media: capturedMedia.entities.last,
                     ),
                   ),
                   Center(

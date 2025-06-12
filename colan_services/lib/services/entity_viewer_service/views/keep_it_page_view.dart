@@ -12,7 +12,7 @@ class KeepItPageView extends StatelessWidget {
       {required this.entity, required this.siblings, super.key});
 
   final ViewerEntity entity;
-  final List<ViewerEntity> siblings;
+  final ViewerEntities siblings;
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +23,7 @@ class KeepItPageView extends StatelessWidget {
         child: CLEntitiesPageView(
           topMenuBuilder: (currentEntity) => TopBar(
             entityAsync: AsyncData(currentEntity),
-            children: const [],
+            children: const ViewerEntities([]),
           ),
           bottomMenu: const BottomBarPageView(),
         ),

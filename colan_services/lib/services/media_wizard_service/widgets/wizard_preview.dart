@@ -17,7 +17,7 @@ class WizardPreview extends ConsumerStatefulWidget {
     super.key,
   });
   final UniversalMediaSource type;
-  final void Function(List<StoreEntity>)? onSelectionChanged;
+  final void Function(ViewerEntities)? onSelectionChanged;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _WizardPreviewState();
@@ -28,7 +28,7 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
 
   UniversalMediaSource get type => widget.type;
 
-  void Function(List<StoreEntity>)? get onSelectionChanged =>
+  void Function(ViewerEntities)? get onSelectionChanged =>
       widget.onSelectionChanged;
 
   @override
@@ -50,8 +50,7 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
       contextMenuBuilder: (context, list) => EntityActions.empty(),
       onSelectionChanged: onSelectionChanged == null
           ? null
-          : (items) => onSelectionChanged
-              ?.call(items.map((e) => e as StoreEntity).toList()),
+          : (items) => onSelectionChanged?.call(items),
       itemBuilder: (context, item, entities) {
         if (item.isCollection) {
           return CollectionPreview.preview(

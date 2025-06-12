@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../common/models/viewer_entity_mixin.dart';
+import '../../common/models/viewer_entities.dart';
 
 class FilterBanner extends StatelessWidget {
   const FilterBanner({
@@ -11,12 +11,12 @@ class FilterBanner extends StatelessWidget {
     required this.incoming,
   });
 
-  final List<ViewerEntity> filterred;
-  final List<ViewerEntity> incoming;
+  final ViewerEntities filterred;
+  final ViewerEntities incoming;
 
   @override
   Widget build(BuildContext context) {
-    if (incoming.isEmpty || filterred.length == incoming.length) {
+    if (incoming.entities.isEmpty || filterred.length == incoming.length) {
       return SizedBox.shrink();
     }
     return Padding(

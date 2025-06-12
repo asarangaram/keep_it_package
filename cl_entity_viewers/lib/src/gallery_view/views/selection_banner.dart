@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import '../../common/models/viewer_entities.dart';
 import '../../common/models/viewer_entity_mixin.dart';
 
 import '../models/selector.dart';
@@ -19,7 +20,7 @@ class SelectionBanner extends ConsumerWidget {
     super.key,
     this.galleryMap = const [],
   });
-  final List<ViewerEntity> incoming;
+  final ViewerEntities incoming;
   final List<ViewerEntityGroup> galleryMap;
 
   @override
@@ -31,7 +32,7 @@ class SelectionBanner extends ConsumerWidget {
     final selector = ref.watch(selectorProvider);
     final allCount = selector.entities.length;
     final selectedInAllCount = selector.count;
-    final currentItems = galleryMap.getEntities.toList();
+    final currentItems = ViewerEntities(galleryMap.getEntities.toList());
 
     final selectionStatusOnVisible =
         selector.isSelected(currentItems) == SelectionStatus.selectedNone;

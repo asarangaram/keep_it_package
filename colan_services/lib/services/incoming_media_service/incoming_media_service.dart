@@ -1,3 +1,4 @@
+import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:cl_media_tools/cl_media_tools.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
@@ -59,7 +60,7 @@ class IncomingMediaHandler0 extends ConsumerStatefulWidget {
 
 class _IncomingMediaHandler0State extends ConsumerState<IncomingMediaHandler0> {
   CLSharedMedia? duplicateCandidates;
-  List<StoreEntity>? newCandidates;
+  ViewerEntities? newCandidates;
 
   bool isSaving = false;
   @override
@@ -89,10 +90,10 @@ class _IncomingMediaHandler0State extends ConsumerState<IncomingMediaHandler0> {
                   onDone: ({required CLSharedMedia? mg}) {
                     onSave(
                       mg: CLSharedMedia(
-                        entries: [
-                          ...mg?.entries ?? [],
-                          ...newCandidates ?? [],
-                        ],
+                        entries: ViewerEntities([
+                          ...mg?.entries.entities ?? [],
+                          ...newCandidates?.entities ?? [],
+                        ]),
                         collection: widget.incomingMedia.collection,
                         type: widget.incomingMedia.type,
                       ),
@@ -117,8 +118,8 @@ class _IncomingMediaHandler0State extends ConsumerState<IncomingMediaHandler0> {
   }
 
   Future<void> segretated({
-    required List<StoreEntity> existingEntities,
-    required List<StoreEntity> newEntities,
+    required ViewerEntities existingEntities,
+    required ViewerEntities newEntities,
     required List<CLMediaContent> invalidContent,
   }) async {
     final duplicateCandidates0 = CLSharedMedia(

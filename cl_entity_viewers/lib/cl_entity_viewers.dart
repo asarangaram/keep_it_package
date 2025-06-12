@@ -20,3 +20,4 @@ export 'src/gallery_view/views/cl_entities_grid_view_scope.dart'
 export 'src/page_view/views/cl_entities_page_view_scope.dart'
     show CLEntitiesPageViewScope;
 export 'src/gallery_view/builders/get_filterred.dart' show GetFilterred;
+export 'src/common/models/viewer_entities.dart' show ViewerEntities;

@@ -20,7 +20,7 @@ class TopBar extends ConsumerWidget implements PreferredSizeWidget {
   });
 
   final AsyncValue<ViewerEntity?> entityAsync;
-  final List<ViewerEntity>? children;
+  final ViewerEntities? children;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -41,7 +41,7 @@ class TopBar extends ConsumerWidget implements PreferredSizeWidget {
             ),
           ],
         ),
-        if (entityAsync.hasValue && (children?.isNotEmpty ?? false))
+        if (entityAsync.hasValue && (children?.entities.isNotEmpty ?? false))
           const Row(
             spacing: 8,
             children: [Flexible(child: TextFilterBox()), FilterPopOverMenu()],
