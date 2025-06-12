@@ -9,7 +9,7 @@ class MediaTitle extends StatelessWidget {
     required this.entityAsync,
     super.key,
   });
-  final AsyncValue<ViewerEntityMixin?> entityAsync;
+  final AsyncValue<ViewerEntity?> entityAsync;
 
   @override
   Widget build(BuildContext context) {

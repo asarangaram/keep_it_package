@@ -12,8 +12,8 @@ class CLEntitiesPageViewScope extends ConsumerWidget {
     required this.child,
     super.key,
   });
-  final List<ViewerEntityMixin> siblings;
-  final ViewerEntityMixin currentEntity;
+  final List<ViewerEntity> siblings;
+  final ViewerEntity currentEntity;
   final Widget child;
 
   @override

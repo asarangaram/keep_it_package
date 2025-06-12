@@ -7,7 +7,7 @@ import 'cl_entity.dart';
 import 'data_types.dart';
 
 @immutable
-class StoreEntity implements ViewerEntityMixin {
+class StoreEntity implements ViewerEntity {
   factory StoreEntity({
     required CLEntity entity,
     required CLStore store,

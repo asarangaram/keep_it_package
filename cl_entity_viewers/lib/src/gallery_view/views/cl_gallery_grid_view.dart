@@ -18,12 +18,12 @@ class CLEntitiesGridView extends StatelessWidget {
       super.key,
       required this.whenEmpty});
 
-  final List<ViewerEntityMixin> incoming;
-  final Widget Function(
-      BuildContext, ViewerEntityMixin, List<ViewerEntityMixin>) itemBuilder;
-  final CLContextMenu Function(BuildContext, List<ViewerEntityMixin>)?
+  final List<ViewerEntity> incoming;
+  final Widget Function(BuildContext, ViewerEntity, List<ViewerEntity>)
+      itemBuilder;
+  final CLContextMenu Function(BuildContext, List<ViewerEntity>)?
       contextMenuBuilder;
-  final void Function(List<ViewerEntityMixin>)? onSelectionChanged;
+  final void Function(List<ViewerEntity>)? onSelectionChanged;
   final bool filtersDisabled;
   final Widget whenEmpty;
 

@@ -7,7 +7,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../common/models/viewer_entity_mixin.dart' show ViewerEntityMixin;
+import '../../common/models/viewer_entity_mixin.dart' show ViewerEntity;
 import '../../common/views/broken_image.dart' show BrokenImage;
 import '../../common/views/shimmer.dart' show GreyShimmer;
 import 'media_viewer.dart';
@@ -19,7 +19,7 @@ class MediaPreviewWithOverlays extends StatelessWidget {
     super.key,
   });
 
-  final ViewerEntityMixin media;
+  final ViewerEntity media;
 
   @override
   Widget build(BuildContext context) {
@@ -96,7 +96,7 @@ class MediaThumbnail extends StatelessWidget {
     super.key,
   });
 
-  final ViewerEntityMixin media;
+  final ViewerEntity media;
   final List<OverlayWidgets>? overlays;
 
   @override

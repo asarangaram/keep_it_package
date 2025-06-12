@@ -12,7 +12,7 @@ class EnumFilterViewRow extends ConsumerWidget {
     required this.filter,
     super.key,
   });
-  final CLFilter<ViewerEntityMixin> filter;
+  final CLFilter<ViewerEntity> filter;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

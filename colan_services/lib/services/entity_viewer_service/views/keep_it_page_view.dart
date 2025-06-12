@@ -11,8 +11,8 @@ class KeepItPageView extends StatelessWidget {
   const KeepItPageView(
       {required this.entity, required this.siblings, super.key});
 
-  final ViewerEntityMixin entity;
-  final List<ViewerEntityMixin> siblings;
+  final ViewerEntity entity;
+  final List<ViewerEntity> siblings;
 
   @override
   Widget build(BuildContext context) {

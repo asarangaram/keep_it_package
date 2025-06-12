@@ -4,18 +4,18 @@ import '../../common/models/viewer_entity_mixin.dart';
 import '../models/selector.dart';
 
 class SelectorNotifier extends StateNotifier<CLSelector> {
-  SelectorNotifier(List<ViewerEntityMixin> entities)
+  SelectorNotifier(List<ViewerEntity> entities)
       : super(CLSelector(entities: entities));
 
-  void select(List<ViewerEntityMixin> candidates) {
+  void select(List<ViewerEntity> candidates) {
     state = state.select(candidates);
   }
 
-  void deselect(List<ViewerEntityMixin> candidates) {
+  void deselect(List<ViewerEntity> candidates) {
     state = state.deselect(candidates);
   }
 
-  void toggle(List<ViewerEntityMixin> candidates) {
+  void toggle(List<ViewerEntity> candidates) {
     if (state.isSelected(candidates) == SelectionStatus.selectedNone) {
       select(candidates);
     } else {
@@ -27,7 +27,7 @@ class SelectorNotifier extends StateNotifier<CLSelector> {
     state = state.clear();
   }
 
-  void updateSelection(List<ViewerEntityMixin>? candidates, {bool? deselect}) {
+  void updateSelection(List<ViewerEntity>? candidates, {bool? deselect}) {
     if (candidates == null) {
       clear();
     } else if (deselect == null) {

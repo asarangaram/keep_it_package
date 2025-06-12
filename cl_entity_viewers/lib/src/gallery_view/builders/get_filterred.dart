@@ -12,12 +12,12 @@ class GetFilterred extends ConsumerWidget {
       this.isDisabled = false});
   final bool isDisabled;
 
-  final List<ViewerEntityMixin> candidates;
-  final Widget Function(List<ViewerEntityMixin> filterred) builder;
+  final List<ViewerEntity> candidates;
+  final Widget Function(List<ViewerEntity> filterred) builder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final List<ViewerEntityMixin> filterred;
+    final List<ViewerEntity> filterred;
     if (isDisabled) {
       filterred = candidates;
     } else {

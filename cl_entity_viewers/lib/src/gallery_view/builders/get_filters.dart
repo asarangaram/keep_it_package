@@ -11,7 +11,7 @@ class GetFilters extends ConsumerWidget {
     super.key,
   });
 
-  final Widget Function(SearchFilters<ViewerEntityMixin> filters) builder;
+  final Widget Function(SearchFilters<ViewerEntity> filters) builder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

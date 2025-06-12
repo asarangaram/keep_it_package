@@ -11,10 +11,8 @@ class GetContent extends ConsumerWidget {
       required this.loadingBuilder,
       super.key});
   final int? id;
-  final Widget Function(
-      ViewerEntityMixin? entity,
-      List<ViewerEntityMixin> children,
-      List<ViewerEntityMixin> siblings) builder;
+  final Widget Function(ViewerEntity? entity, List<ViewerEntity> children,
+      List<ViewerEntity> siblings) builder;
   final Widget Function() loadingBuilder;
   final Widget Function(Object, StackTrace) errorBuilder;
 

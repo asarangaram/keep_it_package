@@ -26,12 +26,12 @@ class SelectionContol extends ConsumerWidget {
   final bool filtersDisabled;
   final Widget whenEmpty;
 
-  final Widget Function(
-      BuildContext, ViewerEntityMixin, List<ViewerEntityMixin>) itemBuilder;
+  final Widget Function(BuildContext, ViewerEntity, List<ViewerEntity>)
+      itemBuilder;
 
-  final CLContextMenu Function(BuildContext, List<ViewerEntityMixin>)?
+  final CLContextMenu Function(BuildContext, List<ViewerEntity>)?
       contextMenuBuilder;
-  final void Function(List<ViewerEntityMixin>)? onSelectionChanged;
+  final void Function(List<ViewerEntity>)? onSelectionChanged;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -57,6 +57,7 @@ class SelectionContol extends ConsumerWidget {
         isDisabled: filtersDisabled,
         builder: (filterred) {
           return CLRawGalleryGridView(
+            galleryIdentifier: filterred.hashCode.toString(),
             incoming: filterred,
             bannersBuilder: (context, galleryMap) {
               return [

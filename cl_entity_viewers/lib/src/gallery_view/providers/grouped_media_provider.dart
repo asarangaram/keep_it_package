@@ -5,8 +5,7 @@ import '../../common/models/viewer_entity_mixin.dart';
 import 'media_grouper.dart';
 
 final groupedMediaProvider = StateProvider.family<
-    List<ViewerEntityGroup<ViewerEntityMixin>>,
-    List<ViewerEntityMixin>>((ref, entities) {
+    List<ViewerEntityGroup<ViewerEntity>>, List<ViewerEntity>>((ref, entities) {
   final groupBy = ref.watch(groupMethodProvider);
 
   return groupBy.getGrouped(entities);

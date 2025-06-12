@@ -10,11 +10,11 @@ class ViewerEntityGroups {
     required this.galleryGroups,
   });
   final String name;
-  final List<ViewerEntityGroup<ViewerEntityMixin>> galleryGroups;
+  final List<ViewerEntityGroup<ViewerEntity>> galleryGroups;
 
   ViewerEntityGroups copyWith({
     String? name,
-    List<ViewerEntityGroup<ViewerEntityMixin>>? galleryGroups,
+    List<ViewerEntityGroup<ViewerEntity>>? galleryGroups,
   }) {
     return ViewerEntityGroups(
       name: name ?? this.name,

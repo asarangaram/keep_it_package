@@ -14,12 +14,12 @@ class DDMMYYYYFilterViewRow extends ConsumerWidget {
     required this.filter,
     super.key,
   });
-  final CLFilter<ViewerEntityMixin> filter;
+  final CLFilter<ViewerEntity> filter;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final defaultDate = DateTime.now();
-    final filter = this.filter as DDMMYYYYFilter<ViewerEntityMixin>;
+    final filter = this.filter as DDMMYYYYFilter<ViewerEntity>;
 
     return ShadCheckbox(
       value: filter.enabled,

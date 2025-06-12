@@ -19,7 +19,7 @@ class SelectionBanner extends ConsumerWidget {
     super.key,
     this.galleryMap = const [],
   });
-  final List<ViewerEntityMixin> incoming;
+  final List<ViewerEntity> incoming;
   final List<ViewerEntityGroup> galleryMap;
 
   @override

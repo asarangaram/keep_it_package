@@ -34,10 +34,10 @@ class EntityActions extends CLContextMenu {
   factory EntityActions.entities(
     BuildContext context,
     WidgetRef ref,
-    List<ViewerEntityMixin> entities,
+    List<ViewerEntity> entities,
   ) {
     return switch (entities) {
-      final List<ViewerEntityMixin> e
+      final List<ViewerEntity> e
           when e.every(
             (e) => e is StoreEntity && e.data.isCollection == false,
           ) =>
@@ -49,7 +49,7 @@ class EntityActions extends CLContextMenu {
             hasOnlineService: true,
           );
         }(),
-      final List<ViewerEntityMixin> e
+      final List<ViewerEntity> e
           when e.every(
             (e) => e is StoreEntity && e.data.isCollection == true,
           ) =>

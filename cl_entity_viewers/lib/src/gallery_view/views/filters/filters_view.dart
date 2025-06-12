@@ -29,7 +29,7 @@ class FiltersView extends ConsumerStatefulWidget {
     super.key,
     this.filters,
   });
-  final List<CLFilter<ViewerEntityMixin>>? filters;
+  final List<CLFilter<ViewerEntity>>? filters;
 
   @override
   ConsumerState<FiltersView> createState() => FiltersViewState();

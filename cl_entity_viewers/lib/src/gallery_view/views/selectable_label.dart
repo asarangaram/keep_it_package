@@ -15,8 +15,8 @@ class SelectableLabel extends ConsumerWidget {
     required this.gallery,
   });
 
-  final List<ViewerEntityGroup<ViewerEntityMixin>> galleryMap;
-  final ViewerEntityGroup<ViewerEntityMixin> gallery;
+  final List<ViewerEntityGroup<ViewerEntity>> galleryMap;
+  final ViewerEntityGroup<ViewerEntity> gallery;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

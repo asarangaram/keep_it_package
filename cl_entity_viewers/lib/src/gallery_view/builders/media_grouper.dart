@@ -51,8 +51,8 @@ class GroupBy implements ViewModifier {
   @override
   String get name => 'Group By';
 
-  List<ViewerEntityGroup<ViewerEntityMixin>> getGrouped(
-    List<ViewerEntityMixin> entities,
+  List<ViewerEntityGroup<ViewerEntity>> getGrouped(
+    List<ViewerEntity> entities,
   ) {
     return switch (method) {
       GroupTypes.none => entities.group(columns),

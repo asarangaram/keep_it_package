@@ -30,7 +30,7 @@ class IncomingMediaMonitor extends ConsumerWidget {
   static Future<bool> onPickFiles(
     BuildContext context,
     WidgetRef ref, {
-    ViewerEntityMixin? collection,
+    ViewerEntity? collection,
   }) async {
     final picker = ImagePicker();
     final pickedFileList = await picker.pickMultipleMedia();

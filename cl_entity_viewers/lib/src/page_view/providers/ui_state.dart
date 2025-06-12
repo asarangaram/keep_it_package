@@ -17,14 +17,14 @@ class MediaViewerUIState {
   final bool showMenu;
   final bool showPlayerMenu;
 
-  final List<ViewerEntityMixin> entities;
+  final List<ViewerEntity> entities;
   final int currentIndex;
 
   MediaViewerUIState copyWith({
     bool? showMenu,
     bool? showPlayerMenu,
     Color? iconColor,
-    List<ViewerEntityMixin>? entities,
+    List<ViewerEntity>? entities,
     int? currentIndex,
   }) {
     return MediaViewerUIState(
@@ -59,7 +59,7 @@ class MediaViewerUIState {
     return 'UIState(showMenu: $showMenu, showPlayerMenu: $showPlayerMenu, entities: $entities, currentIndex: $currentIndex)';
   }
 
-  ViewerEntityMixin get currentItem => entities[currentIndex];
+  ViewerEntity get currentItem => entities[currentIndex];
 
   int get length => entities.length;
 }
@@ -110,9 +110,9 @@ class MediaViewerUIStateNotifier extends StateNotifier<MediaViewerUIState> {
   set currIndex(int value) => notify(state.copyWith(currentIndex: value));
   int get currIndex => state.currentIndex;
 
-  set entities(List<ViewerEntityMixin> entities) =>
+  set entities(List<ViewerEntity> entities) =>
       notify(state.copyWith(entities: entities));
-  List<ViewerEntityMixin> get entities => state.entities;
+  List<ViewerEntity> get entities => state.entities;
 
   @override
   void dispose() {

@@ -12,7 +12,7 @@ class DialogService {
     BuildContext context, {
     required String title,
     required String message,
-    List<ViewerEntityMixin>? entity,
+    List<ViewerEntity>? entity,
   }) async =>
       showDialog<bool?>(
         context: context,

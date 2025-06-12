@@ -11,8 +11,8 @@ class FilterBanner extends StatelessWidget {
     required this.incoming,
   });
 
-  final List<ViewerEntityMixin> filterred;
-  final List<ViewerEntityMixin> incoming;
+  final List<ViewerEntity> filterred;
+  final List<ViewerEntity> incoming;
 
   @override
   Widget build(BuildContext context) {

@@ -1,4 +1,4 @@
-export 'src/common/models/viewer_entity_mixin.dart' show ViewerEntityMixin;
+export 'src/common/models/viewer_entity_mixin.dart' show ViewerEntity;
 export 'src/gallery_view/models/cl_context_menu.dart' show CLContextMenu;
 export 'src/gallery_view/builders/get_selection_mode.dart'
     show GetSelectionMode;

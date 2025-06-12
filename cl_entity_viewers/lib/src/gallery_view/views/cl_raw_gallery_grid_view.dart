@@ -10,7 +10,8 @@ import 'cl_grid.dart';
 
 class CLRawGalleryGridView extends ConsumerStatefulWidget {
   const CLRawGalleryGridView(
-      {required this.incoming,
+      {required this.galleryIdentifier,
+      required this.incoming,
       required this.itemBuilder,
       required this.labelBuilder,
       required this.bannersBuilder,
@@ -18,20 +19,21 @@ class CLRawGalleryGridView extends ConsumerStatefulWidget {
       required this.whenEmpty,
       super.key,
       this.draggableMenuBuilder});
-
-  final List<ViewerEntityMixin> incoming;
+  final String galleryIdentifier;
+  final List<ViewerEntity> incoming;
   final int columns;
-  final Widget Function(BuildContext context, ViewerEntityMixin item,
-      List<ViewerEntityMixin> entities) itemBuilder;
+  final Widget Function(
+          BuildContext context, ViewerEntity item, List<ViewerEntity> entities)
+      itemBuilder;
 
   final Widget? Function(
     BuildContext context,
-    List<ViewerEntityGroup<ViewerEntityMixin>> galleryMap,
-    ViewerEntityGroup<ViewerEntityMixin> gallery,
+    List<ViewerEntityGroup<ViewerEntity>> galleryMap,
+    ViewerEntityGroup<ViewerEntity> gallery,
   ) labelBuilder;
   final List<Widget> Function(
     BuildContext,
-    List<ViewerEntityGroup<ViewerEntityMixin>>,
+    List<ViewerEntityGroup<ViewerEntity>>,
   ) bannersBuilder;
   final Widget whenEmpty;
 
@@ -52,13 +54,15 @@ class CLRawGalleryGridViewState extends ConsumerState<CLRawGalleryGridView> {
   void initState() {
     super.initState();
     _scrollController = ScrollController(
-      initialScrollOffset: ref.read(tabScrollPositionProvider),
+      initialScrollOffset:
+          ref.read(tabScrollPositionProvider(widget.galleryIdentifier)),
     );
 
     // Listen for scroll changes
     _scrollController.addListener(() {
-      ref.read(tabScrollPositionProvider.notifier).state =
-          _scrollController.offset;
+      ref
+          .read(tabScrollPositionProvider(widget.galleryIdentifier).notifier)
+          .state = _scrollController.offset;
     });
   }
 
@@ -87,7 +91,7 @@ class CLRawGalleryGridViewState extends ConsumerState<CLRawGalleryGridView> {
                   );
                 }
                 final gallery = galleryGroups[groupIndex];
-                return CLGrid<ViewerEntityMixin>(
+                return CLGrid<ViewerEntity>(
                   itemCount: gallery.items.length,
                   columns: widget.columns,
                   itemBuilder: (context, itemIndex) {

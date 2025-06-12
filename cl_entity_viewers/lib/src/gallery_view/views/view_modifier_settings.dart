@@ -66,8 +66,7 @@ class _ViewModifierSettingsState extends State<ViewModifierSettings> {
               constraints: const BoxConstraints(minHeight: 100),
               child: switch (currIndex) {
                 0 => FiltersView(
-                    filters:
-                        (items[0] as SearchFilters<ViewerEntityMixin>).filters,
+                    filters: (items[0] as SearchFilters<ViewerEntity>).filters,
                   ),
                 1 => GroupByView(
                     groupBy: items[1] as GroupBy,

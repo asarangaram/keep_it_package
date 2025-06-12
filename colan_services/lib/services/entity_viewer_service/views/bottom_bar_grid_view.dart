@@ -15,7 +15,7 @@ class BottomBarGridView extends ConsumerWidget implements PreferredSizeWidget {
     super.key,
   });
 
-  final ViewerEntityMixin? entity;
+  final ViewerEntity? entity;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

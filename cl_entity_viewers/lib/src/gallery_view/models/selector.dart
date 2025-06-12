@@ -11,12 +11,12 @@ class CLSelector {
     required this.entities,
     this.items = const {},
   });
-  final List<ViewerEntityMixin> entities;
-  final Set<ViewerEntityMixin> items;
+  final List<ViewerEntity> entities;
+  final Set<ViewerEntity> items;
 
   CLSelector copyWith({
-    List<ViewerEntityMixin>? entities,
-    Set<ViewerEntityMixin>? items,
+    List<ViewerEntity>? entities,
+    Set<ViewerEntity>? items,
   }) {
     return CLSelector(
       entities: entities ?? this.entities,
@@ -36,7 +36,7 @@ class CLSelector {
   @override
   int get hashCode => entities.hashCode ^ items.hashCode;
 
-  SelectionStatus isSelected(List<ViewerEntityMixin> candidates) {
+  SelectionStatus isSelected(List<ViewerEntity> candidates) {
     if (candidates.every(items.contains)) {
       return SelectionStatus.selectedAll;
     }
@@ -46,19 +46,19 @@ class CLSelector {
     return SelectionStatus.selectedNone;
   }
 
-  List<ViewerEntityMixin> selectedItems(List<ViewerEntityMixin> candidates) {
+  List<ViewerEntity> selectedItems(List<ViewerEntity> candidates) {
     return candidates.where(items.contains).toList();
   }
 
-  CLSelector select(List<ViewerEntityMixin> candidates) {
+  CLSelector select(List<ViewerEntity> candidates) {
     return copyWith(items: {...items, ...candidates});
   }
 
-  CLSelector deselect(List<ViewerEntityMixin> candidates) {
+  CLSelector deselect(List<ViewerEntity> candidates) {
     return copyWith(items: {...items.where((e) => !candidates.contains(e))});
   }
 
-  CLSelector toggle(List<ViewerEntityMixin> candidates) {
+  CLSelector toggle(List<ViewerEntity> candidates) {
     if (isSelected(candidates) == SelectionStatus.selectedNone) {
       return select(candidates);
     }

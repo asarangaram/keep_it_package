@@ -9,9 +9,7 @@ final viewModifiersProvider = StateProvider<List<ViewModifier>>((
 ) {
   final items = [
     ref.watch(mediaFiltersProvider),
-    ref.watch(
-      groupMethodProvider,
-    ),
+    ref.watch(groupMethodProvider),
   ];
   return items;
 });

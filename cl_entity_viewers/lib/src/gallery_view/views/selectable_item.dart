@@ -16,10 +16,10 @@ class SelectableItem extends ConsumerWidget {
     required this.entities,
   });
 
-  final ViewerEntityMixin item;
-  final List<ViewerEntityMixin> entities;
-  final Widget Function(
-      BuildContext, ViewerEntityMixin, List<ViewerEntityMixin>) itemBuilder;
+  final ViewerEntity item;
+  final List<ViewerEntity> entities;
+  final Widget Function(BuildContext, ViewerEntity, List<ViewerEntity>)
+      itemBuilder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

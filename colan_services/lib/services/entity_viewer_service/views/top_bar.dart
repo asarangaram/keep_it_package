@@ -19,8 +19,8 @@ class TopBar extends ConsumerWidget implements PreferredSizeWidget {
     super.key,
   });
 
-  final AsyncValue<ViewerEntityMixin?> entityAsync;
-  final List<ViewerEntityMixin>? children;
+  final AsyncValue<ViewerEntity?> entityAsync;
+  final List<ViewerEntity>? children;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

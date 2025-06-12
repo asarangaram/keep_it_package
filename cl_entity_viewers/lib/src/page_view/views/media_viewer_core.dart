@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../common/models/viewer_entity_mixin.dart' show ViewerEntityMixin;
+import '../../common/models/viewer_entity_mixin.dart' show ViewerEntity;
 import '../../common/views/broken_image.dart' show BrokenImage;
 import '../../common/views/shimmer.dart' show GreyShimmer;
 import '../models/cl_icons.dart';
@@ -56,7 +56,7 @@ class ViewMedia extends ConsumerWidget {
     this.autoStart = false,
   });
 
-  final ViewerEntityMixin currentItem;
+  final ViewerEntity currentItem;
   final VideoPlayerControls playerControls;
   final bool autoStart;
 

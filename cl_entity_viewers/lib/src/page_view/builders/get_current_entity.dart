@@ -6,7 +6,7 @@ import '../providers/ui_state.dart';
 
 class GetCurrentEntity extends ConsumerWidget {
   const GetCurrentEntity({required this.builder, super.key});
-  final Widget Function(ViewerEntityMixin entity) builder;
+  final Widget Function(ViewerEntity entity) builder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

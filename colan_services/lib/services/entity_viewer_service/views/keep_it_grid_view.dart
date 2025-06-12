@@ -16,8 +16,8 @@ class KeepItGridView extends StatelessWidget {
   const KeepItGridView(
       {required this.parent, required this.children, super.key});
 
-  final ViewerEntityMixin? parent;
-  final List<ViewerEntityMixin> children;
+  final ViewerEntity? parent;
+  final List<ViewerEntity> children;
 
   @override
   Widget build(BuildContext context) {
@@ -39,8 +39,8 @@ class KeepItGridView0 extends ConsumerWidget {
     super.key,
   });
 
-  final ViewerEntityMixin? parent;
-  final List<ViewerEntityMixin> children;
+  final ViewerEntity? parent;
+  final List<ViewerEntity> children;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
