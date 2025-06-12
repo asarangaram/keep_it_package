@@ -15,73 +15,62 @@ class KeepItErrorView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final menuItems = <CLMenuItem>[];
     return CLScaffold(
       topMenu: TopBar(
           serverId: null, entityAsync: AsyncError(e, st), children: null),
       banners: const [],
       bottomMenu: null,
-      body: GetStoreStatus(
-        builder: (
-            {required activeURL,
-            required bool isConnected,
-            required storeAsync}) {
-          final storeError = storeAsync.when(
-              data: (store) {
-                if (!store.store.isAlive) {
+      body: Center(
+        child: GetStoreStatus(
+          builder: (
+              {required activeURL,
+              required bool isConnected,
+              required storeAsync}) {
+            return activeURL.when(
+                data: (activeURLValue) {
+                  final storeError = storeAsync.when(
+                      data: (store) {
+                        if (!store.store.isAlive) {
+                          return CLErrorView(
+                            errorMessage:
+                                '${activeURLValue.name} is not accesseble',
+                          );
+                        } else {
+                          return CLErrorView(
+                            errorMessage: e.toString(),
+                          );
+                        }
+                      },
+                      error: (storeError, storeSt) {
+                        return const CLErrorView(
+                          errorMessage: 'Store is not accessible',
+                        );
+                      },
+                      loading: () => CLLoader.widget(debugMessage: null));
+                  return switch (activeURLValue.scheme) {
+                    'local' => CLErrorView(
+                        errorMessage: e.toString(),
+                      ),
+                    (final String scheme)
+                        when ['http', 'https'].contains(scheme) =>
+                      isConnected
+                          ? storeError
+                          : const CLErrorView(
+                              errorMessage:
+                                  'Connection lost. Connect to your homenetwork to access this server',
+                            ),
+                    _ =>
+                      throw Exception('Unsupported URL') // should never occur
+                  };
+                },
+                error: (activeURLErr, activeURLST) {
                   return CLErrorView(
-                    errorMessage: 'Connection Error',
-                    errorDetails: 'Lost Connection to ${store.store.identity}',
-                    menuItems: menuItems,
+                    errorMessage: activeURLErr.toString(),
                   );
-                } else {
-                  return CLErrorView(
-                    errorMessage: e.toString(),
-                    errorDetails: st.toString(),
-                    menuItems: menuItems,
-                  );
-                }
-              },
-              error: (storeError, storeSt) {
-                return CLErrorView(
-                  errorMessage: 'Store is not accessible',
-                  errorDetails:
-                      "$e\n${st.toString().split("\n").take(2).join("\n")}",
-                  menuItems: menuItems,
-                );
-              },
-              loading: () => CLLoader.widget(debugMessage: null));
-
-          return activeURL.when(
-              data: (activeURLValue) {
-                return switch (activeURLValue.scheme) {
-                  'local' => CLErrorView(
-                      errorMessage: e.toString(),
-                      errorDetails: st.toString(),
-                      menuItems: menuItems,
-                    ),
-                  (final String scheme)
-                      when ['http', 'https'].contains(scheme) =>
-                    isConnected
-                        ? storeError
-                        : CLErrorView(
-                            errorMessage: 'Connection error',
-                            errorDetails:
-                                'You are not connected to any home network',
-                            menuItems: menuItems,
-                          ),
-                  _ => throw Exception('Unsupported URL') // should never occur
-                };
-              },
-              error: (activeURLErr, activeURLST) {
-                return CLErrorView(
-                  errorMessage: activeURLErr.toString(),
-                  errorDetails: activeURLST.toString(),
-                  menuItems: menuItems,
-                );
-              },
-              loading: () => CLLoader.widget(debugMessage: null));
-        },
+                },
+                loading: () => CLLoader.widget(debugMessage: null));
+          },
+        ),
       ),
     );
   }
