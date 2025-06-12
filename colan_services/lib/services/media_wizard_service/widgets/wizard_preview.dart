@@ -12,10 +12,12 @@ import '../../entity_viewer_service/widgets/when_empty.dart';
 
 class WizardPreview extends ConsumerStatefulWidget {
   const WizardPreview({
+    required this.serverId,
     required this.type,
     required this.onSelectionChanged,
     super.key,
   });
+  final String serverId;
   final UniversalMediaSource type;
   final void Function(ViewerEntities)? onSelectionChanged;
 
@@ -47,7 +49,9 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
       whenEmpty: const WhenEmpty(),
 
       // Wizard don't use context menu
-      contextMenuBuilder: (context, list) => EntityActions.empty(),
+      contextMenuBuilder: (context, list) => EntityActions.empty(
+        serverId: widget.serverId,
+      ),
       onSelectionChanged: onSelectionChanged == null
           ? null
           : (items) => onSelectionChanged?.call(items),

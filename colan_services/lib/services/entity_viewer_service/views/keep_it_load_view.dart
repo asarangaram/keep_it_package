@@ -11,7 +11,8 @@ class KeepItLoadView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return CLScaffold(
-        topMenu: const TopBar(entityAsync: AsyncLoading(), children: null),
+        topMenu: const TopBar(
+            serverId: null, entityAsync: AsyncLoading(), children: null),
         bottomMenu: null,
         banners: const [],
         body: OnSwipe(child: CLLoader.widget(debugMessage: null)));

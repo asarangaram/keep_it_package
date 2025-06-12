@@ -19,12 +19,14 @@ import 'wizard_preview.dart';
 
 class SelectAndKeepMedia extends ConsumerStatefulWidget {
   const SelectAndKeepMedia({
+    required this.serverId,
     required this.media,
     required this.type,
     super.key,
   });
   final CLSharedMedia media;
   final UniversalMediaSource type;
+  final String serverId;
 
   @override
   ConsumerState<SelectAndKeepMedia> createState() => SelectAndKeepMediaState();
@@ -76,11 +78,13 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
   }
 
   Future<bool> keep({
+    required String serverId,
     required ViewerEntities currEntities,
     required void Function({required bool enable}) onUpdateSelectionmode,
   }) async {
     if (widget.type == UniversalMediaSource.deleted) {
       return restore(
+        serverId: serverId,
         currEntities: currEntities,
         onUpdateSelectionmode: onUpdateSelectionmode,
       );
@@ -93,16 +97,15 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
   }
 
   Future<bool> restore({
+    required String serverId,
     required ViewerEntities currEntities,
     required void Function({required bool enable}) onUpdateSelectionmode,
   }) async {
     return actor(
       currEntities: currEntities,
       confirmAction: () async =>
-          (await DialogService.restoreMediaMultiple(
-            context,
-            media: currEntities,
-          )) ??
+          (await DialogService.restoreMediaMultiple(context,
+              media: currEntities, serverId: serverId)) ??
           false,
       action: () async {
         for (final item in currEntities.entities.cast<StoreEntity>()) {
@@ -115,6 +118,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
   }
 
   Future<bool> permanentlyDelete({
+    required String serverId,
     required ViewerEntities currEntities,
     required void Function({required bool enable}) onUpdateSelectionmode,
   }) async {
@@ -123,6 +127,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
       confirmAction: () async =>
           await DialogService.permanentlyDeleteMediaMultiple(
             context,
+            serverId: serverId,
             media: currEntities,
           ) ??
           false,
@@ -137,11 +142,13 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
   }
 
   Future<bool> delete({
+    required String serverId,
     required ViewerEntities currEntities,
     required void Function({required bool enable}) onUpdateSelectionmode,
   }) async {
     if (widget.type == UniversalMediaSource.deleted) {
       return permanentlyDelete(
+        serverId: serverId,
         currEntities: currEntities,
         onUpdateSelectionmode: onUpdateSelectionmode,
       );
@@ -151,6 +158,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
       confirmAction: () async =>
           await DialogService.deleteMultipleEntities(
             context,
+            serverId: serverId,
             media: currEntities,
           ) ??
           false,
@@ -186,6 +194,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
         final currEntities =
             (selectionMode ? selectedMedia.entries : widget.media.entries);
         return WizardView(
+          serverId: widget.serverId,
           canSelect: !actionConfirmed && widget.media.entries.length > 1,
           menu: WizardMenuItems.moveOrCancel(
             type: widget.type,
@@ -199,6 +208,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
             keepAction: currEntities.isEmpty
                 ? null
                 : () => keep(
+                      serverId: widget.serverId,
                       onUpdateSelectionmode: onUpdateSelectionmode,
                       currEntities: currEntities,
                     ),
@@ -212,6 +222,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
             deleteAction: currEntities.isEmpty
                 ? null
                 : () => delete(
+                      serverId: widget.serverId,
                       onUpdateSelectionmode: onUpdateSelectionmode,
                       currEntities: currEntities,
                     ),
@@ -256,13 +267,14 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
 
 class WizardView extends ConsumerWidget {
   const WizardView({
+    required this.serverId,
     required this.menu,
     required this.canSelect,
     required this.onSelectionChanged,
     required this.dialog,
     super.key,
   });
-
+  final String serverId;
   final WizardMenuItems menu;
   final bool canSelect;
   final PreferredSizeWidget? dialog;
@@ -288,6 +300,7 @@ class WizardView extends ConsumerWidget {
             option2: menu.option2,
           ),
       child: WizardPreview(
+        serverId: serverId,
         type: menu.type,
         onSelectionChanged: onSelectionChanged,
       ),

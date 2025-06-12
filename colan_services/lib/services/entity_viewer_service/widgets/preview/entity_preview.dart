@@ -10,6 +10,7 @@ import 'collection_preview.dart';
 
 class EntityPreview extends ConsumerWidget {
   const EntityPreview({
+    required this.serverId,
     required this.item,
     required this.entities,
     required this.parentId,
@@ -19,22 +20,18 @@ class EntityPreview extends ConsumerWidget {
   final ViewerEntity item;
   final ViewerEntities entities;
   final int? parentId;
+  final String serverId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final entity = item as StoreEntity;
 
-    final contextMenu = EntityActions.ofEntity(
-      context,
-      ref,
-      entity,
-    );
+    final contextMenu =
+        EntityActions.ofEntity(context, ref, entity, serverId: serverId);
 
     return KeepItContextMenu(
       onTap: () async {
-        await PageManager.of(context).openEntity(
-          entity,
-        );
+        await PageManager.of(context).openEntity(entity, serverId: serverId);
         return true;
       },
       contextMenu: contextMenu,

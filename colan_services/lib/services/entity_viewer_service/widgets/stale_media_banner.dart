@@ -10,8 +10,10 @@ import '../../../models/universal_media_source.dart';
 
 class StaleMediaBanner extends CLBanner {
   const StaleMediaBanner({
+    required this.serverId,
     super.key,
   });
+  final String serverId;
 
   @override
   String get widgetLabel => 'StaleMediaBanner';
@@ -46,6 +48,7 @@ class StaleMediaBanner extends CLBanner {
               entries: staleMedia,
               type: UniversalMediaSource.unclassified,
             ),
+            serverId: serverId,
           ),
         );
       },

@@ -14,11 +14,12 @@ import 'popover_menu.dart';
 
 class TopBar extends ConsumerWidget implements PreferredSizeWidget {
   const TopBar({
+    required this.serverId,
     required this.entityAsync,
     required this.children,
     super.key,
   });
-
+  final String? serverId;
   final AsyncValue<ViewerEntity?> entityAsync;
   final ViewerEntities? children;
 
@@ -36,7 +37,8 @@ class TopBar extends ConsumerWidget implements PreferredSizeWidget {
               if (!ColanPlatformSupport.isMobilePlatform) const RefreshButton(),
             const OnDarkMode(),
             ShadButton.ghost(
-              onPressed: () => PageManager.of(context).openSettings(),
+              onPressed: () =>
+                  PageManager.of(context).openSettings(serverId: serverId),
               child: const Icon(LucideIcons.settings, size: 25),
             ),
           ],

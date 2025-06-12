@@ -25,10 +25,11 @@ import 'widgets/preview.dart';
 
 class CameraService extends ConsumerWidget {
   const CameraService({
+    required this.serverId,
     required this.parentId,
     super.key,
   });
-
+  final String serverId;
   final int? parentId;
 
   @override
@@ -70,14 +71,14 @@ class CameraService extends ConsumerWidget {
                 },
                 onDone: (mediaList) async {
                   await MediaWizardService.openWizard(
-                    context,
-                    ref,
-                    CLSharedMedia(
-                      entries: mediaList,
-                      type: UniversalMediaSource.captured,
-                      collection: collection,
-                    ),
-                  );
+                      context,
+                      ref,
+                      CLSharedMedia(
+                        entries: mediaList,
+                        type: UniversalMediaSource.captured,
+                        collection: collection,
+                      ),
+                      serverId: serverId);
 
                   if (context.mounted) {
                     PageManager.of(context).pop();

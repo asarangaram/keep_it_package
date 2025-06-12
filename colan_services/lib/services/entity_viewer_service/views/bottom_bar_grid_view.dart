@@ -11,11 +11,13 @@ import '../../incoming_media_service/incoming_media_monitor.dart';
 
 class BottomBarGridView extends ConsumerWidget implements PreferredSizeWidget {
   const BottomBarGridView({
+    required this.serverId,
     required this.entity,
     super.key,
   });
 
   final ViewerEntity? entity;
+  final String serverId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -47,9 +49,8 @@ class BottomBarGridView extends ConsumerWidget implements PreferredSizeWidget {
               child: ShadButton.ghost(
                 child: clIcons.camera.iconFormatted(),
                 onPressed: () {
-                  PageManager.of(context).openCamera(
-                    parentId: entity?.id,
-                  );
+                  PageManager.of(context)
+                      .openCamera(parentId: entity?.id, serverId: serverId);
                 },
               ),
             ),

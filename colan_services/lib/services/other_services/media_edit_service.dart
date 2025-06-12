@@ -14,11 +14,12 @@ import '../basic_page_service/widgets/page_manager.dart';
 
 class MediaEditService extends ConsumerWidget {
   const MediaEditService({
+    required this.serverId,
     required this.mediaId,
     required this.canDuplicateMedia,
     super.key,
   });
-
+  final String serverId;
   final int? mediaId;
   final bool canDuplicateMedia;
 
@@ -71,6 +72,7 @@ class MediaEditService extends ConsumerWidget {
                         if (overwrite && context.mounted) {
                           final confirmed = await DialogService.replaceMedia(
                                 context,
+                                serverId: serverId,
                                 media: media,
                               ) ??
                               false;
@@ -83,6 +85,7 @@ class MediaEditService extends ConsumerWidget {
                           final confirmed =
                               await DialogService.cloneAndReplaceMedia(
                                     context,
+                                    serverId: serverId,
                                     media: media,
                                   ) ??
                                   false;

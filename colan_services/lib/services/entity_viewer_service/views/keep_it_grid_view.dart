@@ -14,16 +14,21 @@ import 'top_bar.dart';
 
 class KeepItGridView extends StatelessWidget {
   const KeepItGridView(
-      {required this.parent, required this.children, super.key});
+      {required this.serverId,
+      required this.parent,
+      required this.children,
+      super.key});
 
   final ViewerEntity? parent;
   final ViewerEntities children;
+  final String serverId;
 
   @override
   Widget build(BuildContext context) {
     return OnSwipe(
       child: CLEntitiesGridViewScope(
         child: KeepItGridView0(
+          serverId: serverId,
           parent: parent,
           children: children,
         ),
@@ -34,6 +39,7 @@ class KeepItGridView extends StatelessWidget {
 
 class KeepItGridView0 extends ConsumerWidget {
   const KeepItGridView0({
+    required this.serverId,
     required this.parent,
     required this.children,
     super.key,
@@ -41,17 +47,25 @@ class KeepItGridView0 extends ConsumerWidget {
 
   final ViewerEntity? parent;
   final ViewerEntities children;
+  final String serverId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final topMenu = TopBar(
+      serverId: serverId,
       entityAsync: AsyncData(parent),
       children: children,
     );
     final banners = [
-      if (parent == null) const StaleMediaBanner(),
+      if (parent == null)
+        StaleMediaBanner(
+          serverId: serverId,
+        ),
     ];
-    final bottomMenu = BottomBarGridView(entity: parent);
+    final bottomMenu = BottomBarGridView(
+      entity: parent,
+      serverId: serverId,
+    );
 
     return CLScaffold(
       topMenu: topMenu,
@@ -66,11 +80,10 @@ class KeepItGridView0 extends ConsumerWidget {
               filtersDisabled: false,
               onSelectionChanged: null,
               contextMenuBuilder: (context, entities) => EntityActions.entities(
-                context,
-                ref,
-                entities,
-              ),
+                  context, ref, entities,
+                  serverId: serverId),
               itemBuilder: (context, item, entities) => EntityPreview(
+                serverId: serverId,
                 item: item,
                 entities: entities,
                 parentId: parent?.id,

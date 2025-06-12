@@ -9,10 +9,14 @@ import 'top_bar.dart';
 
 class KeepItPageView extends StatelessWidget {
   const KeepItPageView(
-      {required this.entity, required this.siblings, super.key});
+      {required this.serverId,
+      required this.entity,
+      required this.siblings,
+      super.key});
 
   final ViewerEntity entity;
   final ViewerEntities siblings;
+  final String serverId;
 
   @override
   Widget build(BuildContext context) {
@@ -22,10 +26,13 @@ class KeepItPageView extends StatelessWidget {
         currentEntity: entity,
         child: CLEntitiesPageView(
           topMenuBuilder: (currentEntity) => TopBar(
+            serverId: serverId,
             entityAsync: AsyncData(currentEntity),
             children: const ViewerEntities([]),
           ),
-          bottomMenu: const BottomBarPageView(),
+          bottomMenu: BottomBarPageView(
+            serverId: serverId,
+          ),
         ),
       ),
     );
