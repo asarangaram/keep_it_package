@@ -9,7 +9,10 @@ import 'server_query.dart';
 
 @immutable
 class OnlineEntityStore extends EntityStore {
-  OnlineEntityStore(super.identity, {required this.server}) {
+  OnlineEntityStore(
+      {required super.identity,
+      required super.storeURL,
+      required this.server}) {
     path = '/entity';
     validQueryKeys = const <String>{
       'id',
@@ -32,6 +35,7 @@ class OnlineEntityStore extends EntityStore {
   }
 
   final CLServer server;
+
   late final String path;
   late final Set<String> validQueryKeys;
 
@@ -93,14 +97,17 @@ class OnlineEntityStore extends EntityStore {
     throw UnimplementedError();
   }
 
-  static Future<EntityStore> createStore(CLServer server) async {
-    return OnlineEntityStore(server.baseURL, server: server);
+  static Future<EntityStore> createStore(
+      {required StoreURL storeURL, required CLServer server}) async {
+    return OnlineEntityStore(
+        identity: server.baseURL, storeURL: storeURL, server: server);
   }
 }
 
-Future<EntityStore> createOnlineEntityStore(
-  CLServer server, {
+Future<EntityStore> createOnlineEntityStore({
+  required StoreURL storeURL,
+  required CLServer server,
   required String storePath,
 }) async {
-  return OnlineEntityStore.createStore(server);
+  return OnlineEntityStore.createStore(server: server, storeURL: storeURL);
 }

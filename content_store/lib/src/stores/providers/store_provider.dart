@@ -25,7 +25,8 @@ class StoreNotifier extends FamilyAsyncNotifier<CLStore, StoreURL>
             storePath: directories.db.pathString,
           ),
         'http' => await createOnlineEntityStore(
-            await ref.watch(serverProvider(storeURL).future),
+            storeURL: storeURL,
+            server: await ref.watch(serverProvider(storeURL).future),
             storePath: directories.db.pathString,
           ),
         'https' => await createEntityStore(

@@ -16,8 +16,9 @@ import 'db_query.dart';
 class LocalSQLiteEntityStore extends EntityStore
     with SQLiteDBTableMixin<CLEntity> {
   LocalSQLiteEntityStore(
-    super.identity,
     this.agent, {
+    required super.identity,
+    required super.storeURL,
     required this.mediaPath,
     required this.previewPath,
   });
@@ -210,8 +211,9 @@ class LocalSQLiteEntityStore extends EntityStore
   }
 
   static Future<EntityStore> createStore(
-    DBModel db,
-    String name, {
+    DBModel db, {
+    required String identity,
+    required StoreURL storeURL,
     required String mediaPath,
     required String previewPath,
   }) async {
@@ -237,8 +239,9 @@ class LocalSQLiteEntityStore extends EntityStore
     );
 
     return LocalSQLiteEntityStore(
-      name,
       agent,
+      identity: identity,
+      storeURL: storeURL,
       mediaPath: mediaPath,
       previewPath: previewPath,
     );
@@ -257,7 +260,7 @@ Future<EntityStore> createEntityStore(
     Directory(path).createSync(recursive: true);
   }
 
-  final fullPath = p.join(dbPath, '${url.name}.db');
+  final fullPath = p.join(dbPath, '${url.uri.host}.db');
   final db = await createSQLiteDBInstance(fullPath);
 
   if (!Directory(mediaPath).existsSync()) {
@@ -270,7 +273,8 @@ Future<EntityStore> createEntityStore(
   return switch (db) {
     (final SQLiteDB db) => LocalSQLiteEntityStore.createStore(
         db,
-        url.name,
+        identity: url.uri.host,
+        storeURL: url,
         mediaPath: mediaPath,
         previewPath: previewPath,
       ),
