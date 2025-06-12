@@ -107,15 +107,28 @@ class ServerTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final IconData icon;
+    final Color? color;
+    if (isLoading) {
+      icon = LucideIcons.circle;
+      color = null;
+    } else if (isLoading || (store?.store.isAlive ?? false)) {
+      icon = (isActive ? LucideIcons.circleCheck : LucideIcons.circle);
+      color = null;
+    } else {
+      icon = clIcons.noNetwork;
+      color = Colors.red;
+    }
+
     final child = ListTile(
-        leading: Icon(isActive ? LucideIcons.circleCheck : LucideIcons.circle),
+        leading: Icon(
+          icon,
+          color: color,
+        ),
         enabled: store?.store.isAlive ?? false,
         title: Text(
           storeURL.name,
-          style: ShadTheme.of(context).textTheme.small.copyWith(
-              color: (isLoading || (store?.store.isAlive ?? false))
-                  ? null
-                  : Colors.red),
+          style: ShadTheme.of(context).textTheme.small,
         ),
         onTap: (!isLoading && store != null)
             ? () =>
