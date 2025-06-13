@@ -1,5 +1,4 @@
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:form_factory/form_factory.dart';
 
@@ -20,7 +19,8 @@ class PickCollection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetActiveStore(
+    throw UnimplementedError();
+    /* return GetActiveStore(
       errorBuilder: (_, __) {
         throw UnimplementedError('errorBuilder');
       },
@@ -82,7 +82,7 @@ class PickCollection extends StatelessWidget {
           },
         );
       },
-    );
+    ); */
   }
 }
 

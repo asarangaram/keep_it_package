@@ -3,10 +3,7 @@ import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
-
-import '../../models/cl_shared_media.dart';
-import '../../models/universal_media_source.dart';
-import '../media_wizard_service/media_wizard_service.dart';
+import 'package:store_tasks/store_tasks.dart';
 
 class SettingsService extends ConsumerWidget {
   const SettingsService({
@@ -45,7 +42,7 @@ class SettingsService extends ConsumerWidget {
                   trailing: IconButton(
                     icon: clIcons.gotoPage.iconFormatted(),
                     onPressed: () async {
-                      await MediaWizardService.openWizard(
+                      await MediaWizardService0.openWizard(
                         context,
                         ref,
                         CLSharedMedia(

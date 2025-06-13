@@ -7,13 +7,11 @@ import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
+import 'package:store_tasks/store_tasks.dart';
 
-import '../../../models/cl_shared_media.dart';
 import '../../../models/platform_support.dart';
-import '../../../models/universal_media_source.dart';
 import '../../basic_page_service/widgets/dialogs.dart';
 import '../../basic_page_service/widgets/page_manager.dart';
-import '../../media_wizard_service/media_wizard_service.dart';
 import '../widgets/metadata_editors/collection_metadata_editor.dart';
 import '../widgets/metadata_editors/media_metadata_editor.dart';
 
@@ -103,7 +101,7 @@ class EntityActions extends CLContextMenu {
     }
 
     Future<bool?> onMove({required String serverId}) =>
-        MediaWizardService.openWizard(
+        MediaWizardService0.openWizard(
             context,
             ref,
             CLSharedMedia(
@@ -229,7 +227,7 @@ class EntityActions extends CLContextMenu {
   }) {
     final onEdit0 = onCrop?.call();
     final onEditInfo0 = onEdit?.call();
-    Future<bool?> onMove0() => MediaWizardService.openWizard(
+    Future<bool?> onMove0() => MediaWizardService0.openWizard(
         context,
         ref,
         CLSharedMedia(

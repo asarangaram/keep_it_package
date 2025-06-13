@@ -6,7 +6,6 @@ export '../models/app_descriptor.dart'
         CLTransitionBuilder,
         IncomingMediaViewBuilder;
 export '../models/cl_route_descriptor.dart' show CLRouteDescriptor;
-export '../models/universal_media_source.dart' show UniversalMediaSource;
 export 'services/app_start_service/views/app_start_service.dart'
     show AppStartService;
 export 'services/camera_service/camera_service.dart' show CameraService;

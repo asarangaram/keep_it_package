@@ -6,14 +6,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:store/store.dart';
+import 'package:store_tasks/store_tasks.dart';
 
 import '../../internal/fullscreen_layout.dart';
 import '../../models/cl_media_candidate.dart';
-import '../../models/cl_shared_media.dart';
 import '../basic_page_service/widgets/cl_error_view.dart';
 import '../entity_viewer_service/views/keep_it_error_view.dart';
 import '../entity_viewer_service/views/keep_it_load_view.dart';
-import '../media_wizard_service/media_wizard_service.dart';
 
 import 'widgets/step1_analyse.dart';
 import 'widgets/step2_duplicates.dart';
@@ -166,7 +165,7 @@ class _IncomingMediaHandler0State extends ConsumerState<IncomingMediaHandler0> {
     _infoLogger('onSave - Enter');
     isSavingState = true;
     widget.onDiscard(result: mg.isNotEmpty);
-    await MediaWizardService.openWizard(context, ref, mg, serverId: serverId);
+    await MediaWizardService0.openWizard(context, ref, mg, serverId: serverId);
     duplicateCandidates = null;
     newCandidates = null;
 

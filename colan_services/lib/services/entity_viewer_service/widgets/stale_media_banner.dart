@@ -1,12 +1,9 @@
 import 'package:colan_services/internal/cl_banner.dart';
-import 'package:colan_services/services/media_wizard_service/media_wizard_service.dart';
 
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../../../models/cl_shared_media.dart';
-import '../../../models/universal_media_source.dart';
+import 'package:store_tasks/store_tasks.dart';
 
 class StaleMediaBanner extends CLBanner {
   const StaleMediaBanner({
@@ -41,7 +38,7 @@ class StaleMediaBanner extends CLBanner {
               ? ''
               : 'You have ${staleMedia.length} unclassified media. '
                   'Tap here to show',
-          onTap: () => MediaWizardService.openWizard(
+          onTap: () => MediaWizardService0.openWizard(
             context,
             ref,
             CLSharedMedia(

@@ -11,14 +11,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:path/path.dart' as p;
 import 'package:store/store.dart';
+import 'package:store_tasks/store_tasks.dart';
 
 import '../../internal/fullscreen_layout.dart';
 
-import '../../models/cl_shared_media.dart';
-import '../../models/universal_media_source.dart';
 import '../../providers/captured_media.dart';
 import '../basic_page_service/widgets/page_manager.dart';
-import '../media_wizard_service/media_wizard_service.dart';
 import 'models/default_theme.dart';
 import 'widgets/get_cameras.dart';
 import 'widgets/preview.dart';
@@ -70,7 +68,7 @@ class CameraService extends ConsumerWidget {
                   return null;
                 },
                 onDone: (mediaList) async {
-                  await MediaWizardService.openWizard(
+                  await MediaWizardService0.openWizard(
                       context,
                       ref,
                       CLSharedMedia(

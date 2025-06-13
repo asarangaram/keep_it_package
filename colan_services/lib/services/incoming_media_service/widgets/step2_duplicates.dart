@@ -5,8 +5,8 @@ import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 
 import 'package:store/store.dart';
+import 'package:store_tasks/store_tasks.dart';
 
-import '../../../models/cl_shared_media.dart';
 import '../../basic_page_service/basic_page_service.dart';
 
 class DuplicatePage extends StatelessWidget {

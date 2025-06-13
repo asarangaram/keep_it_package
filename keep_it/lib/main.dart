@@ -119,21 +119,8 @@ class KeepItApp implements AppDescriptor {
         CLRouteDescriptor(
           name: 'wizard',
           builder: (context, parameters) {
-            final typeString = parameters['type'];
-            final UniversalMediaSource type;
-            if (typeString != null) {
-              type = UniversalMediaSource.values.asNameMap()[typeString] ??
-                  UniversalMediaSource.unclassified;
-            } else {
-              type = UniversalMediaSource.unclassified;
-            }
-            final String serverId;
-            if (parameters.keys.contains('serverId')) {
-              serverId = parameters['serverId']!;
-            } else {
-              throw Exception('serverId must be present');
-            }
-            return MediaWizardService(serverId: serverId, type: type);
+            final type = parameters['type'];
+            return MediaWizardService(type: type);
           },
         ),
       ];
