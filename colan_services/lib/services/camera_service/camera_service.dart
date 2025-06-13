@@ -60,7 +60,6 @@ class CameraService extends ConsumerWidget {
                   if (mediaFile != null) {
                     return (await theStore.createMedia(
                       mediaFile: mediaFile,
-                      parentId: parentId,
                       label: () => p.basenameWithoutExtension(mediaFile.path),
                       description: () => 'captured with Camera',
                     ))
@@ -74,7 +73,7 @@ class CameraService extends ConsumerWidget {
                       ref,
                       CLSharedMedia(
                         entries: mediaList,
-                        type: UniversalMediaSource.captured,
+                        type: StoreTaskType.captured,
                         collection: collection,
                       ),
                       serverId: serverId);

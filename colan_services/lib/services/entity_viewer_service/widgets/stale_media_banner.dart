@@ -45,7 +45,7 @@ class StaleMediaBanner extends CLBanner {
             ref,
             CLSharedMedia(
               entries: staleMedia,
-              type: UniversalMediaSource.unclassified,
+              type: StoreTaskType.unclassified,
             ),
             serverId: serverId,
           ),

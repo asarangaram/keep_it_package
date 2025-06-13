@@ -66,7 +66,7 @@ class IncomingMediaNotifier extends StateNotifier<List<CLMediaFileGroup>> {
       push(
         CLMediaFileGroup(
           entries: attachements,
-          type: UniversalMediaSource.incoming,
+          type: StoreTaskType.incoming,
         ),
       );
     }

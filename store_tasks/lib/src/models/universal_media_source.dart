@@ -1,4 +1,4 @@
-enum UniversalMediaSource {
+enum StoreTaskType {
   captured,
   move,
   filePick,

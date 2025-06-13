@@ -49,7 +49,7 @@ class SettingsService extends ConsumerWidget {
                         ref,
                         CLSharedMedia(
                           entries: deletedMedia,
-                          type: UniversalMediaSource.deleted,
+                          type: StoreTaskType.deleted,
                         ),
                         serverId: serverId!,
                       );

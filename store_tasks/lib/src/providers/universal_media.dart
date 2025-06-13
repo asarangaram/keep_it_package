@@ -7,7 +7,7 @@ import '../models/universal_media_source.dart';
 class UniversalMediaNotifier extends StateNotifier<CLSharedMedia> {
   UniversalMediaNotifier(this.mediaTypes)
       : super(const CLSharedMedia(entries: ViewerEntities([])));
-  UniversalMediaSource mediaTypes;
+  StoreTaskType mediaTypes;
 
   set mediaGroup(CLSharedMedia sharedMedia) {
     state = CLSharedMedia(
@@ -31,8 +31,8 @@ class UniversalMediaNotifier extends StateNotifier<CLSharedMedia> {
 }
 
 final StateNotifierProviderFamily<UniversalMediaNotifier, CLSharedMedia,
-        UniversalMediaSource> universalMediaProvider =
+        StoreTaskType> universalMediaProvider =
     StateNotifierProvider.family<UniversalMediaNotifier, CLSharedMedia,
-        UniversalMediaSource>((ref, mediaTypes) {
+        StoreTaskType>((ref, mediaTypes) {
   return UniversalMediaNotifier(mediaTypes);
 });

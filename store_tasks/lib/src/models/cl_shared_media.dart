@@ -15,7 +15,7 @@ class CLSharedMedia {
   });
   final ViewerEntities entries;
   final StoreEntity? collection;
-  final UniversalMediaSource? type;
+  final StoreTaskType? type;
 
   bool get isEmpty => entries.isEmpty;
   bool get isNotEmpty => entries.isNotEmpty;
@@ -27,7 +27,7 @@ class CLSharedMedia {
   CLSharedMedia copyWith({
     ViewerEntities? entries,
     StoreEntity? collection,
-    UniversalMediaSource? type,
+    StoreTaskType? type,
   }) {
     return CLSharedMedia(
       entries: entries ?? this.entries,

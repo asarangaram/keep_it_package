@@ -12,7 +12,7 @@ class WizardMenuItems {
   });
 
   factory WizardMenuItems.moveOrCancel({
-    required UniversalMediaSource type,
+    required StoreTaskType type,
     String? keepActionLabel,
     String? deleteActionLabel,
     Future<bool> Function()? keepAction,
@@ -33,7 +33,7 @@ class WizardMenuItems {
     );
   }
 
-  final UniversalMediaSource type;
+  final StoreTaskType type;
   final CLMenuItem option1;
   final CLMenuItem option2;
 }

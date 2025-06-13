@@ -13,7 +13,7 @@ class CLMediaFileGroup {
   });
   final List<CLMediaContent> entries;
   final StoreEntity? collection;
-  final UniversalMediaSource? type;
+  final StoreTaskType? type;
 
   bool get isEmpty => entries.isEmpty;
   bool get isNotEmpty => entries.isNotEmpty;

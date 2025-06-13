@@ -1,3 +1,5 @@
+export 'src/builders/get_store_task_manager.dart' show GetStoreTaskManager;
 export 'src/models/cl_shared_media.dart' show CLSharedMedia;
-export 'src/models/universal_media_source.dart' show UniversalMediaSource;
+export 'src/models/store_task.dart' show StoreTask;
+export 'src/models/universal_media_source.dart' show StoreTaskType;
 export 'src/widgets/store_task_viewer.dart' show MediaWizardService0;

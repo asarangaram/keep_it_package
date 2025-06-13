@@ -21,7 +21,7 @@ class MediaWizardService0 extends ConsumerWidget {
     ref
         .read(
           universalMediaProvider(
-            media.type ?? UniversalMediaSource.unclassified,
+            media.type ?? StoreTaskType.unclassified,
           ).notifier,
         )
         .mediaGroup = media;
@@ -29,12 +29,12 @@ class MediaWizardService0 extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final UniversalMediaSource source;
+    final StoreTaskType source;
     if (type != null) {
-      source = UniversalMediaSource.values.asNameMap()[type] ??
-          UniversalMediaSource.unclassified;
+      source =
+          StoreTaskType.values.asNameMap()[type] ?? StoreTaskType.unclassified;
     } else {
-      source = UniversalMediaSource.unclassified;
+      source = StoreTaskType.unclassified;
     }
     final media = ref.watch(universalMediaProvider(source));
     if (media.isEmpty) {

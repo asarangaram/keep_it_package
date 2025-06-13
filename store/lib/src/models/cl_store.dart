@@ -142,37 +142,29 @@ class CLStore with CLLogger {
 
   Future<StoreEntity?> createMedia({
     required CLMediaFile mediaFile,
-    required int? parentId,
     ValueGetter<String?>? label,
     ValueGetter<String?>? description,
     UpdateStrategy strategy = UpdateStrategy.skip,
   }) async {
+    if (store.storeURL.scheme != 'local') {
+      throw Exception("Can't directly push media files into non-local servers");
+    }
     final mediaInDB = await store.get(
       StoreQuery<CLEntity>({'md5': mediaFile.md5, 'isCollection': 1}),
     );
     final CLEntity? parent;
 
-    if (parentId != null) {
-      /// FIXME: Handle failure due to network
-      parent = (await get(StoreQuery<CLEntity>({'id': parentId})))?.data;
+    final tempParent = await createCollection(label: tempCollectionName);
 
-      if (parent == null) {
-        throw Exception(
-          "missing parent; collection with id $parentId doesn't exists",
-        );
-      }
-    } else {
-      final tempParent = await createCollection(label: tempCollectionName);
-
-      parent =
-          (await (await tempParent?.updateWith(isHidden: () => true))?.dbSave())
-              ?.data;
-      if (parent == null) {
-        throw Exception(
-          'missing parent; failed to create a default collection',
-        );
-      }
+    parent =
+        (await (await tempParent?.updateWith(isHidden: () => true))?.dbSave())
+            ?.data;
+    if (parent == null) {
+      throw Exception(
+        'missing parent; failed to create a default collection',
+      );
     }
+
     if (!parent.isCollection) {
       throw Exception('Parent entity must be a collection.');
     }
@@ -469,7 +461,6 @@ class CLStore with CLLogger {
               } else {
                 final newEntity = await createMedia(
                   mediaFile: item,
-                  parentId: parentId,
                 );
                 if (newEntity != null) {
                   final saved = await newEntity.dbSave(item.path);
