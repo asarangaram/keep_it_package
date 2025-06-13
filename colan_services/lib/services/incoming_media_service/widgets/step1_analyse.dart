@@ -42,7 +42,6 @@ class AnalysePage extends StatelessWidget {
             child: StreamProgressView(
               stream: () => store.getValidMediaFiles(
                 contentList: incomingMedia.entries,
-                collection: incomingMedia.collection,
                 onDone: onDone,
               ),
               onCancel: onCancel,

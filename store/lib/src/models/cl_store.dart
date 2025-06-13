@@ -369,7 +369,6 @@ class CLStore with CLLogger {
 
   Stream<Progress> getValidMediaFiles({
     required List<CLMediaContent> contentList,
-    required StoreEntity? collection,
     void Function({
       required ViewerEntities existingEntities,
       required ViewerEntities newEntities,
@@ -389,50 +388,6 @@ class CLStore with CLLogger {
     final newEntities = <StoreEntity>[];
     final invalidContent = <CLMediaContent>[];
     try {
-      int parentId;
-      if (collection != null) {
-        yield Progress(
-          currentItem: 'Creating collection " ${collection.data.label}"',
-          fractCompleted: 0,
-        );
-        final collectionInDB = await (await createCollection(
-          label: collection.data.label!,
-          description: () => collection.data.description,
-          parentId:
-              collection.parentId == null ? null : () => collection.parentId,
-        ))
-            ?.dbSave();
-
-        /// A valid collection must have been created
-        if (collectionInDB == null || collectionInDB.id == null) {
-          throw Exception(
-            'failed to create collection with label ${collection.data.label}',
-          );
-        }
-        if (!collectionInDB.isCollection) {
-          throw Exception('Parent entity must be a collection.');
-        }
-        parentId = collectionInDB.id!;
-      } else {
-        StoreEntity? defaultParent;
-        final tempParent = await createCollection(label: tempCollectionName);
-        if (tempParent != null) {
-          defaultParent =
-              await (await tempParent.updateWith(isHidden: () => true))
-                  ?.dbSave();
-        }
-
-        if (defaultParent == null || defaultParent.id == null) {
-          throw Exception(
-            'missing parent; unable to create default collection',
-          );
-        }
-        if (!defaultParent.isCollection) {
-          throw Exception('Parent entity must be a collection.');
-        }
-        parentId = defaultParent.id!;
-      }
-
       for (final (i, mediaFile) in contentList.indexed) {
         await Future<void>.delayed(const Duration(milliseconds: 1));
         yield Progress(
