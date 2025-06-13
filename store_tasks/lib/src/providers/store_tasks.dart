@@ -1,9 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store_tasks/src/models/store_task.dart';
 
+import '../models/content_origin.dart';
 import '../models/store_task_manager.dart';
 import '../models/store_tasks.dart';
-import '../models/content_origin.dart';
 
 class StoreTasksNotifier extends StateNotifier<StoreTasks>
     implements StoreTaskManager {
