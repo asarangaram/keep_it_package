@@ -17,6 +17,7 @@ import '../../internal/fullscreen_layout.dart';
 
 import '../../providers/captured_media.dart';
 import '../basic_page_service/widgets/page_manager.dart';
+import '../media_wizard_service/media_wizard_service.dart';
 import 'models/default_theme.dart';
 import 'widgets/get_cameras.dart';
 import 'widgets/preview.dart';
@@ -68,7 +69,7 @@ class CameraService extends ConsumerWidget {
                   return null;
                 },
                 onDone: (mediaList) async {
-                  await MediaWizardService0.openWizard(
+                  await MediaWizardService.openWizard(
                       context,
                       ref,
                       CLSharedMedia(

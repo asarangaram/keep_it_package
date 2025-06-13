@@ -13,30 +13,6 @@ class MediaWizardService0 extends ConsumerWidget {
   final String? type;
   final void Function() onCancel;
 
-  static Future<bool?> openWizard(
-      BuildContext context, WidgetRef ref, CLSharedMedia sharedMedia,
-      {required String serverId}) async {
-    if (sharedMedia.type == null) {
-      return false;
-    }
-    if (sharedMedia.entries.isEmpty) {
-      return true;
-    }
-
-    await addMedia(
-      context,
-      ref,
-      media: sharedMedia,
-    );
-    throw UnimplementedError();
-    /* if (context.mounted) {
-      await PageManager.of(context)
-          .openWizard(sharedMedia.type!, serverId: serverId);
-    } */
-
-    //return true;
-  }
-
   static Future<void> addMedia(
     BuildContext context,
     WidgetRef ref, {

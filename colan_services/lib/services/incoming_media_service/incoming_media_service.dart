@@ -14,6 +14,7 @@ import '../basic_page_service/widgets/cl_error_view.dart';
 import '../entity_viewer_service/views/keep_it_error_view.dart';
 import '../entity_viewer_service/views/keep_it_load_view.dart';
 
+import '../media_wizard_service/media_wizard_service.dart';
 import 'widgets/step1_analyse.dart';
 import 'widgets/step2_duplicates.dart';
 
@@ -165,7 +166,7 @@ class _IncomingMediaHandler0State extends ConsumerState<IncomingMediaHandler0> {
     _infoLogger('onSave - Enter');
     isSavingState = true;
     widget.onDiscard(result: mg.isNotEmpty);
-    await MediaWizardService0.openWizard(context, ref, mg, serverId: serverId);
+    await MediaWizardService.openWizard(context, ref, mg, serverId: serverId);
     duplicateCandidates = null;
     newCandidates = null;
 

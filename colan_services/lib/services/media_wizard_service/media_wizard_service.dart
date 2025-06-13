@@ -13,6 +13,31 @@ class MediaWizardService extends ConsumerWidget {
   });
   final String? type;
 
+  static Future<bool?> openWizard(
+      BuildContext context, WidgetRef ref, CLSharedMedia sharedMedia,
+      {required String serverId}) async {
+    if (sharedMedia.type == null) {
+      return false;
+    }
+    if (sharedMedia.entries.isEmpty) {
+      return true;
+    }
+    // FIXME
+    /* await addMedia(
+      context,
+      ref,
+      media: sharedMedia,
+    ); */
+
+    if (context.mounted) {
+      //FIXME: May find the return value to return
+      await PageManager.of(context)
+          .openWizard(sharedMedia.type!, serverId: serverId);
+      return true;
+    }
+    return false;
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return MediaWizardService0(

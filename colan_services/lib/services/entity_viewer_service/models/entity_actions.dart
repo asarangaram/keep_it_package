@@ -12,6 +12,7 @@ import 'package:store_tasks/store_tasks.dart';
 import '../../../models/platform_support.dart';
 import '../../basic_page_service/widgets/dialogs.dart';
 import '../../basic_page_service/widgets/page_manager.dart';
+import '../../media_wizard_service/media_wizard_service.dart';
 import '../widgets/metadata_editors/collection_metadata_editor.dart';
 import '../widgets/metadata_editors/media_metadata_editor.dart';
 
@@ -101,7 +102,7 @@ class EntityActions extends CLContextMenu {
     }
 
     Future<bool?> onMove({required String serverId}) =>
-        MediaWizardService0.openWizard(
+        MediaWizardService.openWizard(
             context,
             ref,
             CLSharedMedia(
@@ -227,7 +228,7 @@ class EntityActions extends CLContextMenu {
   }) {
     final onEdit0 = onCrop?.call();
     final onEditInfo0 = onEdit?.call();
-    Future<bool?> onMove0() => MediaWizardService0.openWizard(
+    Future<bool?> onMove0() => MediaWizardService.openWizard(
         context,
         ref,
         CLSharedMedia(

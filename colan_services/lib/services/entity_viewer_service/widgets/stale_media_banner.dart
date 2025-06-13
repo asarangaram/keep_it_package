@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store_tasks/store_tasks.dart';
 
+import '../../media_wizard_service/media_wizard_service.dart';
+
 class StaleMediaBanner extends CLBanner {
   const StaleMediaBanner({
     required this.serverId,
@@ -38,7 +40,7 @@ class StaleMediaBanner extends CLBanner {
               ? ''
               : 'You have ${staleMedia.length} unclassified media. '
                   'Tap here to show',
-          onTap: () => MediaWizardService0.openWizard(
+          onTap: () => MediaWizardService.openWizard(
             context,
             ref,
             CLSharedMedia(

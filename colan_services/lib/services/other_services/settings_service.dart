@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store_tasks/store_tasks.dart';
 
+import '../media_wizard_service/media_wizard_service.dart';
+
 class SettingsService extends ConsumerWidget {
   const SettingsService({
     required this.serverId,
@@ -42,7 +44,7 @@ class SettingsService extends ConsumerWidget {
                   trailing: IconButton(
                     icon: clIcons.gotoPage.iconFormatted(),
                     onPressed: () async {
-                      await MediaWizardService0.openWizard(
+                      await MediaWizardService.openWizard(
                         context,
                         ref,
                         CLSharedMedia(
