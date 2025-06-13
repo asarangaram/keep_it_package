@@ -189,7 +189,7 @@ class _IncomingMediaHandler0State extends ConsumerState<IncomingMediaHandler0> {
       items: mg.entries.entities.cast<StoreEntity>(),
       contentOrigin: contentOrigin,
     ));
-    await PageManager.of(context).openWizard(contentOrigin, serverId: serverId);
+    await PageManager.of(context).openWizard(contentOrigin);
 
     duplicateCandidates = null;
     newCandidates = null;

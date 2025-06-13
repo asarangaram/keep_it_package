@@ -112,8 +112,7 @@ class EntityActions extends CLContextMenu {
         items: [entity],
         contentOrigin: ContentOrigin.move,
       ));
-      await PageManager.of(context)
-          .openWizard(ContentOrigin.move, serverId: serverId);
+      await PageManager.of(context).openWizard(ContentOrigin.move);
       return true;
     }
 
@@ -245,8 +244,7 @@ class EntityActions extends CLContextMenu {
         items: items.entities.cast<StoreEntity>(),
         contentOrigin: ContentOrigin.move,
       ));
-      await PageManager.of(context)
-          .openWizard(ContentOrigin.move, serverId: serverId);
+      await PageManager.of(context).openWizard(ContentOrigin.move);
       return true;
     }
 

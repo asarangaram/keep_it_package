@@ -37,8 +37,7 @@ class TopBar extends ConsumerWidget implements PreferredSizeWidget {
               if (!ColanPlatformSupport.isMobilePlatform) const RefreshButton(),
             const OnDarkMode(),
             ShadButton.ghost(
-              onPressed: () =>
-                  PageManager.of(context).openSettings(serverId: serverId),
+              onPressed: () => PageManager.of(context).openSettings(),
               child: const Icon(LucideIcons.settings, size: 25),
             ),
           ],

@@ -29,8 +29,7 @@ class MediaWizardService extends ConsumerWidget {
 
     if (context.mounted) {
       //FIXME: May find the return value to return
-      await PageManager.of(context)
-          .openWizard(storeTask.contentOrigin, serverId: serverId);
+      await PageManager.of(context).openWizard(storeTask.contentOrigin);
       return true;
     }
     return false;

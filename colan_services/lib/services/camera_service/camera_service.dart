@@ -75,9 +75,8 @@ class CameraService extends ConsumerWidget {
                             items: mediaList.entities.cast<StoreEntity>(),
                             contentOrigin: ContentOrigin.camera,
                             collection: collection));
-                        await PageManager.of(context).openWizard(
-                            ContentOrigin.camera,
-                            serverId: serverId);
+                        await PageManager.of(context)
+                            .openWizard(ContentOrigin.camera);
 
                         if (context.mounted) {
                           PageManager.of(context).pop();

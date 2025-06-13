@@ -10,10 +10,8 @@ import '../basic_page_service/widgets/page_manager.dart';
 
 class SettingsService extends ConsumerWidget {
   const SettingsService({
-    required this.serverId,
     super.key,
   });
-  final String? serverId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -42,7 +40,7 @@ class SettingsService extends ConsumerWidget {
               builder: (deletedMedia) {
                 return ListView(
                   children: [
-                    if (deletedMedia.isNotEmpty && serverId != null)
+                    if (deletedMedia.isNotEmpty)
                       ListTile(
                         leading: clIcons.recycleBin.iconFormatted(),
                         trailing: IconButton(
@@ -52,9 +50,8 @@ class SettingsService extends ConsumerWidget {
                               items: deletedMedia.entities.cast<StoreEntity>(),
                               contentOrigin: ContentOrigin.stale,
                             ));
-                            await PageManager.of(context).openWizard(
-                                ContentOrigin.deleted,
-                                serverId: serverId!);
+                            await PageManager.of(context)
+                                .openWizard(ContentOrigin.deleted);
                           },
                         ),
                         title: Text('Deleted Items (${deletedMedia.length})'),

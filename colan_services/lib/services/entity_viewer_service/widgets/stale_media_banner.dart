@@ -49,8 +49,7 @@ class StaleMediaBanner extends CLBanner {
                     items: staleMedia.entities.cast<StoreEntity>(),
                     contentOrigin: ContentOrigin.stale,
                   ));
-                  await PageManager.of(context)
-                      .openWizard(ContentOrigin.stale, serverId: serverId);
+                  await PageManager.of(context).openWizard(ContentOrigin.stale);
                 },
               );
             },

@@ -57,13 +57,7 @@ class KeepItApp implements AppDescriptor {
         CLRouteDescriptor(
           name: 'settings',
           builder: (context, parameters) {
-            final String? serverId;
-            if (parameters.keys.contains('serverId')) {
-              serverId = parameters['serverId'];
-            } else {
-              serverId = null;
-            }
-            return SettingsService(serverId: serverId);
+            return const SettingsService();
           },
         ),
         CLRouteDescriptor(

@@ -143,28 +143,15 @@ class PageManager {
     await navigator.pushNamed(context, '/media$query');
   }
 
-  Future<void> openWizard(
-    ContentOrigin type, {
-    required String serverId,
-  }) async {
+  Future<void> openWizard(ContentOrigin type) async {
     final queryMap = [
-      'serverId=$serverId',
       'type=${type.name}',
     ];
     final query = queryMap.isNotEmpty ? '?${queryMap.join('&')}' : '';
     await navigator.pushNamed(context, '/wizard$query');
   }
 
-  Future<void> openSettings({
-    required String? serverId,
-  }) async {
-    final queryMap = [
-      if (serverId != null) 'serverId=$serverId',
-    ];
-    final query = queryMap.isNotEmpty ? '?${queryMap.join('&')}' : '';
-    await navigator.pushNamed(
-      context,
-      '/settings$query',
-    );
+  Future<void> openSettings() async {
+    await navigator.pushNamed(context, '/settings');
   }
 }
