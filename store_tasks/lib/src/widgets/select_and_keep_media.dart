@@ -22,7 +22,7 @@ class SelectAndKeepMedia extends ConsumerStatefulWidget {
       required this.onCancel,
       super.key});
   final CLSharedMedia media;
-  final StoreTaskType type;
+  final ContentOrigin type;
   final void Function() onCancel;
 
   @override
@@ -37,7 +37,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
 
   @override
   void initState() {
-    actionConfirmed = widget.type == StoreTaskType.move;
+    actionConfirmed = widget.type == ContentOrigin.move;
     targetCollection = widget.media.collection;
 
     super.initState();
@@ -78,7 +78,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
     required ViewerEntities currEntities,
     required void Function({required bool enable}) onUpdateSelectionmode,
   }) async {
-    if (widget.type == StoreTaskType.deleted) {
+    if (widget.type == ContentOrigin.deleted) {
       return restore(
         currEntities: currEntities,
         onUpdateSelectionmode: onUpdateSelectionmode,
@@ -139,7 +139,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
     required ViewerEntities currEntities,
     required void Function({required bool enable}) onUpdateSelectionmode,
   }) async {
-    if (widget.type == StoreTaskType.deleted) {
+    if (widget.type == ContentOrigin.deleted) {
       return permanentlyDelete(
         currEntities: currEntities,
         onUpdateSelectionmode: onUpdateSelectionmode,
@@ -221,7 +221,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
             setState(() {});
           },
           dialog: switch (widget.type) {
-            StoreTaskType.deleted => null,
+            ContentOrigin.deleted => null,
             _ => actionConfirmed
                 ? (targetCollection == null)
                     ? getCollection(

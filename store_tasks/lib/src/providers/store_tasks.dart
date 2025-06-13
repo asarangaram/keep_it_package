@@ -23,9 +23,9 @@ class StoreTasksNotifier extends StateNotifier<StoreTasks>
   }
 }
 
-final StateNotifierProviderFamily<StoreTasksNotifier, StoreTasks, StoreTaskType>
+final StateNotifierProviderFamily<StoreTasksNotifier, StoreTasks, ContentOrigin>
     storeTasksProvider =
-    StateNotifierProvider.family<StoreTasksNotifier, StoreTasks, StoreTaskType>(
+    StateNotifierProvider.family<StoreTasksNotifier, StoreTasks, ContentOrigin>(
         (ref, taskType) {
   return StoreTasksNotifier();
 });

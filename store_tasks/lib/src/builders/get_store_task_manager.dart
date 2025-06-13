@@ -11,7 +11,7 @@ class GetStoreTaskManager extends ConsumerWidget {
     required this.builder,
     super.key,
   });
-  final StoreTaskType taskType;
+  final ContentOrigin taskType;
   final Widget Function(StoreTaskManager taskTaskManager) builder;
 
   @override

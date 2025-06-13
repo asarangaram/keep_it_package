@@ -73,7 +73,7 @@ class CameraService extends ConsumerWidget {
                       ref,
                       CLSharedMedia(
                         entries: mediaList,
-                        type: StoreTaskType.captured,
+                        type: ContentOrigin.captured,
                         collection: collection,
                       ),
                       serverId: serverId);

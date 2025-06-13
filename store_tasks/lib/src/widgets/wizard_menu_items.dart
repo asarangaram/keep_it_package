@@ -12,7 +12,7 @@ class WizardMenuItems {
   });
 
   factory WizardMenuItems.moveOrCancel({
-    required StoreTaskType type,
+    required ContentOrigin type,
     String? keepActionLabel,
     String? deleteActionLabel,
     Future<bool> Function()? keepAction,
@@ -33,7 +33,7 @@ class WizardMenuItems {
     );
   }
 
-  final StoreTaskType type;
+  final ContentOrigin type;
   final CLMenuItem option1;
   final CLMenuItem option2;
 }

@@ -44,7 +44,7 @@ class IncomingMediaMonitor extends ConsumerWidget {
       final sharedMedia = CLMediaFileGroup(
         entries: items,
         collection: collection as StoreEntity?,
-        type: StoreTaskType.filePick,
+        type: ContentOrigin.filePick,
       );
 
       if (items.isNotEmpty) {

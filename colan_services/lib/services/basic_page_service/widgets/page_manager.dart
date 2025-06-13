@@ -144,7 +144,7 @@ class PageManager {
   }
 
   Future<void> openWizard(
-    StoreTaskType type, {
+    ContentOrigin type, {
     required String serverId,
   }) async {
     final queryMap = [

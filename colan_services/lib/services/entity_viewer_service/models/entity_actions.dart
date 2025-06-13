@@ -107,7 +107,7 @@ class EntityActions extends CLContextMenu {
             ref,
             CLSharedMedia(
               entries: ViewerEntities([entity]),
-              type: StoreTaskType.move,
+              type: ContentOrigin.move,
             ),
             serverId: serverId);
     Future<bool> onDelete() async {
@@ -233,7 +233,7 @@ class EntityActions extends CLContextMenu {
         ref,
         CLSharedMedia(
           entries: items,
-          type: StoreTaskType.move,
+          type: ContentOrigin.move,
         ),
         serverId: serverId);
     Future<bool?> onShare0() => share(context, items);

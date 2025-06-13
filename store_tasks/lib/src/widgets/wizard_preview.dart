@@ -14,7 +14,7 @@ class WizardPreview extends ConsumerStatefulWidget {
     super.key,
   });
 
-  final StoreTaskType type;
+  final ContentOrigin type;
   final void Function(ViewerEntities)? onSelectionChanged;
 
   @override
@@ -24,7 +24,7 @@ class WizardPreview extends ConsumerStatefulWidget {
 class _WizardPreviewState extends ConsumerState<WizardPreview> {
   StoreEntity? previewItem;
 
-  StoreTaskType get type => widget.type;
+  ContentOrigin get type => widget.type;
 
   void Function(ViewerEntities)? get onSelectionChanged =>
       widget.onSelectionChanged;

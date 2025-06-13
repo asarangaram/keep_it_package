@@ -1,4 +1,4 @@
-enum StoreTaskType {
+enum ContentOrigin {
   captured,
   move,
   filePick,
