@@ -39,7 +39,7 @@ class IncomingMediaMonitor extends ConsumerWidget {
       final sharedMedia = CLMediaFileGroup(
         entries: items,
         collection: collection as StoreEntity?,
-        type: ContentOrigin.filePick,
+        contentOrigin: ContentOrigin.filePick,
       );
 
       if (items.isNotEmpty) {
@@ -59,7 +59,7 @@ class IncomingMediaMonitor extends ConsumerWidget {
     if (incomingMedia.isEmpty) {
       return child;
     }
-    return IncomingMediaService(
+    return IncomingMediaHandler(
       incomingMedia: incomingMedia[0],
       onDiscard: ({required bool result}) {
         ref.read(incomingMediaStreamProvider.notifier).pop();

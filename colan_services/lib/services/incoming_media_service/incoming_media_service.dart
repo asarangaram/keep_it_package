@@ -1,5 +1,6 @@
 import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:cl_media_tools/cl_media_tools.dart';
+import 'package:colan_services/services/incoming_media_service/extensions/viewer_entities_ext.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
@@ -10,28 +11,26 @@ import 'package:store_tasks/store_tasks.dart';
 
 import '../../internal/fullscreen_layout.dart';
 import '../../models/cl_media_candidate.dart';
-import '../../models/cl_shared_media.dart';
 import '../basic_page_service/widgets/cl_error_view.dart';
 import '../basic_page_service/widgets/page_manager.dart';
 
 import 'widgets/step1_analyse.dart';
 import 'widgets/step2_duplicates.dart';
 
-class IncomingMediaService extends ConsumerStatefulWidget {
-  const IncomingMediaService(
+class IncomingMediaHandler extends ConsumerStatefulWidget {
+  const IncomingMediaHandler(
       {required this.incomingMedia, required this.onDiscard, super.key});
 
   final CLMediaFileGroup incomingMedia;
-
   final void Function({required bool result}) onDiscard;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
-      _IncomingMediaHandlerState();
+      IncomingMediaHandlerState();
 }
 
-class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaService> {
-  CLSharedMedia? duplicateCandidates;
+class IncomingMediaHandlerState extends ConsumerState<IncomingMediaHandler> {
+  ViewerEntities? duplicateCandidates;
   ViewerEntities? newCandidates;
 
   bool isSaving = false;
@@ -43,14 +42,21 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaService> {
 
   @override
   Widget build(BuildContext context) {
+    final label = widget.incomingMedia.contentOrigin.label;
     return FullscreenLayout(
       child: GetDefaultStore(
-          errorBuilder: (e, st) => CLErrorView(errorMessage: e.toString()),
-          loadingBuilder: () =>
-              CLLoader.widget(debugMessage: 'IncomingMediaService'),
+          errorBuilder: (e, st) => WizardLayout(
+                title: '$label Error',
+                onCancel: () => widget.onDiscard(result: false),
+                child: CLErrorView(errorMessage: e.toString()),
+              ),
+          loadingBuilder: () => WizardLayout(
+              title: label,
+              onCancel: () => widget.onDiscard(result: false),
+              child: CLLoader.widget(debugMessage: null)),
           builder: (store) {
             return GetStoreTaskManager(
-                contentOrigin: widget.incomingMedia.type ?? ContentOrigin.stale,
+                contentOrigin: widget.incomingMedia.contentOrigin,
                 builder: (taskManager) {
                   _infoLogger(
                       'build candidate: $duplicateCandidates, isSaving:$isSaving');
@@ -65,7 +71,8 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaService> {
                                 // Hide the Collection from Analysis so that all goes into default
                                 incomingMedia: CLMediaFileGroup(
                                     entries: widget.incomingMedia.entries,
-                                    type: widget.incomingMedia.type),
+                                    contentOrigin:
+                                        widget.incomingMedia.contentOrigin),
                                 onDone: (
                                         {required existingEntities,
                                         required invalidContent,
@@ -79,18 +86,14 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaService> {
                               )
                             : DuplicatePage(
                                 incomingMedia: duplicateCandidates!,
-                                onDone: ({required CLSharedMedia? mg}) {
+                                parentId: widget.incomingMedia.collection?.id,
+                                onDone: ({required ViewerEntities? mg}) {
                                   onSave(
                                     storeTaskManager: taskManager,
-                                    mg: CLSharedMedia(
-                                      entries: ViewerEntities([
-                                        ...mg?.entries.entities ?? [],
-                                        ...newCandidates?.entities ?? [],
-                                      ]),
-                                      collection:
-                                          widget.incomingMedia.collection,
-                                      type: widget.incomingMedia.type,
-                                    ),
+                                    mg: ViewerEntities([
+                                      ...mg?.entities ?? [],
+                                      ...newCandidates?.entities ?? [],
+                                    ]),
                                   );
                                 },
                                 onCancel: () => onDiscard(result: false),
@@ -120,41 +123,34 @@ class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaService> {
     required ViewerEntities newEntities,
     required List<CLMediaContent> invalidContent,
   }) async {
-    final duplicateCandidates0 = CLSharedMedia(
-      entries: existingEntities,
-      collection: widget.incomingMedia.collection,
-      type: widget.incomingMedia.type,
-    );
-    if (duplicateCandidates0.targetMismatch.isNotEmpty) {
-      duplicateCandidates = duplicateCandidates0;
+    if (existingEntities
+        .targetMismatch(widget.incomingMedia.collection?.id)
+        .isNotEmpty) {
+      duplicateCandidates = existingEntities;
       newCandidates = newEntities;
       setState(() {});
     } else {
       await onSave(
         storeTaskManager: storeTaskManager,
-        mg: CLSharedMedia(
-          entries: newEntities,
-          collection: widget.incomingMedia.collection,
-          type: widget.incomingMedia.type,
-        ),
+        mg: newEntities,
       );
     }
   }
 
   Future<void> onSave(
       {required StoreTaskManager storeTaskManager,
-      required CLSharedMedia mg}) async {
+      required ViewerEntities mg}) async {
     _infoLogger(mg.toString());
     _infoLogger('onSave - Enter');
     isSavingState = true;
     widget.onDiscard(result: mg.isNotEmpty);
 
     storeTaskManager.add(StoreTask(
-      items: mg.entries.entities.cast<StoreEntity>(),
-      contentOrigin: widget.incomingMedia.type ?? ContentOrigin.stale,
+      items: mg.entities.cast<StoreEntity>(),
+      contentOrigin: widget.incomingMedia.contentOrigin,
     ));
     await PageManager.of(context)
-        .openWizard(widget.incomingMedia.type ?? ContentOrigin.stale);
+        .openWizard(widget.incomingMedia.contentOrigin);
 
     duplicateCandidates = null;
     newCandidates = null;

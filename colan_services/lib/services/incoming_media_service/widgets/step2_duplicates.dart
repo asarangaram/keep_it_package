@@ -1,54 +1,31 @@
-import 'package:cl_entity_viewers/cl_entity_viewers.dart'
-    show MediaThumbnail, ViewerEntities;
+import 'package:cl_entity_viewers/cl_entity_viewers.dart' show ViewerEntities;
+import 'package:colan_services/services/incoming_media_service/extensions/viewer_entities_ext.dart';
+import 'package:colan_services/services/incoming_media_service/widgets/exist_in_different_collection.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 
-import 'package:store/store.dart';
-
-import '../../../models/cl_shared_media.dart';
 import '../../basic_page_service/basic_page_service.dart';
 
-class DuplicatePage extends StatelessWidget {
-  const DuplicatePage({
-    required this.incomingMedia,
-    required this.onDone,
-    required this.onCancel,
-    super.key,
-  });
-  final CLSharedMedia incomingMedia;
+class DuplicatePage extends StatefulWidget {
+  const DuplicatePage(
+      {required this.incomingMedia,
+      required this.onDone,
+      required this.onCancel,
+      required this.parentId,
+      super.key});
+  final ViewerEntities incomingMedia;
+  final int? parentId;
 
-  final void Function({required CLSharedMedia? mg}) onDone;
+  final void Function({required ViewerEntities? mg}) onDone;
   final void Function() onCancel;
 
   @override
-  Widget build(BuildContext context) {
-    return DuplicatePageStateful(
-      incomingMedia: incomingMedia,
-      onDone: onDone,
-      onCancel: onCancel,
-    );
-  }
+  State<StatefulWidget> createState() => DuplicatePageState();
 }
 
-class DuplicatePageStateful extends StatefulWidget {
-  const DuplicatePageStateful({
-    required this.incomingMedia,
-    required this.onDone,
-    required this.onCancel,
-    super.key,
-  });
-  final CLSharedMedia incomingMedia;
-
-  final void Function({required CLSharedMedia? mg}) onDone;
-  final void Function() onCancel;
-
-  @override
-  State<StatefulWidget> createState() => _DuplicatePageStatefulState();
-}
-
-class _DuplicatePageStatefulState extends State<DuplicatePageStateful> {
-  late CLSharedMedia currentMedia;
+class DuplicatePageState extends State<DuplicatePage> {
+  late ViewerEntities currentMedia;
 
   @override
   void initState() {
@@ -64,7 +41,7 @@ class _DuplicatePageStatefulState extends State<DuplicatePageStateful> {
       );
     }
     return GetEntity(
-      id: widget.incomingMedia.collection?.id,
+      id: widget.parentId,
       errorBuilder: (_, __) {
         throw UnimplementedError('errorBuilder');
       },
@@ -88,7 +65,7 @@ class _DuplicatePageStatefulState extends State<DuplicatePageStateful> {
                 title: 'Move',
                 onTap: () async {
                   widget.onDone(
-                    mg: await currentMedia.mergeMismatch(),
+                    mg: await currentMedia.mergeMismatch(widget.parentId),
                   );
                   return true;
                 },
@@ -98,7 +75,7 @@ class _DuplicatePageStatefulState extends State<DuplicatePageStateful> {
                 title: 'Skip',
                 onTap: () async {
                   widget.onDone(
-                    mg: currentMedia.removeMismatch(),
+                    mg: currentMedia.removeMismatch(widget.parentId),
                   );
                   return true;
                 },
@@ -109,13 +86,14 @@ class _DuplicatePageStatefulState extends State<DuplicatePageStateful> {
               children: [
                 Flexible(
                   child: ExistInDifferentCollection(
-                    media: currentMedia,
+                    targetMismatch:
+                        currentMedia.targetMismatch(widget.parentId),
                     onRemove: (m) {
                       final updated = currentMedia.remove(m);
-                      if (updated?.targetMismatch.isEmpty ?? true) {
+                      if (updated?.targetMismatch(widget.parentId).isEmpty ??
+                          true) {
                         widget.onDone(mg: updated);
-                        currentMedia =
-                            const CLSharedMedia(entries: ViewerEntities([]));
+                        currentMedia = const ViewerEntities([]);
                       } else {
                         currentMedia = updated!;
                       }
@@ -128,122 +106,6 @@ class _DuplicatePageStatefulState extends State<DuplicatePageStateful> {
           ),
         );
       },
-    );
-  }
-}
-
-class ExistInDifferentCollection extends StatelessWidget {
-  const ExistInDifferentCollection({
-    required this.media,
-    required this.onRemove,
-    super.key,
-  });
-
-  final CLSharedMedia media;
-
-  final void Function(StoreEntity media) onRemove;
-
-  @override
-  Widget build(BuildContext context) {
-    final duplicates = media.targetMismatch;
-    if (duplicates.isEmpty) {
-      return const Center(
-        child: CLText.large('Nothing to show here'),
-      );
-    }
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
-      child: Stack(
-        children: [
-          Positioned(
-            bottom: 0,
-            right: 0,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4),
-              child: CLText.verySmall(
-                'Swipe individual items to leave it in the same group.',
-                color: Theme.of(context).disabledColor,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(bottom: 16),
-            child: ListView.builder(
-              itemCount: duplicates.length,
-              itemBuilder: (BuildContext ctx, index) {
-                final m = duplicates.entities[index] as StoreEntity;
-
-                return GetEntity(
-                  id: m.parentId,
-                  errorBuilder: (_, __) {
-                    throw UnimplementedError('errorBuilder');
-                  },
-                  loadingBuilder: () => CLLoader.widget(
-                    debugMessage: 'GetAllCollection',
-                  ),
-                  builder: (currCollection) {
-                    /* final currCollection = collections
-                        .where((e) => e.id == m.parentId)
-                        .firstOrNull; */
-                    final String currCollectionLabel;
-
-                    if (m.data.isDeleted) {
-                      currCollectionLabel = 'Deleted Items';
-                    } else {
-                      currCollectionLabel =
-                          currCollection?.data.label ?? 'somethig wrong';
-                    }
-                    return SizedBox(
-                      height: 80,
-                      child: Dismissible(
-                        key: Key(m.data.md5!),
-                        direction: DismissDirection.endToStart,
-                        onDismissed: (direction) {
-                          onRemove(m);
-                        },
-                        background: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          alignment: AlignmentDirectional.center,
-                          child: Text(
-                            'Keep the item in "${currCollectionLabel.trim()}"',
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            AspectRatio(
-                              aspectRatio: 1,
-                              child: Padding(
-                                padding: const EdgeInsets.all(2),
-                                child: MediaThumbnail(
-                                  media: m,
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 8),
-                                child: Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: CLText.standard(
-                                    'Found in '
-                                    '"${currCollectionLabel.trim()}"',
-                                    textAlign: TextAlign.start,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                );
-              },
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

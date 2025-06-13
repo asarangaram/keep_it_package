@@ -8,12 +8,12 @@ import 'package:store_tasks/store_tasks.dart';
 class CLMediaFileGroup {
   const CLMediaFileGroup({
     required this.entries,
-    required this.type,
+    required this.contentOrigin,
     this.collection,
   });
   final List<CLMediaContent> entries;
   final StoreEntity? collection;
-  final ContentOrigin? type;
+  final ContentOrigin contentOrigin;
 
   bool get isEmpty => entries.isEmpty;
   bool get isNotEmpty => entries.isNotEmpty;
