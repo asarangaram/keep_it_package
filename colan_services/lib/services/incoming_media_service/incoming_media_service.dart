@@ -17,7 +17,7 @@ import '../basic_page_service/widgets/page_manager.dart';
 import 'widgets/step1_analyse.dart';
 import 'widgets/step2_duplicates.dart';
 
-class IncomingMediaService extends StatelessWidget {
+class IncomingMediaService extends ConsumerStatefulWidget {
   const IncomingMediaService(
       {required this.incomingMedia, required this.onDiscard, super.key});
 
@@ -26,39 +26,11 @@ class IncomingMediaService extends StatelessWidget {
   final void Function({required bool result}) onDiscard;
 
   @override
-  Widget build(BuildContext context) {
-    return FullscreenLayout(
-      child: IncomingMediaHandler0(
-        errorBuilder: (e, st) => CLErrorView(errorMessage: e.toString()),
-        loadingBuilder: () =>
-            CLLoader.widget(debugMessage: 'IncomingMediaService'),
-        incomingMedia: incomingMedia,
-        onDiscard: onDiscard,
-      ),
-    );
-  }
-}
-
-class IncomingMediaHandler0 extends ConsumerStatefulWidget {
-  const IncomingMediaHandler0(
-      {required this.incomingMedia,
-      required this.onDiscard,
-      required this.errorBuilder,
-      required this.loadingBuilder,
-      super.key});
-
-  final CLMediaFileGroup incomingMedia;
-
-  final void Function({required bool result}) onDiscard;
-
-  final Widget Function(Object, StackTrace) errorBuilder;
-  final Widget Function() loadingBuilder;
-  @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
-      _IncomingMediaHandler0State();
+      _IncomingMediaHandlerState();
 }
 
-class _IncomingMediaHandler0State extends ConsumerState<IncomingMediaHandler0> {
+class _IncomingMediaHandlerState extends ConsumerState<IncomingMediaService> {
   CLSharedMedia? duplicateCandidates;
   ViewerEntities? newCandidates;
 
@@ -71,62 +43,66 @@ class _IncomingMediaHandler0State extends ConsumerState<IncomingMediaHandler0> {
 
   @override
   Widget build(BuildContext context) {
-    return GetDefaultStore(
-        errorBuilder: widget.errorBuilder,
-        loadingBuilder: widget.loadingBuilder,
-        builder: (store) {
-          return GetStoreTaskManager(
-              contentOrigin: widget.incomingMedia.type ?? ContentOrigin.stale,
-              builder: (taskManager) {
-                _infoLogger(
-                    'build candidate: $duplicateCandidates, isSaving:$isSaving');
-                _infoLogger('incoming Media: ${widget.incomingMedia}');
-                final Widget widget0;
-                try {
-                  widget0 = isSaving
-                      ? const Center(child: CircularProgressIndicator())
-                      : (duplicateCandidates == null)
-                          ? AnalysePage(
-                              store: store,
-                              // Hide the Collection from Analysis so that all goes into default
-                              incomingMedia: CLMediaFileGroup(
-                                  entries: widget.incomingMedia.entries,
-                                  type: widget.incomingMedia.type),
-                              onDone: (
-                                      {required existingEntities,
-                                      required invalidContent,
-                                      required newEntities}) =>
-                                  segretated(
-                                      storeTaskManager: taskManager,
-                                      existingEntities: existingEntities,
-                                      newEntities: newEntities,
-                                      invalidContent: invalidContent),
-                              onCancel: () => onDiscard(result: false),
-                            )
-                          : DuplicatePage(
-                              incomingMedia: duplicateCandidates!,
-                              onDone: ({required CLSharedMedia? mg}) {
-                                onSave(
-                                  storeTaskManager: taskManager,
-                                  mg: CLSharedMedia(
-                                    entries: ViewerEntities([
-                                      ...mg?.entries.entities ?? [],
-                                      ...newCandidates?.entities ?? [],
-                                    ]),
-                                    collection: widget.incomingMedia.collection,
-                                    type: widget.incomingMedia.type,
-                                  ),
-                                );
-                              },
-                              onCancel: () => onDiscard(result: false),
-                            );
-                } catch (e) {
-                  return CLErrorView(errorMessage: e.toString());
-                }
-                _infoLogger('build IncomingMediaHandler - Done');
-                return widget0;
-              });
-        });
+    return FullscreenLayout(
+      child: GetDefaultStore(
+          errorBuilder: (e, st) => CLErrorView(errorMessage: e.toString()),
+          loadingBuilder: () =>
+              CLLoader.widget(debugMessage: 'IncomingMediaService'),
+          builder: (store) {
+            return GetStoreTaskManager(
+                contentOrigin: widget.incomingMedia.type ?? ContentOrigin.stale,
+                builder: (taskManager) {
+                  _infoLogger(
+                      'build candidate: $duplicateCandidates, isSaving:$isSaving');
+                  _infoLogger('incoming Media: ${widget.incomingMedia}');
+                  final Widget widget0;
+                  try {
+                    widget0 = isSaving
+                        ? const Center(child: CircularProgressIndicator())
+                        : (duplicateCandidates == null)
+                            ? AnalysePage(
+                                store: store,
+                                // Hide the Collection from Analysis so that all goes into default
+                                incomingMedia: CLMediaFileGroup(
+                                    entries: widget.incomingMedia.entries,
+                                    type: widget.incomingMedia.type),
+                                onDone: (
+                                        {required existingEntities,
+                                        required invalidContent,
+                                        required newEntities}) =>
+                                    segretated(
+                                        storeTaskManager: taskManager,
+                                        existingEntities: existingEntities,
+                                        newEntities: newEntities,
+                                        invalidContent: invalidContent),
+                                onCancel: () => onDiscard(result: false),
+                              )
+                            : DuplicatePage(
+                                incomingMedia: duplicateCandidates!,
+                                onDone: ({required CLSharedMedia? mg}) {
+                                  onSave(
+                                    storeTaskManager: taskManager,
+                                    mg: CLSharedMedia(
+                                      entries: ViewerEntities([
+                                        ...mg?.entries.entities ?? [],
+                                        ...newCandidates?.entities ?? [],
+                                      ]),
+                                      collection:
+                                          widget.incomingMedia.collection,
+                                      type: widget.incomingMedia.type,
+                                    ),
+                                  );
+                                },
+                                onCancel: () => onDiscard(result: false),
+                              );
+                  } catch (e) {
+                    return CLErrorView(errorMessage: e.toString());
+                  }
+                  _infoLogger('build IncomingMediaHandler - Done');
+                  return widget0;
+                });
+          }),
+    );
   }
 
   bool get isSavingState => isSaving;
