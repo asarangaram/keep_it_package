@@ -4,7 +4,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:store/store.dart';
 
-import 'universal_media_source.dart';
+import 'content_origin.dart';
 
 @immutable
 class CLSharedMedia {

@@ -33,6 +33,7 @@ class AnalysePage extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8),
       child: GetActiveStore(
+        // FIXME default store!!!
         errorBuilder: errorBuilder,
         loadingBuilder: loadingBuilder,
         builder: (store) {

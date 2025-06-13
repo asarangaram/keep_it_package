@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:store/store.dart';
 
-import '../models/universal_media_source.dart';
+import '../models/content_origin.dart';
 import '../providers/universal_media.dart';
 
 class WizardPreview extends ConsumerStatefulWidget {

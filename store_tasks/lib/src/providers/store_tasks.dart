@@ -3,7 +3,7 @@ import 'package:store_tasks/src/models/store_task.dart';
 
 import '../models/store_task_manager.dart';
 import '../models/store_tasks.dart';
-import '../models/universal_media_source.dart';
+import '../models/content_origin.dart';
 
 class StoreTasksNotifier extends StateNotifier<StoreTasks>
     implements StoreTaskManager {

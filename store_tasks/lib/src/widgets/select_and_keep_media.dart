@@ -8,7 +8,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
 import '../models/cl_shared_media.dart';
-import '../models/universal_media_source.dart';
+import '../models/content_origin.dart';
 import '../providers/universal_media.dart';
 import 'create_collection_wizard.dart';
 import 'dialogs.dart';
