@@ -1,7 +1,7 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
-import '../models/content_origin.dart';
+import '../../models/content_origin.dart';
 
 @immutable
 class WizardMenuItems {
