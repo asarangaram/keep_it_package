@@ -7,16 +7,17 @@ import '../providers/store_tasks.dart';
 
 class GetStoreTaskManager extends ConsumerWidget {
   const GetStoreTaskManager({
-    required this.taskType,
+    required this.contentOrigin,
     required this.builder,
     super.key,
   });
-  final ContentOrigin taskType;
+  final ContentOrigin contentOrigin;
   final Widget Function(StoreTaskManager taskTaskManager) builder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final taskTaskManager = ref.watch(storeTasksProvider(taskType).notifier);
+    final taskTaskManager =
+        ref.watch(storeTasksProvider(contentOrigin).notifier);
     return builder(taskTaskManager);
   }
 }

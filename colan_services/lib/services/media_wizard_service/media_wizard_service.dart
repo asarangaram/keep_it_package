@@ -14,14 +14,12 @@ class MediaWizardService extends ConsumerWidget {
   final String? type;
 
   static Future<bool?> openWizard(
-      BuildContext context, WidgetRef ref, CLSharedMedia sharedMedia,
+      BuildContext context, WidgetRef ref, StoreTask storeTask,
       {required String serverId}) async {
-    if (sharedMedia.type == null) {
-      return false;
+    if (storeTask.items.isEmpty) {
+      throw Exception('Must have atleast one item!');
     }
-    if (sharedMedia.entries.isEmpty) {
-      return true;
-    }
+
     // FIXME
     /* await addMedia(
       context,
@@ -32,7 +30,7 @@ class MediaWizardService extends ConsumerWidget {
     if (context.mounted) {
       //FIXME: May find the return value to return
       await PageManager.of(context)
-          .openWizard(sharedMedia.type!, serverId: serverId);
+          .openWizard(storeTask.contentOrigin, serverId: serverId);
       return true;
     }
     return false;

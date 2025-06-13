@@ -11,10 +11,10 @@ import 'package:store_tasks/store_tasks.dart';
 import '../../internal/fullscreen_layout.dart';
 import '../../models/cl_media_candidate.dart';
 import '../basic_page_service/widgets/cl_error_view.dart';
+import '../basic_page_service/widgets/page_manager.dart';
 import '../entity_viewer_service/views/keep_it_error_view.dart';
 import '../entity_viewer_service/views/keep_it_load_view.dart';
 
-import '../media_wizard_service/media_wizard_service.dart';
 import 'widgets/step1_analyse.dart';
 import 'widgets/step2_duplicates.dart';
 
@@ -84,45 +84,59 @@ class _IncomingMediaHandler0State extends ConsumerState<IncomingMediaHandler0> {
 
   @override
   Widget build(BuildContext context) {
-    _infoLogger('build candidate: $duplicateCandidates, isSaving:$isSaving');
-    _infoLogger('incoming Media: ${widget.incomingMedia}');
-    final Widget widget0;
-    try {
-      widget0 = isSaving
-          ? const Center(child: CircularProgressIndicator())
-          : (duplicateCandidates == null)
-              ? AnalysePage(
-                  errorBuilder: widget.errorBuilder,
-                  loadingBuilder: widget.loadingBuilder,
-                  // Hide the Collection from Analysis so that all goes into default
-                  incomingMedia: CLMediaFileGroup(
-                      entries: widget.incomingMedia.entries,
-                      type: widget.incomingMedia.type),
-                  onDone: segretated,
-                  onCancel: () => onDiscard(result: false),
-                )
-              : DuplicatePage(
-                  incomingMedia: duplicateCandidates!,
-                  onDone: ({required CLSharedMedia? mg}) {
-                    onSave(
-                      serverId: widget.serverId,
-                      mg: CLSharedMedia(
-                        entries: ViewerEntities([
-                          ...mg?.entries.entities ?? [],
-                          ...newCandidates?.entities ?? [],
-                        ]),
-                        collection: widget.incomingMedia.collection,
-                        type: widget.incomingMedia.type,
-                      ),
-                    );
-                  },
-                  onCancel: () => onDiscard(result: false),
-                );
-    } catch (e) {
-      return CLErrorView(errorMessage: e.toString());
-    }
-    _infoLogger('build IncomingMediaHandler - Done');
-    return widget0;
+    return GetStoreTaskManager(
+        contentOrigin: widget.incomingMedia.type ?? ContentOrigin.stale,
+        builder: (taskManager) {
+          _infoLogger(
+              'build candidate: $duplicateCandidates, isSaving:$isSaving');
+          _infoLogger('incoming Media: ${widget.incomingMedia}');
+          final Widget widget0;
+          try {
+            widget0 = isSaving
+                ? const Center(child: CircularProgressIndicator())
+                : (duplicateCandidates == null)
+                    ? AnalysePage(
+                        errorBuilder: widget.errorBuilder,
+                        loadingBuilder: widget.loadingBuilder,
+                        // Hide the Collection from Analysis so that all goes into default
+                        incomingMedia: CLMediaFileGroup(
+                            entries: widget.incomingMedia.entries,
+                            type: widget.incomingMedia.type),
+                        onDone: (
+                                {required existingEntities,
+                                required invalidContent,
+                                required newEntities}) =>
+                            segretated(
+                                storeTaskManager: taskManager,
+                                existingEntities: existingEntities,
+                                newEntities: newEntities,
+                                invalidContent: invalidContent),
+                        onCancel: () => onDiscard(result: false),
+                      )
+                    : DuplicatePage(
+                        incomingMedia: duplicateCandidates!,
+                        onDone: ({required CLSharedMedia? mg}) {
+                          onSave(
+                            storeTaskManager: taskManager,
+                            serverId: widget.serverId,
+                            mg: CLSharedMedia(
+                              entries: ViewerEntities([
+                                ...mg?.entries.entities ?? [],
+                                ...newCandidates?.entities ?? [],
+                              ]),
+                              collection: widget.incomingMedia.collection,
+                              type: widget.incomingMedia.type,
+                            ),
+                          );
+                        },
+                        onCancel: () => onDiscard(result: false),
+                      );
+          } catch (e) {
+            return CLErrorView(errorMessage: e.toString());
+          }
+          _infoLogger('build IncomingMediaHandler - Done');
+          return widget0;
+        });
   }
 
   bool get isSavingState => isSaving;
@@ -135,6 +149,7 @@ class _IncomingMediaHandler0State extends ConsumerState<IncomingMediaHandler0> {
   }
 
   Future<void> segretated({
+    required StoreTaskManager storeTaskManager,
     required ViewerEntities existingEntities,
     required ViewerEntities newEntities,
     required List<CLMediaContent> invalidContent,
@@ -150,6 +165,7 @@ class _IncomingMediaHandler0State extends ConsumerState<IncomingMediaHandler0> {
       setState(() {});
     } else {
       await onSave(
+        storeTaskManager: storeTaskManager,
         serverId: widget.serverId,
         mg: CLSharedMedia(
           entries: newEntities,
@@ -161,12 +177,20 @@ class _IncomingMediaHandler0State extends ConsumerState<IncomingMediaHandler0> {
   }
 
   Future<void> onSave(
-      {required String serverId, required CLSharedMedia mg}) async {
+      {required StoreTaskManager storeTaskManager,
+      required String serverId,
+      required CLSharedMedia mg}) async {
     _infoLogger(mg.toString());
     _infoLogger('onSave - Enter');
     isSavingState = true;
     widget.onDiscard(result: mg.isNotEmpty);
-    await MediaWizardService.openWizard(context, ref, mg, serverId: serverId);
+    final contentOrigin = widget.incomingMedia.type ?? ContentOrigin.stale;
+    storeTaskManager.add(StoreTask(
+      items: mg.entries.entities.cast<StoreEntity>(),
+      contentOrigin: contentOrigin,
+    ));
+    await PageManager.of(context).openWizard(contentOrigin, serverId: serverId);
+
     duplicateCandidates = null;
     newCandidates = null;
 

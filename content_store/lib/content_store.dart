@@ -4,6 +4,7 @@ library;
 export 'src/share_files.dart' show ShareManager;
 export 'src/stores/builders/get_active_store.dart';
 export 'src/stores/builders/get_content.dart' show GetContent;
+export 'src/stores/builders/get_default_store.dart' show GetDefaultStore;
 export 'src/stores/builders/get_entities.dart' show GetEntities, GetEntity;
 export 'src/stores/builders/get_registerred_urls.dart' show GetRegisterredURLs;
 export 'src/stores/builders/get_store.dart' show GetStore;

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
+import 'package:store_tasks/store_tasks.dart';
 
 import '../models/entity_actions.dart';
 
@@ -14,25 +15,29 @@ class BottomBarPageView extends ConsumerWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return GetCurrentEntity(
-      builder: (entity) {
-        final bottomMenu = EntityActions.ofEntity(
-            context, ref, entity as StoreEntity,
-            serverId: serverId);
-        return Row(
-          children: bottomMenu.actions
-              .map(
-                (e) => Expanded(
-                  child: ShadButton.ghost(
-                    onPressed: e.onTap,
-                    child: e.icon.iconFormatted(),
-                  ),
-                ),
-              )
-              .toList(),
-        );
-      },
-    );
+    return GetStoreTaskManager(
+        contentOrigin: ContentOrigin.move,
+        builder: (moveTaskManager) {
+          return GetCurrentEntity(
+            builder: (entity) {
+              final bottomMenu = EntityActions.ofEntity(
+                  context, ref, entity as StoreEntity,
+                  moveTaskManager: moveTaskManager, serverId: serverId);
+              return Row(
+                children: bottomMenu.actions
+                    .map(
+                      (e) => Expanded(
+                        child: ShadButton.ghost(
+                          onPressed: e.onTap,
+                          child: e.icon.iconFormatted(),
+                        ),
+                      ),
+                    )
+                    .toList(),
+              );
+            },
+          );
+        });
   }
 
   @override

@@ -21,7 +21,7 @@ class MediaWizardService0 extends ConsumerWidget {
     ref
         .read(
           universalMediaProvider(
-            media.type ?? ContentOrigin.unclassified,
+            media.type ?? ContentOrigin.stale,
           ).notifier,
         )
         .mediaGroup = media;
@@ -31,10 +31,9 @@ class MediaWizardService0 extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final ContentOrigin source;
     if (type != null) {
-      source =
-          ContentOrigin.values.asNameMap()[type] ?? ContentOrigin.unclassified;
+      source = ContentOrigin.values.asNameMap()[type] ?? ContentOrigin.stale;
     } else {
-      source = ContentOrigin.unclassified;
+      source = ContentOrigin.stale;
     }
     final media = ref.watch(universalMediaProvider(source));
     if (media.isEmpty) {

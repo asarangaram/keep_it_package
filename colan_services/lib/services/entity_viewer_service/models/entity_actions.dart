@@ -12,28 +12,30 @@ import 'package:store_tasks/store_tasks.dart';
 import '../../../models/platform_support.dart';
 import '../../basic_page_service/widgets/dialogs.dart';
 import '../../basic_page_service/widgets/page_manager.dart';
-import '../../media_wizard_service/media_wizard_service.dart';
 import '../widgets/metadata_editors/collection_metadata_editor.dart';
 import '../widgets/metadata_editors/media_metadata_editor.dart';
 
 @immutable
 class EntityActions extends CLContextMenu {
-  const EntityActions({
-    required this.serverId,
-    required this.name,
-    required this.logoImageAsset,
-    required this.onCrop,
-    required this.onEdit,
-    required this.onMove,
-    required this.onShare,
-    required this.onPin,
-    required this.onDelete,
-    required this.infoMap,
-  });
+  const EntityActions(
+      {required this.serverId,
+      required this.name,
+      required this.logoImageAsset,
+      required this.onCrop,
+      required this.onEdit,
+      required this.onMove,
+      required this.onShare,
+      required this.onPin,
+      required this.onDelete,
+      required this.infoMap,
+      required this.moveTaskManager});
 
   factory EntityActions.entities(
-      BuildContext context, WidgetRef ref, ViewerEntities entities,
-      {required String serverId}) {
+    BuildContext context,
+    ViewerEntities entities, {
+    required String serverId,
+    required StoreTaskManager moveTaskManager,
+  }) {
     return switch (entities) {
       final ViewerEntities e
           when e.entities.every(
@@ -42,9 +44,9 @@ class EntityActions extends CLContextMenu {
         () {
           return EntityActions.ofMultipleMedia(
             context,
-            ref,
             items: e,
             serverId: serverId,
+            moveTaskManager: moveTaskManager,
             hasOnlineService: true,
           );
         }(),
@@ -61,8 +63,12 @@ class EntityActions extends CLContextMenu {
     };
   }
   factory EntityActions.ofEntity(
-      BuildContext context, WidgetRef ref, StoreEntity entity,
-      {required String serverId}) {
+    BuildContext context,
+    WidgetRef ref,
+    StoreEntity entity, {
+    required String serverId,
+    required StoreTaskManager moveTaskManager,
+  }) {
     Future<bool> onEdit() async {
       if (context.mounted) {
         final updated = await (entity.isCollection
@@ -101,15 +107,16 @@ class EntityActions extends CLContextMenu {
       return true;
     }
 
-    Future<bool?> onMove({required String serverId}) =>
-        MediaWizardService.openWizard(
-            context,
-            ref,
-            CLSharedMedia(
-              entries: ViewerEntities([entity]),
-              type: ContentOrigin.move,
-            ),
-            serverId: serverId);
+    Future<bool?> onMove({required String serverId}) async {
+      moveTaskManager.add(StoreTask(
+        items: [entity],
+        contentOrigin: ContentOrigin.move,
+      ));
+      await PageManager.of(context)
+          .openWizard(ContentOrigin.move, serverId: serverId);
+      return true;
+    }
+
     Future<bool> onDelete() async {
       final confirmed = await DialogService.deleteEntity(
             context,
@@ -136,6 +143,7 @@ class EntityActions extends CLContextMenu {
 
     return EntityActions.template(
       serverId: serverId,
+      moveTaskManager: moveTaskManager,
       name: entity.data.label ?? 'Unnamed',
       logoImageAsset: 'assets/icon/not_on_server.png',
       onCrop: cropSupported ? () => onCrop(serverId: serverId) : null,
@@ -150,9 +158,12 @@ class EntityActions extends CLContextMenu {
       isPinned: false,
     );
   }
-  factory EntityActions.empty({required String serverId}) {
+  factory EntityActions.empty({
+    required String serverId,
+  }) {
     return EntityActions.template(
       serverId: serverId,
+      moveTaskManager: null,
       name: 'No Context Menu',
       logoImageAsset: '',
       infoMap: const {},
@@ -161,6 +172,7 @@ class EntityActions extends CLContextMenu {
   }
   factory EntityActions.template({
     required String serverId,
+    required StoreTaskManager? moveTaskManager,
     required String name,
     required String logoImageAsset,
     required Map<String, dynamic> infoMap,
@@ -173,48 +185,48 @@ class EntityActions extends CLContextMenu {
     Future<bool?> Function()? onDelete,
   }) {
     return EntityActions(
-      serverId: serverId,
-      name: name,
-      logoImageAsset: logoImageAsset,
-      onCrop: CLMenuItem(
-        title: 'Edit',
-        icon: clIcons.imageCrop,
-        onTap: onCrop,
-      ),
-      onEdit: CLMenuItem(
-        title: 'Info',
-        icon: clIcons.imageEdit,
-        onTap: onEdit,
-      ),
-      onMove: CLMenuItem(
-        title: 'Move',
-        icon: clIcons.imageMove,
-        onTap: onMove,
-      ),
-      onShare: CLMenuItem(
-        title: 'Share',
-        icon: clIcons.imageShare,
-        onTap: onShare,
-      ),
-      onPin: CLMenuItem(
-        title: isPinned ? 'Remove Pin' : 'Pin',
-        icon: isPinned ? clIcons.pin : clIcons.unPin,
-        onTap: onPin,
-      ),
-      onDelete: CLMenuItem(
-        title: 'Remove',
-        icon: clIcons.imageDelete,
-        onTap: onDelete,
-        isDestructive: true,
-        tooltip: 'Moves to Recycle bin. Can recover as per Recycle Policy',
-      ),
-      infoMap: infoMap,
-    );
+        serverId: serverId,
+        name: name,
+        logoImageAsset: logoImageAsset,
+        onCrop: CLMenuItem(
+          title: 'Edit',
+          icon: clIcons.imageCrop,
+          onTap: onCrop,
+        ),
+        onEdit: CLMenuItem(
+          title: 'Info',
+          icon: clIcons.imageEdit,
+          onTap: onEdit,
+        ),
+        onMove: CLMenuItem(
+          title: 'Move',
+          icon: clIcons.imageMove,
+          onTap: onMove,
+        ),
+        onShare: CLMenuItem(
+          title: 'Share',
+          icon: clIcons.imageShare,
+          onTap: onShare,
+        ),
+        onPin: CLMenuItem(
+          title: isPinned ? 'Remove Pin' : 'Pin',
+          icon: isPinned ? clIcons.pin : clIcons.unPin,
+          onTap: onPin,
+        ),
+        onDelete: CLMenuItem(
+          title: 'Remove',
+          icon: clIcons.imageDelete,
+          onTap: onDelete,
+          isDestructive: true,
+          tooltip: 'Moves to Recycle bin. Can recover as per Recycle Policy',
+        ),
+        infoMap: infoMap,
+        moveTaskManager: moveTaskManager);
   }
 
   factory EntityActions.ofMultipleMedia(
-    BuildContext context,
-    WidgetRef ref, {
+    BuildContext context, {
+    required StoreTaskManager moveTaskManager,
     required String serverId,
     required ViewerEntities items,
     // ignore: avoid_unused_constructor_parameters For now, not required
@@ -228,14 +240,16 @@ class EntityActions extends CLContextMenu {
   }) {
     final onEdit0 = onCrop?.call();
     final onEditInfo0 = onEdit?.call();
-    Future<bool?> onMove0() => MediaWizardService.openWizard(
-        context,
-        ref,
-        CLSharedMedia(
-          entries: items,
-          type: ContentOrigin.move,
-        ),
-        serverId: serverId);
+    Future<bool?> onMove0() async {
+      moveTaskManager.add(StoreTask(
+        items: items.entities.cast<StoreEntity>(),
+        contentOrigin: ContentOrigin.move,
+      ));
+      await PageManager.of(context)
+          .openWizard(ContentOrigin.move, serverId: serverId);
+      return true;
+    }
+
     Future<bool?> onShare0() => share(context, items);
     Future<bool> onPin0() async {
       for (final item in items.entities.cast<StoreEntity>()) {
@@ -263,6 +277,7 @@ class EntityActions extends CLContextMenu {
 
     return EntityActions.template(
       serverId: serverId,
+      moveTaskManager: moveTaskManager,
       name: 'Multiple Media',
       logoImageAsset: 'assets/icon/not_on_server.png',
       onCrop: onCrop != null ? onCrop() : onEdit0,
@@ -278,6 +293,7 @@ class EntityActions extends CLContextMenu {
     );
   }
   final String serverId;
+  final StoreTaskManager? moveTaskManager;
   final String name;
   final String logoImageAsset;
   final CLMenuItem onCrop;

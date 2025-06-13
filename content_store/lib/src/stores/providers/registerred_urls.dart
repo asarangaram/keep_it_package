@@ -11,6 +11,7 @@ class RegisteredURLsNotifier extends AsyncNotifier<RegisteredURLs>
     with CLLogger {
   @override
   String get logPrefix => 'RegisteredURLsNotifier';
+  final defaultStore = StoreURL.fromString('local://default', identity: null);
   @override
   FutureOr<RegisteredURLs> build() {
     try {

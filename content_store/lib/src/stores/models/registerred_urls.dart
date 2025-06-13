@@ -2,8 +2,6 @@ import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:store/store.dart';
 
-final defaultStore = StoreURL.fromString('local://default', identity: null);
-
 @immutable
 class RegisteredURLs {
   factory RegisteredURLs(
@@ -11,11 +9,13 @@ class RegisteredURLs {
       required int activeStoreIndex}) {
     final stores = availableStores;
     // Not a good idea when network involved. need more checks
-    if (activeStoreIndex >= stores.length) {
-      throw Exception('Invalid index on avaiablelStore');
+    if (stores.isEmpty) {
+      throw Exception('atleast one store must be available');
     }
     return RegisteredURLs._(
-        availableStores: stores, activeStoreIndex: activeStoreIndex);
+        availableStores: stores,
+        activeStoreIndex:
+            activeStoreIndex > stores.length ? activeStoreIndex : 0);
   }
   const RegisteredURLs._({
     required this.availableStores,
@@ -84,7 +84,7 @@ class RegisteredURLs {
   }
 
   bool isDefaultStore(StoreURL storeURL) {
-    return storeURL == defaultStore;
+    return storeURL == defaultStoreURL;
   }
 
   bool isActiveStore(StoreURL storeURL) {
@@ -92,4 +92,5 @@ class RegisteredURLs {
   }
 
   StoreURL get activeStoreURL => availableStores[activeStoreIndex];
+  StoreURL get defaultStoreURL => availableStores[0];
 }

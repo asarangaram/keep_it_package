@@ -17,7 +17,6 @@ import '../../internal/fullscreen_layout.dart';
 
 import '../../providers/captured_media.dart';
 import '../basic_page_service/widgets/page_manager.dart';
-import '../media_wizard_service/media_wizard_service.dart';
 import 'models/default_theme.dart';
 import 'widgets/get_cameras.dart';
 import 'widgets/preview.dart';
@@ -35,7 +34,7 @@ class CameraService extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return FullscreenLayout(
       useSafeArea: false,
-      child: GetActiveStore(
+      child: GetDefaultStore(
         errorBuilder: (_, __) {
           throw UnimplementedError('errorBuilder');
         },
@@ -43,48 +42,51 @@ class CameraService extends ConsumerWidget {
           debugMessage: 'GetStoreUpdater',
         ),
         builder: (theStore) {
-          return GetEntity(
-            id: parentId,
-            errorBuilder: (_, __) {
-              throw UnimplementedError('errorBuilder');
-            },
-            loadingBuilder: () => CLLoader.widget(
-              debugMessage: 'GetCollection',
-            ),
-            builder: (collection) {
-              return CLCameraService0(
-                onCancel: () => PageManager.of(context).pop(),
-                onNewMedia: (path, {required isVideo}) async {
-                  final mediaFile = await CLMediaFile.fromPath(path);
+          return GetStoreTaskManager(
+              contentOrigin: ContentOrigin.camera,
+              builder: (cameraTaskManager) {
+                return GetEntity(
+                  id: parentId,
+                  errorBuilder: (_, __) {
+                    throw UnimplementedError('errorBuilder');
+                  },
+                  loadingBuilder: () => CLLoader.widget(
+                    debugMessage: 'GetCollection',
+                  ),
+                  builder: (collection) {
+                    return CLCameraService0(
+                      onCancel: () => PageManager.of(context).pop(),
+                      onNewMedia: (path, {required isVideo}) async {
+                        final mediaFile = await CLMediaFile.fromPath(path);
 
-                  if (mediaFile != null) {
-                    return (await theStore.createMedia(
-                      mediaFile: mediaFile,
-                      label: () => p.basenameWithoutExtension(mediaFile.path),
-                      description: () => 'captured with Camera',
-                    ))
-                        ?.dbSave(mediaFile.path);
-                  }
-                  return null;
-                },
-                onDone: (mediaList) async {
-                  await MediaWizardService.openWizard(
-                      context,
-                      ref,
-                      CLSharedMedia(
-                        entries: mediaList,
-                        type: ContentOrigin.captured,
-                        collection: collection,
-                      ),
-                      serverId: serverId);
+                        if (mediaFile != null) {
+                          return (await theStore.createMedia(
+                            mediaFile: mediaFile,
+                            label: () =>
+                                p.basenameWithoutExtension(mediaFile.path),
+                            description: () => 'captured with Camera',
+                          ))
+                              ?.dbSave(mediaFile.path);
+                        }
+                        return null;
+                      },
+                      onDone: (mediaList) async {
+                        cameraTaskManager.add(StoreTask(
+                            items: mediaList.entities.cast<StoreEntity>(),
+                            contentOrigin: ContentOrigin.camera,
+                            collection: collection));
+                        await PageManager.of(context).openWizard(
+                            ContentOrigin.camera,
+                            serverId: serverId);
 
-                  if (context.mounted) {
-                    PageManager.of(context).pop();
-                  }
-                },
-              );
-            },
-          );
+                        if (context.mounted) {
+                          PageManager.of(context).pop();
+                        }
+                      },
+                    );
+                  },
+                );
+              });
         },
       ),
     );
