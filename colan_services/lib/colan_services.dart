@@ -1,10 +1,5 @@
 export '../models/app_descriptor.dart'
-    show
-        AppDescriptor,
-        CLAppInitializer,
-        CLRedirector,
-        CLTransitionBuilder,
-        IncomingMediaViewBuilder;
+    show AppDescriptor, CLAppInitializer, CLRedirector, CLTransitionBuilder;
 export '../models/cl_route_descriptor.dart' show CLRouteDescriptor;
 export 'services/app_start_service/views/app_start_service.dart'
     show AppStartService;

@@ -9,19 +9,14 @@ import 'package:store_tasks/store_tasks.dart';
 
 import '../../models/cl_media_candidate.dart';
 import '../../providers/incoming_media.dart';
+import 'incoming_media_service.dart';
 
 class IncomingMediaMonitor extends ConsumerWidget {
   const IncomingMediaMonitor({
     required this.child,
-    required this.onMedia,
     super.key,
   });
   final Widget child;
-  final Widget Function(
-    BuildContext context, {
-    required CLMediaFileGroup incomingMedia,
-    required void Function({required bool result}) onDiscard,
-  }) onMedia;
 
   static void pushMedia(WidgetRef ref, CLMediaFileGroup sharedMedia) {
     ref.read(incomingMediaStreamProvider.notifier).push(sharedMedia);
@@ -64,8 +59,7 @@ class IncomingMediaMonitor extends ConsumerWidget {
     if (incomingMedia.isEmpty) {
       return child;
     }
-    return onMedia(
-      context,
+    return IncomingMediaService(
       incomingMedia: incomingMedia[0],
       onDiscard: ({required bool result}) {
         ref.read(incomingMediaStreamProvider.notifier).pop();

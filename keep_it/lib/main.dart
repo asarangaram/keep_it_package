@@ -120,17 +120,6 @@ class KeepItApp implements AppDescriptor {
       ];
 
   @override
-  IncomingMediaViewBuilder get incomingMediaViewBuilder => (
-        BuildContext context, {
-        required incomingMedia,
-        required onDiscard,
-      }) =>
-          IncomingMediaService(
-            incomingMedia: incomingMedia,
-            onDiscard: onDiscard,
-          );
-
-  @override
   CLTransitionBuilder get transitionBuilder => (
         BuildContext context,
         Animation<double> animation,

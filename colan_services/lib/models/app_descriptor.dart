@@ -1,7 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'cl_media_candidate.dart';
 import 'cl_route_descriptor.dart';
 
 typedef CLAppInitializer = Future<bool> Function(Ref ref);
@@ -13,12 +12,6 @@ typedef CLTransitionBuilder = Widget Function(
 );
 typedef CLRedirector = Future<String?> Function(String location);
 
-typedef IncomingMediaViewBuilder = Widget Function(
-  BuildContext context, {
-  required CLMediaFileGroup incomingMedia,
-  required void Function({required bool result}) onDiscard,
-});
-
 abstract class AppDescriptor {
   String get title;
 
@@ -27,5 +20,4 @@ abstract class AppDescriptor {
   CLAppInitializer get appInitializer;
   CLTransitionBuilder get transitionBuilder;
   CLRedirector get redirector;
-  IncomingMediaViewBuilder get incomingMediaViewBuilder;
 }
