@@ -1,6 +1,6 @@
+import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
-import 'package:store/store.dart';
 
 import 'content_origin.dart';
 
@@ -12,14 +12,14 @@ class StoreTask {
     this.collection,
   });
 
-  final List<StoreEntity> items;
+  final List<ViewerEntity> items;
   final ContentOrigin contentOrigin;
-  final StoreEntity? collection;
+  final ViewerEntity? collection;
 
   StoreTask copyWith({
-    List<StoreEntity>? items,
+    List<ViewerEntity>? items,
     ContentOrigin? contentOrigin,
-    ValueGetter<StoreEntity?>? collection,
+    ValueGetter<ViewerEntity?>? collection,
   }) {
     return StoreTask(
       items: items ?? this.items,

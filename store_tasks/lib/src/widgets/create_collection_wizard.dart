@@ -1,20 +1,21 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-
 import 'package:store/store.dart';
 
+import 'pick_collection.dart';
 import 'edit_collection_description.dart';
 import 'label_viewer.dart';
-import 'pick_collection.dart';
 
 class CreateCollectionWizard extends StatefulWidget
     implements PreferredSizeWidget {
   const CreateCollectionWizard({
+    required this.collection,
     required this.onDone,
     this.fixedHeight = true,
-    super.key,
     this.isValidSuggestion,
+    super.key,
   });
+  final StoreEntity? collection;
   final bool fixedHeight;
   final void Function({
     required StoreEntity collection,
@@ -50,23 +51,8 @@ class PickCollectionState extends State<CreateCollectionWizard> {
   @override
   Widget build(BuildContext context) {
     final Widget child;
-    if (collection == null || onEditLabel) {
-      child = PickCollection(
-        collection: collection,
-        isValidSuggestion: widget.isValidSuggestion,
-        onDone: (collection) {
-          if (collection.id != null) {
-            widget.onDone(collection: collection);
-          }
 
-          hasDescription = collection.id != null;
-          setState(() {
-            onEditLabel = false;
-            this.collection = collection;
-          });
-        },
-      );
-    } else if (!hasDescription) {
+    /* if (collection != null && !hasDescription) {
       child = Column(
         children: [
           LabelViewer(
@@ -93,13 +79,23 @@ class PickCollectionState extends State<CreateCollectionWizard> {
         ],
       );
     } else {
-      child = Center(
-        child: CLLoader.widget(
-          message: 'Saving...',
-          debugMessage: 'Saving @ PickCollection',
-        ),
+      child = PickCollection(
+        collection: collection,
+        isValidSuggestion: widget.isValidSuggestion,
+        onDone: (collection) {
+          if (collection.id != null) {
+            widget.onDone(collection: collection);
+          }
+
+          hasDescription = collection.id != null;
+          setState(() {
+            onEditLabel = false;
+            this.collection = collection;
+          });
+        },
       );
-    }
+    } */
+    child = const Text('Collection Viewer');
     if (widget.fixedHeight) {
       return SizedBox(
         height: kMinInteractiveDimension * 4,

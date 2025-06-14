@@ -16,7 +16,7 @@ class StoreTasksNotifier extends StateNotifier<StoreTasks>
   }
 
   @override
-  StoreTask? remove() {
+  StoreTask? pop() {
     final task = state.tasks.firstOrNull;
     state = StoreTasks(state.tasks.length > 1 ? state.tasks.sublist(1) : []);
     return task;

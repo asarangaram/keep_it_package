@@ -43,6 +43,7 @@ class WizardLayout extends StatelessWidget {
           child: CLScaffold(
             bottomMenu: null,
             topMenu: AppBar(
+              automaticallyImplyLeading: false,
               title: Text(
                 title ?? '',
               ),
