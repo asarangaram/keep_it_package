@@ -1,0 +1,21 @@
+name: example
+description: "form factory example"
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.8.0
+dependencies:
+  flutter:
+    sdk: flutter
+  form_factory:
+    path: ../
+  shadcn_ui: ^0.27.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true

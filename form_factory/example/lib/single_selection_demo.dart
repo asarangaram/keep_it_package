@@ -1,0 +1,59 @@
+import 'package:flutter/material.dart';
+import 'package:form_factory/form_factory.dart';
+
+@immutable
+class DemoItem {
+  const DemoItem({required this.label});
+  final String label;
+}
+
+List<DemoItem> items = [
+  DemoItem(label: 'item 1'),
+  DemoItem(label: 'item 2'),
+  DemoItem(label: 'item 3'),
+  DemoItem(label: 'item 4'),
+];
+
+class SingleSelectionDemo extends StatefulWidget {
+  const SingleSelectionDemo({super.key, required this.title});
+
+  final String title;
+
+  @override
+  State<SingleSelectionDemo> createState() => SingleSelectionDemoState();
+}
+
+class SingleSelectionDemoState extends State<SingleSelectionDemo> {
+  @override
+  Widget build(BuildContext context) {
+    return CLWizardFormField(
+      descriptor: CLFormSelectSingleDescriptors(
+        title: 'Select Single Demo',
+        label: 'Select an Item',
+        labelBuilder: (e) => (e as DemoItem).label,
+        descriptionBuilder: (e) => (e as DemoItem).label,
+        suggestionsAvailable: items,
+        initialValues: items[2],
+        onSelectSuggestion: (item) async => item,
+        onCreateByLabel: (label) async {
+          return DemoItem(label: label);
+        },
+        onValidate: (value) {
+          if (value == null) {
+            return "can't be empty";
+          }
+          /* if ((value as Collection).label.length > 20) {
+                    return "length can't exceed 20 characters";
+                  } */
+          return null;
+        },
+      ),
+      onSubmit: (CLFormFieldResult result) async {
+        final item =
+            (result as CLFormSelectSingleResult).selectedEntitry as DemoItem;
+
+        print(item);
+      },
+    );
+  }
+}

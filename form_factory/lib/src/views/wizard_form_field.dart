@@ -66,18 +66,17 @@ class _CLWizardFormFieldState extends State<CLWizardFormField> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8),
+    return SizedBox(
+      width: double.infinity,
+      height: kMinInteractiveDimension * 4,
       child: Form(
         key: formKey,
-        child: SizedBox(
-          width: double.infinity,
-          height: kMinInteractiveDimension * 3,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
           child: InputDecorator(
-            decoration: FormDesign.inputDecoration(
-              context,
-              label: widget.descriptor.label,
-            ),
+            decoration: FormDesign.inputDecoration(context,
+                label: widget.descriptor.label,
+                borderRadius: BorderRadius.all(Radius.circular(16))),
             child: switch (widget.descriptor) {
               CLFormSelectMultipleDescriptors _ => CLFormSelectMultiple(
                   descriptors:
