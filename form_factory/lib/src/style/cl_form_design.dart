@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 
 class FormDesign {
   static InputDecoration inputDecoration(BuildContext context,
-          {required String label, String? hintText}) =>
+          {required String label,
+          String? hintText,
+          BorderRadius? borderRadius}) =>
       InputDecoration(
         enabled: true,
         // isDense: true,
@@ -14,12 +16,12 @@ class FormDesign {
             ?.copyWith(fontWeight: FontWeight.bold, fontSize: 20),
         enabledBorder: OutlineInputBorder(
           borderSide: const BorderSide(width: 1),
-          borderRadius: BorderRadius.zero,
+          borderRadius: borderRadius ?? BorderRadius.zero,
           gapPadding: 8,
         ),
         focusedBorder: OutlineInputBorder(
           borderSide: const BorderSide(width: 1),
-          borderRadius: BorderRadius.zero,
+          borderRadius: borderRadius ?? BorderRadius.zero,
           gapPadding: 8,
         ),
         errorBorder: OutlineInputBorder(
@@ -27,7 +29,7 @@ class FormDesign {
             color: Theme.of(context).colorScheme.error,
             width: 2,
           ),
-          borderRadius: BorderRadius.zero,
+          borderRadius: borderRadius ?? BorderRadius.zero,
           gapPadding: 8,
         ),
         hintText: hintText,
