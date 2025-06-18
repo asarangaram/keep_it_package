@@ -16,7 +16,12 @@ export 'src/basics/overlay_widget.dart' show OverlayWidgets;
 export 'src/basics/progress_bar.dart' show ProgressBar;
 export 'src/basics/svg_icon.dart' show SvgIcon, SvgIcons;
 export 'src/models/cl_menu_item.dart'
-    show CLMenuItem, Ext1DCLMenuItem, Ext2DCLMenuItem;
+    show
+        CLMenuItem,
+        CLMenuItemBase,
+        CLPopOverMenuItem,
+        Ext1DCLMenuItem,
+        Ext2DCLMenuItem;
 export 'src/models/cl_scale_type.dart' show CLScaleType;
 export 'src/theme/models/cl_colors.dart' show DefaultCLColors;
 export 'src/theme/models/cl_icons.dart' show CLIcons, IconOnIconData, clIcons;

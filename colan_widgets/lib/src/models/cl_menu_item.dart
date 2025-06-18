@@ -1,19 +1,31 @@
 import 'package:flutter/material.dart';
 
 @immutable
-class CLMenuItem {
-  const CLMenuItem({
+class CLMenuItemBase {
+  const CLMenuItemBase({
     required this.title,
     required this.icon,
-    this.onTap,
     this.isDestructive = false,
     this.tooltip,
   });
+
   final String title;
   final IconData icon;
-  final Future<bool?> Function()? onTap;
   final bool isDestructive;
   final String? tooltip;
+}
+
+@immutable
+class CLMenuItem extends CLMenuItemBase {
+  const CLMenuItem({
+    required super.title,
+    required super.icon,
+    this.onTap,
+    super.isDestructive = false,
+    super.tooltip,
+  });
+
+  final Future<bool?> Function()? onTap;
 
   CLMenuItem copyWith({
     String? title,
@@ -101,4 +113,15 @@ extension Ext1DCLMenuItem on List<CLMenuItem> {
   ) {
     return map((e) => e.extraActionOnSuccess(onDone)).toList();
   }
+}
+
+class CLPopOverMenuItem extends CLMenuItemBase {
+  const CLPopOverMenuItem({
+    required super.title,
+    required super.icon,
+    this.menuItems = const [],
+    super.isDestructive = false,
+    super.tooltip,
+  });
+  final List<CLMenuItem> menuItems;
 }
