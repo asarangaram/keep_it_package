@@ -7,7 +7,7 @@ import '../models/cl_form_field_state.dart';
 
 import 'cl_form_select_multiple.dart';
 
-class CLWizardFormField extends StatefulWidget {
+class CLWizardFormField extends StatefulWidget implements PreferredSizeWidget {
   const CLWizardFormField({
     required this.descriptor,
     required this.onSubmit,
@@ -19,6 +19,9 @@ class CLWizardFormField extends StatefulWidget {
   final CLFormFieldDescriptors descriptor;
   @override
   State<CLWizardFormField> createState() => _CLWizardFormFieldState();
+
+  @override
+  Size get preferredSize => Size(double.infinity, kMinInteractiveDimension * 2);
 }
 
 class _CLWizardFormFieldState extends State<CLWizardFormField> {
@@ -67,8 +70,7 @@ class _CLWizardFormFieldState extends State<CLWizardFormField> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: double.infinity,
-      height: kMinInteractiveDimension * 4,
+      height: widget.preferredSize.height,
       child: Form(
         key: formKey,
         child: Padding(
