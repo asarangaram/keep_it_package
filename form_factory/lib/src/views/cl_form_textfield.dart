@@ -10,14 +10,13 @@ class CLFormTextField extends StatelessWidget {
     required this.descriptors,
     required this.state,
     required this.onRefresh,
-    this.actionBuilder,
     super.key,
   });
 
   final CLFormTextFieldDescriptor descriptors;
   final CLFormTextFieldState state;
   final void Function() onRefresh;
-  final Widget Function(BuildContext context)? actionBuilder;
+
   @override
   Widget build(BuildContext context) {
     return InputDecorator(
