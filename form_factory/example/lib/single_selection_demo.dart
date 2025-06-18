@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:form_factory/form_factory.dart';
 
@@ -5,6 +6,23 @@ import 'package:form_factory/form_factory.dart';
 class DemoItem {
   const DemoItem({required this.label});
   final String label;
+
+  @override
+  String toString() => 'DemoItem(label: $label)';
+
+  DemoItem copyWith({String? label}) {
+    return DemoItem(label: label ?? this.label);
+  }
+
+  @override
+  bool operator ==(covariant DemoItem other) {
+    if (identical(this, other)) return true;
+
+    return other.label == label;
+  }
+
+  @override
+  int get hashCode => label.hashCode;
 }
 
 List<DemoItem> items = [
@@ -33,7 +51,7 @@ class SingleSelectionDemoState extends State<SingleSelectionDemo> {
         labelBuilder: (e) => (e as DemoItem).label,
         descriptionBuilder: (e) => (e as DemoItem).label,
         suggestionsAvailable: items,
-        initialValues: items[2],
+        //initialValues: items[2],
         onSelectSuggestion: (item) async => item,
         onCreateByLabel: (label) async {
           return DemoItem(label: label);
