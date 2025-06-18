@@ -22,9 +22,7 @@ class CLFormTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     return InputDecorator(
       decoration: FormDesign.inputDecoration(context,
-          label: descriptors.label,
-          actionBuilder: actionBuilder,
-          hintText: descriptors.hint),
+          label: descriptors.label, hintText: descriptors.hint),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: TextFormField(

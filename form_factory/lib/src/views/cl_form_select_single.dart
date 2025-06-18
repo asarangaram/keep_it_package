@@ -22,76 +22,82 @@ class CLFormSelectSingle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FormField<Object?>(
-        autovalidateMode: AutovalidateMode.onUserInteraction,
-        validator: (value) {
-          final res = descriptors.onValidate?.call(value);
+    return Row(
+      children: [
+        Expanded(
+          child: FormField<Object?>(
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              validator: (value) {
+                final res = descriptors.onValidate?.call(value);
 
-          if (res != null) return res;
+                if (res != null) return res;
 
-          state.selectedEntitry.clear();
-          state.selectedEntitry.add(value);
+                state.selectedEntitry.clear();
+                state.selectedEntitry.add(value);
 
-          return null;
-        },
-        initialValue: descriptors.initialValues,
-        builder: (fieldState) {
-          return InputDecorator(
-            decoration: FormDesign.inputDecoration(
-              context,
-              label: descriptors.label,
-              actionBuilder: fieldState.value == null ? null : actionBuilder,
-            ),
-            child: Align(
-              alignment: Alignment.topLeft,
-              child: SearchAnchor(
-                searchController: state.searchController,
-                isFullScreen: false,
-                viewBackgroundColor: Theme.of(context).colorScheme.surface,
-                suggestionsBuilder: (context, controller) {
-                  return suggestionsBuilder(context,
-                      suggestions: descriptors.suggestionsAvailable,
-                      controller: controller,
-                      labelBuilder: descriptors.labelBuilder,
-                      fieldState: fieldState);
-                },
-                builder: (context, controller) {
-                  return GestureDetector(
-                    onTap: controller.openView,
-                    child: SizedBox.expand(
-                      child: Center(
-                          child: TextField(
-                        controller: controller,
-                        onTap: () {
-                          controller.openView();
-                        },
-                        onChanged: (_) {
-                          controller.openView();
-                        },
-                      )
-                          /* fieldState.value == null
-                            ? const cl.CLText.large("Tap here to select")
-                            : Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  cl.CLText.large(descriptors
-                                      .labelBuilder(fieldState.value!)),
-                                  if (fieldState.hasError)
-                                    cl.CLText.small(fieldState.errorText!,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .error),
-                                  const cl.CLText.small("Tap here to change")
-                                ],
-                              ), */
+                return null;
+              },
+              initialValue: descriptors.initialValues,
+              builder: (fieldState) {
+                return InputDecorator(
+                  decoration: FormDesign.inputDecoration(
+                    context,
+                    label: descriptors.label,
+                  ),
+                  child: Align(
+                    alignment: Alignment.topLeft,
+                    child: SearchAnchor(
+                      searchController: state.searchController,
+                      isFullScreen: false,
+                      viewBackgroundColor:
+                          Theme.of(context).colorScheme.surface,
+                      suggestionsBuilder: (context, controller) {
+                        return suggestionsBuilder(context,
+                            suggestions: descriptors.suggestionsAvailable,
+                            controller: controller,
+                            labelBuilder: descriptors.labelBuilder,
+                            fieldState: fieldState);
+                      },
+                      builder: (context, controller) {
+                        return GestureDetector(
+                          onTap: controller.openView,
+                          child: SizedBox.expand(
+                            child: Center(
+                                child: TextField(
+                              controller: controller,
+                              onTap: () {
+                                controller.openView();
+                              },
+                              onChanged: (_) {
+                                controller.openView();
+                              },
+                            )
+                                /* fieldState.value == null
+                                  ? const cl.CLText.large("Tap here to select")
+                                  : Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        cl.CLText.large(descriptors
+                                            .labelBuilder(fieldState.value!)),
+                                        if (fieldState.hasError)
+                                          cl.CLText.small(fieldState.errorText!,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .error),
+                                        const cl.CLText.small("Tap here to change")
+                                      ],
+                                    ), */
+                                ),
                           ),
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
-            ),
-          );
-        });
+                  ),
+                );
+              }),
+        ),
+      ],
+    );
   }
 
   FutureOr<Iterable<Widget>> suggestionsBuilder(

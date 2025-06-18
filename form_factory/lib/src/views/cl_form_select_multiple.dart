@@ -48,7 +48,6 @@ class CLFormSelectMultiple extends StatelessWidget {
             decoration: FormDesign.inputDecoration(
               context,
               label: descriptors.label,
-              actionBuilder: fieldState.value!.isEmpty ? null : actionBuilder,
             ),
             child: Align(
               alignment: Alignment.topCenter,
