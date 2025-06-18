@@ -2,9 +2,9 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:store/store.dart';
 
-import 'pick_collection.dart';
 import 'edit_collection_description.dart';
 import 'label_viewer.dart';
+import 'pick_collection.dart';
 
 class CreateCollectionWizard extends StatefulWidget
     implements PreferredSizeWidget {
@@ -52,7 +52,7 @@ class PickCollectionState extends State<CreateCollectionWizard> {
   Widget build(BuildContext context) {
     final Widget child;
 
-    /* if (collection != null && !hasDescription) {
+    if (collection != null && !hasDescription) {
       child = Column(
         children: [
           LabelViewer(
@@ -94,8 +94,7 @@ class PickCollectionState extends State<CreateCollectionWizard> {
           });
         },
       );
-    } */
-    child = const Text('Collection Viewer');
+    }
     if (widget.fixedHeight) {
       return SizedBox(
         height: kMinInteractiveDimension * 4,

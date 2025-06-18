@@ -1,4 +1,5 @@
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:form_factory/form_factory.dart';
 
@@ -19,8 +20,7 @@ class PickCollection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    throw UnimplementedError();
-    /* return GetActiveStore(
+    return GetActiveStore(
       errorBuilder: (_, __) {
         throw UnimplementedError('errorBuilder');
       },
@@ -40,11 +40,6 @@ class PickCollection extends StatelessWidget {
           ),
           builder: (collections) {
             return CLWizardFormField(
-              actionMenu: (context, onTap) => CLMenuItem(
-                icon: clIcons.next,
-                title: 'Next',
-                onTap: onTap,
-              ),
               descriptor: CLFormSelectSingleDescriptors(
                 title: 'Collection',
                 label: 'Select Collection',
@@ -82,7 +77,7 @@ class PickCollection extends StatelessWidget {
           },
         );
       },
-    ); */
+    );
   }
 }
 
@@ -99,11 +94,6 @@ class PickCollectionWizard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CLWizardFormField(
-      actionMenu: (context, onTap) => CLMenuItem(
-        icon: clIcons.next,
-        title: 'Next',
-        onTap: onTap,
-      ),
       descriptor: CLFormSelectSingleDescriptors(
         title: 'Collection',
         label: 'Select Collection',

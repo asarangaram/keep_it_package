@@ -1,4 +1,3 @@
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:form_factory/form_factory.dart';
 
@@ -16,11 +15,6 @@ class EditCollectionDescription extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CLWizardFormField(
-      actionMenu: (context, onTap) => CLMenuItem(
-        icon: clIcons.save,
-        title: 'Save',
-        onTap: onTap,
-      ),
       descriptor: CLFormTextFieldDescriptor(
         title: 'Description',
         label: 'About "${collection.data.label}"',
