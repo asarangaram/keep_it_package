@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:form_factory/src/models/cl_form_field_state.dart';
 
 @immutable
-class CLFormFieldDescriptors {
+abstract class CLFormFieldDescriptors {
   const CLFormFieldDescriptors({required this.title, required this.label});
   final String title;
   final String label;
+
+  CLFormFieldState createState({void Function()? listener});
+  void disposeState(CLFormFieldState state);
 }
 
 @immutable
@@ -24,6 +28,22 @@ class CLFormTextFieldDescriptor extends CLFormFieldDescriptors {
   @override
   String toString() {
     return "initialValues: $initialValue, title: $title, lable: $label}";
+  }
+
+  @override
+  CLFormFieldState createState({void Function()? listener}) {
+    return CLFormTextFieldState(this,
+        controller: TextEditingController(),
+        focusNode: FocusNode()..requestFocus());
+  }
+
+  @override
+  void disposeState(CLFormFieldState state) {
+    if (state is CLFormTextFieldState) {
+      state
+        ..controller.dispose()
+        ..focusNode?.dispose();
+    }
   }
 }
 
@@ -53,6 +73,26 @@ class CLFormSelectMultipleDescriptors extends CLFormFieldDescriptors {
   String toString() {
     return "initialValues: $initialValues, suggestionsAvailable: ${suggestionsAvailable.length}";
   }
+
+  @override
+  CLFormFieldState createState({void Function()? listener}) {
+    return CLFormSelectMultipleState(
+      this,
+      scrollController: ScrollController(),
+      wrapKey: GlobalKey(),
+      searchController: SearchController(),
+      selectedEntities: initialValues,
+    );
+  }
+
+  @override
+  void disposeState(CLFormFieldState state) {
+    if (state is CLFormSelectMultipleState) {
+      state
+        ..scrollController.dispose()
+        ..searchController.dispose();
+    }
+  }
 }
 
 @immutable
@@ -74,11 +114,38 @@ class CLFormSelectSingleDescriptors extends CLFormFieldDescriptors {
   final String Function(Object e) labelBuilder;
   final String? Function(Object e)? descriptionBuilder;
   final Future<Object?> Function(Object item) onSelectSuggestion;
-  final Future<Object?> Function(String label) onCreateByLabel;
+  final Object Function(String label) onCreateByLabel;
   final String? Function(Object?)? onValidate;
 
   @override
   String toString() {
     return "initialValues: $initialValues, suggestionsAvailable: ${suggestionsAvailable.length}";
+  }
+
+  @override
+  CLFormFieldState createState({void Function()? listener}) {
+    final searchController = SearchController();
+    if (initialValues != null) {
+      searchController.text = labelBuilder(initialValues!);
+    }
+    if (listener != null) {
+      searchController.addListener(listener);
+    }
+    final state0 = CLFormSelectSingleState(this,
+        searchController: searchController,
+        selectedEntitry: [initialValues],
+        searchControllerListener: listener);
+
+    return state0;
+  }
+
+  @override
+  void disposeState(CLFormFieldState state) {
+    if (state is CLFormSelectSingleState) {
+      if (state.searchControllerListener != null) {
+        state.searchController.removeListener(state.searchControllerListener!);
+      }
+      state.searchController.dispose();
+    }
   }
 }

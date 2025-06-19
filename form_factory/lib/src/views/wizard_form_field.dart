@@ -1,22 +1,31 @@
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:form_factory/form_factory.dart';
-import 'package:form_factory/src/views/cl_form_select_single.dart';
-import 'package:form_factory/src/views/cl_form_textfield.dart';
 
 import '../models/cl_form_field_state.dart';
-
-import 'cl_form_select_multiple.dart';
+import 'action_button.dart' show ActionButton;
 
 class CLWizardFormField extends StatefulWidget implements PreferredSizeWidget {
-  const CLWizardFormField({
-    required this.descriptor,
-    required this.onSubmit,
-    super.key,
-  });
+  const CLWizardFormField(
+      {required this.descriptor,
+      required this.onSubmit,
+      super.key,
+      this.rightControl,
+      this.leftControl,
+      this.backgroundColor,
+      this.foregroundColor,
+      this.mutedForegroundColor});
 
   final void Function(CLFormFieldResult result) onSubmit;
-
   final CLFormFieldDescriptors descriptor;
+
+  final CLMenuItemBase? leftControl;
+  final CLMenuItemBase? rightControl;
+
+  final Color? foregroundColor;
+  final Color? mutedForegroundColor;
+  final Color? backgroundColor;
+
   @override
   State<CLWizardFormField> createState() => _CLWizardFormFieldState();
 
@@ -26,82 +35,80 @@ class CLWizardFormField extends StatefulWidget implements PreferredSizeWidget {
 
 class _CLWizardFormFieldState extends State<CLWizardFormField> {
   late CLFormFieldState state;
-  final GlobalKey wrapKey = GlobalKey();
+
   final formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
-    state = switch (widget.descriptor) {
-      CLFormSelectMultipleDescriptors _ => CLFormSelectMultipleState(
-          scrollController: ScrollController(),
-          wrapKey: wrapKey,
-          searchController: SearchController(),
-          selectedEntities:
-              (widget.descriptor as CLFormSelectMultipleDescriptors)
-                  .initialValues,
-        ),
-      CLFormSelectSingleDescriptors _ => CLFormSelectSingleState(
-          searchController: SearchController(),
-          selectedEntitry: [
-            (widget.descriptor as CLFormSelectSingleDescriptors).initialValues
-          ],
-        ),
-      CLFormTextFieldDescriptor _ => CLFormTextFieldState(
-          controller: TextEditingController(), focusNode: FocusNode()),
-      _ => throw UnimplementedError()
-    };
-    switch (widget.descriptor) {
-      case CLFormSelectMultipleDescriptors _:
-      case CLFormSelectSingleDescriptors _:
-        break;
-      case CLFormTextFieldDescriptor _:
-        (state as CLFormTextFieldState).focusNode?.requestFocus();
-    }
-
+    state = widget.descriptor.createState(listener: () {});
     super.initState();
   }
 
   @override
   void dispose() {
-    state.dispose();
+    widget.descriptor.disposeState(state);
     super.dispose();
   }
 
+  Radius get leftRadius =>
+      widget.leftControl != null ? Radius.zero : Radius.circular(16);
+  Radius get rightRadius =>
+      widget.rightControl != null ? Radius.zero : Radius.circular(16);
+
+  BorderRadius get borderRadius => BorderRadius.only(
+      topLeft: leftRadius,
+      bottomLeft: leftRadius,
+      topRight: rightRadius,
+      bottomRight: rightRadius);
+  int get flex =>
+      6 +
+      ((widget.leftControl != null) ? 0 : 1) +
+      ((widget.rightControl != null) ? 0 : 1);
+
   @override
   Widget build(BuildContext context) {
+    final formField = state.formField(context, onRefresh: () {
+      setState(() {});
+    });
+
+    final CLMenuItemBase? rightControl;
+    switch (widget.rightControl) {
+      case CLMenuItem item when item.onTap == null:
+        rightControl = item.copyWith(
+          onTap: () async {
+            return true;
+          },
+        );
+      default:
+        rightControl = widget.rightControl;
+    }
+
     return SizedBox(
       height: widget.preferredSize.height,
       child: Form(
         key: formKey,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: InputDecorator(
-            decoration: FormDesign.inputDecoration(context,
-                label: widget.descriptor.label,
-                borderRadius: BorderRadius.all(Radius.circular(16))),
-            child: switch (widget.descriptor) {
-              CLFormSelectMultipleDescriptors _ => CLFormSelectMultiple(
-                  descriptors:
-                      widget.descriptor as CLFormSelectMultipleDescriptors,
-                  state: (state as CLFormSelectMultipleState),
-                  onRefresh: () {
-                    setState(() {});
-                  }),
-              CLFormSelectSingleDescriptors _ => CLFormSelectSingle(
-                  descriptors:
-                      widget.descriptor as CLFormSelectSingleDescriptors,
-                  state: state as CLFormSelectSingleState,
-                  onRefresh: () {
-                    setState(() {});
-                  }),
-              CLFormTextFieldDescriptor _ => CLFormTextField(
-                  descriptors: widget.descriptor as CLFormTextFieldDescriptor,
-                  state: state as CLFormTextFieldState,
-                  onRefresh: () {
-                    setState(() {});
-                  }),
-              _ => throw Exception("Unsupported")
-            },
+          child: Row(
+            children: [
+              Expanded(
+                flex: flex,
+                child: InputDecorator(
+                  decoration: FormDesign.inputDecoration(context,
+                      label: widget.descriptor.label,
+                      borderRadius: borderRadius),
+                  child: formField,
+                ),
+              ),
+              if (rightControl != null)
+                Expanded(
+                  child: ActionButton.right(
+                      backgroundColor: widget.backgroundColor,
+                      foregroundColor: widget.foregroundColor,
+                      foregroundDisabledColor: widget.mutedForegroundColor,
+                      menuItem: rightControl),
+                )
+            ],
           ),
         ),
       ),

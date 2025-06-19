@@ -1,6 +1,8 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:form_factory/form_factory.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 @immutable
 class DemoItem {
@@ -44,6 +46,7 @@ class SingleSelectionDemo extends StatefulWidget {
 class SingleSelectionDemoState extends State<SingleSelectionDemo> {
   @override
   Widget build(BuildContext context) {
+    final theme = ShadTheme.of(context);
     return CLWizardFormField(
       descriptor: CLFormSelectSingleDescriptors(
         title: 'Select Single Demo',
@@ -53,7 +56,7 @@ class SingleSelectionDemoState extends State<SingleSelectionDemo> {
         suggestionsAvailable: items,
         //initialValues: items[2],
         onSelectSuggestion: (item) async => item,
-        onCreateByLabel: (label) async {
+        onCreateByLabel: (label) {
           return DemoItem(label: label);
         },
         onValidate: (value) {
@@ -72,6 +75,11 @@ class SingleSelectionDemoState extends State<SingleSelectionDemo> {
 
         print(item);
       },
+      backgroundColor: theme.colorScheme.background,
+      foregroundColor: theme.colorScheme.foreground,
+      mutedForegroundColor: theme.colorScheme.mutedForeground,
+
+      rightControl: CLMenuItem(title: 'Next', icon: Icons.arrow_right),
     );
   }
 }

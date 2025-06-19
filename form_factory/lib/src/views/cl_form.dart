@@ -40,11 +40,13 @@ class CLFormState extends State<CLForm> {
         key,
         switch (desc) {
           CLFormTextFieldDescriptor _ => CLFormTextFieldState(
+              desc,
               controller: TextEditingController(
                 text: (desc).initialValue,
               ),
             ),
           CLFormSelectMultipleDescriptors _ => CLFormSelectMultipleState(
+              desc,
               selectedEntities: List.from((desc).initialValues),
               scrollController: ScrollController(),
               searchController: SearchController(),

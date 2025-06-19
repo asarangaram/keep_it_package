@@ -59,23 +59,7 @@ class CLFormSelectSingle extends StatelessWidget {
                       onChanged: (_) {
                         controller.openView();
                       },
-                    )
-                        /* fieldState.value == null
-                          ? const cl.CLText.large("Tap here to select")
-                          : Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                cl.CLText.large(descriptors
-                                    .labelBuilder(fieldState.value!)),
-                                if (fieldState.hasError)
-                                  cl.CLText.small(fieldState.errorText!,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .error),
-                                const cl.CLText.small("Tap here to change")
-                              ],
-                            ), */
-                        ),
+                    )),
                   ),
                 );
               },
@@ -120,26 +104,15 @@ class CLFormSelectSingle extends StatelessWidget {
       final c = suggestions?.getByLabel(controllerText, labelBuilder);
 
       if (c == null) {
-        list.add(
-          ListTile(
-            title: Text('Create "$controllerText"'),
-            onTap: () {
-              if (controller.text.isNotEmpty) {
-                controller.closeView(controller.text);
+        final e = _onCreateByLabel(fieldState, controllerText, onRefresh);
 
-                final c = suggestions?.getByLabel(
-                  controller.text,
-                  labelBuilder,
-                );
-                if (c == null) {
-                  _onCreateByLabel(fieldState, controllerText, onRefresh);
-                } else {
-                  _onSelect(fieldState, c, onRefresh);
-                }
-              }
-            },
-          ),
-        );
+        list.add(ListTile(
+          title: Text("create ${labelBuilder(e)}"),
+          onTap: () {
+            controller.closeView(controllerText);
+            _onSelect(fieldState, e, onRefresh);
+          },
+        ));
       }
     }
     return list
@@ -164,15 +137,14 @@ class CLFormSelectSingle extends StatelessWidget {
     //onRefresh();
   }
 
-  Future<void> _onCreateByLabel(
+  Object _onCreateByLabel(
     FormFieldState<Object?> fieldState,
     String label,
     void Function() onRefresh,
-  ) async {
-    final entityUpdated = await descriptors.onCreateByLabel(label);
-    if (entityUpdated == null) return;
-    state.searchController.text = descriptors.labelBuilder(entityUpdated);
+  ) {
+    final entityUpdated = descriptors.onCreateByLabel(label);
+
     fieldState.didChange(entityUpdated);
-    //onRefresh();
+    return entityUpdated;
   }
 }

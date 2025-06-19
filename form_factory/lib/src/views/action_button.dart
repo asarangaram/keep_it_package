@@ -6,6 +6,7 @@ class ActionButton extends StatelessWidget {
     required this.menuItem,
     super.key,
     this.foregroundColor,
+    this.foregroundDisabledColor,
     this.backgroundColor,
     this.width,
     this.height,
@@ -19,6 +20,7 @@ class ActionButton extends StatelessWidget {
     required this.menuItem,
     super.key,
     this.foregroundColor,
+    this.foregroundDisabledColor,
     this.backgroundColor,
     this.width,
     this.height,
@@ -30,6 +32,7 @@ class ActionButton extends StatelessWidget {
     required this.menuItem,
     super.key,
     this.foregroundColor,
+    this.foregroundDisabledColor,
     this.backgroundColor,
     this.width,
     this.height,
@@ -40,6 +43,7 @@ class ActionButton extends StatelessWidget {
 
   final CLMenuItemBase menuItem;
   final Color? foregroundColor;
+  final Color? foregroundDisabledColor;
   final Color? backgroundColor;
   final double? width;
   final double? height;
@@ -50,50 +54,60 @@ class ActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final menuButton = switch (menuItem) {
-      _ => GestureDetector(
-          onTap: (menuItem as CLMenuItem).onTap,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Expanded(
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: CLIcon.standard(
-                    color: backgroundColor,
-                    menuItem.icon,
+    final GestureDetector menuButton;
+    switch (menuItem) {
+      case CLMenuItem item:
+        {
+          final hasAction = item.onTap != null;
+          menuButton = GestureDetector(
+            onTap: (item).onTap,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: CLIcon.standard(
+                      color:
+                          hasAction ? backgroundColor : foregroundDisabledColor,
+                      item.icon,
+                    ),
                   ),
                 ),
-              ),
-              Expanded(
-                child: Align(
-                  alignment: Alignment.topCenter,
-                  child: LayoutBuilder(builder: (context, constraints) {
-                    return ConstrainedBox(
-                      constraints: BoxConstraints(
-                        maxWidth: constraints.maxWidth,
-                      ),
-                      child: FittedBox(
-                        child: CLText.small(
-                          menuItem.title,
-                          color: foregroundColor,
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    child: LayoutBuilder(builder: (context, constraints) {
+                      return ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxWidth: constraints.maxWidth,
                         ),
-                      ),
-                    );
-                  }),
+                        child: FittedBox(
+                          child: CLText.small(
+                            item.title,
+                            color: hasAction
+                                ? backgroundColor
+                                : foregroundDisabledColor,
+                          ),
+                        ),
+                      );
+                    }),
+                  ),
                 ),
-              ),
-            ],
-          ),
-        )
-    };
+              ],
+            ),
+          );
+        }
+      default:
+        throw UnimplementedError();
+    }
     return SizedBox(
       height: height,
       width: width,
       child: Container(
         decoration: BoxDecoration(
-          color: backgroundColor,
+          color: foregroundColor,
           border: Border.all(),
           borderRadius: BorderRadius.only(
               topLeft: topLeft,
