@@ -97,17 +97,20 @@ class CLFormSelectMultipleDescriptors extends CLFormFieldDescriptors {
 
 @immutable
 class CLFormSelectSingleDescriptors extends CLFormFieldDescriptors {
-  const CLFormSelectSingleDescriptors({
-    required super.title,
-    required super.label,
-    required this.suggestionsAvailable,
-    this.initialValues,
-    required this.labelBuilder,
-    required this.descriptionBuilder,
-    required this.onSelectSuggestion,
-    required this.onCreateByLabel,
-    required this.onValidate,
-  });
+  const CLFormSelectSingleDescriptors(
+      {required super.title,
+      required super.label,
+      required this.suggestionsAvailable,
+      this.initialValues,
+      required this.labelBuilder,
+      required this.descriptionBuilder,
+      required this.onSelectSuggestion,
+      required this.onCreateByLabel,
+      required this.onValidate,
+      required this.isSuggestedEntry,
+      this.errorWhenObjectNotFound =
+          "The object will be created when you press next",
+      this.hintText = 'Tap here to select or type to create'});
 
   final List<Object> suggestionsAvailable;
   final Object? initialValues;
@@ -116,6 +119,9 @@ class CLFormSelectSingleDescriptors extends CLFormFieldDescriptors {
   final Future<Object?> Function(Object item) onSelectSuggestion;
   final Object Function(String label) onCreateByLabel;
   final String? Function(Object?)? onValidate;
+  final String errorWhenObjectNotFound;
+  final String hintText;
+  final bool Function(Object) isSuggestedEntry;
 
   @override
   String toString() {

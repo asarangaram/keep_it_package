@@ -69,18 +69,25 @@ class SingleSelectionDemoState extends State<SingleSelectionDemo> {
                   } */
           return null;
         },
+        isSuggestedEntry: (Object e) {
+          return items.contains(e as DemoItem);
+        },
+        hintText: "Type Anything",
       ),
       onSubmit: (CLFormFieldResult result) async {
         setState(() {
           selected =
               (result as CLFormSelectSingleResult).selectedEntitry as DemoItem?;
+          if (selected != null) {
+            items.add(selected!);
+          }
         });
       },
       backgroundColor: theme.colorScheme.background,
       foregroundColor: theme.colorScheme.foreground,
       mutedForegroundColor: theme.colorScheme.mutedForeground,
       footerText: selected?.toString(),
-      rightControl: CLMenuItem(title: 'Next', icon: Icons.arrow_right),
+      rightControl: CLMenuItem(title: 'Keep All', icon: Icons.save_alt),
     );
   }
 }
