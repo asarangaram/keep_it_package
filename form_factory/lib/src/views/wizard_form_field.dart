@@ -121,8 +121,9 @@ class _CLWizardFormFieldState extends State<CLWizardFormField> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       spacing: 8,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Flexible(
+                        Expanded(
                           child: LayoutBuilder(builder: (context, constraints) {
                             return SizedBox(
                                 width: constraints.maxWidth,
@@ -135,6 +136,9 @@ class _CLWizardFormFieldState extends State<CLWizardFormField> {
                           Align(
                               alignment: Alignment.bottomRight,
                               child: Text(widget.footerText!))
+                        else
+                          Align(
+                              alignment: Alignment.bottomRight, child: Text(''))
                       ],
                     ),
                   ),
