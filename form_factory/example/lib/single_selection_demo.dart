@@ -44,7 +44,7 @@ class SingleSelectionDemo extends StatefulWidget {
 }
 
 class SingleSelectionDemoState extends State<SingleSelectionDemo> {
-  DemoItem? selected = items[2];
+  DemoItem? selected /* = items[2] */;
   @override
   Widget build(BuildContext context) {
     final theme = ShadTheme.of(context);
