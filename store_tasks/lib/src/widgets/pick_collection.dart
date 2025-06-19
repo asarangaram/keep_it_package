@@ -54,8 +54,8 @@ class PickCollection extends StatelessWidget {
                 ],
                 initialValues: collection,
                 onSelectSuggestion: (item) async => item,
-                onCreateByLabel: (label) async {
-                  return theStore.createCollection(label: label);
+                onCreateByLabel: (label) {
+                  return theStore.createNewCollection(label: label);
                 },
                 onValidate: (value) {
                   if (value == null) {

@@ -35,13 +35,22 @@ class CLWizardFormField extends StatefulWidget implements PreferredSizeWidget {
 
 class _CLWizardFormFieldState extends State<CLWizardFormField> {
   late CLFormFieldState state;
+  CLMenuItemBase? rightControl;
+  CLMenuItemBase? leftControl;
 
   final formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
-    state = widget.descriptor.createState(listener: () {});
+    state = widget.descriptor.createState(onUpdateResult: onUpdateResult);
+    controls();
     super.initState();
+  }
+
+  void onUpdateResult() {
+    setState(() {
+      controls();
+    });
   }
 
   @override
@@ -65,23 +74,31 @@ class _CLWizardFormFieldState extends State<CLWizardFormField> {
       ((widget.leftControl != null) ? 0 : 1) +
       ((widget.rightControl != null) ? 0 : 1);
 
-  @override
-  Widget build(BuildContext context) {
-    final formField = state.formField(context, onRefresh: () {
-      setState(() {});
-    });
-
-    final CLMenuItemBase? rightControl;
+  void controls() {
     switch (widget.rightControl) {
       case CLMenuItem item when item.onTap == null:
-        rightControl = item.copyWith(
-          onTap: () async {
-            return true;
-          },
-        );
+        if ((formKey.currentState?.validate() ?? false) &&
+            !state.result.isEmpty) {
+          rightControl = item.copyWith(
+            onTap: () async {
+              widget.onSubmit(state.result);
+              return true;
+            },
+          );
+        } else {
+          rightControl = widget.rightControl;
+        }
+
       default:
         rightControl = widget.rightControl;
     }
+
+    leftControl = widget.leftControl;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final formField = state.formField(context, onRefresh: onUpdateResult);
 
     return SizedBox(
       height: widget.preferredSize.height,
@@ -106,7 +123,7 @@ class _CLWizardFormFieldState extends State<CLWizardFormField> {
                       backgroundColor: widget.backgroundColor,
                       foregroundColor: widget.foregroundColor,
                       foregroundDisabledColor: widget.mutedForegroundColor,
-                      menuItem: rightControl),
+                      menuItem: rightControl!),
                 )
             ],
           ),

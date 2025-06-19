@@ -103,6 +103,22 @@ class CLStore with CLLogger {
     }
   }
 
+  StoreEntity createNewCollection({
+    required String label,
+    ValueGetter<String?>? description,
+    ValueGetter<int?>? parentId,
+    UpdateStrategy strategy = UpdateStrategy.skip,
+  }) {
+    return StoreEntity(
+      entity: CLEntity.collection(
+        label: label,
+        description: description?.call(),
+        parentId: parentId?.call(),
+      ),
+      store: this,
+    );
+  }
+
   Future<StoreEntity?> createCollection({
     required String label,
     ValueGetter<String?>? description,

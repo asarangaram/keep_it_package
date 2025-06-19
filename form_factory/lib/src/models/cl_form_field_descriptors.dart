@@ -7,7 +7,7 @@ abstract class CLFormFieldDescriptors {
   final String title;
   final String label;
 
-  CLFormFieldState createState({void Function()? listener});
+  CLFormFieldState createState({void Function()? onUpdateResult});
   void disposeState(CLFormFieldState state);
 }
 
@@ -31,7 +31,7 @@ class CLFormTextFieldDescriptor extends CLFormFieldDescriptors {
   }
 
   @override
-  CLFormFieldState createState({void Function()? listener}) {
+  CLFormFieldState createState({void Function()? onUpdateResult}) {
     return CLFormTextFieldState(this,
         controller: TextEditingController(),
         focusNode: FocusNode()..requestFocus());
@@ -75,7 +75,7 @@ class CLFormSelectMultipleDescriptors extends CLFormFieldDescriptors {
   }
 
   @override
-  CLFormFieldState createState({void Function()? listener}) {
+  CLFormFieldState createState({void Function()? onUpdateResult}) {
     return CLFormSelectMultipleState(
       this,
       scrollController: ScrollController(),
@@ -123,18 +123,22 @@ class CLFormSelectSingleDescriptors extends CLFormFieldDescriptors {
   }
 
   @override
-  CLFormFieldState createState({void Function()? listener}) {
+  CLFormFieldState createState({void Function()? onUpdateResult}) {
     final searchController = SearchController();
+    void searchControllerListener() {
+      if (!searchController.isOpen) {
+        onUpdateResult?.call();
+      }
+    }
+
     if (initialValues != null) {
       searchController.text = labelBuilder(initialValues!);
     }
-    if (listener != null) {
-      searchController.addListener(listener);
-    }
+    searchController.addListener(searchControllerListener);
     final state0 = CLFormSelectSingleState(this,
         searchController: searchController,
         selectedEntitry: [initialValues],
-        searchControllerListener: listener);
+        searchControllerListener: searchControllerListener);
 
     return state0;
   }

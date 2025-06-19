@@ -114,7 +114,8 @@ class CLFormSelectSingleState extends CLFormFieldState {
   final void Function()? searchControllerListener;
 
   @override
-  CLFormFieldResult get result => CLFormSelectSingleResult(selectedEntitry);
+  CLFormFieldResult get result =>
+      CLFormSelectSingleResult(selectedEntitry.firstOrNull);
 
   @override
   void dispose() {

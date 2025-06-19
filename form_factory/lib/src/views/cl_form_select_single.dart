@@ -26,8 +26,10 @@ class CLFormSelectSingle extends StatelessWidget {
 
           if (res != null) return res;
 
-          state.selectedEntitry.clear();
-          state.selectedEntitry.add(value);
+          if (value != null) {
+            state.selectedEntitry.clear();
+            state.selectedEntitry.add(value);
+          }
 
           return null;
         },
@@ -80,6 +82,8 @@ class CLFormSelectSingle extends StatelessWidget {
     final controllerText = controller.text.trim();
     if (controllerText.isEmpty) {
       filterredSuggestion = suggestions;
+      fieldState.didChange(null);
+      onRefresh();
     } else {
       filterredSuggestion = suggestions
           ?.where(
@@ -134,7 +138,7 @@ class CLFormSelectSingle extends StatelessWidget {
     if (entityUpdated == null) return;
     state.searchController.text = descriptors.labelBuilder(entityUpdated);
     fieldState.didChange(entityUpdated);
-    //onRefresh();
+    onRefresh();
   }
 
   Object _onCreateByLabel(
@@ -143,8 +147,8 @@ class CLFormSelectSingle extends StatelessWidget {
     void Function() onRefresh,
   ) {
     final entityUpdated = descriptors.onCreateByLabel(label);
-
     fieldState.didChange(entityUpdated);
+    onRefresh();
     return entityUpdated;
   }
 }
