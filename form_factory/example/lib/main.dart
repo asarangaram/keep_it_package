@@ -1,4 +1,5 @@
 import 'package:example/single_selection_demo.dart';
+import 'package:example/text_field_demo.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
@@ -35,6 +36,7 @@ class Demos extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: SingleChildScrollView(
           child: Column(
+            spacing: 8,
             children: [
               Center(
                 child: TheCard(
@@ -42,8 +44,18 @@ class Demos extends StatelessWidget {
                   footerText:
                       "You can select a single item here. "
                       "Once a valid item is selected, "
-                      "the forward action button become visible",
+                      "the forward action button become active",
                   child: const SingleSelectionDemo(title: 'FormFactory demo'),
+                ),
+              ),
+              Center(
+                child: TheCard(
+                  title: "Input Text",
+                  footerText:
+                      "Wait for a non blank text "
+                      "Once a non blank text is enterred"
+                      "the forward action button become active",
+                  child: const TextFieldDemo(title: 'FormFactory demo'), //,
                 ),
               ),
             ],

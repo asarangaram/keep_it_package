@@ -1,5 +1,6 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:form_factory/form_factory.dart';
 
 import '../models/cl_form_field_state.dart';
@@ -100,6 +101,7 @@ class _CLWizardFormFieldState extends State<CLWizardFormField> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
+      width: double.infinity,
       height: widget.preferredSize.height,
       child: Form(
         key: formKey,
@@ -114,19 +116,13 @@ class _CLWizardFormFieldState extends State<CLWizardFormField> {
                   decoration: FormDesign.inputDecoration(context,
                       label: widget.descriptor.label,
                       borderRadius: borderRadius),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    spacing: 8,
-                    children: [
-                      Expanded(
-                          child: state.formField(context,
-                              onRefresh: onUpdateResult)),
-                      if (widget.footerText != null)
-                        Align(
-                            alignment: Alignment.bottomRight,
-                            child: Text(widget.footerText!))
-                    ],
-                  ),
+                  child: LayoutBuilder(builder: (context, constraints) {
+                    return SizedBox(
+                        width: constraints.maxWidth,
+                        height: constraints.maxHeight,
+                        child: state.formField(context,
+                            onRefresh: onUpdateResult));
+                  }),
                 ),
               ),
               if (rightControl != null)
