@@ -69,7 +69,7 @@ class PickCollection extends StatelessWidget {
               ),
               onSubmit: (CLFormFieldResult result) async {
                 final collection = (result as CLFormSelectSingleResult)
-                    .selectedEntitry as StoreEntity;
+                    .selectedEntitry! as StoreEntity;
 
                 onDone(collection);
               },
@@ -119,8 +119,8 @@ class PickCollectionWizard extends StatelessWidget {
         },
       ),
       onSubmit: (CLFormFieldResult result) async {
-        final collection =
-            (result as CLFormSelectSingleResult).selectedEntitry as StoreEntity;
+        final collection = (result as CLFormSelectSingleResult).selectedEntitry!
+            as StoreEntity;
 
         onDone(collection);
       },

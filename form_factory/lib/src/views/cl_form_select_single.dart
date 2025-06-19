@@ -22,12 +22,10 @@ class CLFormSelectSingle extends StatelessWidget {
     return FormField<Object?>(
         autovalidateMode: AutovalidateMode.onUserInteraction,
         validator: (value) {
+          state.selectedEntitry.clear();
           final res = descriptors.onValidate?.call(value);
-
           if (res != null) return res;
-
           if (value != null) {
-            state.selectedEntitry.clear();
             state.selectedEntitry.add(value);
           }
 
@@ -83,6 +81,7 @@ class CLFormSelectSingle extends StatelessWidget {
     if (controllerText.isEmpty) {
       filterredSuggestion = suggestions;
       fieldState.didChange(null);
+
       onRefresh();
     } else {
       filterredSuggestion = suggestions

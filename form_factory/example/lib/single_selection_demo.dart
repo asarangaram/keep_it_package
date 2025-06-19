@@ -44,6 +44,7 @@ class SingleSelectionDemo extends StatefulWidget {
 }
 
 class SingleSelectionDemoState extends State<SingleSelectionDemo> {
+  DemoItem? selected = items[2];
   @override
   Widget build(BuildContext context) {
     final theme = ShadTheme.of(context);
@@ -54,7 +55,7 @@ class SingleSelectionDemoState extends State<SingleSelectionDemo> {
         labelBuilder: (e) => (e as DemoItem).label,
         descriptionBuilder: (e) => (e as DemoItem).label,
         suggestionsAvailable: items,
-        //initialValues: items[2],
+        initialValues: selected,
         onSelectSuggestion: (item) async => item,
         onCreateByLabel: (label) {
           return DemoItem(label: label);
@@ -70,15 +71,15 @@ class SingleSelectionDemoState extends State<SingleSelectionDemo> {
         },
       ),
       onSubmit: (CLFormFieldResult result) async {
-        final item =
-            (result as CLFormSelectSingleResult).selectedEntitry as DemoItem;
-
-        print(item);
+        setState(() {
+          selected =
+              (result as CLFormSelectSingleResult).selectedEntitry as DemoItem?;
+        });
       },
       backgroundColor: theme.colorScheme.background,
       foregroundColor: theme.colorScheme.foreground,
       mutedForegroundColor: theme.colorScheme.mutedForeground,
-
+      footerText: selected?.toString(),
       rightControl: CLMenuItem(title: 'Next', icon: Icons.arrow_right),
     );
   }

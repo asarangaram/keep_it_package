@@ -14,7 +14,8 @@ class CLWizardFormField extends StatefulWidget implements PreferredSizeWidget {
       this.leftControl,
       this.backgroundColor,
       this.foregroundColor,
-      this.mutedForegroundColor});
+      this.mutedForegroundColor,
+      this.footerText});
 
   final void Function(CLFormFieldResult result) onSubmit;
   final CLFormFieldDescriptors descriptor;
@@ -25,6 +26,7 @@ class CLWizardFormField extends StatefulWidget implements PreferredSizeWidget {
   final Color? foregroundColor;
   final Color? mutedForegroundColor;
   final Color? backgroundColor;
+  final String? footerText;
 
   @override
   State<CLWizardFormField> createState() => _CLWizardFormFieldState();
@@ -77,8 +79,7 @@ class _CLWizardFormFieldState extends State<CLWizardFormField> {
   void controls() {
     switch (widget.rightControl) {
       case CLMenuItem item when item.onTap == null:
-        if ((formKey.currentState?.validate() ?? false) &&
-            !state.result.isEmpty) {
+        if (((formKey.currentState?.validate() ?? true))) {
           rightControl = item.copyWith(
             onTap: () async {
               widget.onSubmit(state.result);
@@ -98,8 +99,6 @@ class _CLWizardFormFieldState extends State<CLWizardFormField> {
 
   @override
   Widget build(BuildContext context) {
-    final formField = state.formField(context, onRefresh: onUpdateResult);
-
     return SizedBox(
       height: widget.preferredSize.height,
       child: Form(
@@ -107,6 +106,7 @@ class _CLWizardFormFieldState extends State<CLWizardFormField> {
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
               Expanded(
                 flex: flex,
@@ -114,7 +114,19 @@ class _CLWizardFormFieldState extends State<CLWizardFormField> {
                   decoration: FormDesign.inputDecoration(context,
                       label: widget.descriptor.label,
                       borderRadius: borderRadius),
-                  child: formField,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    spacing: 8,
+                    children: [
+                      Expanded(
+                          child: state.formField(context,
+                              onRefresh: onUpdateResult)),
+                      if (widget.footerText != null)
+                        Align(
+                            alignment: Alignment.bottomRight,
+                            child: Text(widget.footerText!))
+                    ],
+                  ),
                 ),
               ),
               if (rightControl != null)
