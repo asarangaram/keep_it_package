@@ -33,7 +33,7 @@ class CLWizardFormField extends StatefulWidget implements PreferredSizeWidget {
   State<CLWizardFormField> createState() => _CLWizardFormFieldState();
 
   @override
-  Size get preferredSize => Size(double.infinity, kMinInteractiveDimension * 2);
+  Size get preferredSize => Size(double.infinity, kMinInteractiveDimension * 3);
 }
 
 class _CLWizardFormFieldState extends State<CLWizardFormField> {
@@ -112,26 +112,44 @@ class _CLWizardFormFieldState extends State<CLWizardFormField> {
             children: [
               Expanded(
                 flex: flex,
-                child: InputDecorator(
-                  decoration: FormDesign.inputDecoration(context,
-                      label: widget.descriptor.label,
-                      borderRadius: borderRadius),
-                  child: LayoutBuilder(builder: (context, constraints) {
-                    return SizedBox(
-                        width: constraints.maxWidth,
-                        height: constraints.maxHeight,
-                        child: state.formField(context,
-                            onRefresh: onUpdateResult));
-                  }),
+                child: SizedBox.fromSize(
+                  size: widget.preferredSize,
+                  child: InputDecorator(
+                    decoration: FormDesign.inputDecoration(context,
+                        label: widget.descriptor.label,
+                        borderRadius: borderRadius),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      spacing: 8,
+                      children: [
+                        Flexible(
+                          child: LayoutBuilder(builder: (context, constraints) {
+                            return SizedBox(
+                                width: constraints.maxWidth,
+                                height: constraints.maxHeight,
+                                child: state.formField(context,
+                                    onRefresh: onUpdateResult));
+                          }),
+                        ),
+                        if (widget.footerText != null)
+                          Align(
+                              alignment: Alignment.bottomRight,
+                              child: Text(widget.footerText!))
+                      ],
+                    ),
+                  ),
                 ),
               ),
               if (rightControl != null)
                 Expanded(
-                  child: ActionButton.right(
-                      backgroundColor: widget.backgroundColor,
-                      foregroundColor: widget.foregroundColor,
-                      foregroundDisabledColor: widget.mutedForegroundColor,
-                      menuItem: rightControl!),
+                  child: SizedBox.fromSize(
+                    size: widget.preferredSize,
+                    child: ActionButton.right(
+                        backgroundColor: widget.backgroundColor,
+                        foregroundColor: widget.foregroundColor,
+                        foregroundDisabledColor: widget.mutedForegroundColor,
+                        menuItem: rightControl!),
+                  ),
                 )
             ],
           ),
