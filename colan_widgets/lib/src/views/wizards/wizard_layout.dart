@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../basics/cl_circled_icon.dart';
 import '../../theme/models/cl_icons.dart';
@@ -77,6 +78,88 @@ class WizardLayout extends StatelessWidget {
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class WizardLayout2 extends StatelessWidget {
+  const WizardLayout2({
+    required this.child,
+    this.onCancel,
+    this.title,
+    this.wizard,
+    this.actions,
+    super.key,
+  });
+  final Widget child;
+  final PreferredSizeWidget? wizard;
+  final String? title;
+  final List<Widget>? actions;
+
+  final void Function()? onCancel;
+
+  @override
+  Widget build(BuildContext context) {
+    /*  
+          Do we need ClipRRect?? 
+          
+          */
+    return Scaffold(
+      body: Padding(
+        padding: const EdgeInsets.all(8),
+        child: Column(
+          spacing: 8,
+          children: [
+            Expanded(
+              child: ShadCard(
+                title: AppBar(
+                  automaticallyImplyLeading: false,
+                  centerTitle: false,
+                  title: Text(
+                    title ?? '',
+                  ),
+                  actions: [
+                    if (actions != null) ...actions!.map((e) => e),
+                  ],
+                ),
+                padding: EdgeInsets.zero,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Expanded(
+                        child: Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: child,
+                    )),
+                    /* const Divider(
+                          height: 16,
+                          thickness: 1,
+                          indent: 8,
+                          endIndent: 8,
+                          color: Colors.black,
+                        ), */
+                    if (wizard != null) ...[
+                      const SizedBox(
+                        height: 16,
+                      ),
+                      wizard!,
+                    ],
+                  ],
+                ),
+              ),
+            ),
+            if (onCancel != null)
+              Align(
+                alignment: Alignment.centerRight,
+                child: ShadButton.link(
+                    child: Text(
+                  'Decide Later',
+                  style: ShadTheme.of(context).textTheme.muted,
+                )),
+              )
+          ],
         ),
       ),
     );

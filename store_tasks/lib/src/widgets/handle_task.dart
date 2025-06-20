@@ -68,7 +68,7 @@ class HandleTask extends ConsumerWidget {
             onDone: onDone);
       }
 
-      return WizardLayout(
+      return WizardLayout2(
         title: activeTask.contentOrigin.label,
         onCancel: onDone,
         actions: [

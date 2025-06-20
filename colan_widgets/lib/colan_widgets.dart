@@ -31,4 +31,4 @@ export 'src/views/appearance/cl_scaffold.dart' show CLScaffold;
 export 'src/views/cl_loading_view.dart' show CLLoader;
 export 'src/views/stale_media_indicator_view.dart' show BannerView;
 export 'src/views/wizards/wizard_dialog.dart' show WizardDialog;
-export 'src/views/wizards/wizard_layout.dart' show WizardLayout;
+export 'src/views/wizards/wizard_layout.dart' show WizardLayout, WizardLayout2;
