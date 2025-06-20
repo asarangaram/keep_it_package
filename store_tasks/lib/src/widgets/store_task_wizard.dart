@@ -30,6 +30,7 @@ class StoreTaskWizard extends ConsumerWidget {
     }
     final task = storeTasks.tasks.first;
     return CLFullscreenBox(
+      useSafeArea: true,
       child: ProviderScope(
         overrides: [
           activeTaskProvider.overrideWith((ref) => ActiveTaskNotifier(

@@ -1,3 +1,4 @@
+import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
@@ -66,6 +67,10 @@ class PickCollection extends StatelessWidget {
                   } */
                   return null;
                 },
+                isSuggestedEntry: (entry) {
+                  final item = entry as ViewerEntity;
+                  return collections.entities.contains(item);
+                },
               ),
               onSubmit: (CLFormFieldResult result) async {
                 final collection = (result as CLFormSelectSingleResult)
@@ -116,6 +121,9 @@ class PickCollectionWizard extends StatelessWidget {
               return "length can't exceed 20 characters";
             } */
           return null;
+        },
+        isSuggestedEntry: (entry) {
+          return false;
         },
       ),
       onSubmit: (CLFormFieldResult result) async {
