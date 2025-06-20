@@ -1,10 +1,5 @@
-import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:store/store.dart';
-
-import 'pick_collection.dart';
-import 'edit_collection_description.dart';
-import 'label_viewer.dart';
 
 class CreateCollectionWizard extends StatefulWidget
     implements PreferredSizeWidget {
