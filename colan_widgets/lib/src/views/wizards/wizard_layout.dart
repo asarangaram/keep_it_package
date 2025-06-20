@@ -102,10 +102,6 @@ class WizardLayout2 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    /*  
-          Do we need ClipRRect?? 
-          
-          */
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(8),
@@ -124,6 +120,7 @@ class WizardLayout2 extends StatelessWidget {
                     if (actions != null) ...actions!.map((e) => e),
                   ],
                 ),
+                footer: (wizard != null) ? wizard : null,
                 padding: EdgeInsets.zero,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -140,12 +137,6 @@ class WizardLayout2 extends StatelessWidget {
                           endIndent: 8,
                           color: Colors.black,
                         ), */
-                    if (wizard != null) ...[
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      wizard!,
-                    ],
                   ],
                 ),
               ),
