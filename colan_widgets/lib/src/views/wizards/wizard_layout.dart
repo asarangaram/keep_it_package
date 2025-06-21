@@ -113,43 +113,23 @@ class WizardLayout2 extends StatelessWidget {
                 title: AppBar(
                   automaticallyImplyLeading: false,
                   centerTitle: false,
-                  title: Text(
-                    title ?? '',
-                  ),
+                  title: Text(title ?? ''),
                   actions: [
                     if (actions != null) ...actions!.map((e) => e),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: Icon(clIcons.closeFullscreen),
+                    )
                   ],
                 ),
                 footer: (wizard != null) ? wizard : null,
                 padding: EdgeInsets.zero,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Expanded(
-                        child: Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: child,
-                    )),
-                    /* const Divider(
-                          height: 16,
-                          thickness: 1,
-                          indent: 8,
-                          endIndent: 8,
-                          color: Colors.black,
-                        ), */
-                  ],
+                child: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: child,
                 ),
               ),
             ),
-            if (onCancel != null)
-              Align(
-                alignment: Alignment.centerRight,
-                child: ShadButton.link(
-                    child: Text(
-                  'Decide Later',
-                  style: ShadTheme.of(context).textTheme.muted,
-                )),
-              )
           ],
         ),
       ),

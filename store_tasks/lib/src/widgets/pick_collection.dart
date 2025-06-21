@@ -4,6 +4,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:form_factory/form_factory.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import 'package:store/store.dart';
@@ -27,17 +28,19 @@ class PickCollection extends StatefulWidget implements PreferredSizeWidget {
   State<PickCollection> createState() => _PickCollectionState();
 
   @override
-  Size get preferredSize => const Size.fromHeight(kMinInteractiveDimension * 2);
+  Size get preferredSize => const Size.fromHeight(kMinInteractiveDimension * 3);
 }
 
 class _PickCollectionState extends State<PickCollection> {
   late final SearchController searchController;
+  late final TextEditingController textEditingController;
 
   @override
   void initState() {
     searchController = SearchController();
+    textEditingController = TextEditingController();
     searchController.text = widget.collection?.data.label ?? '';
-
+    textEditingController.text = widget.collection?.data.label ?? '';
     // if collection is empty!
 
     super.initState();
@@ -45,39 +48,29 @@ class _PickCollectionState extends State<PickCollection> {
 
   @override
   void dispose() {
+    textEditingController.dispose();
     searchController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    try {
-      throw Exception('this is an error');
-    } catch (e) {
-      return SizedBox.fromSize(
-        size: widget.preferredSize,
-        child: GetEntities(
-            loadingBuilder: loadingBuilder,
-            errorBuilder: errorBuilder,
-            builder: (entities) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                //only when the collection is Null
-                if (searchController.isAttached && !searchController.isOpen) {
-                  searchController.openView();
-                }
-              });
-              return WizardDialog2(
-                option1: const CLMenuItem(
-                    title: 'Save', icon: LucideIcons.arrowRight),
-                child: CollectionAnchor(
-                  searchController: searchController,
-                  suggestionsBuilder: suggestionsBuilder,
-                ),
-              );
-              /* return ; */
-            }),
-      );
-    }
+    /* if (widget.collection == null &&
+        searchController.isAttached &&
+        !searchController.isOpen) {
+      WidgetsBinding.instance
+          .addPostFrameCallback((_) => searchController.openView());
+    } */
+    return SizedBox.fromSize(
+      size: widget.preferredSize,
+      child: WizardDialog2(
+        child: CollectionAnchor(
+          searchController: searchController,
+          textEditingController: textEditingController,
+          suggestionsBuilder: suggestionsBuilder,
+        ),
+      ),
+    );
   }
 
   Widget errorBuilder([Object? e, StackTrace? st]) {
@@ -102,6 +95,7 @@ class _PickCollectionState extends State<PickCollection> {
           child: CollectionAnchor(
         searchController: searchController,
         suggestionsBuilder: suggestionsBuilder,
+        textEditingController: textEditingController,
       )),
     );
   }
@@ -117,11 +111,13 @@ class _PickCollectionState extends State<PickCollection> {
 class CollectionAnchor extends ConsumerWidget {
   const CollectionAnchor(
       {required this.searchController,
+      required this.textEditingController,
       required this.suggestionsBuilder,
       super.key});
   final FutureOr<Iterable<Widget>> Function(BuildContext, SearchController)
       suggestionsBuilder;
   final SearchController searchController;
+  final TextEditingController textEditingController;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -130,20 +126,77 @@ class CollectionAnchor extends ConsumerWidget {
       isFullScreen: true,
       suggestionsBuilder: suggestionsBuilder,
       builder: (context, controller) {
-        return GestureDetector(
-            onTap: controller.openView,
-            child: SizedBox.expand(
-              child: Center(
-                  child: TextField(
-                controller: controller,
-                onTap: () {
-                  controller.openView();
-                },
-                onChanged: (_) {
-                  controller.openView();
-                },
+        return InputDecorator(
+          decoration: InputDecoration(
+              //isDense: true,
+              contentPadding: const EdgeInsets.fromLTRB(20, 8, 4, 8),
+              labelText: 'Select a collection',
+              labelStyle: Theme.of(context)
+                  .textTheme
+                  .bodyLarge
+                  ?.copyWith(fontWeight: FontWeight.bold, fontSize: 20),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                gapPadding: 8,
+              ),
+              suffixIcon: FractionallySizedBox(
+                widthFactor: 0.2,
+                heightFactor: 1,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color:
+                        CLTheme.of(context).colors.wizardButtonBackgroundColor,
+                    border: Border.all(),
+                    borderRadius: const BorderRadius.only(
+                      topRight: Radius.circular(16),
+                      bottomRight: Radius.circular(16),
+                    ),
+                  ),
+                  child: Align(
+                    child: CLButtonIconLabelled.standard(
+                      LucideIcons.folderInput,
+                      'Keep',
+                      color: Theme.of(context).colorScheme.surface,
+                    ),
+                  ),
+                ),
               )),
-            ));
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              spacing: 8,
+              children: [
+                Expanded(
+                  flex: 13,
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: TextField(
+                      decoration: InputDecoration(
+                          hintStyle: ShadTheme.of(context).textTheme.muted,
+                          hintText: 'Tap here to select a collection'),
+                      controller: textEditingController,
+                      onTap: searchController.openView,
+                      onChanged: (_) => searchController.openView(),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 7,
+                  child: Align(
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        'Server100@cloudonlanapps',
+                        style: ShadTheme.of(context)
+                            .textTheme
+                            .muted
+                            .copyWith(color: Colors.red),
+                      )),
+                )
+              ],
+            ),
+          ),
+        );
       },
     );
   }
