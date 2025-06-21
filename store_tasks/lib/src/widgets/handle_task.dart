@@ -6,8 +6,8 @@ import 'package:store/store.dart';
 import 'package:store_tasks/src/providers/active_task.dart';
 import 'package:store_tasks/src/widgets/keep_with_progress.dart';
 
-import 'create_collection_wizard.dart';
 import 'items_preview.dart';
+import 'pick_collection.dart';
 import 'selection_control_icon.dart';
 import 'wizard_menu_items.dart';
 
@@ -52,14 +52,17 @@ class HandleTask extends ConsumerWidget {
           option2: menu.option2,
         );
       } else if (activeTask.targetConfirmed == null) {
-        wizard = CreateCollectionWizard(
-            collection: activeTask.collection as StoreEntity?,
-            isValidSuggestion: (collection) {
-              return !collection.data.isDeleted;
-            },
-            onDone: ({required collection}) {
+        wizard = PickCollection(
+          collection: activeTask.collection as StoreEntity?,
+          isValidSuggestion: (collection) {
+            return !collection.data.isDeleted;
+          },
+          onDone: (collection) {
+            if (collection.id != null) {
               ref.read(activeTaskProvider.notifier).target = collection;
-            });
+            }
+          },
+        );
       } else {
         wizard = KeepWithProgress(
             media2Move: ViewerEntities(
@@ -72,7 +75,8 @@ class HandleTask extends ConsumerWidget {
         title: activeTask.contentOrigin.label,
         onCancel: onDone,
         actions: [
-          if (activeTask.selectable) const SelectionControlIcon(),
+          if (activeTask.itemsConfirmed == null)
+            if (activeTask.selectable) const SelectionControlIcon(),
         ],
         wizard: wizard,
         child: const WizardPreview(),
