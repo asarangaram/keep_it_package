@@ -2,8 +2,8 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
-import 'package:store_tasks/src/widgets/confirm_collection.dart';
-import 'package:store_tasks/src/widgets/pick_collection.dart';
+
+import 'confirm_collection.dart';
 
 class PickWizard extends ConsumerWidget {
   const PickWizard({

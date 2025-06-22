@@ -2,11 +2,11 @@ import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:store_tasks/src/models/content_origin.dart';
-import 'package:store_tasks/src/widgets/handle_task.dart';
 
+import '../../store_tasks.dart';
 import '../providers/active_task.dart';
 import '../providers/store_tasks.dart';
+import 'handle_task.dart';
 
 class StoreTaskWizard extends ConsumerWidget {
   const StoreTaskWizard({required this.type, required this.onDone, super.key});

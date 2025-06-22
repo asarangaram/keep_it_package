@@ -3,10 +3,10 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
-import 'package:store_tasks/src/providers/active_task.dart';
-import 'package:store_tasks/src/widgets/keep_with_progress.dart';
 
+import '../providers/active_task.dart';
 import 'items_preview.dart';
+import 'keep_with_progress.dart';
 import 'pick_collection.dart';
 import 'selection_control_icon.dart';
 import 'wizard_menu_items.dart';

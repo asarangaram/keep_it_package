@@ -1,15 +1,10 @@
-import 'dart:async';
-
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
-
 import 'package:store/store.dart';
-import 'package:store_tasks/src/widgets/collection_anchor.dart';
-import 'package:store_tasks/src/widgets/pick_wizard.dart';
-import 'package:store_tasks/src/widgets/wizard_error.dart';
 
-import 'with_target_store.dart';
+import 'pick_collection/collection_anchor.dart';
+import 'pick_collection/pick_wizard.dart';
 
 class PickCollection extends StatefulWidget implements PreferredSizeWidget {
   const PickCollection({
@@ -31,22 +26,18 @@ class PickCollection extends StatefulWidget implements PreferredSizeWidget {
 
 class _PickCollectionState extends State<PickCollection> {
   late final SearchController searchController;
-  late final TextEditingController textEditingController;
+  late StoreEntity? collection;
 
   @override
   void initState() {
+    collection = widget.collection;
     searchController = SearchController();
-    textEditingController = TextEditingController();
     searchController.text = widget.collection?.data.label ?? '';
-    textEditingController.text = widget.collection?.data.label ?? '';
-    // if collection is empty!
-
     super.initState();
   }
 
   @override
   void dispose() {
-    textEditingController.dispose();
     searchController.dispose();
     super.dispose();
   }
@@ -55,37 +46,21 @@ class _PickCollectionState extends State<PickCollection> {
   Widget build(BuildContext context) {
     return SizedBox.fromSize(
       size: widget.preferredSize,
-      child: WithTargetStore(
+      child: PickWizard(
+        menuItem: CLMenuItem(
+            title: 'Keep',
+            icon: LucideIcons.folderInput,
+            onTap: collection == null
+                ? null
+                : () async {
+                    widget.onDone(collection!);
+                    return true;
+                  }),
+        child: CollectionAnchor(
           collection: widget.collection,
-          loadingBuilder: () =>
-              PickWizard(child: CLLoader.widget(debugMessage: null)),
-          errorBuilder: ([e, st]) => WizardError.show(context, e, st),
-          builder: () {
-            /* if (widget.collection == null &&
-                  searchController.isAttached &&
-                  !searchController.isOpen) {
-                WidgetsBinding.instance
-                    .addPostFrameCallback((_) => searchController.openView());
-              } */
-            return PickWizard(
-              menuItem: const CLMenuItem(
-                title: 'Keep',
-                icon: LucideIcons.folderInput,
-              ),
-              child: CollectionAnchor(
-                searchController: searchController,
-                textEditingController: textEditingController,
-                suggestionsBuilder: suggestionsBuilder,
-              ),
-            );
-          }),
+          searchController: searchController,
+        ),
+      ),
     );
-  }
-
-  FutureOr<Iterable<Widget>> suggestionsBuilder(
-    BuildContext context,
-    SearchController controller,
-  ) async {
-    return [];
   }
 }
