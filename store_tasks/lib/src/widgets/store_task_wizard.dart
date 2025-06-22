@@ -2,6 +2,7 @@ import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:store/store.dart';
 import 'package:store_tasks/src/models/content_origin.dart';
 import 'package:store_tasks/src/widgets/handle_task.dart';
 
@@ -29,8 +30,7 @@ class StoreTaskWizard extends ConsumerWidget {
       );
     }
     final task = storeTasks.tasks.first;
-    return CLFullscreenBox(
-      useSafeArea: true,
+    return SafeArea(
       child: ProviderScope(
         overrides: [
           activeTaskProvider.overrideWith((ref) => ActiveTaskNotifier(
@@ -54,3 +54,7 @@ class StoreTaskWizard extends ConsumerWidget {
     );
   }
 }
+
+final targetStoreProvider = StateProvider<CLStore>((ref) {
+  throw Exception('Must override targetStoreProvider');
+});

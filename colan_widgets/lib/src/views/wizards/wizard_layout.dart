@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../basics/cl_circled_icon.dart';
 import '../../theme/models/cl_icons.dart';
@@ -102,35 +101,32 @@ class WizardLayout2 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(8),
-        child: Column(
-          spacing: 8,
-          children: [
-            Expanded(
-              child: ShadCard(
-                title: AppBar(
-                  automaticallyImplyLeading: false,
-                  centerTitle: false,
-                  title: Text(title ?? ''),
-                  actions: [
-                    if (actions != null) ...actions!.map((e) => e),
-                    Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: Icon(clIcons.closeFullscreen),
-                    )
-                  ],
-                ),
-                footer: (wizard != null) ? wizard : null,
-                padding: EdgeInsets.zero,
-                child: Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: child,
-                ),
-              ),
-            ),
-          ],
+    return Container(
+      margin: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+          borderRadius: const BorderRadius.all(Radius.circular(16)),
+          border: Border.all()),
+      child: ClipRRect(
+        borderRadius: const BorderRadius.all(Radius.circular(16)),
+        child: Scaffold(
+          appBar: AppBar(
+            automaticallyImplyLeading: false,
+            centerTitle: false,
+            title: Text(title ?? ''),
+            actions: [
+              if (actions != null) ...actions!.map((e) => e),
+              Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: GestureDetector(
+                    onTap: onCancel, child: Icon(clIcons.closeFullscreen)),
+              )
+            ],
+          ),
+          body: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: child,
+          ),
+          bottomNavigationBar: (wizard != null) ? wizard : null,
         ),
       ),
     );

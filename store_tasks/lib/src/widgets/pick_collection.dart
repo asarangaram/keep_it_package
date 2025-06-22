@@ -127,23 +127,24 @@ class CollectionAnchor extends ConsumerWidget {
         return InputDecorator(
           decoration: InputDecoration(
               //isDense: true,
-              contentPadding: const EdgeInsets.fromLTRB(20, 8, 4, 8),
+              contentPadding: const EdgeInsets.fromLTRB(30, 8, 4, 8),
               labelText: 'Select a collection',
               labelStyle: Theme.of(context)
                   .textTheme
                   .bodyLarge
                   ?.copyWith(fontWeight: FontWeight.bold, fontSize: 20),
               enabledBorder: OutlineInputBorder(
+                //borderSide: const BorderSide(width: 3),
                 borderRadius: BorderRadius.circular(16),
                 gapPadding: 8,
               ),
+              focusColor: ShadTheme.of(context).colorScheme.primary,
               suffixIcon: FractionallySizedBox(
                 widthFactor: 0.2,
                 heightFactor: 1,
                 child: Container(
                   decoration: BoxDecoration(
-                    color:
-                        CLTheme.of(context).colors.wizardButtonBackgroundColor,
+                    color: ShadTheme.of(context).colorScheme.primary,
                     border: Border.all(),
                     borderRadius: const BorderRadius.only(
                       topRight: Radius.circular(16),
@@ -154,7 +155,8 @@ class CollectionAnchor extends ConsumerWidget {
                     child: CLButtonIconLabelled.standard(
                       LucideIcons.folderInput,
                       'Keep',
-                      color: Theme.of(context).colorScheme.surface,
+                      color:
+                          ShadTheme.of(context).colorScheme.primaryForeground,
                     ),
                   ),
                 ),

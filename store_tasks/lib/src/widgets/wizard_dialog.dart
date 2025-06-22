@@ -19,12 +19,12 @@ class WizardDialog2 extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: fixedHeight ? kMinInteractiveDimension * 3 : null,
-      decoration: BoxDecoration(
-          border: Border(
-              top: BorderSide(color: ShadTheme.of(context).colorScheme.muted))),
-      child: child,
+      child: Padding(
+        padding: const EdgeInsets.all(2),
+        child: child,
+      ),
     );
   }
 
