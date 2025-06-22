@@ -1,5 +1,4 @@
-import 'dart:async';
-
+import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
@@ -28,10 +27,47 @@ class CollectionAnchor extends ConsumerWidget {
           return SearchAnchor(
             searchController: searchController,
             isFullScreen: true,
+            viewBuilder: (suggestions) {
+              final items = suggestions.toList();
+              return Padding(
+                padding: const EdgeInsets.all(8),
+                child: CLGrid(
+                  columns: 3,
+                  itemCount: items.length,
+                  physics: const BouncingScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    return items[index];
+                  },
+                ),
+              );
+            },
             suggestionsBuilder: (context, controller) {
-              return entities.entities.map((e) => ListTile(
-                    title: Text(e.label!),
-                  ));
+              final suggestions = <Widget>[];
+              if (controller.text.isEmpty) {
+                suggestions.addAll(entities.entities.map((e) => Center(
+                      child: GetEntities(
+                          parentId: e.id,
+                          errorBuilder: (_, __) => const BrokenImage(),
+                          loadingBuilder: () => const GreyShimmer(),
+                          builder: (children) {
+                            return CLEntityView(entity: e, children: children);
+                          }),
+                    )));
+              } else {
+                suggestions.addAll(entities.entities
+                    .where((e) => e.label!.startsWith(searchController.text))
+                    .map((e) => GetEntities(
+                        parentId: e.id,
+                        errorBuilder: (_, __) => const BrokenImage(),
+                        loadingBuilder: () => const GreyShimmer(),
+                        builder: (children) {
+                          return CLEntityView(entity: e, children: children);
+                        })));
+              }
+              suggestions.add(Container(
+                child: const Icon(Icons.add),
+              ));
+              return suggestions;
             },
             builder: (context, controller) {
               return Column(
@@ -72,13 +108,6 @@ class CollectionAnchor extends ConsumerWidget {
             },
           );
         });
-  }
-
-  FutureOr<Iterable<Widget>> suggestionsBuilder(
-    BuildContext context,
-    SearchController controller,
-  ) async {
-    return [];
   }
 }
 

@@ -92,7 +92,7 @@ class CLRawGalleryGridViewState extends ConsumerState<CLRawGalleryGridView> {
                   );
                 }
                 final gallery = galleryGroups[groupIndex];
-                return CLGrid<ViewerEntity>(
+                return CLGrid(
                   itemCount: gallery.items.length,
                   columns: widget.columns,
                   itemBuilder: (context, itemIndex) {
