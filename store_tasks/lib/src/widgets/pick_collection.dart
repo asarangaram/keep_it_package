@@ -2,14 +2,14 @@ import 'dart:async';
 
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import 'package:store/store.dart';
-import 'package:store_tasks/src/widgets/load_shimmer.dart';
+import 'package:store_tasks/src/widgets/collection_anchor.dart';
+import 'package:store_tasks/src/widgets/pick_wizard.dart';
 import 'package:store_tasks/src/widgets/wizard_error.dart';
 
-import 'wizard_dialog.dart';
+import 'with_target_store.dart';
 
 class PickCollection extends StatefulWidget implements PreferredSizeWidget {
   const PickCollection({
@@ -53,48 +53,32 @@ class _PickCollectionState extends State<PickCollection> {
 
   @override
   Widget build(BuildContext context) {
-    /* if (widget.collection == null &&
-        searchController.isAttached &&
-        !searchController.isOpen) {
-      WidgetsBinding.instance
-          .addPostFrameCallback((_) => searchController.openView());
-    } */
     return SizedBox.fromSize(
       size: widget.preferredSize,
-      child: WizardDialog2(
-        child: CollectionAnchor(
-          searchController: searchController,
-          textEditingController: textEditingController,
-          suggestionsBuilder: suggestionsBuilder,
-        ),
-      ),
-    );
-  }
-
-  Widget errorBuilder([Object? e, StackTrace? st]) {
-    return Container(
-      decoration: BoxDecoration(
-          border: Border(
-              top: BorderSide(
-                  width: 2, color: ShadTheme.of(context).colorScheme.muted))),
-      child: WizardError(
-        error: e.toString(),
-      ),
-    );
-  }
-
-  Widget loadingBuilder() {
-    return Container(
-      decoration: BoxDecoration(
-          border: Border(
-              top: BorderSide(
-                  width: 2, color: ShadTheme.of(context).colorScheme.muted))),
-      child: LoadShimmer(
-          child: CollectionAnchor(
-        searchController: searchController,
-        suggestionsBuilder: suggestionsBuilder,
-        textEditingController: textEditingController,
-      )),
+      child: WithTargetStore(
+          collection: widget.collection,
+          loadingBuilder: () =>
+              PickWizard(child: CLLoader.widget(debugMessage: null)),
+          errorBuilder: ([e, st]) => WizardError.show(context, e, st),
+          builder: () {
+            /* if (widget.collection == null &&
+                  searchController.isAttached &&
+                  !searchController.isOpen) {
+                WidgetsBinding.instance
+                    .addPostFrameCallback((_) => searchController.openView());
+              } */
+            return PickWizard(
+              menuItem: const CLMenuItem(
+                title: 'Keep',
+                icon: LucideIcons.folderInput,
+              ),
+              child: CollectionAnchor(
+                searchController: searchController,
+                textEditingController: textEditingController,
+                suggestionsBuilder: suggestionsBuilder,
+              ),
+            );
+          }),
     );
   }
 
@@ -103,101 +87,5 @@ class _PickCollectionState extends State<PickCollection> {
     SearchController controller,
   ) async {
     return [];
-  }
-}
-
-class CollectionAnchor extends ConsumerWidget {
-  const CollectionAnchor(
-      {required this.searchController,
-      required this.textEditingController,
-      required this.suggestionsBuilder,
-      super.key});
-  final FutureOr<Iterable<Widget>> Function(BuildContext, SearchController)
-      suggestionsBuilder;
-  final SearchController searchController;
-  final TextEditingController textEditingController;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return SearchAnchor(
-      searchController: searchController,
-      isFullScreen: true,
-      suggestionsBuilder: suggestionsBuilder,
-      builder: (context, controller) {
-        return InputDecorator(
-          decoration: InputDecoration(
-              //isDense: true,
-              contentPadding: const EdgeInsets.fromLTRB(30, 8, 4, 8),
-              labelText: 'Select a collection',
-              labelStyle: Theme.of(context)
-                  .textTheme
-                  .bodyLarge
-                  ?.copyWith(fontWeight: FontWeight.bold, fontSize: 20),
-              enabledBorder: OutlineInputBorder(
-                //borderSide: const BorderSide(width: 3),
-                borderRadius: BorderRadius.circular(16),
-                gapPadding: 8,
-              ),
-              focusColor: ShadTheme.of(context).colorScheme.primary,
-              suffixIcon: FractionallySizedBox(
-                widthFactor: 0.2,
-                heightFactor: 1,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: ShadTheme.of(context).colorScheme.primary,
-                    border: Border.all(),
-                    borderRadius: const BorderRadius.only(
-                      topRight: Radius.circular(16),
-                      bottomRight: Radius.circular(16),
-                    ),
-                  ),
-                  child: Align(
-                    child: CLButtonIconLabelled.standard(
-                      LucideIcons.folderInput,
-                      'Keep',
-                      color:
-                          ShadTheme.of(context).colorScheme.primaryForeground,
-                    ),
-                  ),
-                ),
-              )),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              spacing: 8,
-              children: [
-                Expanded(
-                  flex: 13,
-                  child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: TextField(
-                      decoration: InputDecoration(
-                          hintStyle: ShadTheme.of(context).textTheme.muted,
-                          hintText: 'Tap here to select a collection'),
-                      controller: textEditingController,
-                      onTap: searchController.openView,
-                      onChanged: (_) => searchController.openView(),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  flex: 7,
-                  child: Align(
-                      alignment: Alignment.centerRight,
-                      child: Text(
-                        'Server100@cloudonlanapps',
-                        style: ShadTheme.of(context)
-                            .textTheme
-                            .muted
-                            .copyWith(color: Colors.red),
-                      )),
-                )
-              ],
-            ),
-          ),
-        );
-      },
-    );
   }
 }

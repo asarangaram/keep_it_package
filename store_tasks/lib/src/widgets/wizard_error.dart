@@ -1,12 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import 'pick_wizard.dart';
+
 class WizardError extends StatefulWidget {
   const WizardError({super.key, this.error});
   final String? error;
 
   @override
   State<WizardError> createState() => _WizardErrorState();
+
+  static Widget show(BuildContext context, [Object? e, StackTrace? st]) {
+    return PickWizard(
+      child: WizardError(
+        error: e?.toString(),
+      ),
+    );
+  }
 }
 
 class _WizardErrorState extends State<WizardError> {
@@ -18,12 +28,12 @@ class _WizardErrorState extends State<WizardError> {
         mainAxisSize: MainAxisSize.min,
         spacing: 8,
         children: [
-          Text(
-            'Something went wrong.',
-            style: ShadTheme.of(context)
-                .textTheme
-                .list
-                .copyWith(color: ShadTheme.of(context).colorScheme.destructive),
+          Flexible(
+            child: Text(
+              'Something went wrong.',
+              style: ShadTheme.of(context).textTheme.list.copyWith(
+                  color: ShadTheme.of(context).colorScheme.destructive),
+            ),
           ),
           ShadPopover(
             controller: popoverController,
