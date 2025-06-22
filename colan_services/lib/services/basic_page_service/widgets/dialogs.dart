@@ -39,7 +39,6 @@ class DialogService {
                             entities: const ViewerEntities([]),
                           );
                         },
-                        whenNopreview: const Center(),
                       ),
                     ),
                   _ => Container()
