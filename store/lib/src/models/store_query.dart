@@ -1,5 +1,7 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
+import 'package:store/store.dart';
 
 import 'cl_entity.dart';
 
@@ -7,34 +9,34 @@ class NotNullValues {}
 
 @immutable
 class StoreQuery<T> {
-  const StoreQuery(this.map);
+  const StoreQuery(this.map, {this.store});
 
   final Map<String, dynamic> map;
+  final CLStore? store;
 
   @override
   bool operator ==(covariant StoreQuery<T> other) {
     if (identical(this, other)) return true;
     final mapEquals = const DeepCollectionEquality().equals;
 
-    return mapEquals(other.map, map);
+    return mapEquals(other.map, map) && store == other.store;
   }
 
   @override
-  int get hashCode => map.entries.fold(0, (previousValue, element) {
+  int get hashCode =>
+      map.entries.fold(store.hashCode, (previousValue, element) {
         return previousValue ^ element.key.hashCode ^ element.value.hashCode;
       });
 
   StoreQuery<T> copyWith({
-    String? storeIdentity,
+    CLStore? store,
     Map<String, dynamic>? map,
   }) {
-    return StoreQuery<T>(
-      map ?? this.map,
-    );
+    return StoreQuery<T>(map ?? this.map, store: store ?? this.store);
   }
 
   @override
-  String toString() => 'StoreQuery( map: $map)';
+  String toString() => 'StoreQuery(map: $map, store: $store)';
 }
 
 class Shortcuts {

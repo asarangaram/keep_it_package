@@ -64,17 +64,17 @@ class GetEntity extends ConsumerWidget {
 }
 
 class GetEntities extends ConsumerWidget {
-  const GetEntities({
-    required this.builder,
-    required this.errorBuilder,
-    required this.loadingBuilder,
-    this.parentId, // parentID = 0 ignores parentId, null is a valid parentId
-    this.isCollection, // isCollection = null ignores isCollection
-    super.key,
-    this.isHidden = false, // isHidden = null ignores isHidden
-    this.isDeleted = false, // isDeleted = null ignores isDeleted
-    this.hasPin,
-  });
+  const GetEntities(
+      {required this.builder,
+      required this.errorBuilder,
+      required this.loadingBuilder,
+      this.parentId, // parentID = 0 ignores parentId, null is a valid parentId
+      this.isCollection, // isCollection = null ignores isCollection
+      super.key,
+      this.isHidden = false, // isHidden = null ignores isHidden
+      this.isDeleted = false, // isDeleted = null ignores isDeleted
+      this.hasPin,
+      this.store});
   final Widget Function(ViewerEntities items) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
@@ -83,18 +83,17 @@ class GetEntities extends ConsumerWidget {
   final bool? isHidden;
   final bool? isDeleted;
   final bool? hasPin;
+  final CLStore? store;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final query = StoreQuery<CLEntity>(
-      {
-        if (isHidden != null) 'isHidden': isHidden! ? 1 : 0,
-        if (isDeleted != null) 'isDeleted': isDeleted! ? 1 : 0,
-        if (parentId != 0) 'parentId': parentId,
-        if (isCollection != null) 'isCollection': isCollection! ? 1 : 0,
-        if (hasPin != null) 'pin': hasPin! ? NotNullValues : null,
-      },
-    );
+    final query = StoreQuery<CLEntity>({
+      if (isHidden != null) 'isHidden': isHidden! ? 1 : 0,
+      if (isDeleted != null) 'isDeleted': isDeleted! ? 1 : 0,
+      if (parentId != 0) 'parentId': parentId,
+      if (isCollection != null) 'isCollection': isCollection! ? 1 : 0,
+      if (hasPin != null) 'pin': hasPin! ? NotNullValues : null,
+    }, store: store);
 
     final dataAsync = ref.watch(entitiesProvider(query));
     return dataAsync.when(
