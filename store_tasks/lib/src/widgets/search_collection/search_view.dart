@@ -88,9 +88,28 @@ class SearchView0 extends ConsumerWidget {
                 Expanded(
                   child: CLGrid(
                     columns: 3,
-                    itemCount: items.length,
+                    itemCount: items.length + 1,
                     physics: const BouncingScrollPhysics(),
                     itemBuilder: (context, index) {
+                      if (index == items.length) {
+                        return FolderItem(
+                          name: searchController.text.isEmpty
+                              ? 'Create New'
+                              : "Create '${searchController.text}'",
+                          child: SizedBox.expand(
+                              child: FractionallySizedBox(
+                            widthFactor: 0.7,
+                            heightFactor: 0.7,
+                            child: FittedBox(
+                                fit: BoxFit.cover,
+                                child: Icon(
+                                  LucideIcons.plus,
+                                  color: const Color(0xFFE6B65C)
+                                      .withValues(alpha: 0.6),
+                                )),
+                          )),
+                        );
+                      }
                       return Center(
                         child: GetEntities(
                             parentId: items[index].id,
@@ -128,7 +147,6 @@ class StoreSelector extends ConsumerWidget {
               message: 'Scanning Avaliable Servers ...',
             ),
         errorBuilder: (e, st) {
-          print('error: $e');
           return Center(
             child: ShadBadge.destructive(
               onPressed: onFailed,

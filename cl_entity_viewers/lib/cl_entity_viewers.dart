@@ -23,3 +23,4 @@ export 'src/gallery_view/builders/get_filterred.dart' show GetFilterred;
 export 'src/common/models/viewer_entities.dart' show ViewerEntities;
 export 'src/common/views/preview/collection_preview_raw.dart' show CLEntityView;
 export 'src/gallery_view/views/cl_grid.dart' show CLGrid;
+export 'src/common/views/preview/collection_folder_item.dart' show FolderItem;
