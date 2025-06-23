@@ -1,3 +1,4 @@
+import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -57,9 +58,11 @@ class _PickCollectionState extends State<PickCollection> {
                     return true;
                   }),
         child: CollectionAnchor(
-          collection: widget.collection,
-          searchController: searchController,
-        ),
+            collection: widget.collection,
+            searchController: searchController,
+            onDone: (StoreEntity candidate) {
+              collection = candidate;
+            }),
       ),
     );
   }

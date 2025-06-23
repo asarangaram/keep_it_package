@@ -11,9 +11,13 @@ import 'wizard_error.dart';
 
 class CollectionAnchor extends ConsumerStatefulWidget {
   const CollectionAnchor(
-      {required this.collection, required this.searchController, super.key});
+      {required this.collection,
+      required this.searchController,
+      required this.onDone,
+      super.key});
   final StoreEntity? collection;
   final SearchController searchController;
+  final void Function(StoreEntity candidate) onDone;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>

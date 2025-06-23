@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
+import 'package:store_tasks/src/widgets/search_collection/create_new_collection.dart';
 
 import '../pick_collection/wizard_error.dart';
 
@@ -92,33 +93,12 @@ class SearchView0 extends ConsumerWidget {
                     physics: const BouncingScrollPhysics(),
                     itemBuilder: (context, index) {
                       if (index == items.length) {
-                        return FolderItem(
-                          name: searchController.text.isEmpty
-                              ? 'Create New'
-                              : "Create '${searchController.text}'",
-                          child: SizedBox.expand(
-                              child: FractionallySizedBox(
-                            widthFactor: 0.7,
-                            heightFactor: 0.7,
-                            child: FittedBox(
-                                fit: BoxFit.cover,
-                                child: Icon(
-                                  LucideIcons.plus,
-                                  color: const Color(0xFFE6B65C)
-                                      .withValues(alpha: 0.6),
-                                )),
-                          )),
-                        );
+                        return CreateNewCollection(
+                            searchController: searchController);
                       }
-                      return Center(
-                        child: GetEntities(
-                            parentId: items[index].id,
-                            errorBuilder: (_, __) => const BrokenImage(),
-                            loadingBuilder: () => const GreyShimmer(),
-                            builder: (children) {
-                              return CLEntityView(
-                                  entity: items[index], children: children);
-                            }),
+                      return SuggestedCollection(
+                        item: items[index],
+                        searchController: searchController,
                       );
                     },
                   ),
@@ -127,6 +107,34 @@ class SearchView0 extends ConsumerWidget {
             ),
           );
         });
+  }
+}
+
+class SuggestedCollection extends StatelessWidget {
+  const SuggestedCollection(
+      {required this.item, required this.searchController, super.key});
+
+  final ViewerEntity item;
+  final SearchController searchController;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: GestureDetector(
+        onTap: () => searchController.closeView(item.label),
+        child: GetEntities(
+            parentId: item.id,
+            errorBuilder: (_, __) => CLEntityView(
+                  entity: item,
+                ),
+            loadingBuilder: () => CLEntityView(
+                  entity: item,
+                ),
+            builder: (children) {
+              return CLEntityView(entity: item, children: children);
+            }),
+      ),
+    );
   }
 }
 
