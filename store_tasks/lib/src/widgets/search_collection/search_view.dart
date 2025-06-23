@@ -139,7 +139,6 @@ class StoreSelector extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = ShadTheme.of(context);
     final targetStore = ref.watch(targetStoreProvider);
     return GetAvailableStores(
         loadingBuilder: () => CLLoader.widget(
