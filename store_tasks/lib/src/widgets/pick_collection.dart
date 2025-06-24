@@ -1,13 +1,11 @@
-import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:colan_widgets/colan_widgets.dart';
-import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
+import 'package:store_tasks/src/widgets/search_collection/collection_search_view.dart';
 
-import 'pick_collection/wizard_error.dart';
-import 'search_collection/search_bar.dart';
-import 'search_collection/search_view.dart';
+import 'pick_collection/pick_wizard.dart';
+import 'pick_collection/server_label.dart';
 import 'search_collection/text_edit_box.dart';
 
 class PickCollection extends StatefulWidget implements PreferredSizeWidget {
@@ -53,98 +51,50 @@ class _PickCollectionState extends State<PickCollection> {
   Widget build(BuildContext context) {
     return Hero(
       tag: 'Search bar',
-      child: TextEditBox(
-        controller: viewController,
-        collection: collection,
-        onTap: () async {
-          final result = await showModalBottomSheet<StoreEntity>(
-              context: context,
-              isScrollControlled: true,
-              shape: const RoundedRectangleBorder(),
-              constraints: const BoxConstraints(),
-              useSafeArea: true,
-              isDismissible: false,
-              builder: (BuildContext context) {
-                return CollectionSearchView(
-                  collection: collection,
-                );
-              });
+      child: SizedBox(
+        height: kMinInteractiveDimension * 3,
+        child: PickWizard(
+          menuItem: CLMenuItem(
+              title: 'Keep',
+              icon: LucideIcons.folderInput,
+              onTap: collection == null
+                  ? null
+                  : () async {
+                      widget.onDone(collection!);
+                      return true;
+                    }),
+          child: TextEditBox(
+            controller: viewController,
+            collection: collection,
+            onTap: () async {
+              final result = await showModalBottomSheet<StoreEntity>(
+                  context: context,
+                  isScrollControlled: true,
+                  shape: const RoundedRectangleBorder(),
+                  constraints: const BoxConstraints(),
+                  useSafeArea: true,
+                  isDismissible: false,
+                  builder: (BuildContext context) {
+                    return CollectionSearchView(
+                      collection: collection,
+                    );
+                  });
 
-          if (result != null) {
-            setState(() {
-              collection = result;
-            });
-          }
-          viewController.text = collection?.label ?? '';
-        },
-        menuItem: CLMenuItem(
-            title: 'Keep',
-            icon: LucideIcons.folderInput,
-            onTap: collection == null
+              if (result != null) {
+                setState(() {
+                  collection = result;
+                });
+              }
+              viewController.text = collection?.label ?? '';
+            },
+            serverWidget: collection == null
                 ? null
-                : () async {
-                    widget.onDone(collection!);
-                    return true;
-                  }),
+                : ServerLabel(
+                    store: (collection!).store,
+                  ),
+          ),
+        ),
       ),
     );
-  }
-}
-
-class CollectionSearchView extends StatefulWidget {
-  const CollectionSearchView({required this.collection, super.key});
-
-  final ViewerEntity? collection;
-
-  @override
-  State<StatefulWidget> createState() => _CollectionSearchViewState();
-}
-
-class _CollectionSearchViewState extends State<CollectionSearchView> {
-  late final TextEditingController controller;
-
-  @override
-  void initState() {
-    controller = TextEditingController(text: widget.collection?.label ?? '');
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
-
-  void onClose() => Navigator.of(context).pop;
-  void onSelect(ViewerEntity entity) => Navigator.of(context).pop(entity);
-
-  @override
-  Widget build(BuildContext context) {
-    return GetActiveStore(
-        loadingBuilder: () => CLLoader.widget(debugMessage: null),
-        errorBuilder: (e, st) {
-          return WizardError(
-            error: e.toString(),
-            onClose: onClose,
-          );
-        },
-        builder: (activeStore) {
-          return Column(
-            children: [
-              EntitySearchBar(
-                controller: controller,
-                onClose: onClose,
-              ),
-              Expanded(
-                  child: SearchView(
-                controller: controller,
-                targetStore:
-                    (widget.collection as StoreEntity?)?.store ?? activeStore,
-                onClose: onClose,
-                onSelect: onSelect,
-              )),
-            ],
-          );
-        });
   }
 }
