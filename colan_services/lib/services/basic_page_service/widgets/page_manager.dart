@@ -99,7 +99,7 @@ class PageManager {
             if (parentId != null) 'parentId=$parentId',
           ];
           final query = queryMap.isNotEmpty ? '?${queryMap.join('&')}' : '';
-          await navigator.pushNamed(context, '/camera?$query');
+          await navigator.pushNamed(context, '/camera$query');
         }
       },
       themeData: DefaultCLCameraIcons(),
