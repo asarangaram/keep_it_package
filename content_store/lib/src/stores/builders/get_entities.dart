@@ -6,15 +6,15 @@ import 'package:store/store.dart';
 import '../providers/store_query_result.dart';
 
 class GetEntity extends ConsumerWidget {
-  const GetEntity({
-    required this.builder,
-    required this.errorBuilder,
-    required this.loadingBuilder,
-    this.id,
-    super.key,
-    this.label, // Searches only collection
-    this.md5, // Searches only media
-  });
+  const GetEntity(
+      {required this.builder,
+      required this.errorBuilder,
+      required this.loadingBuilder,
+      this.id,
+      super.key,
+      this.label, // Searches only collection
+      this.md5, // Searches only media
+      this.store});
   final Widget Function(StoreEntity? item) builder;
   final Widget Function(Object, StackTrace) errorBuilder;
   final Widget Function() loadingBuilder;
@@ -22,6 +22,7 @@ class GetEntity extends ConsumerWidget {
   final int? id;
   final int? label;
   final int? md5;
+  final CLStore? store;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -35,19 +36,17 @@ class GetEntity extends ConsumerWidget {
           'Incorrect usage. Use one, only one of id, md5 or label',
         );
       }
-      query = StoreQuery<CLEntity>(
-        {
-          if (id != null)
-            'id': id
-          else if (md5 != null) ...{
-            'isCollection': 0,
-            'md5': md5,
-          } else if (label != null) ...{
-            'isCollection': 1,
-            'label': label,
-          },
+      query = StoreQuery<CLEntity>({
+        if (id != null)
+          'id': id
+        else if (md5 != null) ...{
+          'isCollection': 0,
+          'md5': md5,
+        } else if (label != null) ...{
+          'isCollection': 1,
+          'label': label,
         },
-      );
+      }, store: store);
     } catch (e, st) {
       return errorBuilder(e, st);
     }

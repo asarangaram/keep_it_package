@@ -10,8 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
-import '../../../basic_page_service/widgets/page_manager.dart';
-import '../map_info.dart';
+import 'map_info.dart';
 
 class MediaMetadataEditor extends StatelessWidget {
   factory MediaMetadataEditor({
@@ -66,9 +65,9 @@ class MediaMetadataEditor extends StatelessWidget {
       builder: (BuildContext context) => MediaMetadataEditor.dialog(
         mediaId: media.id!,
         onSubmit: (media) {
-          PageManager.of(context).pop(media);
+          Navigator.of(context).pop(media);
         },
-        onCancel: () => PageManager.of(context).pop(),
+        onCancel: () => Navigator.of(context).pop(),
       ),
     );
   }

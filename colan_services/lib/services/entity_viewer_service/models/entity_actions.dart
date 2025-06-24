@@ -12,8 +12,6 @@ import 'package:store_tasks/store_tasks.dart';
 import '../../../models/platform_support.dart';
 import '../../basic_page_service/widgets/dialogs.dart';
 import '../../basic_page_service/widgets/page_manager.dart';
-import '../widgets/metadata_editors/collection_metadata_editor.dart';
-import '../widgets/metadata_editors/media_metadata_editor.dart';
 
 @immutable
 class EntityActions extends CLContextMenu {
@@ -72,11 +70,11 @@ class EntityActions extends CLContextMenu {
     Future<bool> onEdit() async {
       if (context.mounted) {
         final updated = await (entity.isCollection
-            ? CollectionMetadataEditor.openSheet(
-                context,
-                ref,
+            ? CollectionMetadataEditor.openSheet(context, ref,
                 collection: entity,
-              )
+                store: entity.store,
+                suggestedLabel: null,
+                description: null)
             : MediaMetadataEditor.openSheet(
                 context,
                 ref,
