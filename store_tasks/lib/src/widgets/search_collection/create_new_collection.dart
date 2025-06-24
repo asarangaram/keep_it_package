@@ -7,8 +7,11 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import '../../providers/target_store_provider.dart';
 
 class CreateNewCollection extends ConsumerWidget {
-  const CreateNewCollection(
-      {required this.suggestedName, required this.onSelect, super.key});
+  const CreateNewCollection({
+    required this.suggestedName,
+    required this.onSelect,
+    super.key,
+  });
 
   final String suggestedName;
   final void Function(ViewerEntity) onSelect;
@@ -35,16 +38,18 @@ class CreateNewCollection extends ConsumerWidget {
       child: FolderItem(
         name: null,
         child: SizedBox.expand(
-            child: FractionallySizedBox(
-          widthFactor: 0.7,
-          heightFactor: 0.7,
-          child: FittedBox(
+          child: FractionallySizedBox(
+            widthFactor: 0.7,
+            heightFactor: 0.7,
+            child: FittedBox(
               fit: BoxFit.cover,
               child: Icon(
                 LucideIcons.plus,
                 color: const Color(0xFFE6B65C).withValues(alpha: 0.6),
-              )),
-        )),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

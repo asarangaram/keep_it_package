@@ -16,7 +16,7 @@ class PickCollection extends StatefulWidget implements PreferredSizeWidget {
     this.isValidSuggestion,
   });
   final StoreEntity? collection;
-  final void Function(StoreEntity) onDone;
+  final Future<bool> Function(StoreEntity) onDone;
   final bool Function(StoreEntity collection)? isValidSuggestion;
 
   @override
@@ -28,7 +28,6 @@ class PickCollection extends StatefulWidget implements PreferredSizeWidget {
 
 class _PickCollectionState extends State<PickCollection> {
   late final TextEditingController viewController;
-  late final TextEditingController searchController;
   late StoreEntity? collection;
 
   @override
@@ -36,9 +35,6 @@ class _PickCollectionState extends State<PickCollection> {
     collection = widget.collection;
     viewController = TextEditingController();
     viewController.text = widget.collection?.data.label ?? '';
-    searchController = TextEditingController();
-    viewController.text = widget.collection?.data.label ?? '';
-
     super.initState();
   }
 
@@ -50,6 +46,11 @@ class _PickCollectionState extends State<PickCollection> {
 
   @override
   Widget build(BuildContext context) {
+    final menuItem = CLMenuItem(
+        title: 'Keep',
+        icon: LucideIcons.folderInput,
+        onTap:
+            collection == null ? null : () async => widget.onDone(collection!));
     return Hero(
       tag: 'Search bar',
       child: SizedBox(
@@ -57,15 +58,7 @@ class _PickCollectionState extends State<PickCollection> {
         child: Padding(
           padding: const EdgeInsets.only(top: 8),
           child: PickWizard(
-            menuItem: CLMenuItem(
-                title: 'Keep',
-                icon: LucideIcons.folderInput,
-                onTap: collection == null
-                    ? null
-                    : () async {
-                        widget.onDone(collection!);
-                        return true;
-                      }),
+            menuItem: menuItem,
             child: TextEditBox(
               controller: viewController,
               collection: collection,
@@ -98,9 +91,7 @@ class _PickCollectionState extends State<PickCollection> {
         });
 
     if (result != null) {
-      setState(() {
-        collection = result;
-      });
+      setState(() => collection = result);
     }
     viewController.text = collection?.label ?? '';
   }

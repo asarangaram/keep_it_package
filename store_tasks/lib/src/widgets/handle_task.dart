@@ -47,22 +47,18 @@ class HandleTask extends ConsumerWidget {
                             false;
                         return false;
                       });
-        wizard = WizardDialog(
-          option1: menu.option1,
-          option2: menu.option2,
-        );
+        wizard = WizardDialog(option1: menu.option1, option2: menu.option2);
       } else if (activeTask.targetConfirmed == null) {
         wizard = PickCollection(
-          collection: activeTask.collection as StoreEntity?,
-          isValidSuggestion: (collection) {
-            return !collection.data.isDeleted;
-          },
-          onDone: (collection) {
-            if (collection.id != null) {
-              ref.read(activeTaskProvider.notifier).target = collection;
-            }
-          },
-        );
+            collection: activeTask.collection as StoreEntity?,
+            isValidSuggestion: (collection) => !collection.data.isDeleted,
+            onDone: (collection) async {
+              if (collection.id != null) {
+                ref.read(activeTaskProvider.notifier).target = collection;
+                return true;
+              }
+              return false;
+            });
       } else {
         wizard = KeepWithProgress(
             media2Move: ViewerEntities(
