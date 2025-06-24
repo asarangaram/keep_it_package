@@ -38,25 +38,33 @@ class StoreSelector extends ConsumerWidget {
               ),
             );
           }
-          return ConstrainedBox(
-            constraints: const BoxConstraints(minWidth: 180),
-            child: ShadSelect<CLStore>(
-              placeholder: const Text('Select A Server'),
-              padding: EdgeInsets.zero,
-              initialValue: targetStore,
-              options: [
-                ...stores.map(
-                    (e) => ShadOption(value: e, child: Text(e.store.identity))),
-              ],
-              selectedOptionBuilder: (context, value) {
-                return Text(value.store.identity);
-              },
-              onChanged: (store) {
-                if (store != null) {
-                  ref.read(targetStoreProvider.notifier).state = store;
-                }
-              },
-            ),
+          return Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.end,
+            spacing: 8,
+            children: [
+              const Text('Store: '),
+              ConstrainedBox(
+                constraints: const BoxConstraints(minWidth: 180),
+                child: ShadSelect<CLStore>(
+                  placeholder: const Text('Select A Server'),
+                  padding: EdgeInsets.zero,
+                  initialValue: targetStore,
+                  options: [
+                    ...stores.map((e) =>
+                        ShadOption(value: e, child: Text(e.store.identity))),
+                  ],
+                  selectedOptionBuilder: (context, value) {
+                    return Text(value.store.identity);
+                  },
+                  onChanged: (store) {
+                    if (store != null) {
+                      ref.read(targetStoreProvider.notifier).state = store;
+                    }
+                  },
+                ),
+              ),
+            ],
           );
         });
   }

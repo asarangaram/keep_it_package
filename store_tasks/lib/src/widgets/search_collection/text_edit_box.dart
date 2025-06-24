@@ -42,9 +42,7 @@ class TextEditBox extends ConsumerWidget {
         ),
         Expanded(
           flex: 7,
-          child: Align(
-              alignment: Alignment.centerRight,
-              child: ColoredBox(color: Colors.blue, child: serverWidget)),
+          child: Align(alignment: Alignment.centerRight, child: serverWidget),
         )
       ],
     );

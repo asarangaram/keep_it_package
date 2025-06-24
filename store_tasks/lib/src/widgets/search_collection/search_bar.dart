@@ -12,7 +12,7 @@ class EntitySearchBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: kMinInteractiveDimension * 2,
+      height: kMinInteractiveDimension * 3,
       child: Hero(
         tag: 'Search bar',
         child: TextEditBox(
