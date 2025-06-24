@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
+import 'package:store_tasks/src/providers/target_store_provider.dart';
 
 import '../pick_collection/pick_wizard.dart';
 import '../pick_collection/wizard_error.dart';
@@ -59,6 +60,12 @@ class _CollectionSearchViewState extends State<CollectionSearchView> {
               child: Column(
                 spacing: 8,
                 children: [
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: ShadButton.ghost(
+                        onPressed: onClose,
+                        child: clIcons.closeFullscreen.iconFormatted()),
+                  ),
                   PickWizard(
                     child: EntitySearchBar(
                       controller: controller,

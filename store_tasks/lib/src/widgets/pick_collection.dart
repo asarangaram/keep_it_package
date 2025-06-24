@@ -38,6 +38,7 @@ class _PickCollectionState extends State<PickCollection> {
     viewController.text = widget.collection?.data.label ?? '';
     searchController = TextEditingController();
     viewController.text = widget.collection?.data.label ?? '';
+
     super.initState();
   }
 
@@ -53,48 +54,54 @@ class _PickCollectionState extends State<PickCollection> {
       tag: 'Search bar',
       child: SizedBox(
         height: kMinInteractiveDimension * 3,
-        child: PickWizard(
-          menuItem: CLMenuItem(
-              title: 'Keep',
-              icon: LucideIcons.folderInput,
-              onTap: collection == null
+        child: Padding(
+          padding: const EdgeInsets.only(top: 8),
+          child: PickWizard(
+            menuItem: CLMenuItem(
+                title: 'Keep',
+                icon: LucideIcons.folderInput,
+                onTap: collection == null
+                    ? null
+                    : () async {
+                        widget.onDone(collection!);
+                        return true;
+                      }),
+            child: TextEditBox(
+              controller: viewController,
+              collection: collection,
+              onTap: getCollection,
+              hintText: 'Tab here to select a collection',
+              serverWidget: collection == null
                   ? null
-                  : () async {
-                      widget.onDone(collection!);
-                      return true;
-                    }),
-          child: TextEditBox(
-            controller: viewController,
-            collection: collection,
-            onTap: () async {
-              final result = await showModalBottomSheet<StoreEntity>(
-                  context: context,
-                  isScrollControlled: true,
-                  shape: const RoundedRectangleBorder(),
-                  constraints: const BoxConstraints(),
-                  useSafeArea: true,
-                  isDismissible: false,
-                  builder: (BuildContext context) {
-                    return CollectionSearchView(
-                      collection: collection,
-                    );
-                  });
-
-              if (result != null) {
-                setState(() {
-                  collection = result;
-                });
-              }
-              viewController.text = collection?.label ?? '';
-            },
-            serverWidget: collection == null
-                ? null
-                : ServerLabel(
-                    store: (collection!).store,
-                  ),
+                  : ServerLabel(
+                      store: (collection!).store,
+                    ),
+            ),
           ),
         ),
       ),
     );
+  }
+
+  Future<void> getCollection() async {
+    final result = await showModalBottomSheet<StoreEntity>(
+        context: context,
+        isScrollControlled: true,
+        shape: const RoundedRectangleBorder(),
+        constraints: const BoxConstraints(),
+        useSafeArea: true,
+        isDismissible: false,
+        builder: (BuildContext context) {
+          return CollectionSearchView(
+            collection: collection,
+          );
+        });
+
+    if (result != null) {
+      setState(() {
+        collection = result;
+      });
+    }
+    viewController.text = collection?.label ?? '';
   }
 }

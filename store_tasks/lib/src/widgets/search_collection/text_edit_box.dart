@@ -8,6 +8,7 @@ class TextEditBox extends ConsumerWidget {
       {required this.controller,
       required this.onTap,
       required this.serverWidget,
+      required this.hintText,
       super.key,
       this.collection});
   final StoreEntity? collection;
@@ -15,6 +16,7 @@ class TextEditBox extends ConsumerWidget {
   final TextEditingController controller;
   final void Function()? onTap;
   final Widget? serverWidget;
+  final String? hintText;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -31,7 +33,7 @@ class TextEditBox extends ConsumerWidget {
               decoration: collection == null
                   ? InputDecoration(
                       hintStyle: ShadTheme.of(context).textTheme.muted,
-                      hintText: 'Search here')
+                      hintText: hintText)
                   : null,
               readOnly: onTap != null,
               showCursor: onTap != null,

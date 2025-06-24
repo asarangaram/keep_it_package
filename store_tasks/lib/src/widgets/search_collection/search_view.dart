@@ -3,7 +3,7 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:store/store.dart';
+import 'package:store_tasks/src/providers/target_store_provider.dart';
 import 'package:store_tasks/src/widgets/search_collection/create_new_collection.dart';
 import 'package:store_tasks/src/widgets/search_collection/suggested_collection.dart';
 
@@ -70,7 +70,7 @@ class _SearchViewState extends ConsumerState<SearchView> {
             itemBuilder: (context, index) {
               if (index == items.length) {
                 return CreateNewCollection(
-                    onSelect: widget.onSelect, suggestedName: 'FIXME');
+                    onSelect: widget.onSelect, suggestedName: searchText);
               }
               return SuggestedCollection(
                 item: items[index],
@@ -81,7 +81,3 @@ class _SearchViewState extends ConsumerState<SearchView> {
         });
   }
 }
-
-final targetStoreProvider = StateProvider<CLStore>((ref) {
-  throw Exception('Must be overridden');
-});

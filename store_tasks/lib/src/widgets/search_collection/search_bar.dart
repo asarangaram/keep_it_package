@@ -16,9 +16,11 @@ class EntitySearchBar extends StatelessWidget implements PreferredSizeWidget {
       child: Hero(
         tag: 'Search bar',
         child: TextEditBox(
-            controller: controller,
-            onTap: null,
-            serverWidget: StoreSelector(onClose: onClose)),
+          controller: controller,
+          onTap: null,
+          serverWidget: StoreSelector(onClose: onClose),
+          hintText: 'Search here',
+        ),
       ),
     );
   }

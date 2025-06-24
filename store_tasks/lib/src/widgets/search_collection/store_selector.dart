@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
-import 'package:store_tasks/src/widgets/search_collection/search_view.dart';
+import 'package:store_tasks/src/providers/target_store_provider.dart';
 
 class StoreSelector extends ConsumerWidget {
   const StoreSelector({
