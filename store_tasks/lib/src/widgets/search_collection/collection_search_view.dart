@@ -23,20 +23,27 @@ class CollectionSearchView extends StatefulWidget {
 
 class _CollectionSearchViewState extends State<CollectionSearchView> {
   late final TextEditingController controller;
+  late final FocusNode focusNode;
 
   @override
   void initState() {
     controller = TextEditingController(text: widget.collection?.label ?? '');
+    focusNode = FocusNode()..requestFocus();
+
     super.initState();
   }
 
   @override
   void dispose() {
     controller.dispose();
+    focusNode.dispose();
     super.dispose();
   }
 
-  void onClose() => Navigator.of(context).pop;
+  void onClose() {
+    Navigator.of(context).pop();
+  }
+
   void onSelect(ViewerEntity entity) => Navigator.of(context).pop(entity);
 
   @override
@@ -69,6 +76,7 @@ class _CollectionSearchViewState extends State<CollectionSearchView> {
                   PickWizard(
                     child: EntitySearchBar(
                       controller: controller,
+                      focusNode: focusNode,
                       onClose: onClose,
                     ),
                   ),

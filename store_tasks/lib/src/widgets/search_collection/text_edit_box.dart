@@ -4,14 +4,17 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 
 class TextEditBox extends ConsumerWidget {
-  const TextEditBox(
-      {required this.controller,
-      required this.onTap,
-      required this.serverWidget,
-      required this.hintText,
-      super.key,
-      this.collection});
+  const TextEditBox({
+    required this.controller,
+    required this.onTap,
+    required this.serverWidget,
+    required this.hintText,
+    super.key,
+    this.collection,
+    this.focusNode,
+  });
   final StoreEntity? collection;
+  final FocusNode? focusNode;
 
   final TextEditingController controller;
   final void Function()? onTap;
@@ -30,13 +33,14 @@ class TextEditBox extends ConsumerWidget {
             alignment: Alignment.bottomCenter,
             child: TextFormField(
               controller: controller,
+              focusNode: focusNode,
               decoration: collection == null
                   ? InputDecoration(
                       hintStyle: ShadTheme.of(context).textTheme.muted,
                       hintText: hintText)
                   : null,
               readOnly: onTap != null,
-              showCursor: onTap != null,
+              showCursor: onTap == null,
               enableInteractiveSelection: false,
               onTap: onTap,
             ),

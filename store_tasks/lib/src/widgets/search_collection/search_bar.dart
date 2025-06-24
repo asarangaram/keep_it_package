@@ -4,9 +4,14 @@ import 'package:store_tasks/src/widgets/search_collection/text_edit_box.dart';
 import 'store_selector.dart';
 
 class EntitySearchBar extends StatelessWidget implements PreferredSizeWidget {
-  const EntitySearchBar(
-      {required this.controller, required this.onClose, super.key});
+  const EntitySearchBar({
+    required this.controller,
+    required this.onClose,
+    required this.focusNode,
+    super.key,
+  });
   final TextEditingController controller;
+  final FocusNode focusNode;
   final void Function() onClose;
 
   @override
@@ -17,6 +22,7 @@ class EntitySearchBar extends StatelessWidget implements PreferredSizeWidget {
         tag: 'Search bar',
         child: TextEditBox(
           controller: controller,
+          focusNode: focusNode,
           onTap: null,
           serverWidget: StoreSelector(onClose: onClose),
           hintText: 'Search here',
