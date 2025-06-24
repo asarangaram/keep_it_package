@@ -13,7 +13,7 @@ class FolderItem extends StatelessWidget {
     this.avatarAsset,
     this.counter,
   });
-  final String name;
+  final String? name;
   final Widget child;
   final Color borderColor;
   final String? avatarAsset;
@@ -41,29 +41,30 @@ class FolderItem extends StatelessWidget {
             right: 0,
             child: counter!,
           ),
-        OverlayWidgets(
-          heightFactor: 0.2,
-          widthFactor: 0.9,
-          alignment: Alignment.bottomCenter,
-          fit: BoxFit.none,
-          child: Container(
-            alignment: Alignment.center,
-            margin: const EdgeInsets.symmetric(horizontal: 4),
-            color: ShadTheme.of(context)
-                .colorScheme
-                .foreground
-                .withValues(alpha: 0.5),
-            child: Text(
-              name,
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: ShadTheme.of(context).textTheme.small.copyWith(
-                    color: ShadTheme.of(context).colorScheme.background,
-                  ),
+        if (name != null)
+          OverlayWidgets(
+            heightFactor: 0.2,
+            widthFactor: 0.9,
+            alignment: Alignment.bottomCenter,
+            fit: BoxFit.none,
+            child: Container(
+              alignment: Alignment.center,
+              margin: const EdgeInsets.symmetric(horizontal: 4),
+              color: ShadTheme.of(context)
+                  .colorScheme
+                  .foreground
+                  .withValues(alpha: 0.5),
+              child: Text(
+                name!,
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: ShadTheme.of(context).textTheme.small.copyWith(
+                      color: ShadTheme.of(context).colorScheme.background,
+                    ),
+              ),
             ),
           ),
-        ),
         if (avatarAsset != null)
           Positioned.fill(
             bottom: 6,

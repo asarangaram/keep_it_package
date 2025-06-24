@@ -3,18 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 class CreateNewCollection extends StatelessWidget {
-  const CreateNewCollection({
-    required this.searchController,
-    super.key,
-  });
+  const CreateNewCollection(
+      {required this.suggestedName, required this.onSelect, super.key});
 
-  final SearchController searchController;
+  final String suggestedName;
+  final void Function(ViewerEntity) onSelect;
 
   @override
   Widget build(BuildContext context) {
-    final suggestedName = searchController.text;
     return FolderItem(
-      name: suggestedName.isEmpty ? 'Create New' : "Create '$suggestedName'",
+      name: null,
       child: SizedBox.expand(
           child: FractionallySizedBox(
         widthFactor: 0.7,

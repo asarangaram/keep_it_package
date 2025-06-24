@@ -6,59 +6,88 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:store/store.dart';
 import 'package:store_tasks/src/widgets/search_collection/create_new_collection.dart';
+import 'package:store_tasks/src/widgets/search_collection/suggested_collection.dart';
 
 import '../pick_collection/wizard_error.dart';
 
 class SearchView extends StatelessWidget {
   const SearchView(
-      {required this.onFailed,
+      {required this.onClose,
+      required this.onSelect,
       required this.targetStore,
-      required this.searchController,
+      required this.controller,
       super.key});
   final CLStore targetStore;
-  final VoidCallback onFailed;
-  final SearchController searchController;
+  final VoidCallback onClose;
+  final void Function(ViewerEntity) onSelect;
+
+  final TextEditingController controller;
 
   @override
   Widget build(BuildContext context) {
     return ProviderScope(
       overrides: [targetStoreProvider.overrideWith((ref) => targetStore)],
       child: SearchView0(
-        onFailed: onFailed,
-        searchController: searchController,
+        onClose: onClose,
+        onSelect: onSelect,
+        controller: controller,
       ),
     );
   }
 }
 
-class SearchView0 extends ConsumerWidget {
+class SearchView0 extends ConsumerStatefulWidget {
   const SearchView0({
-    required this.onFailed,
-    required this.searchController,
+    required this.onClose,
+    required this.onSelect,
+    required this.controller,
     super.key,
   });
 
-  final VoidCallback onFailed;
-  final SearchController searchController;
+  final VoidCallback onClose;
+  final void Function(ViewerEntity) onSelect;
+  final TextEditingController controller;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ConsumerStatefulWidget> createState() => _SearchView0State();
+}
+
+class _SearchView0State extends ConsumerState<SearchView0> {
+  @override
+  void initState() {
+    widget.controller.addListener(refresh);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    widget.controller.removeListener(refresh);
+    super.dispose();
+  }
+
+  void refresh() {
+    setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final targetStore = ref.watch(targetStoreProvider);
+    final searchText = widget.controller.text;
     return GetEntities(
         store: targetStore,
         isCollection: true,
         //isHidden: null,
         isDeleted: null,
         loadingBuilder: () => CLLoader.widget(debugMessage: null),
-        errorBuilder: (e, st) => WizardError.show(context,
-            e: e, st: st, onClose: () => searchController.closeView(null)),
+        errorBuilder: (e, st) =>
+            WizardError.show(context, e: e, st: st, onClose: widget.onClose),
         builder: (entries) {
           final List<ViewerEntity> items;
-          if (searchController.text.isEmpty) {
+          if (searchText.isEmpty) {
             items = entries.entities;
           } else {
             items = entries.entities
-                .where((item) => item.label!.startsWith(searchController.text))
+                .where((item) => item.label!.startsWith(searchText))
                 .toList();
           }
           return Padding(
@@ -81,7 +110,7 @@ class SearchView0 extends ConsumerWidget {
                       ),
                       Expanded(
                           child: StoreSelector(
-                        onFailed: onFailed,
+                        onFailed: widget.onClose,
                       ))
                     ],
                   ),
@@ -94,11 +123,11 @@ class SearchView0 extends ConsumerWidget {
                     itemBuilder: (context, index) {
                       if (index == items.length) {
                         return CreateNewCollection(
-                            searchController: searchController);
+                            onSelect: widget.onSelect, suggestedName: 'FIXME');
                       }
                       return SuggestedCollection(
                         item: items[index],
-                        searchController: searchController,
+                        onSelect: widget.onSelect,
                       );
                     },
                   ),
@@ -107,34 +136,6 @@ class SearchView0 extends ConsumerWidget {
             ),
           );
         });
-  }
-}
-
-class SuggestedCollection extends StatelessWidget {
-  const SuggestedCollection(
-      {required this.item, required this.searchController, super.key});
-
-  final ViewerEntity item;
-  final SearchController searchController;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: GestureDetector(
-        onTap: () => searchController.closeView(item.label),
-        child: GetEntities(
-            parentId: item.id,
-            errorBuilder: (_, __) => CLEntityView(
-                  entity: item,
-                ),
-            loadingBuilder: () => CLEntityView(
-                  entity: item,
-                ),
-            builder: (children) {
-              return CLEntityView(entity: item, children: children);
-            }),
-      ),
-    );
   }
 }
 
