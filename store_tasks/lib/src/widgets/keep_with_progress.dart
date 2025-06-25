@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:cl_entity_viewers/cl_entity_viewers.dart';
+import 'package:cl_media_tools/cl_media_tools.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:store/store.dart';
@@ -48,11 +51,44 @@ class KeepWithProgress extends StatelessWidget implements PreferredSizeWidget {
     final updatedItems = <StoreEntity>[];
     for (final (i, item) in items.entities.cast<StoreEntity>().indexed) {
       yield Progress(fractCompleted: (i + 1) / items.length, currentItem: '');
-      final updated = await (await item.updateWith(
-        parentId: () => parentCollection.id!,
-        isHidden: () => false,
-      ))
-          ?.dbSave();
+      final StoreEntity? updated;
+      if (parentCollection.store == item.store) {
+        updated = await (await item.updateWith(
+          parentId: () => parentCollection.id!,
+          isHidden: () => false,
+        ))
+            ?.dbSave();
+      } else {
+        final targetStore = parentCollection.store;
+        if (item.store.store.isLocal) {
+          updated = await (await targetStore.createMedia(
+                  label: () => item.data.label,
+                  description: () => item.data.description,
+                  parentCollection: parentCollection.data,
+                  mediaFile: CLMediaFile(
+                      path: item.mediaUri!.toFilePath(),
+                      md5: item.data.md5!,
+                      fileSize: item.data.fileSize!,
+                      mimeType: item.data.mimeType!,
+                      type: CLMediaType.fromMIMEType(item.data.type!),
+                      fileSuffix: item.data.extension!,
+                      createDate: item.data.createDate,
+                      height: item.data.height,
+                      width: item.data.width,
+                      duration: item.data.duration),
+                  strategy: UpdateStrategy.mergeAppend))
+              ?.dbSave(item.mediaUri!.toFilePath());
+          if (updated != null) {
+            final filePath = item.mediaUri!.toFilePath();
+
+            await item.delete();
+            await File(filePath).deleteIfExists();
+          }
+        } else {
+          updated = null;
+        }
+      }
+
       if (updated == null) {
         throw Exception('Failed to update item ${item.id}');
       }
