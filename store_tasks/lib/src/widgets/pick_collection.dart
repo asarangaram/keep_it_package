@@ -53,22 +53,25 @@ class _PickCollectionState extends State<PickCollection> {
             collection == null ? null : () async => widget.onDone(collection!));
     return Hero(
       tag: 'Search bar',
-      child: SizedBox(
-        height: kMinInteractiveDimension * 3,
-        child: Padding(
-          padding: const EdgeInsets.only(top: 8),
-          child: PickWizard(
-            menuItem: menuItem,
-            child: TextEditBox(
-              controller: viewController,
-              collection: collection,
-              onTap: getCollection,
-              hintText: 'Tab here to select a collection',
-              serverWidget: collection == null
-                  ? null
-                  : ServerLabel(
-                      store: (collection!).store,
-                    ),
+      child: Padding(
+        padding: const EdgeInsets.only(top: 4),
+        child: SizedBox(
+          height: kMinInteractiveDimension * 3,
+          child: Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: PickWizard(
+              menuItem: menuItem,
+              child: TextEditBox(
+                controller: viewController,
+                collection: collection,
+                onTap: getCollection,
+                hintText: 'Tab here to select a collection',
+                serverWidget: collection == null
+                    ? null
+                    : ServerLabel(
+                        store: (collection!).store,
+                      ),
+              ),
             ),
           ),
         ),

@@ -103,6 +103,32 @@ class _CollectionMetadataEditorState
     extends ConsumerState<CollectionMetadataEditor> {
   final formKey = GlobalKey<ShadFormState>();
   Map<Object, dynamic> formValue = {};
+  late final FocusNode focusNode;
+  late final FocusNode focusNode2;
+
+  @override
+  void initState() {
+    focusNode = FocusNode();
+    focusNode2 = FocusNode();
+    focusNode.addListener(focusNode1Listener);
+    focusNode2.addListener(focusNode1Listener);
+    super.initState();
+  }
+
+  void focusNode1Listener() {
+    if (!focusNode.hasFocus && !focusNode2.hasFocus) {
+      formKey.currentState?.validate(focusOnInvalid: false);
+    } else {
+      formKey.currentState?.reset();
+    }
+  }
+
+  @override
+  void dispose() {
+    focusNode.dispose();
+    focusNode2.dispose();
+    super.dispose();
+  }
 
   Widget loading(String debugMessage) => ShadSheet(
         title: const Text('Loading'),
@@ -185,9 +211,11 @@ class _CollectionMetadataEditorState
                   ],
                   child: ShadForm(
                     key: formKey,
+                    autovalidateMode: ShadAutovalidateMode.disabled,
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
+                      spacing: 8,
                       children: [
                         ShadInputFormField(
                           id: 'label',
@@ -205,6 +233,7 @@ class _CollectionMetadataEditorState
                           inputFormatters: [
                             FilteringTextInputFormatter.deny(RegExp(r'\n')),
                           ],
+                          focusNode: focusNode,
                         ),
                         ShadInputFormField(
                           id: 'description',
@@ -215,6 +244,7 @@ class _CollectionMetadataEditorState
                           placeholder:
                               const Text('Describe about this collection'),
                           maxLines: 4,
+                          focusNode: focusNode2,
                         ),
                         if (formValue.isNotEmpty)
                           Padding(

@@ -126,7 +126,12 @@ class WizardLayout2 extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 8),
             child: child,
           ),
-          bottomNavigationBar: (wizard != null) ? wizard : null,
+          bottomNavigationBar: (wizard != null)
+              ? Padding(
+                  padding: const EdgeInsets.only(top: 2),
+                  child: wizard,
+                )
+              : null,
         ),
       ),
     );
