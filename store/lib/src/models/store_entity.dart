@@ -1,5 +1,6 @@
 import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:cl_media_tools/cl_media_tools.dart';
+import 'package:intl/intl.dart';
 import 'package:meta/meta.dart';
 import 'package:store/src/models/cl_store.dart';
 
@@ -185,4 +186,8 @@ class StoreEntity implements ViewerEntity {
 
   @override
   String? get pin => data.pin;
+
+  @override
+  String? get dateString =>
+      DateFormat('dd MMM, yyyy').format(createDate ?? updatedDate);
 }
