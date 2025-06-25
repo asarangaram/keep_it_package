@@ -140,36 +140,49 @@ class CLStore with CLLogger {
     );
   }
 
-  Future<StoreEntity?> createMedia({
-    required CLMediaFile mediaFile,
-    ValueGetter<String?>? label,
-    ValueGetter<String?>? description,
-    UpdateStrategy strategy = UpdateStrategy.skip,
-  }) async {
-    if (store.storeURL.scheme != 'local') {
-      throw Exception("Can't directly push media files into non-local servers");
-    }
-    final mediaInDB = await store.get(
-      StoreQuery<CLEntity>({'md5': mediaFile.md5, 'isCollection': 1}),
-    );
-    final CLEntity? parent;
+  Future<CLEntity> getTempCollection() async {
+    final CLEntity? item;
+    final temp = await createCollection(label: tempCollectionName);
 
-    final tempParent = await createCollection(label: tempCollectionName);
-
-    parent =
-        (await (await tempParent?.updateWith(isHidden: () => true))?.dbSave())
-            ?.data;
-    if (parent == null) {
+    item =
+        (await (await temp?.updateWith(isHidden: () => true))?.dbSave())?.data;
+    if (item == null) {
       throw Exception(
         'missing parent; failed to create a default collection',
       );
     }
-
-    if (!parent.isCollection) {
-      throw Exception('Parent entity must be a collection.');
+    if (item.id == null) {
+      throw Exception('failed to get id for temporary collection');
     }
-    if (parent.id == null) {
-      throw Exception("media can't be stored with valid parentId");
+    return item;
+  }
+
+  Future<StoreEntity?> createMedia(
+      {required CLMediaFile mediaFile,
+      ValueGetter<String?>? label,
+      ValueGetter<String?>? description,
+      UpdateStrategy strategy = UpdateStrategy.skip,
+      CLEntity? parentCollection}) async {
+    if (!store.isLocal) {
+      throw Exception("Can't directly push media files into non-local servers");
+    }
+    if (parentCollection != null) {
+      if (!parentCollection.isCollection) {
+        throw Exception('Parent entity must be a collection.');
+      }
+      if (parentCollection.id == null) {
+        throw Exception("media can't be stored without valid parentId");
+      }
+    }
+    final mediaInDB = await store.get(
+      StoreQuery<CLEntity>({'md5': mediaFile.md5, 'isCollection': 1}),
+    );
+    final CLEntity parent;
+
+    if (parentCollection == null) {
+      parent = await getTempCollection();
+    } else {
+      parent = parentCollection;
     }
 
     if (mediaInDB != null && mediaInDB.id != null) {
@@ -180,7 +193,7 @@ class CLStore with CLLogger {
           mediaInDB,
           label: label,
           description: description,
-          parentId: () => parent!.id!,
+          parentId: () => parent.id!,
           strategy: strategy,
         );
       }
