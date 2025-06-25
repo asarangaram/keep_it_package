@@ -6,10 +6,13 @@ extension DuplicateMergeOnViewerEntities on ViewerEntities {
   Future<ViewerEntities> mergeMismatch(int? parentId) async {
     final items = <StoreEntity>[];
     for (final e in entities.cast<StoreEntity>()) {
-      await e.updateWith(
+      final item = await e.updateWith(
         isDeleted: () => false,
         parentId: () => parentId,
       );
+      if (item != null) {
+        items.add(item);
+      }
     }
     return ViewerEntities(items.toList());
   }
