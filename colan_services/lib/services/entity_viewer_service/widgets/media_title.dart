@@ -18,9 +18,8 @@ class MediaTitle extends StatelessWidget {
         loadingBuilder: () => const CustomListTile(title: 'Keep It'),
         errorBuilder: (e, st) => const CustomListTile(title: 'Keep It'),
         builder: (activeStore) {
-          final defaultTitle = CustomListTile(
+          const defaultTitle = CustomListTile(
             title: 'Keep It',
-            subTitle: activeStore.label,
           );
           return entityAsync.when(
               loading: () => defaultTitle,
@@ -34,7 +33,7 @@ class MediaTitle extends StatelessWidget {
                       CustomListTile(
                         title: entity.label?.capitalizeFirstLetter() ??
                             'media #${entity.id ?? "New Media"}',
-                        subTitle: activeStore.label,
+                        subTitle: entity.dateString,
                       ),
                   ],
                 );
@@ -50,17 +49,19 @@ class CustomListTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ListTile(
-      title: Text(
-        title,
-        style: ShadTheme.of(context).textTheme.h3,
-      ),
-      subtitle: (subTitle == null)
-          ? null
-          : Text(
+    return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            title,
+            style: ShadTheme.of(context).textTheme.h3,
+          ),
+          if (subTitle != null)
+            Text(
               subTitle!,
               style: ShadTheme.of(context).textTheme.small,
             ),
-    );
+        ]);
   }
 }
