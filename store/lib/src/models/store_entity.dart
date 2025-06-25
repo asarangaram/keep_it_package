@@ -116,6 +116,17 @@ class StoreEntity implements ViewerEntity {
     await store.delete(data.id!);
   }
 
+  Future<StoreEntity> accept(StoreEntity entity) async {
+    if (!isCollection) {
+      throw Exception(
+          "A media entity can't accept another media. Use collection");
+    }
+    if (id == null) {
+      throw Exception('the collection must saved before accepting media');
+    }
+    return entity.store.move(entity, this);
+  }
+
   Future<StoreEntity?> onPin() async {
     // Pin here, if not pinned
     return updateWith(pin: () => 'PIN TEST');

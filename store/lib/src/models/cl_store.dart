@@ -3,9 +3,10 @@ import 'dart:io';
 import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:cl_media_tools/cl_media_tools.dart';
 import 'package:meta/meta.dart';
-import 'package:store/src/models/cl_logger.dart';
 
+import '../extensions/ext_file.dart';
 import 'cl_entity.dart';
+import 'cl_logger.dart';
 import 'data_types.dart';
 import 'entity_store.dart';
 import 'progress.dart';
@@ -155,6 +156,52 @@ class CLStore with CLLogger {
       throw Exception('failed to get id for temporary collection');
     }
     return item;
+  }
+
+  Future<StoreEntity> move(
+      StoreEntity entity, StoreEntity targetCollection) async {
+    final StoreEntity? updated;
+    if (targetCollection.store == entity.store) {
+      updated = await (await entity.updateWith(
+        parentId: () => targetCollection.id!,
+        isHidden: () => false,
+      ))
+          ?.dbSave();
+    } else {
+      final targetStore = targetCollection.store;
+      if (entity.store.store.isLocal) {
+        updated = await (await targetStore.createMedia(
+                label: () => entity.data.label,
+                description: () => entity.data.description,
+                parentCollection: targetCollection.data,
+                mediaFile: CLMediaFile(
+                    path: entity.mediaUri!.toFilePath(),
+                    md5: entity.data.md5!,
+                    fileSize: entity.data.fileSize!,
+                    mimeType: entity.data.mimeType!,
+                    type: CLMediaType.fromMIMEType(entity.data.type!),
+                    fileSuffix: entity.data.extension!,
+                    createDate: entity.data.createDate,
+                    height: entity.data.height,
+                    width: entity.data.width,
+                    duration: entity.data.duration),
+                strategy: UpdateStrategy.mergeAppend))
+            ?.dbSave(entity.mediaUri!.toFilePath());
+        if (updated != null) {
+          final filePath = entity.mediaUri!.toFilePath();
+
+          await entity.delete();
+          await File(filePath).deleteIfExists();
+        }
+      } else {
+        updated = null;
+      }
+    }
+
+    if (updated == null) {
+      throw Exception('Failed to update item ${entity.id}');
+    }
+    return updated;
   }
 
   Future<StoreEntity?> createMedia(
