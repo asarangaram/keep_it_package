@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:local_store/local_store.dart';
 import 'package:online_store/online_store.dart';
+import 'package:path/path.dart' as p;
 import 'package:store/store.dart';
 
 import '../../../storage_service/providers/directories.dart';
@@ -18,20 +19,21 @@ class StoreNotifier extends FamilyAsyncNotifier<CLStore, StoreURL>
       final storeURL = arg;
       final directories = await ref.watch(deviceDirectoriesProvider.future);
       final scheme = storeURL.scheme; // local or https
-
+      final storePath = p.join(directories.persistent.path, storeURL.name);
       final store = switch (scheme) {
         'local' => await createEntityStore(
             storeURL,
-            storePath: directories.db.pathString,
+            storePath: storePath,
           ),
         'http' => await createOnlineEntityStore(
             storeURL: storeURL,
             server: await ref.watch(serverProvider(storeURL).future),
-            storePath: directories.db.pathString,
+            storePath: storePath,
           ),
-        'https' => await createEntityStore(
-            storeURL,
-            storePath: directories.db.pathString,
+        'https' => await createOnlineEntityStore(
+            storeURL: storeURL,
+            server: await ref.watch(serverProvider(storeURL).future),
+            storePath: storePath,
           ),
         _ => throw Exception('Unexpected')
       };
