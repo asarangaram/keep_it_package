@@ -19,7 +19,7 @@ class StoreNotifier extends FamilyAsyncNotifier<CLStore, StoreURL>
       final storeURL = arg;
       final directories = await ref.watch(deviceDirectoriesProvider.future);
       final scheme = storeURL.scheme; // local or https
-      final storePath = p.join(directories.persistent.path, storeURL.name);
+      final storePath = p.join(directories.stores.pathString, storeURL.name);
       final store = switch (scheme) {
         'local' => await createEntityStore(
             storeURL,
