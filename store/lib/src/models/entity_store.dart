@@ -18,6 +18,7 @@ abstract class EntityStore {
     CLEntity curr, {
     String? path,
   });
+  bool get isLocal => storeURL.scheme == 'local';
 
   Future<bool> delete(CLEntity item);
 
