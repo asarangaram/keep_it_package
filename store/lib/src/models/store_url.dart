@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:meta/meta.dart';
 import 'package:store/extensions.dart';
 
@@ -6,23 +7,26 @@ import 'data_types.dart';
 
 @immutable
 class StoreURL {
-  const StoreURL(this.uri, {required this.identity});
+  const StoreURL(this.uri, {required this.identity, required this.label});
 
   factory StoreURL.fromMap(Map<String, dynamic> map) {
     return StoreURL(
       Uri.parse(map['uri'] as String),
       identity: map['identity'] != null ? map['identity'] as String : null,
+      label: map['label'] != null ? map['label'] as String : null,
     );
   }
 
   factory StoreURL.fromJson(String source) =>
       StoreURL.fromMap(json.decode(source) as Map<String, dynamic>);
 
-  factory StoreURL.fromString(String url, {required String? identity}) {
-    return StoreURL(Uri.parse(url), identity: identity);
+  factory StoreURL.fromString(String url,
+      {required String? identity, required String? label}) {
+    return StoreURL(Uri.parse(url), identity: identity, label: label);
   }
   final Uri uri;
   final String? identity;
+  final String? label;
   String get scheme => uri.scheme;
   String get name =>
       identity?.capitalizeFirstLetter() ??
@@ -39,22 +43,26 @@ class StoreURL {
   int get hashCode => uri.hashCode ^ identity.hashCode;
 
   @override
-  String toString() => 'StoreURL(uri: $uri, identity: $identity)';
+  String toString() =>
+      'StoreURL(uri: $uri, identity: $identity, label: $label)';
 
   StoreURL copyWith({
     Uri? uri,
     ValueGetter<String?>? identity,
+    ValueGetter<String?>? label,
   }) {
     return StoreURL(
       uri ?? this.uri,
       identity: identity != null ? identity.call() : this.identity,
+      label: label != null ? label.call() : this.label,
     );
   }
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'uri': '$uri',
-      if (identity != null) 'identity': identity
+      'identity': identity,
+      'label': label,
     };
   }
 

@@ -9,19 +9,18 @@ class ServerLabel extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final label = store.store.identity == 'default'
-        ? 'On this device'
-        : store.store.identity;
     final Color color;
+
     switch (store.store.storeURL.scheme) {
       case 'http':
       case 'https':
-        color = Colors.green; // When offline, change to red
+        color =
+            Colors.green; // TODO(anandas): When offline support, change to red
       default:
         color = Colors.grey.shade400;
     }
     return Text(
-      label,
+      store.label,
       style: ShadTheme.of(context).textTheme.muted.copyWith(color: color),
     );
   }

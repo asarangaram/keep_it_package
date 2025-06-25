@@ -28,6 +28,7 @@ class CLStore with CLLogger {
 
   @override
   String get logPrefix => 'CLStore';
+  String get label => store.storeURL.label ?? store.storeURL.name;
 
   CLStore copyWith({
     EntityStore? store,
