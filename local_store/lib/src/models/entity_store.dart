@@ -263,13 +263,6 @@ Future<EntityStore> createEntityStore(
   final fullPath = p.join(dbPath, '${url.uri.host}.db');
   final db = await createSQLiteDBInstance(fullPath);
 
-  if (!Directory(mediaPath).existsSync()) {
-    Directory(mediaPath).createSync(recursive: true);
-  }
-  if (!Directory(previewPath).existsSync()) {
-    Directory(previewPath).createSync(recursive: true);
-  }
-
   return switch (db) {
     (final SQLiteDB db) => LocalSQLiteEntityStore.createStore(
         db,
