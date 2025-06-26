@@ -94,7 +94,7 @@ class CLEntityView extends StatelessWidget {
     return FolderItem(
       name: entity.label!,
       borderColor: borderColor,
-      avatarAsset: 'assets/icon/not_on_server.png',
+      // avatarAsset: 'assets/icon/not_on_server.png',
       counter: counter,
       child: CLMediaCollage.byMatrixSize(
         children.length,
