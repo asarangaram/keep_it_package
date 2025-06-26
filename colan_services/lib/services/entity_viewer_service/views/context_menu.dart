@@ -35,7 +35,6 @@ class KeepItContextMenu extends ConsumerWidget {
           if (item.onTap != null)
             ShadContextMenuItem(
               leading: SizedBox.square(
-                dimension: 16,
                 child: Center(child: item.icon.iconFormatted()),
               ),
               enabled: item.onTap != null,
@@ -56,8 +55,7 @@ class KeepItContextMenu extends ConsumerWidget {
         ),
         ShadContextMenuItem(
           leading: SizedBox.square(
-            dimension: 16,
-            child: Center(child: Icon(clIcons.recycleBin)),
+            child: Center(child: clIcons.recycleBin.iconFormatted()),
           ),
           trailing: const Icon(LucideIcons.chevronRight),
           items: [
@@ -65,12 +63,9 @@ class KeepItContextMenu extends ConsumerWidget {
               if (item.onTap != null)
                 ShadContextMenuItem(
                   leading: SizedBox.square(
-                    dimension: 16,
                     child: Center(
-                      child: Icon(
-                        item.icon,
-                        color: ShadTheme.of(context).colorScheme.destructive,
-                      ),
+                      child: item.icon.iconFormatted(
+                          color: ShadTheme.of(context).colorScheme.destructive),
                     ),
                   ),
                   textStyle: textStyle.copyWith(
@@ -108,12 +103,9 @@ class SelectMenuItem extends ConsumerWidget {
       }) {
         return ShadContextMenuItem(
           leading: SizedBox.square(
-            dimension: 16,
             child: Center(
-              child: Icon(
-                selectionMode ? clIcons.selected : clIcons.deselected,
-              ),
-            ),
+                child: (selectionMode ? clIcons.selected : clIcons.deselected)
+                    .iconFormatted()),
           ),
           enabled: !selectionMode,
           onPressed: () => onUpdateSelectionmode(enable: true),
