@@ -1,6 +1,7 @@
 import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -30,30 +31,36 @@ class BottomBarGridView extends ConsumerWidget implements PreferredSizeWidget {
         right: 16,
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          ShadButton.ghost(
-            child: clIcons.insertItem.iconFormatted(),
-            onPressed: () {
-              IncomingMediaMonitor.onPickFiles(
-                context,
-                ref,
-                collection: entity,
-              );
-            },
-          ),
-          if (ColanPlatformSupport.cameraSupported)
-            Align(
-              alignment: Alignment.centerRight,
-              child: ShadButton.ghost(
-                child: clIcons.camera.iconFormatted(),
+          const ServerBar(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              ShadButton.ghost(
+                child: clIcons.insertItem.iconFormatted(),
                 onPressed: () {
-                  PageManager.of(context)
-                      .openCamera(parentId: entity?.id, serverId: serverId);
+                  IncomingMediaMonitor.onPickFiles(
+                    context,
+                    ref,
+                    collection: entity,
+                  );
                 },
               ),
-            ),
+              if (ColanPlatformSupport.cameraSupported)
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: ShadButton.ghost(
+                    child: clIcons.camera.iconFormatted(),
+                    onPressed: () {
+                      PageManager.of(context)
+                          .openCamera(parentId: entity?.id, serverId: serverId);
+                    },
+                  ),
+                ),
+            ],
+          ),
         ],
       ),
     );

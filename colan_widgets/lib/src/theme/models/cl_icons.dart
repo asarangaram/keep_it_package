@@ -153,8 +153,8 @@ class CLIcons {
   final IconData collectionsSelect = Symbols.list_alt;
   final IconData searchRequest = Symbols.search;
   final IconData searchOpened = Symbols.search_check_2;
-  final IconData selected = Symbols.select_check_box_rounded;
-  final IconData deselected = Symbols.check_box_outline_blank_rounded;
+  final IconData selected = LucideIcons.squareCheck;
+  final IconData deselected = LucideIcons.square;
   final IconData settings = LucideIcons.settings2;
   final IconData darkMode = LucideIcons.moon;
   final IconData lightMode = LucideIcons.sun;

@@ -2,6 +2,7 @@ import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:store_tasks/store_tasks.dart';
 
 import '../models/entity_actions.dart';
 import '../widgets/on_swipe.dart';
@@ -75,21 +76,26 @@ class KeepItGridView0 extends ConsumerWidget {
         child: OnRefreshWrapper(
           child: Padding(
             padding: const EdgeInsets.all(8),
-            child: CLEntitiesGridView(
-              incoming: children,
-              filtersDisabled: false,
-              onSelectionChanged: null,
-              contextMenuBuilder: (context, entities) => EntityActions.entities(
-                  context, ref, entities,
-                  serverId: serverId),
-              itemBuilder: (context, item, entities) => EntityPreview(
-                serverId: serverId,
-                item: item,
-                entities: entities,
-                parentId: parent?.id,
-              ),
-              whenEmpty: const WhenEmpty(),
-            ),
+            child: GetStoreTaskManager(
+                contentOrigin: ContentOrigin.move,
+                builder: (moveTaskManager) {
+                  return CLEntitiesGridView(
+                    incoming: children,
+                    filtersDisabled: false,
+                    onSelectionChanged: null,
+                    contextMenuBuilder: (context, entities) =>
+                        EntityActions.entities(context, entities,
+                            moveTaskManager: moveTaskManager,
+                            serverId: serverId),
+                    itemBuilder: (context, item, entities) => EntityPreview(
+                      serverId: serverId,
+                      item: item,
+                      entities: entities,
+                      parentId: parent?.id,
+                    ),
+                    whenEmpty: const WhenEmpty(),
+                  );
+                }),
           ),
         ),
       ),

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'package:store/store.dart';
+import 'package:store_tasks/store_tasks.dart';
 
-import '../../../models/universal_media_source.dart';
 import '../../camera_service/camera_service.dart';
 import '../../camera_service/models/default_theme.dart';
 
@@ -99,7 +99,7 @@ class PageManager {
             if (parentId != null) 'parentId=$parentId',
           ];
           final query = queryMap.isNotEmpty ? '?${queryMap.join('&')}' : '';
-          await navigator.pushNamed(context, '/camera?$query');
+          await navigator.pushNamed(context, '/camera$query');
         }
       },
       themeData: DefaultCLCameraIcons(),
@@ -143,28 +143,15 @@ class PageManager {
     await navigator.pushNamed(context, '/media$query');
   }
 
-  Future<void> openWizard(
-    UniversalMediaSource type, {
-    required String serverId,
-  }) async {
+  Future<void> openWizard(ContentOrigin type) async {
     final queryMap = [
-      'serverId=$serverId',
       'type=${type.name}',
     ];
     final query = queryMap.isNotEmpty ? '?${queryMap.join('&')}' : '';
     await navigator.pushNamed(context, '/wizard$query');
   }
 
-  Future<void> openSettings({
-    required String? serverId,
-  }) async {
-    final queryMap = [
-      if (serverId != null) 'serverId=$serverId',
-    ];
-    final query = queryMap.isNotEmpty ? '?${queryMap.join('&')}' : '';
-    await navigator.pushNamed(
-      context,
-      '/settings$query',
-    );
+  Future<void> openSettings() async {
+    await navigator.pushNamed(context, '/settings');
   }
 }

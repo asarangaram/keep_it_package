@@ -127,7 +127,7 @@ class ServerTile extends ConsumerWidget {
         ),
         enabled: store?.store.isAlive ?? false,
         title: Text(
-          storeURL.name,
+          storeURL.label ?? storeURL.name,
           style: ShadTheme.of(context).textTheme.small,
         ),
         onTap: (!isLoading && store != null)

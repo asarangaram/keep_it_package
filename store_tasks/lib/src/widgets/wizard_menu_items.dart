@@ -1,7 +1,7 @@
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
-import '../../../models/universal_media_source.dart';
+import '../models/content_origin.dart';
 
 @immutable
 class WizardMenuItems {
@@ -12,7 +12,7 @@ class WizardMenuItems {
   });
 
   factory WizardMenuItems.moveOrCancel({
-    required UniversalMediaSource type,
+    required ContentOrigin type,
     String? keepActionLabel,
     String? deleteActionLabel,
     Future<bool> Function()? keepAction,
@@ -33,7 +33,7 @@ class WizardMenuItems {
     );
   }
 
-  final UniversalMediaSource type;
+  final ContentOrigin type;
   final CLMenuItem option1;
   final CLMenuItem option2;
 }

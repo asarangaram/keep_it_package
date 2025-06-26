@@ -1,12 +1,12 @@
 import 'package:colan_services/internal/cl_banner.dart';
-import 'package:colan_services/services/media_wizard_service/media_wizard_service.dart';
 
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:store/store.dart';
+import 'package:store_tasks/store_tasks.dart';
 
-import '../../../models/cl_shared_media.dart';
-import '../../../models/universal_media_source.dart';
+import '../../basic_page_service/widgets/page_manager.dart';
 
 class StaleMediaBanner extends CLBanner {
   const StaleMediaBanner({
@@ -27,31 +27,33 @@ class StaleMediaBanner extends CLBanner {
     String msg = '',
     void Function()? onTap,
   }) {
-    return GetEntities(
-      isHidden: true,
-      isCollection: false,
-      parentId: 0,
-      errorBuilder: errorBuilder,
-      loadingBuilder: loadingBuilder,
-      builder: (staleMedia) {
-        return super.build(
-          context,
-          ref,
-          msg: staleMedia.isEmpty
-              ? ''
-              : 'You have ${staleMedia.length} unclassified media. '
-                  'Tap here to show',
-          onTap: () => MediaWizardService.openWizard(
-            context,
-            ref,
-            CLSharedMedia(
-              entries: staleMedia,
-              type: UniversalMediaSource.unclassified,
-            ),
-            serverId: serverId,
-          ),
-        );
-      },
-    );
+    return GetStoreTaskManager(
+        contentOrigin: ContentOrigin.stale,
+        builder: (staleTaskManager) {
+          return GetEntities(
+            isHidden: true,
+            isCollection: false,
+            parentId: 0,
+            errorBuilder: errorBuilder,
+            loadingBuilder: loadingBuilder,
+            builder: (staleMedia) {
+              return super.build(
+                context,
+                ref,
+                msg: staleMedia.isEmpty
+                    ? ''
+                    : 'You have ${staleMedia.length} unclassified media. '
+                        'Tap here to show',
+                onTap: () async {
+                  staleTaskManager.add(StoreTask(
+                    items: staleMedia.entities.cast<StoreEntity>(),
+                    contentOrigin: ContentOrigin.stale,
+                  ));
+                  await PageManager.of(context).openWizard(ContentOrigin.stale);
+                },
+              );
+            },
+          );
+        });
   }
 }

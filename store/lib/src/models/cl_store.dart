@@ -3,9 +3,10 @@ import 'dart:io';
 import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:cl_media_tools/cl_media_tools.dart';
 import 'package:meta/meta.dart';
-import 'package:store/src/models/cl_logger.dart';
 
+import '../extensions/ext_file.dart';
 import 'cl_entity.dart';
+import 'cl_logger.dart';
 import 'data_types.dart';
 import 'entity_store.dart';
 import 'progress.dart';
@@ -27,6 +28,7 @@ class CLStore with CLLogger {
 
   @override
   String get logPrefix => 'CLStore';
+  String get label => store.storeURL.label ?? store.storeURL.name;
 
   CLStore copyWith({
     EntityStore? store,
@@ -140,44 +142,95 @@ class CLStore with CLLogger {
     );
   }
 
-  Future<StoreEntity?> createMedia({
-    required CLMediaFile mediaFile,
-    required int? parentId,
-    ValueGetter<String?>? label,
-    ValueGetter<String?>? description,
-    UpdateStrategy strategy = UpdateStrategy.skip,
-  }) async {
+  Future<CLEntity> getTempCollection() async {
+    final CLEntity? item;
+    final temp = await createCollection(label: tempCollectionName);
+
+    item =
+        (await (await temp?.updateWith(isHidden: () => true))?.dbSave())?.data;
+    if (item == null) {
+      throw Exception(
+        'missing parent; failed to create a default collection',
+      );
+    }
+    if (item.id == null) {
+      throw Exception('failed to get id for temporary collection');
+    }
+    return item;
+  }
+
+  Future<StoreEntity> move(
+      StoreEntity entity, StoreEntity targetCollection) async {
+    final StoreEntity? updated;
+    if (targetCollection.store == entity.store) {
+      updated = await (await entity.updateWith(
+        parentId: () => targetCollection.id!,
+        isHidden: () => false,
+      ))
+          ?.dbSave();
+    } else {
+      final targetStore = targetCollection.store;
+      if (entity.store.store.isLocal) {
+        updated = await (await targetStore.createMedia(
+                label: () => entity.data.label,
+                description: () => entity.data.description,
+                parentCollection: targetCollection.data,
+                mediaFile: CLMediaFile(
+                    path: entity.mediaUri!.toFilePath(),
+                    md5: entity.data.md5!,
+                    fileSize: entity.data.fileSize!,
+                    mimeType: entity.data.mimeType!,
+                    type: CLMediaType.fromMIMEType(entity.data.type!),
+                    fileSuffix: entity.data.extension!,
+                    createDate: entity.data.createDate,
+                    height: entity.data.height,
+                    width: entity.data.width,
+                    duration: entity.data.duration),
+                strategy: UpdateStrategy.mergeAppend))
+            ?.dbSave(entity.mediaUri!.toFilePath());
+        if (updated != null) {
+          final filePath = entity.mediaUri!.toFilePath();
+
+          await entity.delete();
+          await File(filePath).deleteIfExists();
+        }
+      } else {
+        updated = null;
+      }
+    }
+
+    if (updated == null) {
+      throw Exception('Failed to update item ${entity.id}');
+    }
+    return updated;
+  }
+
+  Future<StoreEntity?> createMedia(
+      {required CLMediaFile mediaFile,
+      ValueGetter<String?>? label,
+      ValueGetter<String?>? description,
+      UpdateStrategy strategy = UpdateStrategy.skip,
+      CLEntity? parentCollection}) async {
+    if (!store.isLocal) {
+      throw Exception("Can't directly push media files into non-local servers");
+    }
+    if (parentCollection != null) {
+      if (!parentCollection.isCollection) {
+        throw Exception('Parent entity must be a collection.');
+      }
+      if (parentCollection.id == null) {
+        throw Exception("media can't be stored without valid parentId");
+      }
+    }
     final mediaInDB = await store.get(
       StoreQuery<CLEntity>({'md5': mediaFile.md5, 'isCollection': 1}),
     );
-    final CLEntity? parent;
+    final CLEntity parent;
 
-    if (parentId != null) {
-      /// FIXME: Handle failure due to network
-      parent = (await get(StoreQuery<CLEntity>({'id': parentId})))?.data;
-
-      if (parent == null) {
-        throw Exception(
-          "missing parent; collection with id $parentId doesn't exists",
-        );
-      }
+    if (parentCollection == null) {
+      parent = await getTempCollection();
     } else {
-      final tempParent = await createCollection(label: tempCollectionName);
-
-      parent =
-          (await (await tempParent?.updateWith(isHidden: () => true))?.dbSave())
-              ?.data;
-      if (parent == null) {
-        throw Exception(
-          'missing parent; failed to create a default collection',
-        );
-      }
-    }
-    if (!parent.isCollection) {
-      throw Exception('Parent entity must be a collection.');
-    }
-    if (parent.id == null) {
-      throw Exception("media can't be stored with valid parentId");
+      parent = parentCollection;
     }
 
     if (mediaInDB != null && mediaInDB.id != null) {
@@ -188,7 +241,7 @@ class CLStore with CLLogger {
           mediaInDB,
           label: label,
           description: description,
-          parentId: () => parent!.id!,
+          parentId: () => parent.id!,
           strategy: strategy,
         );
       }
@@ -377,7 +430,6 @@ class CLStore with CLLogger {
 
   Stream<Progress> getValidMediaFiles({
     required List<CLMediaContent> contentList,
-    required StoreEntity? collection,
     void Function({
       required ViewerEntities existingEntities,
       required ViewerEntities newEntities,
@@ -397,50 +449,6 @@ class CLStore with CLLogger {
     final newEntities = <StoreEntity>[];
     final invalidContent = <CLMediaContent>[];
     try {
-      int parentId;
-      if (collection != null) {
-        yield Progress(
-          currentItem: 'Creating collection " ${collection.data.label}"',
-          fractCompleted: 0,
-        );
-        final collectionInDB = await (await createCollection(
-          label: collection.data.label!,
-          description: () => collection.data.description,
-          parentId:
-              collection.parentId == null ? null : () => collection.parentId,
-        ))
-            ?.dbSave();
-
-        /// A valid collection must have been created
-        if (collectionInDB == null || collectionInDB.id == null) {
-          throw Exception(
-            'failed to create collection with label ${collection.data.label}',
-          );
-        }
-        if (!collectionInDB.isCollection) {
-          throw Exception('Parent entity must be a collection.');
-        }
-        parentId = collectionInDB.id!;
-      } else {
-        StoreEntity? defaultParent;
-        final tempParent = await createCollection(label: tempCollectionName);
-        if (tempParent != null) {
-          defaultParent =
-              await (await tempParent.updateWith(isHidden: () => true))
-                  ?.dbSave();
-        }
-
-        if (defaultParent == null || defaultParent.id == null) {
-          throw Exception(
-            'missing parent; unable to create default collection',
-          );
-        }
-        if (!defaultParent.isCollection) {
-          throw Exception('Parent entity must be a collection.');
-        }
-        parentId = defaultParent.id!;
-      }
-
       for (final (i, mediaFile) in contentList.indexed) {
         await Future<void>.delayed(const Duration(milliseconds: 1));
         yield Progress(
@@ -469,7 +477,6 @@ class CLStore with CLLogger {
               } else {
                 final newEntity = await createMedia(
                   mediaFile: item,
-                  parentId: parentId,
                 );
                 if (newEntity != null) {
                   final saved = await newEntity.dbSave(item.path);

@@ -50,7 +50,6 @@ class CLMediaCollage extends StatelessWidget {
     this.vCount,
     this.childSize,
     super.key,
-    this.whenNopreview,
   });
   factory CLMediaCollage.byMatrixSize(
     int itemCount, {
@@ -60,7 +59,6 @@ class CLMediaCollage extends StatelessWidget {
     Key? key,
     bool? keepAspectRatio,
     CLDimension? maxPageDimension,
-    Widget? whenNopreview,
   }) {
     return CLMediaCollage._(
       itemCount: itemCount,
@@ -71,7 +69,6 @@ class CLMediaCollage extends StatelessWidget {
       canScroll: vCount == null,
       maxPageDimension: maxPageDimension ??
           const CLDimension(itemsInRow: 6, itemsInColumn: 6),
-      whenNopreview: whenNopreview,
       itemBuilder: itemBuilder,
     );
   }
@@ -83,7 +80,6 @@ class CLMediaCollage extends StatelessWidget {
     bool? keepAspectRatio,
     bool canScroll = false,
     CLDimension? maxPageDimension,
-    Widget? whenNopreview,
   }) {
     return CLMediaCollage._(
       itemCount: itemCount,
@@ -93,7 +89,6 @@ class CLMediaCollage extends StatelessWidget {
       canScroll: canScroll,
       maxPageDimension: maxPageDimension ??
           const CLDimension(itemsInRow: 6, itemsInColumn: 6),
-      whenNopreview: whenNopreview,
       itemBuilder: itemBuilder,
     );
   }
@@ -105,7 +100,7 @@ class CLMediaCollage extends StatelessWidget {
   final Size? childSize;
   final bool canScroll;
   final CLDimension maxPageDimension;
-  final Widget? whenNopreview;
+
   final Widget Function(BuildContext context, int index) itemBuilder;
 
   @override

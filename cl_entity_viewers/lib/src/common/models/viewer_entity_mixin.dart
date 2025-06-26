@@ -18,6 +18,8 @@ abstract class ViewerEntity {
   String? get mimeType;
   String? get label;
   String? get pin;
+
+  String? get dateString;
 }
 
 class ViewerEntityGroup<T extends ViewerEntity> {

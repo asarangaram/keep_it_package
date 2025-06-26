@@ -39,7 +39,6 @@ class DialogService {
                             entities: const ViewerEntities([]),
                           );
                         },
-                        whenNopreview: const Center(),
                       ),
                     ),
                   _ => Container()
@@ -115,7 +114,7 @@ class DialogService {
     }
   }
 
-  static Future<bool?> permanentlyDeleteMedia(
+  /* static Future<bool?> permanentlyDeleteMedia(
     BuildContext context, {
     required String serverId,
     required StoreEntity media,
@@ -190,7 +189,7 @@ class DialogService {
       title: 'Confirm Restore',
       message: 'Are you sure you want to restore  ${media.length} items?',
     );
-  }
+  } */
 
   static Future<bool?> replaceMedia(
     BuildContext context, {
@@ -214,17 +213,5 @@ class DialogService {
         title: 'Save',
         message: 'This will save the above media as a separate copy, '
             'other propertes will be copied from original media',
-      );
-  static Future<bool?> deleteNote(
-    BuildContext context, {
-    required String serverId,
-    required StoreEntity note,
-  }) async =>
-      template(
-        context,
-        serverId: serverId,
-        title: 'Confirm Delete',
-        message: 'Are you sure you want to delete '
-            "this note? You can't recover it",
       );
 }

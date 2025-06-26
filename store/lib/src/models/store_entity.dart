@@ -1,5 +1,6 @@
 import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:cl_media_tools/cl_media_tools.dart';
+import 'package:intl/intl.dart';
 import 'package:meta/meta.dart';
 import 'package:store/src/models/cl_store.dart';
 
@@ -116,6 +117,17 @@ class StoreEntity implements ViewerEntity {
     await store.delete(data.id!);
   }
 
+  Future<StoreEntity> accept(StoreEntity entity) async {
+    if (!isCollection) {
+      throw Exception(
+          "A media entity can't accept another media. Use collection");
+    }
+    if (id == null) {
+      throw Exception('the collection must saved before accepting media');
+    }
+    return entity.store.move(entity, this);
+  }
+
   Future<StoreEntity?> onPin() async {
     // Pin here, if not pinned
     return updateWith(pin: () => 'PIN TEST');
@@ -174,4 +186,8 @@ class StoreEntity implements ViewerEntity {
 
   @override
   String? get pin => data.pin;
+
+  @override
+  String? get dateString =>
+      DateFormat('dd MMM, yyyy').format(createDate ?? updatedDate);
 }

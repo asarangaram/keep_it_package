@@ -57,13 +57,7 @@ class KeepItApp implements AppDescriptor {
         CLRouteDescriptor(
           name: 'settings',
           builder: (context, parameters) {
-            final String? serverId;
-            if (parameters.keys.contains('serverId')) {
-              serverId = parameters['serverId'];
-            } else {
-              serverId = null;
-            }
-            return SettingsService(serverId: serverId);
+            return const SettingsService();
           },
         ),
         CLRouteDescriptor(
@@ -119,35 +113,17 @@ class KeepItApp implements AppDescriptor {
         CLRouteDescriptor(
           name: 'wizard',
           builder: (context, parameters) {
-            final typeString = parameters['type'];
-            final UniversalMediaSource type;
-            if (typeString != null) {
-              type = UniversalMediaSource.values.asNameMap()[typeString] ??
-                  UniversalMediaSource.unclassified;
-            } else {
-              type = UniversalMediaSource.unclassified;
-            }
-            final String serverId;
-            if (parameters.keys.contains('serverId')) {
-              serverId = parameters['serverId']!;
+            final String type;
+            if (parameters.keys.contains('type')) {
+              type = parameters['type']!;
             } else {
               throw Exception('serverId must be present');
             }
-            return MediaWizardService(serverId: serverId, type: type);
+
+            return MediaWizardService(type: type);
           },
         ),
       ];
-
-  @override
-  IncomingMediaViewBuilder get incomingMediaViewBuilder => (
-        BuildContext context, {
-        required incomingMedia,
-        required onDiscard,
-      }) =>
-          IncomingMediaService(
-            incomingMedia: incomingMedia,
-            onDiscard: onDiscard,
-          );
 
   @override
   CLTransitionBuilder get transitionBuilder => (

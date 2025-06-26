@@ -57,7 +57,6 @@ class AppStart extends ConsumerWidget {
               );
             }
             return IncomingMediaMonitor(
-              onMedia: app.incomingMediaViewBuilder,
               child: screen.builder(context, {}),
             );
           },
@@ -97,7 +96,6 @@ class AppStart extends ConsumerWidget {
                   );
                 }
                 return IncomingMediaMonitor(
-                  onMedia: app.incomingMediaViewBuilder,
                   child: screen.builder(context, uri.queryParameters),
                 );
               },

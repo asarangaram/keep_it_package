@@ -17,8 +17,12 @@ class EntitiesNotifier
     final dbQuery = arg;
 
     ref.watch(reloadProvider);
-    final store = await ref.watch(activeStoreProvider.future);
-    return store.getAll(dbQuery);
+    if (dbQuery.store == null) {
+      final store = await ref.watch(activeStoreProvider.future);
+      return store.getAll(dbQuery);
+    } else {
+      return dbQuery.store!.getAll(dbQuery);
+    }
   }
 }
 

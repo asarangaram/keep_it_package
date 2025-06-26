@@ -43,7 +43,9 @@ class Menu extends StatelessWidget {
                       e.title,
                       color: Theme.of(context).colorScheme.onPrimaryContainer,
                       onTap: () async {
-                        await e.onTap?.call();
+                        if (context.mounted) {
+                          await e.onTap?.call();
+                        }
                       },
                     ),
                   ),

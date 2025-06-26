@@ -23,9 +23,9 @@
       "request": "launch",
       "type": "dart",
       "flutterMode": "release"
-    },
+    }
 
-    {
+    /*{
       "name": "cl_media_info_extractor",
       "cwd": "cl_media_info_extractor/example",
       "request": "launch",
@@ -44,6 +44,6 @@
       "request": "launch",
       "type": "dart",
       "flutterMode": "release"
-    }
+    }**/
   ]
 }

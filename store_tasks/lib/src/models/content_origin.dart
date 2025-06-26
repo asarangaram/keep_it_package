@@ -1,34 +1,34 @@
-enum UniversalMediaSource {
-  captured,
+enum ContentOrigin {
+  camera,
   move,
   filePick,
   incoming,
   deleted,
-  unclassified;
+  stale;
 
   String get identifier => switch (this) {
-        captured => 'Captured',
+        camera => 'Captured',
         move => 'Moving...',
         filePick => 'Imported',
-        unclassified => 'Unclassified',
+        stale => 'Unclassified',
         incoming => 'Incoming',
         deleted => 'Deleted'
       };
   String get label => identifier;
 
   String get keepActionLabel => switch (this) {
-        captured => 'Save',
+        camera => 'Save',
         move => 'Move',
         filePick => 'Import',
-        unclassified => 'Keep',
+        stale => 'Keep',
         incoming => 'Save',
         deleted => 'Restore'
       };
   String get deleteActionLabel => switch (this) {
-        captured => 'Discard',
+        camera => 'Discard',
         move => 'Discard',
         filePick => 'Discard',
-        unclassified => 'Discard',
+        stale => 'Discard',
         incoming => 'Discard',
         deleted => 'Delete'
       };

@@ -43,6 +43,7 @@ class WizardLayout extends StatelessWidget {
           child: CLScaffold(
             bottomMenu: null,
             topMenu: AppBar(
+              automaticallyImplyLeading: false,
               title: Text(
                 title ?? '',
               ),
@@ -76,6 +77,61 @@ class WizardLayout extends StatelessWidget {
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class WizardLayout2 extends StatelessWidget {
+  const WizardLayout2({
+    required this.child,
+    this.onCancel,
+    this.title,
+    this.wizard,
+    this.actions,
+    super.key,
+  });
+  final Widget child;
+  final PreferredSizeWidget? wizard;
+  final String? title;
+  final List<Widget>? actions;
+
+  final void Function()? onCancel;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+          borderRadius: const BorderRadius.all(Radius.circular(16)),
+          border: Border.all()),
+      child: ClipRRect(
+        borderRadius: const BorderRadius.all(Radius.circular(16)),
+        child: Scaffold(
+          appBar: AppBar(
+            automaticallyImplyLeading: false,
+            centerTitle: false,
+            title: Text(title ?? ''),
+            actions: [
+              if (actions != null) ...actions!.map((e) => e),
+              Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: GestureDetector(
+                    onTap: onCancel, child: Icon(clIcons.closeFullscreen)),
+              )
+            ],
+          ),
+          body: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: child,
+          ),
+          bottomNavigationBar: (wizard != null)
+              ? Padding(
+                  padding: const EdgeInsets.only(top: 2),
+                  child: wizard,
+                )
+              : null,
         ),
       ),
     );

@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-class CLGrid<T> extends StatelessWidget {
+class CLGrid extends StatelessWidget {
   const CLGrid({
     required this.itemCount,
     required this.itemBuilder,
@@ -12,8 +12,8 @@ class CLGrid<T> extends StatelessWidget {
     this.physics = const NeverScrollableScrollPhysics(),
     this.header,
     this.footer,
-    this.crossAxisSpacing = 2.0,
-    this.mainAxisSpacing = 2.0,
+    this.crossAxisSpacing = 8.0,
+    this.mainAxisSpacing = 8.0,
     super.key,
   });
   final int itemCount;
