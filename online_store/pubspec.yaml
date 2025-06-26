@@ -1,0 +1,21 @@
+name: online_store
+description: Online Store implementation.
+version: 0.0.1
+# repository: https://github.com/my_org/my_repo
+publish_to: none
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+# Add regular dependencies here.
+dependencies:
+  cl_media_tools:
+    path: ../cl_media_tools
+  collection: ^1.19.0
+  http: ^1.2.2
+  meta: ^1.12.0
+  store:
+    path: ../store
+
+dev_dependencies:
+  lints: ^3.0.0
+  very_good_analysis: ^8.0.0

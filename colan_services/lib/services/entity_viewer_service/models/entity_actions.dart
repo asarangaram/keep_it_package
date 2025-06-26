@@ -20,6 +20,7 @@ import '../widgets/metadata_editors/media_metadata_editor.dart';
 @immutable
 class EntityActions extends CLContextMenu {
   const EntityActions({
+    required this.serverId,
     required this.name,
     required this.logoImageAsset,
     required this.onCrop,
@@ -32,40 +33,37 @@ class EntityActions extends CLContextMenu {
   });
 
   factory EntityActions.entities(
-    BuildContext context,
-    WidgetRef ref,
-    List<ViewerEntityMixin> entities,
-  ) {
+      BuildContext context, WidgetRef ref, ViewerEntities entities,
+      {required String serverId}) {
     return switch (entities) {
-      final List<ViewerEntityMixin> e
-          when e.every(
+      final ViewerEntities e
+          when e.entities.every(
             (e) => e is StoreEntity && e.data.isCollection == false,
           ) =>
         () {
           return EntityActions.ofMultipleMedia(
             context,
             ref,
-            items: e.map((e) => e as StoreEntity).toList(),
+            items: e,
+            serverId: serverId,
             hasOnlineService: true,
           );
         }(),
-      final List<ViewerEntityMixin> e
-          when e.every(
+      final ViewerEntities e
+          when e.entities.every(
             (e) => e is StoreEntity && e.data.isCollection == true,
           ) =>
         () {
-          return EntityActions.empty();
+          return EntityActions.empty(serverId: serverId);
         }(),
       _ => () {
-          return EntityActions.empty();
+          return EntityActions.empty(serverId: serverId);
         }()
     };
   }
   factory EntityActions.ofEntity(
-    BuildContext context,
-    WidgetRef ref,
-    StoreEntity entity,
-  ) {
+      BuildContext context, WidgetRef ref, StoreEntity entity,
+      {required String serverId}) {
     Future<bool> onEdit() async {
       if (context.mounted) {
         final updated = await (entity.isCollection
@@ -99,22 +97,24 @@ class EntityActions extends CLContextMenu {
       CLMediaType.collection => false,
     };
 
-    Future<bool> onCrop() async {
-      await PageManager.of(context).openEditor(entity);
+    Future<bool> onCrop({required String serverId}) async {
+      await PageManager.of(context).openEditor(entity, serverId: serverId);
       return true;
     }
 
-    Future<bool?> onMove() => MediaWizardService.openWizard(
-          context,
-          ref,
-          CLSharedMedia(
-            entries: [entity],
-            type: UniversalMediaSource.move,
-          ),
-        );
+    Future<bool?> onMove({required String serverId}) =>
+        MediaWizardService.openWizard(
+            context,
+            ref,
+            CLSharedMedia(
+              entries: ViewerEntities([entity]),
+              type: UniversalMediaSource.move,
+            ),
+            serverId: serverId);
     Future<bool> onDelete() async {
       final confirmed = await DialogService.deleteEntity(
             context,
+            serverId: serverId,
             entity: entity,
           ) ??
           false;
@@ -127,7 +127,7 @@ class EntityActions extends CLContextMenu {
       return false;
     }
 
-    Future<bool?> onShare() => share(context, [entity]);
+    Future<bool?> onShare() => share(context, ViewerEntities([entity]));
 
     Future<bool> onPin() async {
       await entity.onPin();
@@ -136,11 +136,12 @@ class EntityActions extends CLContextMenu {
     }
 
     return EntityActions.template(
+      serverId: serverId,
       name: entity.data.label ?? 'Unnamed',
       logoImageAsset: 'assets/icon/not_on_server.png',
-      onCrop: cropSupported ? onCrop : null,
+      onCrop: cropSupported ? () => onCrop(serverId: serverId) : null,
       onEdit: onEdit,
-      onMove: onMove,
+      onMove: () => onMove(serverId: serverId),
       onShare: entity.isCollection ? null : onShare,
       onPin: !entity.isCollection && !ColanPlatformSupport.isMobilePlatform
           ? onPin
@@ -150,8 +151,9 @@ class EntityActions extends CLContextMenu {
       isPinned: false,
     );
   }
-  factory EntityActions.empty() {
+  factory EntityActions.empty({required String serverId}) {
     return EntityActions.template(
+      serverId: serverId,
       name: 'No Context Menu',
       logoImageAsset: '',
       infoMap: const {},
@@ -159,6 +161,7 @@ class EntityActions extends CLContextMenu {
     );
   }
   factory EntityActions.template({
+    required String serverId,
     required String name,
     required String logoImageAsset,
     required Map<String, dynamic> infoMap,
@@ -171,6 +174,7 @@ class EntityActions extends CLContextMenu {
     Future<bool?> Function()? onDelete,
   }) {
     return EntityActions(
+      serverId: serverId,
       name: name,
       logoImageAsset: logoImageAsset,
       onCrop: CLMenuItem(
@@ -212,7 +216,8 @@ class EntityActions extends CLContextMenu {
   factory EntityActions.ofMultipleMedia(
     BuildContext context,
     WidgetRef ref, {
-    required List<StoreEntity> items,
+    required String serverId,
+    required ViewerEntities items,
     // ignore: avoid_unused_constructor_parameters For now, not required
     required bool hasOnlineService,
     ValueGetter<Future<bool?> Function()?>? onCrop,
@@ -225,16 +230,16 @@ class EntityActions extends CLContextMenu {
     final onEdit0 = onCrop?.call();
     final onEditInfo0 = onEdit?.call();
     Future<bool?> onMove0() => MediaWizardService.openWizard(
-          context,
-          ref,
-          CLSharedMedia(
-            entries: items,
-            type: UniversalMediaSource.move,
-          ),
-        );
+        context,
+        ref,
+        CLSharedMedia(
+          entries: items,
+          type: UniversalMediaSource.move,
+        ),
+        serverId: serverId);
     Future<bool?> onShare0() => share(context, items);
     Future<bool> onPin0() async {
-      for (final item in items) {
+      for (final item in items.entities.cast<StoreEntity>()) {
         await item.onPin();
       }
       return true;
@@ -243,12 +248,13 @@ class EntityActions extends CLContextMenu {
     Future<bool> onDelete0() async {
       final confirmed = await DialogService.deleteMultipleEntities(
             context,
+            serverId: serverId,
             media: items,
           ) ??
           false;
       if (!confirmed) return confirmed;
       if (context.mounted) {
-        for (final item in items) {
+        for (final item in items.entities.cast<StoreEntity>()) {
           await item.delete();
         }
         return true;
@@ -257,6 +263,7 @@ class EntityActions extends CLContextMenu {
     }
 
     return EntityActions.template(
+      serverId: serverId,
       name: 'Multiple Media',
       logoImageAsset: 'assets/icon/not_on_server.png',
       onCrop: onCrop != null ? onCrop() : onEdit0,
@@ -266,10 +273,12 @@ class EntityActions extends CLContextMenu {
       onPin: onPin != null ? onPin() : onPin0,
       onDelete: onDelete != null ? onDelete() : onDelete0,
       infoMap: const {},
-      isPinned: items.any((media) => media.data.pin != null),
+      isPinned: items.entities
+          .cast<StoreEntity>()
+          .any((media) => media.data.pin != null),
     );
   }
-
+  final String serverId;
   final String name;
   final String logoImageAsset;
   final CLMenuItem onCrop;
@@ -305,9 +314,9 @@ class EntityActions extends CLContextMenu {
 
   static Future<bool?> share(
     BuildContext context,
-    List<StoreEntity> media,
+    ViewerEntities media,
   ) {
-    final files = media
+    final files = media.entities
         .where((e) => e.mediaUri != null)
         .map((e) => e.mediaUri!.toFilePath())
         .where((e) => File(e).existsSync());

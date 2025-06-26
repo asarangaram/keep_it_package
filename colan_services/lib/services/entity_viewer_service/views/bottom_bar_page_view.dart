@@ -9,14 +9,16 @@ import 'package:store/store.dart';
 import '../models/entity_actions.dart';
 
 class BottomBarPageView extends ConsumerWidget implements PreferredSizeWidget {
-  const BottomBarPageView({super.key});
+  const BottomBarPageView({required this.serverId, super.key});
+  final String serverId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GetCurrentEntity(
       builder: (entity) {
-        final bottomMenu =
-            EntityActions.ofEntity(context, ref, entity as StoreEntity);
+        final bottomMenu = EntityActions.ofEntity(
+            context, ref, entity as StoreEntity,
+            serverId: serverId);
         return Row(
           children: bottomMenu.actions
               .map(

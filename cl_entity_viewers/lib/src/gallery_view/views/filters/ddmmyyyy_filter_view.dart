@@ -12,22 +12,20 @@ import '../../providers/media_filters.dart';
 class DDMMYYYYFilterViewRow extends ConsumerWidget {
   const DDMMYYYYFilterViewRow({
     required this.filter,
-    required this.identifier,
     super.key,
   });
-  final CLFilter<ViewerEntityMixin> filter;
-  final String identifier;
+  final CLFilter<ViewerEntity> filter;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final defaultDate = DateTime.now();
-    final filter = this.filter as DDMMYYYYFilter<ViewerEntityMixin>;
+    final filter = this.filter as DDMMYYYYFilter<ViewerEntity>;
 
     return ShadCheckbox(
       value: filter.enabled,
       onChanged: (v) {
         ref
-            .read(mediaFiltersProvider(identifier).notifier)
+            .read(mediaFiltersProvider.notifier)
             .updateFilter(filter, 'enable', v);
       },
       label: Stack(
@@ -41,11 +39,11 @@ class DDMMYYYYFilterViewRow extends ConsumerWidget {
             date: filter.ddmmyyyy ?? DDMMYYYY.fromDateTime(defaultDate),
             onDateChanged: (ddmmyyyy) async {
               ref
-                  .read(mediaFiltersProvider(identifier).notifier)
+                  .read(mediaFiltersProvider.notifier)
                   .updateFilter(filter, 'ddmmyyyy', ddmmyyyy);
             },
             onReset: () {
-              ref.read(mediaFiltersProvider(identifier).notifier).updateFilter(
+              ref.read(mediaFiltersProvider.notifier).updateFilter(
                     filter,
                     'ddmmyyyy',
                     DDMMYYYY.fromDateTime(defaultDate),

@@ -1,13 +1,14 @@
 import 'package:flutter/foundation.dart';
+import '../../common/models/viewer_entities.dart';
 import '../../common/models/viewer_entity_mixin.dart';
 import '../../common/extensions/ext_datetime.dart';
 import '../../common/extensions/list_ext.dart';
 
-extension EntityGrouper on List<ViewerEntityMixin> {
-  Map<String, List<ViewerEntityMixin>> filterByDate() {
-    final filterredMedia = <String, List<ViewerEntityMixin>>{};
-    final noDate = <ViewerEntityMixin>[];
-    for (final entry in this) {
+extension EntityGrouper on ViewerEntities {
+  Map<String, List<ViewerEntity>> filterByDate() {
+    final filterredMedia = <String, List<ViewerEntity>>{};
+    final noDate = <ViewerEntity>[];
+    for (final entry in entities) {
       final String formattedDate;
 
       if (entry.createDate != null) {
@@ -29,8 +30,8 @@ extension EntityGrouper on List<ViewerEntityMixin> {
     return filterredMedia;
   }
 
-  List<ViewerEntityGroup<ViewerEntityMixin>> groupByTime(int columns) {
-    final galleryGroups = <ViewerEntityGroup<ViewerEntityMixin>>[];
+  List<ViewerEntityGroup<ViewerEntity>> groupByTime(int columns) {
+    final galleryGroups = <ViewerEntityGroup<ViewerEntity>>[];
 
     for (final entry in filterByDate().entries) {
       if (entry.value.length > columns) {
@@ -60,10 +61,10 @@ extension EntityGrouper on List<ViewerEntityMixin> {
     return galleryGroups;
   }
 
-  List<ViewerEntityGroup<ViewerEntityMixin>> group(int columns) {
-    final galleryGroups = <ViewerEntityGroup<ViewerEntityMixin>>[];
+  List<ViewerEntityGroup<ViewerEntity>> group(int columns) {
+    final galleryGroups = <ViewerEntityGroup<ViewerEntity>>[];
 
-    for (final rows in convertTo2D(columns)) {
+    for (final rows in entities.convertTo2D(columns)) {
       galleryGroups.add(
         ViewerEntityGroup(
           rows,

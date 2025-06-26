@@ -1,4 +1,5 @@
-import 'package:cl_entity_viewers/cl_entity_viewers.dart' show MediaThumbnail;
+import 'package:cl_entity_viewers/cl_entity_viewers.dart'
+    show MediaThumbnail, ViewerEntities;
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
@@ -11,13 +12,12 @@ import '../../basic_page_service/basic_page_service.dart';
 class DuplicatePage extends StatelessWidget {
   const DuplicatePage({
     required this.incomingMedia,
-    required this.parentIdentifier,
     required this.onDone,
     required this.onCancel,
     super.key,
   });
   final CLSharedMedia incomingMedia;
-  final String parentIdentifier;
+
   final void Function({required CLSharedMedia? mg}) onDone;
   final void Function() onCancel;
 
@@ -25,7 +25,6 @@ class DuplicatePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return DuplicatePageStateful(
       incomingMedia: incomingMedia,
-      parentIdentifier: parentIdentifier,
       onDone: onDone,
       onCancel: onCancel,
     );
@@ -35,13 +34,12 @@ class DuplicatePage extends StatelessWidget {
 class DuplicatePageStateful extends StatefulWidget {
   const DuplicatePageStateful({
     required this.incomingMedia,
-    required this.parentIdentifier,
     required this.onDone,
     required this.onCancel,
     super.key,
   });
   final CLSharedMedia incomingMedia;
-  final String parentIdentifier;
+
   final void Function({required CLSharedMedia? mg}) onDone;
   final void Function() onCancel;
 
@@ -61,7 +59,7 @@ class _DuplicatePageStatefulState extends State<DuplicatePageStateful> {
   @override
   Widget build(BuildContext context) {
     if (currentMedia.isEmpty) {
-      return BasicPageService.nothingToShow(
+      return BasicPageService.message(
         message: 'Should not have seen this.',
       );
     }
@@ -111,13 +109,13 @@ class _DuplicatePageStatefulState extends State<DuplicatePageStateful> {
               children: [
                 Flexible(
                   child: ExistInDifferentCollection(
-                    parentIdentifier: widget.parentIdentifier,
                     media: currentMedia,
                     onRemove: (m) {
                       final updated = currentMedia.remove(m);
                       if (updated?.targetMismatch.isEmpty ?? true) {
                         widget.onDone(mg: updated);
-                        currentMedia = const CLSharedMedia(entries: []);
+                        currentMedia =
+                            const CLSharedMedia(entries: ViewerEntities([]));
                       } else {
                         currentMedia = updated!;
                       }
@@ -137,13 +135,11 @@ class _DuplicatePageStatefulState extends State<DuplicatePageStateful> {
 class ExistInDifferentCollection extends StatelessWidget {
   const ExistInDifferentCollection({
     required this.media,
-    required this.parentIdentifier,
     required this.onRemove,
     super.key,
   });
 
   final CLSharedMedia media;
-  final String parentIdentifier;
 
   final void Function(StoreEntity media) onRemove;
 
@@ -175,7 +171,7 @@ class ExistInDifferentCollection extends StatelessWidget {
             child: ListView.builder(
               itemCount: duplicates.length,
               itemBuilder: (BuildContext ctx, index) {
-                final m = duplicates[index];
+                final m = duplicates.entities[index] as StoreEntity;
 
                 return GetEntity(
                   id: m.parentId,
@@ -219,7 +215,6 @@ class ExistInDifferentCollection extends StatelessWidget {
                               child: Padding(
                                 padding: const EdgeInsets.all(2),
                                 child: MediaThumbnail(
-                                  parentIdentifier: parentIdentifier,
                                   media: m,
                                 ),
                               ),

@@ -1,64 +1,41 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
+import 'package:store/store.dart';
+
+final defaultStore = StoreURL.fromString('local://default', identity: null);
 
 @immutable
-class StoreURL {
-  const StoreURL(this.uri);
-  factory StoreURL.fromString(String url) {
-    return StoreURL(Uri.parse(url));
-  }
-  final Uri uri;
-  String get scheme => uri.scheme;
-  String get name => uri.host.isNotEmpty ? uri.host : uri.path;
-
-  @override
-  bool operator ==(covariant StoreURL other) {
-    if (identical(this, other)) return true;
-
-    return other.uri == uri;
-  }
-
-  @override
-  int get hashCode => uri.hashCode;
-
-  @override
-  String toString() => '$uri';
-}
-
-final defaultStore = StoreURL.fromString('local://default');
-
-@immutable
-class AvailableStores {
-  factory AvailableStores(
-      {List<StoreURL>? availableStores, int activeStoreIndex = 0}) {
-    final stores = availableStores ??
-        [defaultStore, StoreURL.fromString('local://QuotesCollection')];
-
+class RegisteredURLs {
+  factory RegisteredURLs(
+      {required List<StoreURL> availableStores,
+      required int activeStoreIndex}) {
+    final stores = availableStores;
+    // Not a good idea when network involved. need more checks
     if (activeStoreIndex >= stores.length) {
-      activeStoreIndex = 0;
+      throw Exception('Invalid index on avaiablelStore');
     }
-    return AvailableStores._(
+    return RegisteredURLs._(
         availableStores: stores, activeStoreIndex: activeStoreIndex);
   }
-  const AvailableStores._({
+  const RegisteredURLs._({
     required this.availableStores,
     required this.activeStoreIndex,
   });
   final List<StoreURL> availableStores;
   final int activeStoreIndex;
 
-  AvailableStores copyWith({
+  RegisteredURLs copyWith({
     List<StoreURL>? availableStores,
     int? activeStoreIndex,
   }) {
-    return AvailableStores._(
+    return RegisteredURLs._(
       availableStores: availableStores ?? this.availableStores,
       activeStoreIndex: activeStoreIndex ?? this.activeStoreIndex,
     );
   }
 
   @override
-  bool operator ==(covariant AvailableStores other) {
+  bool operator ==(covariant RegisteredURLs other) {
     if (identical(this, other)) return true;
     final listEquals = const DeepCollectionEquality().equals;
 
@@ -73,7 +50,7 @@ class AvailableStores {
   String toString() =>
       'AvailableStores(availableStores: $availableStores, activeStoreIndex: $activeStoreIndex)';
 
-  AvailableStores setActiveStore(StoreURL storeURL) {
+  RegisteredURLs setActiveStore(StoreURL storeURL) {
     if (!availableStores.contains(storeURL)) {
       throw Exception('Store is not registered');
     }
@@ -81,7 +58,7 @@ class AvailableStores {
         activeStoreIndex: availableStores.indexWhere((e) => e == storeURL));
   }
 
-  AvailableStores addStore(StoreURL storeURL) {
+  RegisteredURLs addStore(StoreURL storeURL) {
     if (availableStores.contains(storeURL)) {
       throw Exception('Store already exists');
     }
@@ -93,7 +70,7 @@ class AvailableStores {
     return copyWith(availableStores: stores, activeStoreIndex: index);
   }
 
-  AvailableStores removeStore(StoreURL storeURL) {
+  RegisteredURLs removeStore(StoreURL storeURL) {
     if (!availableStores.contains(storeURL)) {
       throw Exception('Store is not registered');
     }
@@ -114,5 +91,5 @@ class AvailableStores {
     return storeURL == availableStores[activeStoreIndex];
   }
 
-  StoreURL get activeStore => availableStores[activeStoreIndex];
+  StoreURL get activeStoreURL => availableStores[activeStoreIndex];
 }

@@ -18,8 +18,15 @@ class KeepItApp implements AppDescriptor {
         CLRouteDescriptor(
           name: '',
           builder: (context, parameters) {
-            return const EntityViewerService(
-              parentIdentifier: 'KeepIt Viewer',
+            final String serverId;
+            if (parameters.keys.contains('serverId')) {
+              serverId = parameters['serverId']!;
+            } else {
+              serverId = 'default';
+            }
+
+            return EntityViewerService(
+              serverId: serverId,
               id: null,
             );
           },
@@ -28,27 +35,36 @@ class KeepItApp implements AppDescriptor {
           name: 'media',
           builder: (context, parameters) {
             final int? mediaId;
+
             if (parameters.keys.contains('id')) {
               mediaId = int.parse(parameters['id']!);
             } else {
               mediaId = null;
             }
-            final String parentIdentifier;
-            if (parameters.keys.contains('parentIdentifier')) {
-              parentIdentifier = parameters['parentIdentifier']!;
+            final String serverId;
+            if (parameters.keys.contains('serverId')) {
+              serverId = parameters['serverId']!;
             } else {
-              throw Exception('parentIdentifier must be provided');
+              throw Exception('serverId must be present');
             }
 
             return EntityViewerService(
-              parentIdentifier: parentIdentifier,
+              serverId: serverId,
               id: mediaId,
             );
           },
         ),
         CLRouteDescriptor(
           name: 'settings',
-          builder: (context, parameters) => const SettingsService(),
+          builder: (context, parameters) {
+            final String? serverId;
+            if (parameters.keys.contains('serverId')) {
+              serverId = parameters['serverId'];
+            } else {
+              serverId = null;
+            }
+            return SettingsService(serverId: serverId);
+          },
         ),
         CLRouteDescriptor(
           name: 'camera',
@@ -59,7 +75,14 @@ class KeepItApp implements AppDescriptor {
             } else {
               parentId = null;
             }
+            final String serverId;
+            if (parameters.keys.contains('serverId')) {
+              serverId = parameters['serverId']!;
+            } else {
+              throw Exception('serverId must be present');
+            }
             return CameraService(
+              serverId: serverId,
               parentId: parentId,
             );
           },
@@ -79,8 +102,15 @@ class KeepItApp implements AppDescriptor {
             } else {
               canDuplicateMedia = false;
             }
+            final String serverId;
+            if (parameters.keys.contains('serverId')) {
+              serverId = parameters['serverId']!;
+            } else {
+              throw Exception('serverId must be present');
+            }
 
             return MediaEditService(
+              serverId: serverId,
               mediaId: mediaId,
               canDuplicateMedia: canDuplicateMedia,
             );
@@ -97,7 +127,13 @@ class KeepItApp implements AppDescriptor {
             } else {
               type = UniversalMediaSource.unclassified;
             }
-            return MediaWizardService(type: type);
+            final String serverId;
+            if (parameters.keys.contains('serverId')) {
+              serverId = parameters['serverId']!;
+            } else {
+              throw Exception('serverId must be present');
+            }
+            return MediaWizardService(serverId: serverId, type: type);
           },
         ),
       ];
@@ -109,7 +145,6 @@ class KeepItApp implements AppDescriptor {
         required onDiscard,
       }) =>
           IncomingMediaService(
-            parentIdentifier: 'IncomingMediaService',
             incomingMedia: incomingMedia,
             onDiscard: onDiscard,
           );

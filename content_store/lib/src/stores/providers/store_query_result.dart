@@ -1,27 +1,26 @@
 import 'dart:async';
 
-import 'package:content_store/src/stores/providers/stores.dart';
+import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/store.dart';
 
+import 'active_store_provider.dart';
 import 'refresh_cache.dart';
 
 class EntitiesNotifier
-    extends FamilyAsyncNotifier<List<StoreEntity>, EntityQuery> {
+    extends FamilyAsyncNotifier<ViewerEntities, StoreQuery<CLEntity>>
+    with CLLogger {
   @override
-  FutureOr<List<StoreEntity>> build(EntityQuery arg) async {
+  String get logPrefix => 'EntitiesNotifier';
+  @override
+  FutureOr<ViewerEntities> build(StoreQuery<CLEntity> arg) async {
     final dbQuery = arg;
-    final identity = dbQuery.storeIdentity;
 
     ref.watch(reloadProvider);
-    if (identity != null) {
-      final store = await ref.watch(storeProvider.future);
-      return store.getAll(dbQuery);
-    } else {
-      throw UnimplementedError();
-    }
+    final store = await ref.watch(activeStoreProvider.future);
+    return store.getAll(dbQuery);
   }
 }
 
 final entitiesProvider = AsyncNotifierProviderFamily<EntitiesNotifier,
-    List<StoreEntity>, EntityQuery>(EntitiesNotifier.new);
+    ViewerEntities, StoreQuery<CLEntity>>(EntitiesNotifier.new);

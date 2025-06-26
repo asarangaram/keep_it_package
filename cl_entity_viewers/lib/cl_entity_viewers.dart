@@ -1,5 +1,4 @@
-export 'src/gallery_view/models/tab_identifier.dart' show ViewIdentifier;
-export 'src/common/models/viewer_entity_mixin.dart' show ViewerEntityMixin;
+export 'src/common/models/viewer_entity_mixin.dart' show ViewerEntity;
 export 'src/gallery_view/models/cl_context_menu.dart' show CLContextMenu;
 export 'src/gallery_view/builders/get_selection_mode.dart'
     show GetSelectionMode;
@@ -21,3 +20,4 @@ export 'src/gallery_view/views/cl_entities_grid_view_scope.dart'
 export 'src/page_view/views/cl_entities_page_view_scope.dart'
     show CLEntitiesPageViewScope;
 export 'src/gallery_view/builders/get_filterred.dart' show GetFilterred;
+export 'src/common/models/viewer_entities.dart' show ViewerEntities;

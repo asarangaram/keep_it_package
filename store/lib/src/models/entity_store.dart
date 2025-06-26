@@ -3,11 +3,15 @@ import 'package:meta/meta.dart';
 import 'cl_entity.dart';
 
 import 'store_query.dart';
+import 'store_url.dart';
 
 @immutable
 abstract class EntityStore {
-  const EntityStore(this.identity);
+  const EntityStore({required this.identity, required this.storeURL});
   final String identity;
+  final StoreURL storeURL;
+
+  bool get isAlive;
   Future<CLEntity?> get([StoreQuery<CLEntity>? query]);
   Future<List<CLEntity>> getAll([StoreQuery<CLEntity>? query]);
   Future<CLEntity?> upsert(

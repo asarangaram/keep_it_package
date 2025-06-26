@@ -2,16 +2,15 @@ import 'package:cl_media_tools/cl_media_tools.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../common/models/viewer_entities.dart';
 import '../../common/models/viewer_entity_mixin.dart';
-import '../models/tab_identifier.dart';
 import '../models/filter/base_filter.dart';
 import '../models/filter/ddmmyyyy_filter.dart';
 import '../models/filter/enum_filter.dart';
 import '../models/filter/string_filter.dart';
 import '../models/filter/filters.dart';
 
-class MediaFiltersNotifier
-    extends StateNotifier<SearchFilters<ViewerEntityMixin>> {
+class MediaFiltersNotifier extends StateNotifier<SearchFilters<ViewerEntity>> {
   MediaFiltersNotifier()
       : super(
           SearchFilters(
@@ -26,7 +25,7 @@ class MediaFiltersNotifier
   void disableEdit() => state = state.disableEdit();
 
   void updateFilter(
-    CLFilter<ViewerEntityMixin> filter,
+    CLFilter<ViewerEntity> filter,
     String key,
     dynamic value,
   ) =>
@@ -51,24 +50,24 @@ class MediaFiltersNotifier
     return state.filters?.map((e) => e.name).toList() ?? [];
   }
 
-  Map<String, CLFilter<ViewerEntityMixin>> get unusedFiltersMap =>
-      Map.fromEntries(
+  Map<String, CLFilter<ViewerEntity>> get unusedFiltersMap => Map.fromEntries(
         allFiltersMap.entries
             .where((entry) => !availableFilters.contains(entry.key)),
       );
 
-  List<CLFilter<ViewerEntityMixin>> get unusedFilters => List.from(
+  List<CLFilter<ViewerEntity>> get unusedFilters => List.from(
         allFilters.where((e) => !availableFilters.contains(e.name)),
       );
 }
 
-final mediaFiltersProvider = StateNotifierProvider.family<MediaFiltersNotifier,
-    SearchFilters<ViewerEntityMixin>, String>((ref, identifier) {
+final mediaFiltersProvider =
+    StateNotifierProvider<MediaFiltersNotifier, SearchFilters<ViewerEntity>>(
+        (ref) {
   return MediaFiltersNotifier();
 });
 
-final List<CLFilter<ViewerEntityMixin>> allFilters = List.unmodifiable([
-  EnumFilter<ViewerEntityMixin, CLMediaType>(
+final List<CLFilter<ViewerEntity>> allFilters = List.unmodifiable([
+  EnumFilter<ViewerEntity, CLMediaType>(
     name: 'Search By MediaType',
     labels: {
       for (var e in [CLMediaType.image, CLMediaType.video]) e: e.name,
@@ -77,7 +76,7 @@ final List<CLFilter<ViewerEntityMixin>> allFilters = List.unmodifiable([
     isByPassed: (media) => media.isCollection,
     enabled: true,
   ),
-  EnumFilter<ViewerEntityMixin, MediaAvailability>(
+  EnumFilter<ViewerEntity, MediaAvailability>(
     name: 'Search By Location',
     labels: {
       for (var e in MediaAvailability.values) e: e.name,
@@ -88,7 +87,7 @@ final List<CLFilter<ViewerEntityMixin>> allFilters = List.unmodifiable([
     isByPassed: (media) => media.isCollection,
     enabled: true,
   ),
-  DDMMYYYYFilter<ViewerEntityMixin>(
+  DDMMYYYYFilter<ViewerEntity>(
     name: 'Search by Date',
     fieldSelector: (media) => media.createDate ?? media.updatedDate,
     isByPassed: (media) => media.isCollection,
@@ -96,10 +95,10 @@ final List<CLFilter<ViewerEntityMixin>> allFilters = List.unmodifiable([
   ),
 ]);
 
-Map<String, CLFilter<ViewerEntityMixin>> get allFiltersMap =>
+Map<String, CLFilter<ViewerEntity>> get allFiltersMap =>
     Map.unmodifiable({for (final e in allFilters) e.name: e});
 
-final StringFilter<ViewerEntityMixin> textSearchFilter = StringFilter(
+final StringFilter<ViewerEntity> textSearchFilter = StringFilter(
   name: 'TextSearch',
   fieldSelector: (media) => media.searchableTexts,
   isByPassed: (media) => media.isCollection,
@@ -107,8 +106,8 @@ final StringFilter<ViewerEntityMixin> textSearchFilter = StringFilter(
   enabled: true,
 );
 
-final filterredMediaProvider = StateProvider.family<List<ViewerEntityMixin>,
-    MapEntry<ViewIdentifier, List<ViewerEntityMixin>>>((ref, mediaMap) {
-  final mediaFilters = ref.watch(mediaFiltersProvider(mediaMap.key.parentID));
-  return mediaFilters.apply(mediaMap.value);
+final filterredMediaProvider =
+    StateProvider.family<ViewerEntities, ViewerEntities>((ref, entities) {
+  final mediaFilters = ref.watch(mediaFiltersProvider);
+  return ViewerEntities(mediaFilters.apply(entities.entities));
 });

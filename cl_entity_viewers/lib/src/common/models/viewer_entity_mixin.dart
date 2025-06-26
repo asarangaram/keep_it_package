@@ -5,7 +5,7 @@ import 'gallery_group.dart'; */
 
 import 'package:cl_media_tools/cl_media_tools.dart';
 
-abstract class ViewerEntityMixin {
+abstract class ViewerEntity {
   int? get id;
   bool get isCollection;
   DateTime? get createDate;
@@ -20,7 +20,7 @@ abstract class ViewerEntityMixin {
   String? get pin;
 }
 
-class ViewerEntityGroup<T extends ViewerEntityMixin> {
+class ViewerEntityGroup<T extends ViewerEntity> {
   const ViewerEntityGroup(
     this.items, {
     required this.chunkIdentifier,
@@ -35,7 +35,7 @@ class ViewerEntityGroup<T extends ViewerEntityMixin> {
   Set<int?> get getEntityIds => items.map((e) => e.id).toSet();
 }
 
-extension GalleryGroupStoreEntityListQuery<T extends ViewerEntityMixin>
+extension GalleryGroupStoreEntityListQuery<T extends ViewerEntity>
     on List<ViewerEntityGroup<T>> {
   Set<int?> get getEntityIds => expand((item) => item.getEntityIds).toSet();
   Set<T> get getEntities => expand((item) => item.items).toSet();

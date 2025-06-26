@@ -37,6 +37,32 @@ class AppStart extends ConsumerWidget {
     return ShadApp(
       title: app.title,
       initialRoute: '/',
+      home: CLTheme(
+        colors: const DefaultCLColors(),
+        // noteTheme: const DefaultNotesTheme(),
+        child: OnInitDone(
+          app: app,
+          uri: Uri.parse('/'),
+          builder: () {
+            final screen = app.screens
+                .where(
+                  (s) => s.name == '',
+                )
+                .firstOrNull;
+            if (screen == null) {
+              return const Scaffold(
+                body: Center(
+                  child: Text('404: Page not found'),
+                ),
+              );
+            }
+            return IncomingMediaMonitor(
+              onMedia: app.incomingMediaViewBuilder,
+              child: screen.builder(context, {}),
+            );
+          },
+        ),
+      ),
       theme: ShadThemeData(
         brightness: Brightness.light,
         colorScheme: const ShadZincColorScheme.light(),

@@ -22,7 +22,7 @@ abstract class CLContextMenu {
   ) {
     if (actions.isNotEmpty) {
       return (context, {required parentKey}) {
-        return ActionsDraggableMenu<ViewerEntityMixin>(
+        return ActionsDraggableMenu<ViewerEntity>(
           parentKey: parentKey,
           tagPrefix: 'Selection',
           menuItems: actions.insertOnDone(onDone),

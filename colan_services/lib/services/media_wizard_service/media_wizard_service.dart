@@ -12,16 +12,16 @@ import '../basic_page_service/widgets/page_manager.dart';
 
 class MediaWizardService extends ConsumerWidget {
   const MediaWizardService({
+    required this.serverId,
     required this.type,
     super.key,
   });
+  final String serverId;
   final UniversalMediaSource type;
 
   static Future<bool?> openWizard(
-    BuildContext context,
-    WidgetRef ref,
-    CLSharedMedia sharedMedia,
-  ) async {
+      BuildContext context, WidgetRef ref, CLSharedMedia sharedMedia,
+      {required String serverId}) async {
     if (sharedMedia.type == null) {
       return false;
     }
@@ -35,7 +35,8 @@ class MediaWizardService extends ConsumerWidget {
       media: sharedMedia,
     );
     if (context.mounted) {
-      await PageManager.of(context).openWizard(sharedMedia.type!);
+      await PageManager.of(context)
+          .openWizard(sharedMedia.type!, serverId: serverId);
     }
 
     return true;
@@ -68,10 +69,7 @@ class MediaWizardService extends ConsumerWidget {
     return FullscreenLayout(
       child: CLEntitiesGridViewScope(
         child: SelectAndKeepMedia(
-          viewIdentifier: ViewIdentifier(
-            parentID: 'MediaWizardService',
-            viewId: type.name,
-          ),
+          serverId: serverId,
           media: media,
           type: type,
         ),

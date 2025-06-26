@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cl_camera/cl_camera.dart';
+import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:cl_media_tools/cl_media_tools.dart';
 
 import 'package:colan_widgets/colan_widgets.dart';
@@ -24,17 +25,18 @@ import 'widgets/preview.dart';
 
 class CameraService extends ConsumerWidget {
   const CameraService({
+    required this.serverId,
     required this.parentId,
     super.key,
   });
-
+  final String serverId;
   final int? parentId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return FullscreenLayout(
       useSafeArea: false,
-      child: GetStore(
+      child: GetActiveStore(
         errorBuilder: (_, __) {
           throw UnimplementedError('errorBuilder');
         },
@@ -52,7 +54,6 @@ class CameraService extends ConsumerWidget {
             ),
             builder: (collection) {
               return CLCameraService0(
-                parentIdentifier: 'CLCameraService',
                 onCancel: () => PageManager.of(context).pop(),
                 onNewMedia: (path, {required isVideo}) async {
                   final mediaFile = await CLMediaFile.fromPath(path);
@@ -70,14 +71,14 @@ class CameraService extends ConsumerWidget {
                 },
                 onDone: (mediaList) async {
                   await MediaWizardService.openWizard(
-                    context,
-                    ref,
-                    CLSharedMedia(
-                      entries: mediaList,
-                      type: UniversalMediaSource.captured,
-                      collection: collection,
-                    ),
-                  );
+                      context,
+                      ref,
+                      CLSharedMedia(
+                        entries: mediaList,
+                        type: UniversalMediaSource.captured,
+                        collection: collection,
+                      ),
+                      serverId: serverId);
 
                   if (context.mounted) {
                     PageManager.of(context).pop();
@@ -94,16 +95,15 @@ class CameraService extends ConsumerWidget {
 
 class CLCameraService0 extends ConsumerWidget {
   const CLCameraService0({
-    required this.parentIdentifier,
     required this.onDone,
     required this.onNewMedia,
     this.onCancel,
     super.key,
     this.onError,
   });
-  final String parentIdentifier;
+
   final VoidCallback? onCancel;
-  final Future<void> Function(List<StoreEntity> mediaList) onDone;
+  final Future<void> Function(ViewerEntities mediaList) onDone;
   final Future<StoreEntity?> Function(String, {required bool isVideo})
       onNewMedia;
 
@@ -152,7 +152,6 @@ class CLCameraService0 extends ConsumerWidget {
           },
           previewWidget: PreviewCapturedMedia(
             sendMedia: onDone,
-            parentIdentifier: parentIdentifier,
           ),
           themeData: DefaultCLCameraIcons(),
           onError: onError,

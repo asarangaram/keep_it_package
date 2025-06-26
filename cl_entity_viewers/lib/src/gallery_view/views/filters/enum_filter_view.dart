@@ -10,11 +10,9 @@ import '../../providers/media_filters.dart';
 class EnumFilterViewRow extends ConsumerWidget {
   const EnumFilterViewRow({
     required this.filter,
-    required this.identifier,
     super.key,
   });
-  final CLFilter<ViewerEntityMixin> filter;
-  final String identifier;
+  final CLFilter<ViewerEntity> filter;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -37,7 +35,7 @@ class EnumFilterViewRow extends ConsumerWidget {
                 onChanged: (value) {
                   //ref.read(clMediaTypeFilterProvider.notifier).toggle(entry.key);
                   ref
-                      .read(mediaFiltersProvider(identifier).notifier)
+                      .read(mediaFiltersProvider.notifier)
                       .updateFilter(filter, 'toggle', entry.key);
                 },
                 label: Text(entry.value),

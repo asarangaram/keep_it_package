@@ -1,17 +1,17 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../common/models/viewer_entities.dart';
 import '../../common/models/viewer_entity_mixin.dart';
 
 import '../providers/grouped_media_provider.dart';
-import '../models/tab_identifier.dart';
 
 import '../providers/scroll_position.dart';
 import 'cl_grid.dart';
 
 class CLRawGalleryGridView extends ConsumerStatefulWidget {
   const CLRawGalleryGridView(
-      {required this.viewIdentifier,
+      {required this.galleryIdentifier,
       required this.incoming,
       required this.itemBuilder,
       required this.labelBuilder,
@@ -20,20 +20,21 @@ class CLRawGalleryGridView extends ConsumerStatefulWidget {
       required this.whenEmpty,
       super.key,
       this.draggableMenuBuilder});
-  final ViewIdentifier viewIdentifier;
-  final List<ViewerEntityMixin> incoming;
+  final String galleryIdentifier;
+  final ViewerEntities incoming;
   final int columns;
-  final Widget Function(BuildContext context, ViewerEntityMixin item,
-      List<ViewerEntityMixin> entities) itemBuilder;
+  final Widget Function(
+          BuildContext context, ViewerEntity item, ViewerEntities entities)
+      itemBuilder;
 
   final Widget? Function(
     BuildContext context,
-    List<ViewerEntityGroup<ViewerEntityMixin>> galleryMap,
-    ViewerEntityGroup<ViewerEntityMixin> gallery,
+    List<ViewerEntityGroup<ViewerEntity>> galleryMap,
+    ViewerEntityGroup<ViewerEntity> gallery,
   ) labelBuilder;
   final List<Widget> Function(
     BuildContext,
-    List<ViewerEntityGroup<ViewerEntityMixin>>,
+    List<ViewerEntityGroup<ViewerEntity>>,
   ) bannersBuilder;
   final Widget whenEmpty;
 
@@ -55,13 +56,13 @@ class CLRawGalleryGridViewState extends ConsumerState<CLRawGalleryGridView> {
     super.initState();
     _scrollController = ScrollController(
       initialScrollOffset:
-          ref.read(tabScrollPositionProvider(widget.viewIdentifier)),
+          ref.read(tabScrollPositionProvider(widget.galleryIdentifier)),
     );
 
     // Listen for scroll changes
     _scrollController.addListener(() {
       ref
-          .read(tabScrollPositionProvider(widget.viewIdentifier).notifier)
+          .read(tabScrollPositionProvider(widget.galleryIdentifier).notifier)
           .state = _scrollController.offset;
     });
   }
@@ -70,10 +71,7 @@ class CLRawGalleryGridViewState extends ConsumerState<CLRawGalleryGridView> {
   Widget build(BuildContext context) {
     final galleryGroups = ref.watch(
       groupedMediaProvider(
-        MapEntry(
-          widget.viewIdentifier,
-          widget.incoming,
-        ),
+        widget.incoming,
       ),
     );
     final child = Column(
@@ -94,7 +92,7 @@ class CLRawGalleryGridViewState extends ConsumerState<CLRawGalleryGridView> {
                   );
                 }
                 final gallery = galleryGroups[groupIndex];
-                return CLGrid<ViewerEntityMixin>(
+                return CLGrid<ViewerEntity>(
                   itemCount: gallery.items.length,
                   columns: widget.columns,
                   itemBuilder: (context, itemIndex) {

@@ -10,45 +10,37 @@ import 'collection_preview.dart';
 
 class EntityPreview extends ConsumerWidget {
   const EntityPreview({
-    required this.viewIdentifier,
+    required this.serverId,
     required this.item,
     required this.entities,
     required this.parentId,
     super.key,
   });
-  final ViewIdentifier viewIdentifier;
-  final ViewerEntityMixin item;
-  final List<ViewerEntityMixin> entities;
+
+  final ViewerEntity item;
+  final ViewerEntities entities;
   final int? parentId;
+  final String serverId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final entity = item as StoreEntity;
 
-    final contextMenu = EntityActions.ofEntity(
-      context,
-      ref,
-      entity,
-    );
+    final contextMenu =
+        EntityActions.ofEntity(context, ref, entity, serverId: serverId);
 
     return KeepItContextMenu(
-      viewIdentifier: viewIdentifier,
       onTap: () async {
-        await PageManager.of(context).openEntity(
-          entity,
-          parentIdentifier: viewIdentifier.parentID,
-        );
+        await PageManager.of(context).openEntity(entity, serverId: serverId);
         return true;
       },
       contextMenu: contextMenu,
       child: entity.isCollection
           ? CollectionPreview.preview(
               entity,
-              viewIdentifier: viewIdentifier,
             )
           : MediaPreviewWithOverlays(
               media: entity,
-              parentIdentifier: viewIdentifier.toString(),
             ),
     );
   }

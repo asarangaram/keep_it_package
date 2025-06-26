@@ -5,6 +5,8 @@ import 'package:form_factory/form_factory.dart';
 
 import 'package:store/store.dart';
 
+//FIXME - implement error Builder for Wizard Pick Collection
+
 class PickCollection extends StatelessWidget {
   const PickCollection({
     required this.collection,
@@ -18,7 +20,7 @@ class PickCollection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetStore(
+    return GetActiveStore(
       errorBuilder: (_, __) {
         throw UnimplementedError('errorBuilder');
       },
@@ -28,6 +30,8 @@ class PickCollection extends StatelessWidget {
       builder: (theStore) {
         return GetEntities(
           isCollection: true,
+          isHidden: null,
+          isDeleted: null,
           errorBuilder: (_, __) {
             throw UnimplementedError('errorBuilder');
           },
@@ -48,9 +52,10 @@ class PickCollection extends StatelessWidget {
                 descriptionBuilder: (e) => (e as StoreEntity).data.description,
                 suggestionsAvailable: [
                   if (isValidSuggestion != null)
-                    ...collections.where((e) => isValidSuggestion!(e))
+                    ...collections.entities
+                        .where((e) => isValidSuggestion!(e as StoreEntity))
                   else
-                    ...collections,
+                    ...collections.entities,
                 ],
                 initialValues: collection,
                 onSelectSuggestion: (item) async => item,

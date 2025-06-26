@@ -1,3 +1,4 @@
+import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,24 +8,25 @@ import 'views/media_viewer_core.dart';
 
 class CLEntitiesPageView extends ConsumerWidget {
   const CLEntitiesPageView({
-    required this.parentIdentifier,
-    required this.topMenu,
+    required this.topMenuBuilder,
     required this.bottomMenu,
     super.key,
   });
-  final String parentIdentifier;
-  final PreferredSizeWidget topMenu;
+
+  final PreferredSizeWidget Function(ViewerEntity? entity) topMenuBuilder;
   final PreferredSizeWidget bottomMenu;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final showMenu =
         ref.watch(mediaViewerUIStateProvider.select((e) => e.showMenu));
+    final currentItem =
+        ref.watch(mediaViewerUIStateProvider.select((e) => e.currentItem));
     if (showMenu) {
       return CLScaffold(
-        topMenu: topMenu,
+        topMenu: topMenuBuilder(currentItem),
         banners: const [],
         body: SafeArea(
-          child: MediaViewerCore(parentIdentifier: parentIdentifier),
+          child: MediaViewerCore(),
         ),
         bottomMenu: bottomMenu,
       );
@@ -32,7 +34,7 @@ class CLEntitiesPageView extends ConsumerWidget {
       return Scaffold(
         backgroundColor: Colors.black,
         body: SafeArea(
-          child: MediaViewerCore(parentIdentifier: parentIdentifier),
+          child: MediaViewerCore(),
         ),
       );
     }

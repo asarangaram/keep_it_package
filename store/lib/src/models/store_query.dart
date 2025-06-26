@@ -7,8 +7,8 @@ class NotNullValues {}
 
 @immutable
 class StoreQuery<T> {
-  const StoreQuery(this.storeIdentity, this.map);
-  final String? storeIdentity;
+  const StoreQuery(this.map);
+
   final Map<String, dynamic> map;
 
   @override
@@ -16,12 +16,11 @@ class StoreQuery<T> {
     if (identical(this, other)) return true;
     final mapEquals = const DeepCollectionEquality().equals;
 
-    return other.storeIdentity == storeIdentity && mapEquals(other.map, map);
+    return mapEquals(other.map, map);
   }
 
   @override
-  int get hashCode =>
-      map.entries.fold(storeIdentity.hashCode, (previousValue, element) {
+  int get hashCode => map.entries.fold(0, (previousValue, element) {
         return previousValue ^ element.key.hashCode ^ element.value.hashCode;
       });
 
@@ -30,18 +29,17 @@ class StoreQuery<T> {
     Map<String, dynamic>? map,
   }) {
     return StoreQuery<T>(
-      storeIdentity ?? this.storeIdentity,
       map ?? this.map,
     );
   }
 
   @override
-  String toString() => 'StoreQuery(storeIdentity: $storeIdentity, map: $map)';
+  String toString() => 'StoreQuery( map: $map)';
 }
 
 class Shortcuts {
   static StoreQuery<CLEntity> mediaQuery(String storeIdentity, CLEntity media) {
-    return StoreQuery<CLEntity>(storeIdentity, {
+    return StoreQuery<CLEntity>({
       if (media.id != null)
         'id': media.id
       else if (media.isCollection)

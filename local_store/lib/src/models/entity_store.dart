@@ -6,6 +6,7 @@ import 'package:path/path.dart' as p;
 import 'package:sqlite_async/sqlite_async.dart';
 import 'package:store/store.dart';
 
+import '../implementations/sqlite_db.dart' show createSQLiteDBInstance;
 import '../implementations/sqlite_db/db_store.dart';
 import '../implementations/sqlite_db/db_table_mixin.dart';
 import '../implementations/sqlite_db/table_agent.dart';
@@ -15,14 +16,18 @@ import 'db_query.dart';
 class LocalSQLiteEntityStore extends EntityStore
     with SQLiteDBTableMixin<CLEntity> {
   LocalSQLiteEntityStore(
-    super.identity,
     this.agent, {
+    required super.identity,
+    required super.storeURL,
     required this.mediaPath,
     required this.previewPath,
   });
   final SQLiteTableAgent<CLEntity> agent;
   final String mediaPath;
   final String previewPath;
+
+  @override
+  bool get isAlive => true;
 
   @override
   Future<bool> delete(CLEntity item) async {
@@ -130,7 +135,7 @@ class LocalSQLiteEntityStore extends EntityStore
         final timeNow = DateTime.now();
         updated = curr.copyWith(addedDate: timeNow, updatedDate: timeNow);
       } else {
-        prev = await get(EntityQuery(null, {'id': curr.id}));
+        prev = await get(StoreQuery<CLEntity>({'id': curr.id}));
         if (prev == null) {
           throw Exception('media with id ${curr.id} not found');
         }
@@ -166,8 +171,8 @@ class LocalSQLiteEntityStore extends EntityStore
     }
 
     Future<CLEntity?> cb(SqliteWriteContext tx) async {
-      final parent =
-          await dbGet(tx, agent, EntityQuery(null, {'id': updated.parentId}));
+      final parent = await dbGet(
+          tx, agent, StoreQuery<CLEntity>({'id': updated.parentId}));
 
       final entityFromDB = await dbUpsert(
         tx,
@@ -206,8 +211,9 @@ class LocalSQLiteEntityStore extends EntityStore
   }
 
   static Future<EntityStore> createStore(
-    DBModel db,
-    String name, {
+    DBModel db, {
+    required String identity,
+    required StoreURL storeURL,
     required String mediaPath,
     required String previewPath,
   }) async {
@@ -233,8 +239,9 @@ class LocalSQLiteEntityStore extends EntityStore
     );
 
     return LocalSQLiteEntityStore(
-      name,
       agent,
+      identity: identity,
+      storeURL: storeURL,
       mediaPath: mediaPath,
       previewPath: previewPath,
     );
@@ -242,15 +249,32 @@ class LocalSQLiteEntityStore extends EntityStore
 }
 
 Future<EntityStore> createEntityStore(
-  DBModel db,
-  String name, {
-  required String mediaPath,
-  required String previewPath,
-}) {
+  StoreURL url, {
+  required String storePath,
+}) async {
+  final dbPath = p.join(storePath, 'db');
+  final mediaPath = p.join(storePath, 'media');
+  final previewPath = p.join(storePath, 'thumbnails');
+
+  for (final path in [dbPath, mediaPath, previewPath]) {
+    Directory(path).createSync(recursive: true);
+  }
+
+  final fullPath = p.join(dbPath, '${url.uri.host}.db');
+  final db = await createSQLiteDBInstance(fullPath);
+
+  if (!Directory(mediaPath).existsSync()) {
+    Directory(mediaPath).createSync(recursive: true);
+  }
+  if (!Directory(previewPath).existsSync()) {
+    Directory(previewPath).createSync(recursive: true);
+  }
+
   return switch (db) {
     (final SQLiteDB db) => LocalSQLiteEntityStore.createStore(
         db,
-        name,
+        identity: url.uri.host,
+        storeURL: url,
         mediaPath: mediaPath,
         previewPath: previewPath,
       ),

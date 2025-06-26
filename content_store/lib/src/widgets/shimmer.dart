@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
 class GreyShimmer extends StatelessWidget {
-  const GreyShimmer({super.key});
+  const GreyShimmer({super.key, this.height, this.width});
+  final double? height;
+  final double? width;
 
   static Widget? cachedWidget;
 
@@ -12,8 +14,8 @@ class GreyShimmer extends StatelessWidget {
       baseColor: Colors.grey[300]!,
       highlightColor: Colors.grey[100]!,
       child: Container(
-        width: 200,
-        height: 200,
+        width: width ?? 200,
+        height: height ?? 200,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),

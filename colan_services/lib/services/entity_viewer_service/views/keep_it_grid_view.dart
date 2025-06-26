@@ -10,31 +10,62 @@ import '../widgets/refresh_button.dart';
 import '../widgets/stale_media_banner.dart';
 import '../widgets/when_empty.dart';
 import 'bottom_bar_grid_view.dart';
-import 'top_bar_grid_view.dart';
+import 'top_bar.dart';
 
-class EntityGridView extends ConsumerWidget {
-  const EntityGridView({
-    required this.viewIdentifier,
+class KeepItGridView extends StatelessWidget {
+  const KeepItGridView(
+      {required this.serverId,
+      required this.parent,
+      required this.children,
+      super.key});
+
+  final ViewerEntity? parent;
+  final ViewerEntities children;
+  final String serverId;
+
+  @override
+  Widget build(BuildContext context) {
+    return OnSwipe(
+      child: CLEntitiesGridViewScope(
+        child: KeepItGridView0(
+          serverId: serverId,
+          parent: parent,
+          children: children,
+        ),
+      ),
+    );
+  }
+}
+
+class KeepItGridView0 extends ConsumerWidget {
+  const KeepItGridView0({
+    required this.serverId,
     required this.parent,
     required this.children,
     super.key,
   });
-  final ViewIdentifier viewIdentifier;
 
-  final ViewerEntityMixin? parent;
-  final List<ViewerEntityMixin> children;
+  final ViewerEntity? parent;
+  final ViewerEntities children;
+  final String serverId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final topMenu = TopBarGridView(
-      viewIdentifier: viewIdentifier,
-      parent: parent,
+    final topMenu = TopBar(
+      serverId: serverId,
+      entityAsync: AsyncData(parent),
       children: children,
     );
     final banners = [
-      if (parent == null) const StaleMediaBanner(),
+      if (parent == null)
+        StaleMediaBanner(
+          serverId: serverId,
+        ),
     ];
-    final bottomMenu = BottomBarGridView(entity: parent);
+    final bottomMenu = BottomBarGridView(
+      entity: parent,
+      serverId: serverId,
+    );
 
     return CLScaffold(
       topMenu: topMenu,
@@ -45,17 +76,14 @@ class EntityGridView extends ConsumerWidget {
           child: Padding(
             padding: const EdgeInsets.all(8),
             child: CLEntitiesGridView(
-              viewIdentifier: viewIdentifier,
               incoming: children,
               filtersDisabled: false,
               onSelectionChanged: null,
               contextMenuBuilder: (context, entities) => EntityActions.entities(
-                context,
-                ref,
-                entities,
-              ),
+                  context, ref, entities,
+                  serverId: serverId),
               itemBuilder: (context, item, entities) => EntityPreview(
-                viewIdentifier: viewIdentifier,
+                serverId: serverId,
                 item: item,
                 entities: entities,
                 parentId: parent?.id,

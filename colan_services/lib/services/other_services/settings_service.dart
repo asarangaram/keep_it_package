@@ -10,8 +10,10 @@ import '../media_wizard_service/media_wizard_service.dart';
 
 class SettingsService extends ConsumerWidget {
   const SettingsService({
+    required this.serverId,
     super.key,
   });
+  final String? serverId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -37,7 +39,7 @@ class SettingsService extends ConsumerWidget {
         builder: (deletedMedia) {
           return ListView(
             children: [
-              if (deletedMedia.isNotEmpty)
+              if (deletedMedia.isNotEmpty && serverId != null)
                 ListTile(
                   leading: clIcons.recycleBin.iconFormatted(),
                   trailing: IconButton(
@@ -50,6 +52,7 @@ class SettingsService extends ConsumerWidget {
                           entries: deletedMedia,
                           type: UniversalMediaSource.deleted,
                         ),
+                        serverId: serverId!,
                       );
                     },
                   ),

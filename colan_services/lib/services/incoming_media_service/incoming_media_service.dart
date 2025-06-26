@@ -1,5 +1,7 @@
+import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:cl_media_tools/cl_media_tools.dart';
 import 'package:colan_widgets/colan_widgets.dart';
+import 'package:content_store/content_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -9,6 +11,8 @@ import '../../internal/fullscreen_layout.dart';
 import '../../models/cl_media_candidate.dart';
 import '../../models/cl_shared_media.dart';
 import '../basic_page_service/widgets/cl_error_view.dart';
+import '../entity_viewer_service/views/keep_it_error_view.dart';
+import '../entity_viewer_service/views/keep_it_load_view.dart';
 import '../media_wizard_service/media_wizard_service.dart';
 
 import 'widgets/step1_analyse.dart';
@@ -17,40 +21,47 @@ import 'widgets/step2_duplicates.dart';
 class IncomingMediaService extends StatelessWidget {
   const IncomingMediaService({
     required this.incomingMedia,
-    required this.parentIdentifier,
     required this.onDiscard,
     super.key,
   });
+
   final CLMediaFileGroup incomingMedia;
-  final String parentIdentifier;
+
   final void Function({required bool result}) onDiscard;
 
   @override
   Widget build(BuildContext context) {
-    return FullscreenLayout(
-      child: IncomingMediaHandler0(
-        errorBuilder: (e, st) => CLErrorView(errorMessage: e.toString()),
-        loadingBuilder: () =>
-            CLLoader.widget(debugMessage: 'IncomingMediaService'),
-        incomingMedia: incomingMedia,
-        parentIdentifier: parentIdentifier,
-        onDiscard: onDiscard,
-      ),
-    );
+    KeepItLoadView loadBuilder() => const KeepItLoadView();
+    return GetRegisterredURLs(
+        loadingBuilder: loadBuilder,
+        errorBuilder: (e, st) => KeepItErrorView(e: e, st: st),
+        builder: (registeredURLs) {
+          return FullscreenLayout(
+            child: IncomingMediaHandler0(
+              serverId: registeredURLs.activeStoreURL.name,
+              errorBuilder: (e, st) => CLErrorView(errorMessage: e.toString()),
+              loadingBuilder: () =>
+                  CLLoader.widget(debugMessage: 'IncomingMediaService'),
+              incomingMedia: incomingMedia,
+              onDiscard: onDiscard,
+            ),
+          );
+        });
   }
 }
 
 class IncomingMediaHandler0 extends ConsumerStatefulWidget {
   const IncomingMediaHandler0({
-    required this.parentIdentifier,
+    required this.serverId,
     required this.incomingMedia,
     required this.onDiscard,
     required this.errorBuilder,
     required this.loadingBuilder,
     super.key,
   });
+  final String serverId;
   final CLMediaFileGroup incomingMedia;
-  final String parentIdentifier;
+
   final void Function({required bool result}) onDiscard;
 
   final Widget Function(Object, StackTrace) errorBuilder;
@@ -62,7 +73,7 @@ class IncomingMediaHandler0 extends ConsumerStatefulWidget {
 
 class _IncomingMediaHandler0State extends ConsumerState<IncomingMediaHandler0> {
   CLSharedMedia? duplicateCandidates;
-  List<StoreEntity>? newCandidates;
+  ViewerEntities? newCandidates;
 
   bool isSaving = false;
   @override
@@ -89,14 +100,14 @@ class _IncomingMediaHandler0State extends ConsumerState<IncomingMediaHandler0> {
                 )
               : DuplicatePage(
                   incomingMedia: duplicateCandidates!,
-                  parentIdentifier: widget.parentIdentifier,
                   onDone: ({required CLSharedMedia? mg}) {
                     onSave(
+                      serverId: widget.serverId,
                       mg: CLSharedMedia(
-                        entries: [
-                          ...mg?.entries ?? [],
-                          ...newCandidates ?? [],
-                        ],
+                        entries: ViewerEntities([
+                          ...mg?.entries.entities ?? [],
+                          ...newCandidates?.entities ?? [],
+                        ]),
                         collection: widget.incomingMedia.collection,
                         type: widget.incomingMedia.type,
                       ),
@@ -121,8 +132,8 @@ class _IncomingMediaHandler0State extends ConsumerState<IncomingMediaHandler0> {
   }
 
   Future<void> segretated({
-    required List<StoreEntity> existingEntities,
-    required List<StoreEntity> newEntities,
+    required ViewerEntities existingEntities,
+    required ViewerEntities newEntities,
     required List<CLMediaContent> invalidContent,
   }) async {
     final duplicateCandidates0 = CLSharedMedia(
@@ -136,6 +147,7 @@ class _IncomingMediaHandler0State extends ConsumerState<IncomingMediaHandler0> {
       setState(() {});
     } else {
       await onSave(
+        serverId: widget.serverId,
         mg: CLSharedMedia(
           entries: newEntities,
           collection: widget.incomingMedia.collection,
@@ -145,12 +157,13 @@ class _IncomingMediaHandler0State extends ConsumerState<IncomingMediaHandler0> {
     }
   }
 
-  Future<void> onSave({required CLSharedMedia mg}) async {
+  Future<void> onSave(
+      {required String serverId, required CLSharedMedia mg}) async {
     _infoLogger(mg.toString());
     _infoLogger('onSave - Enter');
     isSavingState = true;
     widget.onDiscard(result: mg.isNotEmpty);
-    await MediaWizardService.openWizard(context, ref, mg);
+    await MediaWizardService.openWizard(context, ref, mg, serverId: serverId);
     duplicateCandidates = null;
     newCandidates = null;
 

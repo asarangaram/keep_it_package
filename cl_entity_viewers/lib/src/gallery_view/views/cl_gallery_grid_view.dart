@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../common/models/viewer_entities.dart';
 import '../providers/menu_position.dart';
 import '../models/cl_context_menu.dart';
 import '../../common/models/viewer_entity_mixin.dart';
-import '../models/tab_identifier.dart';
+
 import '../providers/selector.dart';
 import 'selection_control.dart';
 
 class CLEntitiesGridView extends StatelessWidget {
   const CLEntitiesGridView(
-      {required this.viewIdentifier,
-      required this.incoming,
+      {required this.incoming,
       required this.itemBuilder,
       required this.contextMenuBuilder,
       required this.filtersDisabled,
@@ -19,13 +19,11 @@ class CLEntitiesGridView extends StatelessWidget {
       super.key,
       required this.whenEmpty});
 
-  final ViewIdentifier viewIdentifier;
-  final List<ViewerEntityMixin> incoming;
-  final Widget Function(
-      BuildContext, ViewerEntityMixin, List<ViewerEntityMixin>) itemBuilder;
-  final CLContextMenu Function(BuildContext, List<ViewerEntityMixin>)?
+  final ViewerEntities incoming;
+  final Widget Function(BuildContext, ViewerEntity, ViewerEntities) itemBuilder;
+  final CLContextMenu Function(BuildContext, ViewerEntities)?
       contextMenuBuilder;
-  final void Function(List<ViewerEntityMixin>)? onSelectionChanged;
+  final void Function(ViewerEntities)? onSelectionChanged;
   final bool filtersDisabled;
   final Widget whenEmpty;
 
@@ -39,7 +37,6 @@ class CLEntitiesGridView extends StatelessWidget {
             .overrideWith((ref) => MenuPositionNotifier()),
       ],
       child: SelectionContol(
-        viewIdentifier: viewIdentifier,
         itemBuilder: itemBuilder,
         contextMenuBuilder: contextMenuBuilder,
         onSelectionChanged: onSelectionChanged,

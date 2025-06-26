@@ -3,23 +3,21 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../models/tab_identifier.dart';
 import '../builders/media_grouper.dart';
 import '../providers/media_grouper.dart';
 
 class GroupByView extends ConsumerWidget {
   const GroupByView({
-    required this.viewIdentifier,
     required this.groupBy,
     super.key,
   });
-  final ViewIdentifier viewIdentifier;
+
   final GroupBy groupBy;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currValue = ref.watch(
-      groupMethodProvider(viewIdentifier.parentID),
+      groupMethodProvider,
     );
 
     return ShadRadioGroup<GroupTypes>(
@@ -28,7 +26,7 @@ class GroupByView extends ConsumerWidget {
         if (v != null) {
           ref
               .read(
-                groupMethodProvider(viewIdentifier.parentID).notifier,
+                groupMethodProvider.notifier,
               )
               .state = currValue.copyWith(method: v);
         }

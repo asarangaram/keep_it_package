@@ -19,21 +19,22 @@ import 'wizard_preview.dart';
 
 class SelectAndKeepMedia extends ConsumerStatefulWidget {
   const SelectAndKeepMedia({
-    required this.viewIdentifier,
+    required this.serverId,
     required this.media,
     required this.type,
     super.key,
   });
   final CLSharedMedia media;
   final UniversalMediaSource type;
-  final ViewIdentifier viewIdentifier;
+  final String serverId;
 
   @override
   ConsumerState<SelectAndKeepMedia> createState() => SelectAndKeepMediaState();
 }
 
 class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
-  CLSharedMedia selectedMedia = const CLSharedMedia(entries: []);
+  CLSharedMedia selectedMedia =
+      const CLSharedMedia(entries: ViewerEntities([]));
   late StoreEntity? targetCollection;
   late bool actionConfirmed;
 
@@ -46,7 +47,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
   }
 
   Future<bool> actor({
-    required List<StoreEntity> currEntities,
+    required ViewerEntities currEntities,
     required Future<bool> Function() confirmAction,
     required Future<bool> Function() action,
     required void Function({required bool enable}) onUpdateSelectionmode,
@@ -56,7 +57,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
     final bool res;
     if (await confirmAction()) {
       if (await action()) {
-        selectedMedia = const CLSharedMedia(entries: []);
+        selectedMedia = const CLSharedMedia(entries: ViewerEntities([]));
         await ref
             .read(
               universalMediaProvider(widget.type).notifier,
@@ -77,11 +78,13 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
   }
 
   Future<bool> keep({
-    required List<StoreEntity> currEntities,
+    required String serverId,
+    required ViewerEntities currEntities,
     required void Function({required bool enable}) onUpdateSelectionmode,
   }) async {
     if (widget.type == UniversalMediaSource.deleted) {
       return restore(
+        serverId: serverId,
         currEntities: currEntities,
         onUpdateSelectionmode: onUpdateSelectionmode,
       );
@@ -94,19 +97,18 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
   }
 
   Future<bool> restore({
-    required List<StoreEntity> currEntities,
+    required String serverId,
+    required ViewerEntities currEntities,
     required void Function({required bool enable}) onUpdateSelectionmode,
   }) async {
     return actor(
       currEntities: currEntities,
       confirmAction: () async =>
-          (await DialogService.restoreMediaMultiple(
-            context,
-            media: currEntities,
-          )) ??
+          (await DialogService.restoreMediaMultiple(context,
+              media: currEntities, serverId: serverId)) ??
           false,
       action: () async {
-        for (final item in currEntities) {
+        for (final item in currEntities.entities.cast<StoreEntity>()) {
           await item.updateWith(isDeleted: () => false);
         }
         return true;
@@ -116,7 +118,8 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
   }
 
   Future<bool> permanentlyDelete({
-    required List<StoreEntity> currEntities,
+    required String serverId,
+    required ViewerEntities currEntities,
     required void Function({required bool enable}) onUpdateSelectionmode,
   }) async {
     return actor(
@@ -124,11 +127,12 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
       confirmAction: () async =>
           await DialogService.permanentlyDeleteMediaMultiple(
             context,
+            serverId: serverId,
             media: currEntities,
           ) ??
           false,
       action: () async {
-        for (final item in currEntities) {
+        for (final item in currEntities.entities.cast<StoreEntity>()) {
           await item.delete();
         }
         return true;
@@ -138,11 +142,13 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
   }
 
   Future<bool> delete({
-    required List<StoreEntity> currEntities,
+    required String serverId,
+    required ViewerEntities currEntities,
     required void Function({required bool enable}) onUpdateSelectionmode,
   }) async {
     if (widget.type == UniversalMediaSource.deleted) {
       return permanentlyDelete(
+        serverId: serverId,
         currEntities: currEntities,
         onUpdateSelectionmode: onUpdateSelectionmode,
       );
@@ -152,11 +158,12 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
       confirmAction: () async =>
           await DialogService.deleteMultipleEntities(
             context,
+            serverId: serverId,
             media: currEntities,
           ) ??
           false,
       action: () async {
-        for (final item in currEntities) {
+        for (final item in currEntities.entities.cast<StoreEntity>()) {
           await item.updateWith(isDeleted: () => true);
         }
         return true;
@@ -165,7 +172,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
     );
   }
 
-  PreferredSizeWidget getCollection({required List<StoreEntity> currEntities}) {
+  PreferredSizeWidget getCollection({required ViewerEntities currEntities}) {
     return CreateCollectionWizard(
       isValidSuggestion: (collection) {
         return !collection.data.isDeleted;
@@ -179,16 +186,15 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
   @override
   Widget build(BuildContext context) {
     return GetSelectionMode(
-      viewIdentifier: widget.viewIdentifier,
       builder: ({
         required onUpdateSelectionmode,
         required selectionMode,
-        required viewIdentifier,
+        required,
       }) {
         final currEntities =
             (selectionMode ? selectedMedia.entries : widget.media.entries);
         return WizardView(
-          viewIdentifier: widget.viewIdentifier,
+          serverId: widget.serverId,
           canSelect: !actionConfirmed && widget.media.entries.length > 1,
           menu: WizardMenuItems.moveOrCancel(
             type: widget.type,
@@ -202,6 +208,7 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
             keepAction: currEntities.isEmpty
                 ? null
                 : () => keep(
+                      serverId: widget.serverId,
                       onUpdateSelectionmode: onUpdateSelectionmode,
                       currEntities: currEntities,
                     ),
@@ -215,12 +222,12 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
             deleteAction: currEntities.isEmpty
                 ? null
                 : () => delete(
+                      serverId: widget.serverId,
                       onUpdateSelectionmode: onUpdateSelectionmode,
                       currEntities: currEntities,
                     ),
           ),
-          freezeView: actionConfirmed,
-          onSelectionChanged: (List<StoreEntity> items) {
+          onSelectionChanged: (ViewerEntities items) {
             selectedMedia = selectedMedia.copyWith(entries: items);
             setState(() {});
           },
@@ -240,7 +247,8 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
                                 universalMediaProvider(widget.type).notifier,
                               )
                               .remove(currEntities);
-                          selectedMedia = const CLSharedMedia(entries: []);
+                          selectedMedia =
+                              const CLSharedMedia(entries: ViewerEntities([]));
                           actionConfirmed = false;
                           targetCollection = null;
                           onUpdateSelectionmode(enable: false);
@@ -259,20 +267,18 @@ class SelectAndKeepMediaState extends ConsumerState<SelectAndKeepMedia> {
 
 class WizardView extends ConsumerWidget {
   const WizardView({
-    required this.viewIdentifier,
+    required this.serverId,
     required this.menu,
-    required this.freezeView,
     required this.canSelect,
     required this.onSelectionChanged,
     required this.dialog,
     super.key,
   });
-  final ViewIdentifier viewIdentifier;
+  final String serverId;
   final WizardMenuItems menu;
   final bool canSelect;
   final PreferredSizeWidget? dialog;
-  final void Function(List<StoreEntity>)? onSelectionChanged;
-  final bool freezeView; // Can this avoided?
+  final void Function(ViewerEntities)? onSelectionChanged;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -286,9 +292,7 @@ class WizardView extends ConsumerWidget {
       actions: [
         if (canSelect)
           // FIX ME: select ICon or text?
-          SelectionControlIcon(
-            viewIdentifier: viewIdentifier,
-          ),
+          const SelectionControlIcon(),
       ],
       wizard: dialog ??
           WizardDialog(
@@ -296,10 +300,9 @@ class WizardView extends ConsumerWidget {
             option2: menu.option2,
           ),
       child: WizardPreview(
-        viewIdentifier: viewIdentifier,
+        serverId: serverId,
         type: menu.type,
         onSelectionChanged: onSelectionChanged,
-        freezeView: freezeView,
       ),
     );
   }
@@ -312,7 +315,7 @@ class KeepWithProgress extends StatelessWidget implements PreferredSizeWidget {
     required this.onDone,
     super.key,
   });
-  final List<StoreEntity> media2Move;
+  final ViewerEntities media2Move;
   final StoreEntity newParent;
 
   final Future<void> Function() onDone;
@@ -323,7 +326,7 @@ class KeepWithProgress extends StatelessWidget implements PreferredSizeWidget {
         items: media2Move,
         newParent: newParent,
         onDone: ({
-          required List<StoreEntity> mediaMultiple,
+          required ViewerEntities mediaMultiple,
         }) async =>
             onDone(),
       ),
@@ -336,10 +339,10 @@ class KeepWithProgress extends StatelessWidget implements PreferredSizeWidget {
   }
 
   Stream<Progress> moveMultiple({
-    required List<StoreEntity> items,
+    required ViewerEntities items,
     required StoreEntity newParent,
     required Future<void> Function({
-      required List<StoreEntity> mediaMultiple,
+      required ViewerEntities mediaMultiple,
     }) onDone,
   }) async* {
     final parentCollection = await newParent.dbSave();
@@ -348,7 +351,7 @@ class KeepWithProgress extends StatelessWidget implements PreferredSizeWidget {
     }
 
     final updatedItems = <StoreEntity>[];
-    for (final (i, item) in items.indexed) {
+    for (final (i, item) in items.entities.cast<StoreEntity>().indexed) {
       yield Progress(fractCompleted: (i + 1) / items.length, currentItem: '');
       final updated = await (await item.updateWith(
         parentId: () => parentCollection.id!,
@@ -361,7 +364,7 @@ class KeepWithProgress extends StatelessWidget implements PreferredSizeWidget {
       updatedItems.add(updated);
     }
     yield const Progress(fractCompleted: 1, currentItem: 'All items are moved');
-    await onDone(mediaMultiple: updatedItems);
+    await onDone(mediaMultiple: ViewerEntities(updatedItems));
   }
 
   @override
@@ -369,18 +372,14 @@ class KeepWithProgress extends StatelessWidget implements PreferredSizeWidget {
 }
 
 class SelectionControlIcon extends ConsumerWidget {
-  const SelectionControlIcon({required this.viewIdentifier, super.key});
-
-  final ViewIdentifier viewIdentifier;
+  const SelectionControlIcon({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GetSelectionMode(
-      viewIdentifier: viewIdentifier,
       builder: ({
         required void Function({required bool enable}) onUpdateSelectionmode,
         required bool selectionMode,
-        required ViewIdentifier viewIdentifier,
       }) {
         return ShadButton.ghost(
           padding: const EdgeInsets.only(right: 8),

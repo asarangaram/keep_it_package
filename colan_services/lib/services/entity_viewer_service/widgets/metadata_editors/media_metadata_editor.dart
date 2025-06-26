@@ -178,7 +178,6 @@ class _StatefulMediaEditorState extends ConsumerState<StatefulMediaEditor> {
               width: 64,
               height: 64,
               child: MediaThumbnail(
-                parentIdentifier: 'Metadata Editor', // FIXME
                 media: widget.media,
               ),
             ),

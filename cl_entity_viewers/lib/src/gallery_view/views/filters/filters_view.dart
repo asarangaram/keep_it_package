@@ -10,17 +10,15 @@ import 'enum_filter_view.dart';
 import 'text_filter.dart';
 
 class TextFilterBox extends ConsumerWidget {
-  const TextFilterBox({required this.parentIdentifier, super.key});
-  final String parentIdentifier;
+  const TextFilterBox({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final filters = ref.watch(mediaFiltersProvider(parentIdentifier));
+    final filters = ref.watch(mediaFiltersProvider);
 
     final defaultTextSearchFilter = filters.defaultTextSearchFilter;
 
     return TextFilterView(
-      parentIdentifier: parentIdentifier,
       filter: defaultTextSearchFilter,
     );
   }
@@ -28,12 +26,10 @@ class TextFilterBox extends ConsumerWidget {
 
 class FiltersView extends ConsumerStatefulWidget {
   const FiltersView({
-    required this.parentIdentifier,
     super.key,
     this.filters,
   });
-  final List<CLFilter<ViewerEntityMixin>>? filters;
-  final String parentIdentifier;
+  final List<CLFilter<ViewerEntity>>? filters;
 
   @override
   ConsumerState<FiltersView> createState() => FiltersViewState();
@@ -64,18 +60,15 @@ class FiltersViewState extends ConsumerState<FiltersView> {
                 value: filter.name,
                 child: switch (filter.filterType) {
                   FilterType.stringFilter => TextFilterView(
-                      parentIdentifier: widget.parentIdentifier,
                       filter: filter,
                     ),
                   FilterType.booleanFilter => throw UnimplementedError(),
                   FilterType.dateFilter => throw UnimplementedError(),
                   FilterType.ddmmyyyyFilter => DDMMYYYYFilterViewRow(
                       filter: filter,
-                      identifier: widget.parentIdentifier,
                     ),
                   FilterType.enumFilter => EnumFilterViewRow(
                       filter: filter,
-                      identifier: widget.parentIdentifier,
                     ),
                 },
               ),
@@ -85,9 +78,7 @@ class FiltersViewState extends ConsumerState<FiltersView> {
           size: ShadButtonSize.sm,
           child: const Text('Clear Filters'),
           onPressed: () {
-            ref
-                .read(mediaFiltersProvider(widget.parentIdentifier).notifier)
-                .clearFilters();
+            ref.read(mediaFiltersProvider.notifier).clearFilters();
           },
         ),
       ],

@@ -13,10 +13,9 @@ import '../folder_clip.dart';
 class CollectionPreview extends ConsumerWidget {
   const CollectionPreview.preview(
     this.collection, {
-    required this.viewIdentifier,
     super.key,
   });
-  final ViewIdentifier viewIdentifier;
+
   final StoreEntity collection;
 
   @override
@@ -25,7 +24,6 @@ class CollectionPreview extends ConsumerWidget {
     final borderColor = ShadTheme.of(context).colorScheme.foreground;
 
     return GetFilters(
-      identifier: viewIdentifier.parentID,
       builder: (filters) {
         return GetEntities(
           parentId: collection.id,
@@ -33,7 +31,6 @@ class CollectionPreview extends ConsumerWidget {
           loadingBuilder: () => const GreyShimmer(),
           builder: (children) {
             return GetFilterred(
-                viewIdentifier: viewIdentifier,
                 candidates: children,
                 builder: (filterredChildren) {
                   return FolderItem(
@@ -50,7 +47,7 @@ class CollectionPreview extends ConsumerWidget {
                                     .colorScheme
                                     .mutedForeground,
                                 child: Text(
-                                  '${filterredChildren.where((e) => !e.isCollection).length}/${children.length} matches',
+                                  '${filterredChildren.entities.where((e) => !e.isCollection).length}/${children.length} matches',
                                 ),
                               ),
                             ),
@@ -62,7 +59,7 @@ class CollectionPreview extends ConsumerWidget {
                       vCount: 3,
                       itemBuilder: (context, index) {
                         final Widget widget;
-                        if (children[index].isCollection) {
+                        if (children.entities[index].isCollection) {
                           widget = LayoutBuilder(
                             builder: (context, constrain) {
                               return Image.asset(
@@ -74,13 +71,12 @@ class CollectionPreview extends ConsumerWidget {
                           );
                         } else {
                           widget = MediaThumbnail(
-                            parentIdentifier: viewIdentifier.parentID,
-                            media: children[index],
+                            media: children.entities[index],
                           );
                         }
-                        final grayOut = !filterredChildren
+                        final grayOut = !filterredChildren.entities
                             .map((e) => e.id)
-                            .contains(children[index].id);
+                            .contains(children.entities[index].id);
                         if (grayOut) {
                           return ColorFiltered(
                               colorFilter: const ColorFilter.matrix(<double>[

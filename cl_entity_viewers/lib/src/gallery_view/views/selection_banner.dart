@@ -4,8 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import '../../common/models/viewer_entities.dart';
 import '../../common/models/viewer_entity_mixin.dart';
-import '../models/tab_identifier.dart';
 
 import '../models/selector.dart';
 
@@ -16,15 +16,12 @@ import 'selection_count.dart';
 
 class SelectionBanner extends ConsumerWidget {
   const SelectionBanner({
-    required this.viewIdentifier,
     required this.incoming,
     super.key,
     this.galleryMap = const [],
   });
-  final List<ViewerEntityMixin> incoming;
+  final ViewerEntities incoming;
   final List<ViewerEntityGroup> galleryMap;
-
-  final ViewIdentifier viewIdentifier;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -35,7 +32,7 @@ class SelectionBanner extends ConsumerWidget {
     final selector = ref.watch(selectorProvider);
     final allCount = selector.entities.length;
     final selectedInAllCount = selector.count;
-    final currentItems = galleryMap.getEntities.toList();
+    final currentItems = ViewerEntities(galleryMap.getEntities.toList());
 
     final selectionStatusOnVisible =
         selector.isSelected(currentItems) == SelectionStatus.selectedNone;

@@ -1,30 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../common/models/viewer_entity_mixin.dart';
-import '../models/tab_identifier.dart';
-import '../providers/media_filters.dart' show filterredMediaProvider;
+import '../../common/models/viewer_entities.dart';
+import '../providers/media_filters.dart' show mediaFiltersProvider;
 
 class GetFilterred extends ConsumerWidget {
   const GetFilterred(
       {super.key,
-      required this.viewIdentifier,
       required this.candidates,
       required this.builder,
       this.isDisabled = false});
   final bool isDisabled;
-  final ViewIdentifier viewIdentifier;
-  final List<ViewerEntityMixin> candidates;
-  final Widget Function(List<ViewerEntityMixin> filterred) builder;
+
+  final ViewerEntities candidates;
+  final Widget Function(ViewerEntities filterred) builder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final List<ViewerEntityMixin> filterred;
+    final ViewerEntities filterred;
     if (isDisabled) {
       filterred = candidates;
     } else {
-      filterred = ref
-          .watch(filterredMediaProvider(MapEntry(viewIdentifier, candidates)));
+      final mediaFilters = ref.watch(mediaFiltersProvider);
+      filterred = ViewerEntities(mediaFilters.apply(candidates.entities));
     }
     return builder(filterred);
   }

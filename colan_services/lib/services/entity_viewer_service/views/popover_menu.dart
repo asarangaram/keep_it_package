@@ -5,17 +5,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../basic_page_service/widgets/page_manager.dart';
-
-class PopOverMenu extends ConsumerStatefulWidget {
-  const PopOverMenu({required this.viewIdentifier, super.key});
-  final ViewIdentifier viewIdentifier;
+class FilterPopOverMenu extends ConsumerStatefulWidget {
+  const FilterPopOverMenu({super.key});
 
   @override
-  ConsumerState<PopOverMenu> createState() => _PopoverPageState();
+  ConsumerState<FilterPopOverMenu> createState() => _PopoverPageState();
 }
 
-class _PopoverPageState extends ConsumerState<PopOverMenu> {
+class _PopoverPageState extends ConsumerState<FilterPopOverMenu> {
   final popoverController = ShadPopoverController();
 
   @override
@@ -40,29 +37,20 @@ class _PopoverPageState extends ConsumerState<PopOverMenu> {
                   onPressed: popoverController.hide,
                   child: const Icon(LucideIcons.check, size: 25),
                 ),
-                ShadButton.ghost(
-                  onPressed: () => PageManager.of(context)
-                      .openSettings()
-                      .then((val) => popoverController.hide()),
-                  child: const Icon(LucideIcons.settings, size: 25),
-                ),
               ],
             ),
-            SingleChildScrollView(
-              child: ViewModifierSettings(
-                viewIdentifier: widget.viewIdentifier,
-              ),
+            const SingleChildScrollView(
+              child: ViewModifierSettings(),
             ),
           ],
         ),
       ),
       child: GetViewModifiers(
-        viewIdentifier: widget.viewIdentifier,
         builder: (items) {
           return ShadButton.ghost(
             padding: const EdgeInsets.only(right: 8),
             onPressed: popoverController.toggle,
-            child: clIcons.extraMenu.iconFormatted(
+            child: clIcons.filter.iconFormatted(
               color: items.any((e) => e.isActive)
                   ? ShadTheme.of(context).colorScheme.destructive
                   : null,

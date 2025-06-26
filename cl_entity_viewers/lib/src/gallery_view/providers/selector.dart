@@ -1,21 +1,21 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../common/models/viewer_entity_mixin.dart';
+import '../../common/models/viewer_entities.dart';
 import '../models/selector.dart';
 
 class SelectorNotifier extends StateNotifier<CLSelector> {
-  SelectorNotifier(List<ViewerEntityMixin> entities)
+  SelectorNotifier(ViewerEntities entities)
       : super(CLSelector(entities: entities));
 
-  void select(List<ViewerEntityMixin> candidates) {
+  void select(ViewerEntities candidates) {
     state = state.select(candidates);
   }
 
-  void deselect(List<ViewerEntityMixin> candidates) {
+  void deselect(ViewerEntities candidates) {
     state = state.deselect(candidates);
   }
 
-  void toggle(List<ViewerEntityMixin> candidates) {
+  void toggle(ViewerEntities candidates) {
     if (state.isSelected(candidates) == SelectionStatus.selectedNone) {
       select(candidates);
     } else {
@@ -27,7 +27,7 @@ class SelectorNotifier extends StateNotifier<CLSelector> {
     state = state.clear();
   }
 
-  void updateSelection(List<ViewerEntityMixin>? candidates, {bool? deselect}) {
+  void updateSelection(ViewerEntities? candidates, {bool? deselect}) {
     if (candidates == null) {
       clear();
     } else if (deselect == null) {

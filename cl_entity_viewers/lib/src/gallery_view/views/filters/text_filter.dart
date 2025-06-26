@@ -12,11 +12,9 @@ import '../../providers/media_filters.dart';
 class TextFilterView extends ConsumerStatefulWidget {
   const TextFilterView({
     required this.filter,
-    required this.parentIdentifier,
     super.key,
   });
-  final CLFilter<ViewerEntityMixin> filter;
-  final String parentIdentifier;
+  final CLFilter<ViewerEntity> filter;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _TextFilterViewState();
@@ -31,16 +29,14 @@ class _TextFilterViewState extends ConsumerState<TextFilterView> {
       throw Exception('filter is not EnumFilter');
     }
     controller = TextEditingController(
-      text: (widget.filter as StringFilter<ViewerEntityMixin>).query,
+      text: (widget.filter as StringFilter<ViewerEntity>).query,
     );
     controller.addListener(updateFilter);
     super.initState();
   }
 
   void updateFilter() {
-    ref
-        .read(mediaFiltersProvider(widget.parentIdentifier).notifier)
-        .updateDefautTextSearchFilter(
+    ref.read(mediaFiltersProvider.notifier).updateDefautTextSearchFilter(
           controller.text,
         );
   }

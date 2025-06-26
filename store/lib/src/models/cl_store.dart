@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:cl_media_tools/cl_media_tools.dart';
 import 'package:meta/meta.dart';
+import 'package:store/src/models/cl_logger.dart';
 
 import 'cl_entity.dart';
 import 'data_types.dart';
@@ -13,7 +15,7 @@ import 'store_query.dart';
 class ClStoreInterface {}
 
 @immutable
-class CLStore {
+class CLStore with CLLogger {
   const CLStore({
     required this.store,
     required this.tempFilePath,
@@ -22,6 +24,9 @@ class CLStore {
   final EntityStore store;
   final String tempCollectionName;
   final String tempFilePath;
+
+  @override
+  String get logPrefix => 'CLStore';
 
   CLStore copyWith({
     EntityStore? store,
@@ -64,7 +69,7 @@ class CLStore {
   }
 
   Future<bool> delete(int entityId) async {
-    final entity = await store.get(EntityQuery(null, {'id': entityId}));
+    final entity = await store.get(StoreQuery<CLEntity>({'id': entityId}));
 
     if (entity == null) {
       return false;
@@ -72,8 +77,8 @@ class CLStore {
     return store.delete(entity);
   }
 
-  Future<StoreEntity?> get([EntityQuery? query]) async {
-    final entityFromDB = await store.get(query as StoreQuery<CLEntity>?);
+  Future<StoreEntity?> get([StoreQuery<CLEntity>? query]) async {
+    final entityFromDB = await store.get(query);
     if (entityFromDB == null) {
       return null;
     }
@@ -83,14 +88,19 @@ class CLStore {
     );
   }
 
-  Future<List<StoreEntity>> getAll([EntityQuery? query]) async {
-    final entititesFromDB = await store.getAll(query as StoreQuery<CLEntity>?);
-    return entititesFromDB
-        .cast<CLEntity>()
-        .map(
-          (entityFromDB) => StoreEntity(entity: entityFromDB, store: this),
-        )
-        .toList();
+  Future<ViewerEntities> getAll([StoreQuery<CLEntity>? query]) async {
+    try {
+      final entititesFromDB = await store.getAll(query);
+      return ViewerEntities(entititesFromDB
+          .cast<CLEntity>()
+          .map(
+            (entityFromDB) => StoreEntity(entity: entityFromDB, store: this),
+          )
+          .toList());
+    } catch (e, st) {
+      log('$e $st');
+      rethrow;
+    }
   }
 
   Future<StoreEntity?> createCollection({
@@ -99,8 +109,8 @@ class CLStore {
     ValueGetter<int?>? parentId,
     UpdateStrategy strategy = UpdateStrategy.skip,
   }) async {
-    final collectionInDB =
-        await store.get(EntityQuery(null, {'label': label, 'isCollection': 1}));
+    final collectionInDB = await store
+        .get(StoreQuery<CLEntity>({'label': label, 'isCollection': 1}));
 
     if (collectionInDB != null && collectionInDB.id != null) {
       if (!collectionInDB.isCollection) {
@@ -138,12 +148,13 @@ class CLStore {
     UpdateStrategy strategy = UpdateStrategy.skip,
   }) async {
     final mediaInDB = await store.get(
-      EntityQuery(null, {'md5': mediaFile.md5, 'isCollection': 1}),
+      StoreQuery<CLEntity>({'md5': mediaFile.md5, 'isCollection': 1}),
     );
     final CLEntity? parent;
 
     if (parentId != null) {
-      parent = (await get(EntityQuery(null, {'id': parentId})))?.data;
+      /// FIXME: Handle failure due to network
+      parent = (await get(StoreQuery<CLEntity>({'id': parentId})))?.data;
 
       if (parent == null) {
         throw Exception(
@@ -220,7 +231,8 @@ class CLStore {
     }
 
     if (entity.id != null) {
-      final entityInDB = await store.get(EntityQuery(null, {'id': entity.id}));
+      final entityInDB =
+          await store.get(StoreQuery<CLEntity>({'id': entity.id}));
       if (entityInDB == null) {
         throw Exception('entity with id ${entity.id} not found');
       }
@@ -243,8 +255,9 @@ class CLStore {
         );
       }
       if (parentIdValue != null) {
+        /// FIXME: Handle failure due to network
         final parent = (await get(
-          EntityQuery(null, {'id': parentIdValue}),
+          StoreQuery<CLEntity>({'id': parentIdValue}),
         ))
             ?.data;
         if (parent == null) {
@@ -294,7 +307,8 @@ class CLStore {
     }
 
     if (entity.id != null) {
-      final entityInDB = await store.get(EntityQuery(null, {'id': entity.id}));
+      final entityInDB =
+          await store.get(StoreQuery<CLEntity>({'id': entity.id}));
       if (entityInDB == null) {
         throw Exception('entity with id ${entity.id} not found');
       }
@@ -320,7 +334,7 @@ class CLStore {
       }
       if (parentIdValue != null) {
         final parent =
-            await store.get(EntityQuery(null, {'id': parentIdValue}));
+            await store.get(StoreQuery<CLEntity>({'id': parentIdValue}));
         if (parent == null) {
           throw Exception('Parent entity does not exist.');
         }
@@ -365,11 +379,20 @@ class CLStore {
     required List<CLMediaContent> contentList,
     required StoreEntity? collection,
     void Function({
-      required List<StoreEntity> existingEntities,
-      required List<StoreEntity> newEntities,
+      required ViewerEntities existingEntities,
+      required ViewerEntities newEntities,
       required List<CLMediaContent> invalidContent,
     })? onDone,
   }) async* {
+    /// Valid Media can only be pushed into a local store
+    /// Rationale:
+    ///   handling the id for server and managing the network situation when
+    ///   processing the media files is complicated.
+    ///   We always receive the content into a local server and then push to
+    ///   the appropriate server.
+    if (store.storeURL.scheme != 'local') {
+      throw Exception("Can't directly push media files into non-local servers");
+    }
     final existingEntities = <StoreEntity>[];
     final newEntities = <StoreEntity>[];
     final invalidContent = <CLMediaContent>[];
@@ -436,8 +459,9 @@ class CLStore {
         if (item != null) {
           Future<bool> processSupportedMediaContent() async {
             if ([CLMediaType.image, CLMediaType.video].contains(item.type)) {
+              /// FIXME: Handle failure due to network
               final mediaInDB = await get(
-                EntityQuery(null, {'md5': item.md5, 'isCollection': 0}),
+                StoreQuery<CLEntity>({'md5': item.md5, 'isCollection': 0}),
               );
               if (mediaInDB != null) {
                 existingEntities.add(mediaInDB);
@@ -474,8 +498,8 @@ class CLStore {
       // Need to check and add items into invalidContent
     }
     onDone?.call(
-      existingEntities: existingEntities,
-      newEntities: newEntities,
+      existingEntities: ViewerEntities(existingEntities),
+      newEntities: ViewerEntities(newEntities),
       invalidContent: invalidContent,
     );
   }

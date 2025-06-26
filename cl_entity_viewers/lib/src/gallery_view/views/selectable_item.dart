@@ -2,26 +2,24 @@ import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../common/models/viewer_entities.dart';
 import '../../common/models/viewer_entity_mixin.dart';
 import '../models/selector.dart';
-import '../models/tab_identifier.dart';
 
 import '../providers/select_mode.dart';
 import '../providers/selector.dart';
 
 class SelectableItem extends ConsumerWidget {
   const SelectableItem({
-    required this.viewIdentifier,
     required this.item,
     required this.itemBuilder,
     super.key,
     required this.entities,
   });
-  final ViewIdentifier viewIdentifier;
-  final ViewerEntityMixin item;
-  final List<ViewerEntityMixin> entities;
-  final Widget Function(
-      BuildContext, ViewerEntityMixin, List<ViewerEntityMixin>) itemBuilder;
+
+  final ViewerEntity item;
+  final ViewerEntities entities;
+  final Widget Function(BuildContext, ViewerEntity, ViewerEntities) itemBuilder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -32,9 +30,9 @@ class SelectableItem extends ConsumerWidget {
       return itemWidget;
     }
 
-    final isSelected =
-        ref.watch(selectorProvider.select((e) => e.isSelected([item]))) !=
-            SelectionStatus.selectedNone;
+    final isSelected = ref.watch(selectorProvider
+            .select((e) => e.isSelected(ViewerEntities([item])))) !=
+        SelectionStatus.selectedNone;
 
     final decoration = isSelected
         ? BoxDecoration(
@@ -49,8 +47,9 @@ class SelectableItem extends ConsumerWidget {
         Positioned.fill(child: itemWidget),
         Positioned.fill(
           child: GestureDetector(
-            onTap: () =>
-                ref.read(selectorProvider.notifier).updateSelection([item]),
+            onTap: () => ref
+                .read(selectorProvider.notifier)
+                .updateSelection(ViewerEntities([item])),
             child: SizedBox.expand(
               child: Container(
                 decoration: decoration,

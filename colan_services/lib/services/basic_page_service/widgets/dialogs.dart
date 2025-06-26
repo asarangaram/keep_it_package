@@ -10,9 +10,10 @@ import 'page_manager.dart';
 class DialogService {
   static Future<bool?> template(
     BuildContext context, {
+    required String serverId,
     required String title,
     required String message,
-    List<ViewerEntityMixin>? entity,
+    ViewerEntities? entity,
   }) async =>
       showDialog<bool?>(
         context: context,
@@ -22,8 +23,8 @@ class DialogService {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              if (entity != null && entity.isNotEmpty)
-                switch (entity.first) {
+              if (entity != null && entity.entities.isNotEmpty)
+                switch (entity.entities.first) {
                   final StoreEntity e when !e.isCollection => SizedBox.square(
                       dimension: 100,
                       child: CLMediaCollage.byMatrixSize(
@@ -32,13 +33,10 @@ class DialogService {
                         vCount: 3,
                         itemBuilder: (context, index) {
                           return EntityPreview(
-                            viewIdentifier: const ViewIdentifier(
-                              parentID: 'Dialog Service',
-                              viewId: 'PreviewInDialog',
-                            ),
-                            item: entity[index] as StoreEntity,
-                            parentId: entity[index].parentId,
-                            entities: const [],
+                            serverId: serverId,
+                            item: entity.entities[index] as StoreEntity,
+                            parentId: entity.entities[index].parentId,
+                            entities: const ViewerEntities([]),
                           );
                         },
                         whenNopreview: const Center(),
@@ -73,22 +71,25 @@ class DialogService {
 
   static Future<bool?> deleteEntity(
     BuildContext context, {
+    required String serverId,
     required StoreEntity entity,
   }) async =>
       template(
         context,
+        serverId: serverId,
         title: 'Confirm Delete',
         message: entity.isCollection
             ? 'Are you sure you want to delete '
                 '"${entity.data.label}" and its content?'
             : 'Are you sure you want to delete '
                 'this ${entity.data.mediaType}?',
-        entity: [entity],
+        entity: ViewerEntities([entity]),
       );
 
   static Future<bool?> deleteMultipleEntities(
     BuildContext context, {
-    required List<StoreEntity> media,
+    required String serverId,
+    required ViewerEntities media,
   }) async {
     if (media.isEmpty) {
       return false;
@@ -97,7 +98,8 @@ class DialogService {
     if (media.length == 1) {
       return DialogService.deleteEntity(
         context,
-        entity: media[0],
+        serverId: serverId,
+        entity: media.entities[0] as StoreEntity,
       );
     } else {
       final String msg;
@@ -105,6 +107,7 @@ class DialogService {
       msg = 'Are you sure you want to delete ${media.length} items?';
       return template(
         context,
+        serverId: serverId,
         title: 'Confirm Delete',
         message: msg,
         entity: media,
@@ -114,10 +117,12 @@ class DialogService {
 
   static Future<bool?> permanentlyDeleteMedia(
     BuildContext context, {
+    required String serverId,
     required StoreEntity media,
   }) async =>
       template(
         context,
+        serverId: serverId,
         title: 'Confirm Delete',
         message: 'Are you sure you want to PERMANENTLY delete '
             'this ${media.data.mediaType}?',
@@ -125,7 +130,8 @@ class DialogService {
 
   static Future<bool?> permanentlyDeleteMediaMultiple(
     BuildContext context, {
-    required List<StoreEntity> media,
+    required String serverId,
+    required ViewerEntities media,
   }) async {
     if (media.isEmpty) {
       return false;
@@ -134,7 +140,8 @@ class DialogService {
     if (media.length == 1) {
       return DialogService.permanentlyDeleteMedia(
         context,
-        media: media[0],
+        serverId: serverId,
+        media: media.entities[0] as StoreEntity,
       );
     } else {
       msg =
@@ -143,6 +150,7 @@ class DialogService {
 
     return template(
       context,
+      serverId: serverId,
       title: 'Confirm Delete',
       message: msg,
     );
@@ -150,10 +158,12 @@ class DialogService {
 
   static Future<bool?> restoreMedia(
     BuildContext context, {
+    required String serverId,
     required StoreEntity media,
   }) async =>
       template(
         context,
+        serverId: serverId,
         title: 'Confirm Restore',
         message: 'Are you sure you want to restore '
             'this ${media.data.type}?',
@@ -161,7 +171,8 @@ class DialogService {
 
   static Future<bool?> restoreMediaMultiple(
     BuildContext context, {
-    required List<StoreEntity> media,
+    required String serverId,
+    required ViewerEntities media,
   }) async {
     if (media.isEmpty) {
       return false;
@@ -169,11 +180,13 @@ class DialogService {
     if (media.length == 1) {
       return DialogService.restoreMedia(
         context,
-        media: media[0],
+        serverId: serverId,
+        media: media.entities[0] as StoreEntity,
       );
     }
     return template(
       context,
+      serverId: serverId,
       title: 'Confirm Restore',
       message: 'Are you sure you want to restore  ${media.length} items?',
     );
@@ -181,29 +194,35 @@ class DialogService {
 
   static Future<bool?> replaceMedia(
     BuildContext context, {
+    required String serverId,
     required StoreEntity media,
   }) async =>
       template(
         context,
+        serverId: serverId,
         title: 'Confirm Replace',
         message: 'This will replace the original file with the above media',
       );
   static Future<bool?> cloneAndReplaceMedia(
     BuildContext context, {
+    required String serverId,
     required StoreEntity media,
   }) async =>
       template(
         context,
+        serverId: serverId,
         title: 'Save',
         message: 'This will save the above media as a separate copy, '
             'other propertes will be copied from original media',
       );
   static Future<bool?> deleteNote(
     BuildContext context, {
+    required String serverId,
     required StoreEntity note,
   }) async =>
       template(
         context,
+        serverId: serverId,
         title: 'Confirm Delete',
         message: 'Are you sure you want to delete '
             "this note? You can't recover it",

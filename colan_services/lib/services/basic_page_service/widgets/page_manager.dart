@@ -87,6 +87,7 @@ class PageManager {
   }
 
   Future<bool?> openCamera({
+    required String serverId,
     int? parentId,
   }) async {
     await CLCameraService0.invokeWithSufficientPermission(
@@ -94,6 +95,7 @@ class PageManager {
       () async {
         if (context.mounted) {
           final queryMap = [
+            'serverId=$serverId',
             if (parentId != null) 'parentId=$parentId',
           ];
           final query = queryMap.isNotEmpty ? '?${queryMap.join('&')}' : '';
@@ -107,12 +109,14 @@ class PageManager {
 
   Future<StoreEntity?> openEditor(
     StoreEntity media, {
+    required String serverId,
     bool canDuplicateMedia = true,
   }) async {
     if (media.data.pin != null) {
       return media;
     } else {
       final queryMap = [
+        'serverId=$serverId',
         'id=${media.id}',
         'canDuplicateMedia=${canDuplicateMedia ? '1' : '0'}',
       ];
@@ -129,28 +133,38 @@ class PageManager {
 
   Future<void> openEntity(
     StoreEntity? entity, {
-    required String parentIdentifier,
+    required String serverId,
   }) async {
     final queryMap = [
+      'serverId=$serverId',
       if (entity != null) 'id=${entity.id}',
-      'parentIdentifier=$parentIdentifier',
     ];
     final query = queryMap.isNotEmpty ? '?${queryMap.join('&')}' : '';
     await navigator.pushNamed(context, '/media$query');
   }
 
-  Future<void> openWizard(UniversalMediaSource type) async {
+  Future<void> openWizard(
+    UniversalMediaSource type, {
+    required String serverId,
+  }) async {
     final queryMap = [
+      'serverId=$serverId',
       'type=${type.name}',
     ];
     final query = queryMap.isNotEmpty ? '?${queryMap.join('&')}' : '';
     await navigator.pushNamed(context, '/wizard$query');
   }
 
-  Future<void> openSettings() async {
+  Future<void> openSettings({
+    required String? serverId,
+  }) async {
+    final queryMap = [
+      if (serverId != null) 'serverId=$serverId',
+    ];
+    final query = queryMap.isNotEmpty ? '?${queryMap.join('&')}' : '';
     await navigator.pushNamed(
       context,
-      '/settings',
+      '/settings$query',
     );
   }
 }
