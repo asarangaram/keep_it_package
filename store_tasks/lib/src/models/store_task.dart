@@ -1,6 +1,6 @@
-import 'package:cl_entity_viewers/cl_entity_viewers.dart';
+import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:collection/collection.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart' hide ValueGetter;
 
 import 'content_origin.dart';
 

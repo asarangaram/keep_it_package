@@ -7,6 +7,8 @@ environment:
   sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
+  cl_basic_types:
+    path: ../cl_basic_types
   cl_entity_viewers:
     path: ../cl_entity_viewers
   cl_media_tools:

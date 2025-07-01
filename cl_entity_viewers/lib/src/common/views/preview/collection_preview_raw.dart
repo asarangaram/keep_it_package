@@ -1,10 +1,10 @@
+import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/widgets.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../../page_view/views/media_preview.dart';
-import '../../models/viewer_entities.dart';
-import '../../models/viewer_entity_mixin.dart';
+
 import 'collection_folder_item.dart';
 
 //

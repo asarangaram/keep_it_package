@@ -9,6 +9,8 @@ environment:
 
 dependencies:
   #background_downloader: ^8.9.4
+  cl_basic_types:
+    path: ../cl_basic_types
   cl_entity_viewers:
     path: ../cl_entity_viewers
   cl_media_tools:

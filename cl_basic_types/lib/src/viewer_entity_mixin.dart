@@ -3,7 +3,7 @@ import 'package:store/src/extensions/ext_list.dart';
 
 import 'gallery_group.dart'; */
 
-import 'package:cl_basic_types/cl_basic_types.dart';
+import 'cl_media_type.dart';
 
 abstract class ViewerEntity {
   int? get id;
@@ -42,13 +42,11 @@ extension GalleryGroupStoreEntityListQuery<T extends ViewerEntity>
   Set<int?> get getEntityIds => expand((item) => item.getEntityIds).toSet();
   Set<T> get getEntities => expand((item) => item.items).toSet();
 
-  Set<int?> getEntityIdsByGroup(String groupIdentifier) =>
-      where((e) => e.groupIdentifier == groupIdentifier)
-          .expand((item) => item.getEntityIds)
-          .toSet();
+  Set<int?> getEntityIdsByGroup(String groupIdentifier) => where(
+    (e) => e.groupIdentifier == groupIdentifier,
+  ).expand((item) => item.getEntityIds).toSet();
 
-  Set<T> getEntitiesByGroup(String groupIdentifier) =>
-      where((e) => e.groupIdentifier == groupIdentifier)
-          .expand((item) => item.items)
-          .toSet();
+  Set<T> getEntitiesByGroup(String groupIdentifier) => where(
+    (e) => e.groupIdentifier == groupIdentifier,
+  ).expand((item) => item.items).toSet();
 }

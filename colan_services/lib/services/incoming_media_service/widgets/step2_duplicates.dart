@@ -1,4 +1,4 @@
-import 'package:cl_entity_viewers/cl_entity_viewers.dart' show ViewerEntities;
+import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:colan_services/services/incoming_media_service/extensions/viewer_entities_ext.dart';
 import 'package:colan_services/services/incoming_media_service/widgets/exist_in_different_collection.dart';
 import 'package:colan_widgets/colan_widgets.dart';

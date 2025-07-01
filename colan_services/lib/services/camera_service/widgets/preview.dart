@@ -1,5 +1,5 @@
-import 'package:cl_entity_viewers/cl_entity_viewers.dart'
-    show MediaThumbnail, ViewerEntities;
+import 'package:cl_basic_types/cl_basic_types.dart';
+import 'package:cl_entity_viewers/cl_entity_viewers.dart' show MediaThumbnail;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';

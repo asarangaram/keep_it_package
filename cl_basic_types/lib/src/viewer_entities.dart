@@ -1,4 +1,7 @@
 import 'package:collection/collection.dart';
+import 'package:meta/meta.dart';
+
+import 'viewer_entity_mixin.dart';
 
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 /* import 'package:store/src/extensions/ext_datetime.dart';
@@ -6,20 +9,13 @@ import 'package:store/src/extensions/ext_list.dart';
 
 import 'gallery_group.dart'; */
 
-import 'package:cl_entity_viewers/src/common/models/viewer_entity_mixin.dart';
-import 'package:flutter/material.dart';
-
 @immutable
 class ViewerEntities {
   const ViewerEntities(this.entities);
   final List<ViewerEntity> entities;
 
-  ViewerEntities copyWith({
-    List<ViewerEntity>? entities,
-  }) {
-    return ViewerEntities(
-      entities ?? this.entities,
-    );
+  ViewerEntities copyWith({List<ViewerEntity>? entities}) {
+    return ViewerEntities(entities ?? this.entities);
   }
 
   @override

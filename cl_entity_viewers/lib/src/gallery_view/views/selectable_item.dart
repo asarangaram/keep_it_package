@@ -1,9 +1,8 @@
+import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../common/models/viewer_entities.dart';
-import '../../common/models/viewer_entity_mixin.dart';
 import '../models/selector.dart';
 
 import '../providers/select_mode.dart';

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../common/models/viewer_entities.dart';
+import 'package:cl_basic_types/cl_basic_types.dart';
 import '../builders/get_filterred.dart';
 import '../models/cl_context_menu.dart';
-import '../../common/models/viewer_entity_mixin.dart';
 
 import 'cl_raw_gallery_grid_view.dart';
 

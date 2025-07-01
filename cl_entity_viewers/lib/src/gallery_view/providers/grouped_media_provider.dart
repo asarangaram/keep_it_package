@@ -1,7 +1,5 @@
+import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../../common/models/viewer_entities.dart';
-import '../../common/models/viewer_entity_mixin.dart';
 
 import 'media_grouper.dart';
 

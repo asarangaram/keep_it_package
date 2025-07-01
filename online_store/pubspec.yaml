@@ -8,8 +8,6 @@ environment:
 
 # Add regular dependencies here.
 dependencies:
-  cl_media_tools:
-    path: ../cl_media_tools
   collection: ^1.19.0
   http: ^1.2.2
   meta: ^1.12.0
@@ -19,3 +17,4 @@ dependencies:
 dev_dependencies:
   lints: ^3.0.0
   very_good_analysis: ^8.0.0
+ 

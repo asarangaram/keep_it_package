@@ -1,9 +1,8 @@
+import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 
 import '../views/actions_draggable_menu.dart';
-
-import '../../common/models/viewer_entity_mixin.dart';
 
 typedef DraggableMenuBuilderType = Widget Function(
   BuildContext, {

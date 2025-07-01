@@ -1,8 +1,8 @@
+import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../../common/models/viewer_entity_mixin.dart';
 import '../../models/filter/base_filter.dart';
 import '../../models/filter/enum_filter.dart';
 import '../../providers/media_filters.dart';

@@ -1,6 +1,6 @@
+import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:flutter/foundation.dart';
-import '../../common/models/viewer_entities.dart';
-import '../../common/models/viewer_entity_mixin.dart';
+
 import '../../common/extensions/ext_datetime.dart';
 import '../../common/extensions/list_ext.dart';
 

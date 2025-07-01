@@ -1,8 +1,7 @@
+import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:flutter/material.dart';
 
 import 'package:shadcn_ui/shadcn_ui.dart';
-
-import '../../common/models/viewer_entities.dart';
 
 class FilterBanner extends StatelessWidget {
   const FilterBanner({

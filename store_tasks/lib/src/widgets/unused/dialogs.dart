@@ -1,4 +1,4 @@
-import 'package:cl_entity_viewers/cl_entity_viewers.dart';
+import 'package:cl_basic_types/cl_basic_types.dart';
 
 import 'package:flutter/material.dart';
 import 'package:store/store.dart';

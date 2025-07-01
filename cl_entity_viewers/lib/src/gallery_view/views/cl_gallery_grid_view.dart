@@ -1,10 +1,9 @@
+import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../common/models/viewer_entities.dart';
 import '../providers/menu_position.dart';
 import '../models/cl_context_menu.dart';
-import '../../common/models/viewer_entity_mixin.dart';
 
 import '../providers/selector.dart';
 import 'selection_control.dart';
