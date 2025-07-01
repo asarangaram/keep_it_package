@@ -1,35 +1,73 @@
+/* import 'dart:convert';
 import 'dart:io';
+import 'package:exif/exif.dart';
 
-import 'package:crypto/crypto.dart';
-import 'package:path/path.dart' as p;
+import 'media_metadata.dart';
 
-import 'utils.dart';
-
-extension UtilExtensionOnFile on File {
-  Future<void> deleteIfExists() async {
-    if (await exists()) {
-      await delete();
-    }
-  }
-
-  Future<String> get checksum async {
+extension ExtFileAnalysis on File {
+  Future<MediaMetaData?> getImageMetaData() async {
     try {
-      final stream = openRead();
-      final hash = await md5.bind(stream).first;
+      final fileBytes = readAsBytesSync();
+      final data = await readExifFromBytes(fileBytes);
 
-      // NOTE: You might not need to convert it to base64
-      return hash.toString();
-    } catch (exception) {
-      throw Exception('unable to determine md5');
+      var dateTimeString = data['EXIF DateTimeOriginal']!.printable;
+      final dateAndTime = dateTimeString.split(' ');
+      dateTimeString =
+          [dateAndTime[0].replaceAll(':', '-'), dateAndTime[1]].join(' ');
+
+      final originalDate = DateTime.parse(dateTimeString);
+      return MediaMetaData(originalDate: originalDate);
+    } catch (e) {
+      //ignore the error and continue without metada/*  */ta
     }
+    return null;
   }
 
-  File copyTo(Directory directory) {
-    final targetPath = p.join(directory.path, p.basename(path));
-    if (targetPath == path) {
-      return this;
+  Future<MediaMetaData?> getVideoMetaData() async {
+    /* final session = await FFprobeKit.getMediaInformation(path);
+    final properties = session.getMediaInformation()?.getAllProperties();
+    if (properties != null) {
+      try {
+        /* final jsonString = jsonEncode(properties);
+          printFormattedJson(jsonString); */
+        /* _infoLogger(
+            getAllValuesForKey(properties, 'creation_time').toString(),
+          ); */
+        final creationTimeTags =
+            getAllValuesForKey(properties, 'creation_time');
+        if (creationTimeTags.isNotEmpty) {
+          final originalDate = DateTime.parse(creationTimeTags[0] as String);
+          return MediaMetaData(originalDate: originalDate);
+        }
+      } catch (e) {
+        //ignore the error and continue without metadata
+      }
+    } */
+    return null;
+  }
+
+  List<dynamic> getAllValuesForKey(
+    Map<dynamic, dynamic> map,
+    String targetKey,
+  ) {
+    final values = <dynamic>[];
+
+    for (final entry in map.entries) {
+      if (entry.key == targetKey) {
+        values.add(entry.value);
+      } else if (entry.value is Map) {
+        final nestedValues =
+            getAllValuesForKey(entry.value as Map<dynamic, dynamic>, targetKey);
+        values.addAll(nestedValues);
+      }
     }
-    final updatedTarget = Utils.getAvailableFileName(targetPath);
-    return copySync(updatedTarget);
+    return values;
+  }
+
+  String printFormattedJson(String jsonString) {
+    const encoder =
+        JsonEncoder.withIndent('  '); // Use two spaces for indentation
+    return encoder.convert(json.decode(jsonString));
   }
 }
+ */

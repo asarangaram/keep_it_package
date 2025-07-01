@@ -1,12 +1,12 @@
 import 'dart:async';
 
+import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nsd/nsd.dart';
 import 'package:store/store.dart';
 
 import '../models/network_scanner.dart';
-import 'list_ext.dart';
 
 extension ServiceExtDiscovery on Discovery {
   Future<void> stop() async => stopDiscovery(this);

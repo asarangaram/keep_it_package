@@ -1,9 +1,8 @@
-/* import 'package:store/src/extensions/ext_datetime.dart';
-import 'package:store/src/extensions/ext_list.dart';
-
-import 'gallery_group.dart'; */
-
+import 'cl_media_file.dart';
 import 'cl_media_type.dart';
+import 'value_getter.dart';
+
+enum UpdateStrategy { skip, overwrite, mergeAppend }
 
 abstract class ViewerEntity {
   int? get id;
@@ -18,8 +17,20 @@ abstract class ViewerEntity {
   String? get mimeType;
   String? get label;
   String? get pin;
+  bool get isHidden;
 
   String? get dateString;
+  Future<ViewerEntity?> updateWith({
+    CLMediaFile? mediaFile,
+    ValueGetter<String?>? label,
+    ValueGetter<String?>? description,
+    ValueGetter<int?>? parentId,
+    ValueGetter<bool>? isDeleted,
+    ValueGetter<bool>? isHidden,
+    ValueGetter<String?>? pin,
+    UpdateStrategy? strategy,
+    bool autoSave = false,
+  });
 }
 
 class ViewerEntityGroup<T extends ViewerEntity> {

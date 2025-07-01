@@ -21,5 +21,5 @@ export 'src/widgets/metadata_editors/collection_metadata_editor.dart';
 export 'src/widgets/metadata_editors/media_metadata_editor.dart';
 export 'src/widgets/server_bar.dart' show ServerBar;
 export 'src/widgets/shimmer.dart';
-export 'storage_service/extensions/ext_file.dart';
+
 export 'storage_service/widgets/storage_monitor.dart' show StorageMonitor;

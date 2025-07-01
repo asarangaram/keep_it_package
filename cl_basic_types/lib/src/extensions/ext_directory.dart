@@ -1,6 +1,6 @@
 import 'dart:io';
 
-extension ExtDirectory on Directory {
+extension UtilExtensionOnDirectory on Directory {
   void clear() {
     if (existsSync()) {
       final contents = listSync();

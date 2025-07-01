@@ -1,18 +1,12 @@
-import 'package:flutter/foundation.dart';
+import 'package:meta/meta.dart';
 
 @immutable
 class MediaMetaData {
-  const MediaMetaData({
-    required this.originalDate,
-  });
+  const MediaMetaData({required this.originalDate});
   final DateTime originalDate;
 
-  MediaMetaData copyWith({
-    DateTime? originalDate,
-  }) {
-    return MediaMetaData(
-      originalDate: originalDate ?? this.originalDate,
-    );
+  MediaMetaData copyWith({DateTime? originalDate}) {
+    return MediaMetaData(originalDate: originalDate ?? this.originalDate);
   }
 
   @override

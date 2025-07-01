@@ -1,8 +1,7 @@
 import 'dart:math';
-
 import 'package:collection/collection.dart';
 
-extension RandomExt<T> on List<T> {
+extension UtilExtensionOnList<T> on List<T> {
   List<T> pickRandomItems(int count) {
     final copyList = List<T>.from(this); // Create a copy of the original list
     if (copyList.length <= count) {
@@ -12,27 +11,7 @@ extension RandomExt<T> on List<T> {
     copyList.shuffle(Random()); // Shuffle the copy list
     return copyList.take(count).toList();
   }
-}
 
-extension CompareExtOnSet<T> on Set<T> {
-  bool isSame(Set<T> other) {
-    // If the lengths are not the same, the lists can't be equal
-    if (length != other.length) {
-      return false;
-    }
-
-    // Sort both lists
-    final sortedList1 = List<T>.from(this)..sort();
-    final sortedList2 = List<T>.from(other)..sort();
-
-    // Compare the sorted lists
-    return ListEquality<T>().equals(sortedList1, sortedList2);
-  }
-
-  bool isDifferent(Set<T> other) => !isSame(other);
-}
-
-extension CompareExtOnList<T> on List<T> {
   bool isSame(List<T> other) {
     // If the lengths are not the same, the lists can't be equal
     if (length != other.length) {
@@ -47,10 +26,8 @@ extension CompareExtOnList<T> on List<T> {
     return ListEquality<T>().equals(sortedList1, sortedList2);
   }
 
-  bool isDifferent(List<T> other) => isSame(other);
-}
+  bool isDifferent(List<T> other) => !isSame(other);
 
-extension Reshape<T> on List<T> {
   List<List<T>> convertTo2D(int innerDimension) {
     final pages = <List<T>>[];
     for (var i = 0; i < length; i += innerDimension) {
@@ -59,4 +36,42 @@ extension Reshape<T> on List<T> {
     }
     return pages;
   }
+
+  // take?
+  List<T> firstNItems(int n) {
+    if (length <= n) {
+      return this; // Return the list as it is
+    } else {
+      return sublist(0, n); // Return the first N items
+    }
+  }
+
+  List<T> removeFirstItem() {
+    if (isNotEmpty) {
+      return List<T>.from(this)..removeAt(0);
+    } else {
+      return this;
+    }
+  }
+
+  Iterable<T> excludeByLabel(
+    List<T> another,
+    String Function(T obj) labelBuilder,
+  ) {
+    return where((e) {
+      return !another.map(labelBuilder).contains(labelBuilder(e));
+    });
+  }
+
+  Iterable<T> excludeLabel(String label, String Function(T obj) labelBuilder) {
+    return where((e) => labelBuilder(e) != label);
+  }
+
+  T? getByLabel(String label, String Function(T obj) labelBuilder) {
+    return where((e) => labelBuilder(e) == label).firstOrNull;
+  }
+}
+
+extension IDGenerator on List<String> {
+  String toID() => join(' ');
 }

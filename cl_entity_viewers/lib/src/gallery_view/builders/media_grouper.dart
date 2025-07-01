@@ -2,7 +2,6 @@ import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:flutter/foundation.dart';
 
 import '../models/view_modifier.dart';
-import 'gallery_group.dart';
 
 enum GroupTypes {
   none,

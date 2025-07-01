@@ -8,7 +8,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_handler/share_handler.dart';
 import 'package:store_tasks/store_tasks.dart';
 
-import '../../extensions/ext_list.dart';
 import '../models/cl_media_candidate.dart';
 import '../models/platform_support.dart';
 

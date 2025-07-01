@@ -3,8 +3,6 @@ import 'package:intl/intl.dart';
 import 'package:meta/meta.dart';
 import 'package:store/src/models/cl_store.dart';
 
-import 'data_types.dart';
-
 @immutable
 class StoreEntity implements ViewerEntity {
   factory StoreEntity({
@@ -28,6 +26,7 @@ class StoreEntity implements ViewerEntity {
   final CLStore store;
 //  final String? path;
 
+  @override
   Future<StoreEntity?> updateWith({
     CLMediaFile? mediaFile,
     ValueGetter<String?>? label,
@@ -188,4 +187,7 @@ class StoreEntity implements ViewerEntity {
   @override
   String? get dateString =>
       DateFormat('dd MMM, yyyy').format(createDate ?? updatedDate);
+
+  @override
+  bool get isHidden => data.isHidden;
 }

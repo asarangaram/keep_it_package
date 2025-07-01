@@ -1,8 +1,7 @@
 import 'dart:io';
 
+import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:flutter/foundation.dart';
-
-import '../../../extensions/human_readable.dart';
 
 @immutable
 class CLDirectoryInfo {

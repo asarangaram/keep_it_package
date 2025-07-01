@@ -1,4 +1,4 @@
-extension DBExtOnMap on Map<String, dynamic> {
+extension UtilExtensionOnMap on Map<String, dynamic> {
   bool get hasID => containsKey('id') && this['id'] != null;
 
   Map<String, dynamic> removeId() {

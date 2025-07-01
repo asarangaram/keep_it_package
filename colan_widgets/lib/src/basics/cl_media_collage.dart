@@ -1,17 +1,8 @@
 import 'dart:math';
 
+import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
-
-extension ExtONDouble on double {
-  double nearest(double value) {
-    if (value == 0.0) {
-      // Avoid division by zero
-      return value;
-    }
-    return (this / value).floor() * value;
-  }
-}
 
 @immutable
 class CLDimension {

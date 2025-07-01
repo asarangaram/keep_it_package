@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:colan_widgets/colan_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,15 +16,6 @@ double durationToDouble(Duration duration) => duration.inSeconds.toDouble();
 
 Duration doubleToDuration(double position) =>
     Duration(minutes: position ~/ 60, seconds: (position % 60).truncate());
-
-extension ExtDuration on Duration {
-  String get timestamp {
-    final hh = inHours > 0 ? "${inHours.toString().padLeft(2, '0')}:" : '';
-    return '$hh'
-        "${inMinutes.toString().padLeft(2, '0')}:"
-        "${(inSeconds % 60).toString().padLeft(2, '0')}";
-  }
-}
 
 extension ExtVideoPlayerValue on VideoPlayerValue {
   double get bufferedInSeconds => min(

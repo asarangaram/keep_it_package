@@ -1,8 +1,8 @@
+import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:meta/meta.dart';
 import 'package:sqlite_async/sqlite_async.dart';
 
 import 'db_command.dart';
-import 'db_extension_on_map.dart';
 
 @immutable
 class DBBatchCommand {

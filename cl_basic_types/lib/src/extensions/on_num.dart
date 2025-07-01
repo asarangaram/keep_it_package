@@ -1,6 +1,6 @@
 //https://stackoverflow.com/a/76902150
 
-extension FileSizeExtensions on num {
+extension UtilExtensionOnNum on num {
   String toHumanReadableFileSize({int round = 2, bool useBase1024 = true}) {
     const affixes = <String>['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
 
