@@ -3,7 +3,6 @@ import 'package:intl/intl.dart';
 import 'package:meta/meta.dart';
 import 'package:store/src/models/cl_store.dart';
 
-import 'cl_entity.dart';
 import 'data_types.dart';
 
 @immutable

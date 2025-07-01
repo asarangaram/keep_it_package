@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cl_media_tools/cl_media_tools.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:local_store/local_store.dart';
 import 'package:online_store/online_store.dart';
@@ -24,6 +25,7 @@ class StoreNotifier extends FamilyAsyncNotifier<CLStore, StoreURL>
         'local' => await createEntityStore(
             storeURL,
             storePath: storePath,
+            generatePreview: FfmpegUtils.generatePreview,
           ),
         'http' => await createOnlineEntityStore(
             storeURL: storeURL,

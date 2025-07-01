@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:cl_media_tools/cl_media_tools.dart';
+import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 import 'package:sqlite_async/sqlite_async.dart';
@@ -15,16 +15,17 @@ import 'db_query.dart';
 @immutable
 class LocalSQLiteEntityStore extends EntityStore
     with SQLiteDBTableMixin<CLEntity> {
-  LocalSQLiteEntityStore(
-    this.agent, {
-    required super.identity,
-    required super.storeURL,
-    required this.mediaPath,
-    required this.previewPath,
-  });
+  LocalSQLiteEntityStore(this.agent,
+      {required super.identity,
+      required super.storeURL,
+      required this.mediaPath,
+      required this.previewPath,
+      required this.generatePreview});
   final SQLiteTableAgent<CLEntity> agent;
   final String mediaPath;
   final String previewPath;
+  final Future<String> Function(String mediaPath,
+      {required String previewPath, required int dimension}) generatePreview;
 
   @override
   bool get isAlive => true;
@@ -81,7 +82,10 @@ class LocalSQLiteEntityStore extends EntityStore
     return Uri.file(filePath);
   }
 
-  Future<bool> createMediaFiles(CLEntity media, String path) async {
+  Future<bool> createMediaFiles(CLEntity media, String path,
+      {required Future<String> Function(String mediaPath,
+              {required String previewPath, required int dimension})
+          generatePreview}) async {
     final mediaPath = absoluteMediaPath(media);
     final previewPath = absolutePreviewPath(media);
     if (previewPath != null) {
@@ -94,7 +98,7 @@ class LocalSQLiteEntityStore extends EntityStore
       Directory(dirPath).createSync(recursive: true);
       File(path).copySync(mediaPath);
 
-      await FfmpegUtils.generatePreview(
+      await generatePreview(
         mediaPath,
         previewPath: previewPath!,
         dimension: 640,
@@ -119,10 +123,7 @@ class LocalSQLiteEntityStore extends EntityStore
   }
 
   @override
-  Future<CLEntity?> upsert(
-    CLEntity curr, {
-    String? path,
-  }) async {
+  Future<CLEntity?> upsert(CLEntity curr, {String? path}) async {
     CLEntity? prev;
     CLEntity updated;
 
@@ -185,7 +186,7 @@ class LocalSQLiteEntityStore extends EntityStore
       if (path != null) {
         // do we need to check this against prevMediaPath
         // if they are same, still this overwrites.
-        await createMediaFiles(updated, path);
+        await createMediaFiles(updated, path, generatePreview: generatePreview);
       }
       // generate preview here
 
@@ -216,6 +217,9 @@ class LocalSQLiteEntityStore extends EntityStore
     required StoreURL storeURL,
     required String mediaPath,
     required String previewPath,
+    required Future<String> Function(String mediaPath,
+            {required String previewPath, required int dimension})
+        generatePreview,
   }) async {
     const tableName = 'entity';
     final sqliteDB = db as SQLiteDB;
@@ -238,19 +242,21 @@ class LocalSQLiteEntityStore extends EntityStore
       validColumns: validColumns,
     );
 
-    return LocalSQLiteEntityStore(
-      agent,
-      identity: identity,
-      storeURL: storeURL,
-      mediaPath: mediaPath,
-      previewPath: previewPath,
-    );
+    return LocalSQLiteEntityStore(agent,
+        identity: identity,
+        storeURL: storeURL,
+        mediaPath: mediaPath,
+        previewPath: previewPath,
+        generatePreview: generatePreview);
   }
 }
 
 Future<EntityStore> createEntityStore(
   StoreURL url, {
   required String storePath,
+  required Future<String> Function(String mediaPath,
+          {required String previewPath, required int dimension})
+      generatePreview,
 }) async {
   final dbPath = p.join(storePath, 'db');
   final mediaPath = p.join(storePath, 'media');
@@ -264,13 +270,12 @@ Future<EntityStore> createEntityStore(
   final db = await createSQLiteDBInstance(fullPath);
 
   return switch (db) {
-    (final SQLiteDB db) => LocalSQLiteEntityStore.createStore(
-        db,
+    (final SQLiteDB db) => LocalSQLiteEntityStore.createStore(db,
         identity: url.uri.host,
         storeURL: url,
         mediaPath: mediaPath,
         previewPath: previewPath,
-      ),
+        generatePreview: generatePreview),
     _ => throw Exception('Unsupported DB')
   };
 }

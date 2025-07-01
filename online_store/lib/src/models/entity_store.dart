@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:meta/meta.dart';
 import 'package:online_store/src/implementations/cl_server.dart';
 

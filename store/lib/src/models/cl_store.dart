@@ -5,7 +5,6 @@ import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:meta/meta.dart';
 
 import '../extensions/ext_file.dart';
-import 'cl_entity.dart';
 import 'cl_logger.dart';
 import 'data_types.dart';
 import 'entity_store.dart';
