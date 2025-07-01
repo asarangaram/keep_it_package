@@ -12,7 +12,8 @@ dependencies:
   # audio_waveforms: 1.0.5 # Upgrade has issues!
   # background_downloader: ^8.9.4
   camera: ^0.11.0+1
-
+  cl_basic_types:
+    path: ../cl_basic_types
   cl_camera:
     path: ../cl_camera
   cl_entity_viewers:

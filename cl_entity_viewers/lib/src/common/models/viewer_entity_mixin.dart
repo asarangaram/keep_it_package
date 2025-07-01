@@ -3,7 +3,7 @@ import 'package:store/src/extensions/ext_list.dart';
 
 import 'gallery_group.dart'; */
 
-import 'package:cl_media_tools/cl_media_tools.dart';
+import 'package:cl_basic_types/cl_basic_types.dart';
 
 abstract class ViewerEntity {
   int? get id;
