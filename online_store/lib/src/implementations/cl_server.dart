@@ -140,10 +140,10 @@ class CLServer {
 
   Future<String> post(
     String endPoint, {
+    required Map<String, dynamic>? form,
+    required String? fileName,
     http.Client? client,
     String? json,
-    Map<String, dynamic>? form,
-    String? fileName,
   }) async =>
       RestApi(baseURL, client: client)
           .post(endPoint, json: json ?? '', form: form, fileName: fileName);
