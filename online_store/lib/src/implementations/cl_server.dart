@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
@@ -142,18 +143,20 @@ class CLServer {
     http.Client? client,
     String? json,
     Map<String, dynamic>? form,
+    String? fileName,
   }) async =>
       RestApi(baseURL, client: client)
-          .post(endPoint, json: json ?? '', form: form);
+          .post(endPoint, json: json ?? '', form: form, fileName: fileName);
 
   Future<String> put(
     String endPoint, {
     http.Client? client,
     String? json,
     Map<String, dynamic>? form,
+    String? fileName,
   }) async =>
       RestApi(baseURL, client: client)
-          .put(endPoint, json: json ?? '', form: form);
+          .put(endPoint, json: json ?? '', form: form, fileName: fileName);
 
   Future<String> delete(
     String endPoint, {

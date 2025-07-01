@@ -11,7 +11,7 @@ class RestApi {
   final bool connectViaMobile;
   final http.Client? client;
 
-  static const uploadimageTimeout = 15;
+  static const timeout = 15;
 
   void log(
     String message, {
@@ -95,17 +95,69 @@ class RestApi {
     http.Response? response;
     switch (method) {
       case 'post':
-        if (form != null) {
-          response = await myClient.post(uri, headers: headers, body: form);
+        if (fileName == null) {
+          if (form != null) {
+            response = await myClient.post(uri, headers: headers, body: form);
+          } else {
+            response = await myClient.post(uri, headers: headers, body: json);
+          }
         } else {
-          response = await myClient.post(uri, headers: headers, body: json);
+          // If file is given, we need to use MultiPart
+
+          final file = File(fileName);
+          if (!file.existsSync()) {
+            throw Exception('file does not exist: $fileName');
+          }
+          final request = http.MultipartRequest('POST', uri)
+            ..headers.addAll(headers)
+            ..files.add(await http.MultipartFile.fromPath(
+              'media',
+              file.path,
+            ));
+          if (form != null) {
+            for (final item in form.entries) {
+              request.fields[item.key] = item.value.toString();
+            }
+          }
+          // json not supported ???
+          response = await myClient
+              .send(request)
+              .timeout(const Duration(seconds: timeout))
+              .then(http.Response.fromStream);
         }
+
       case 'put':
-        if (form != null) {
-          response = await myClient.put(uri, headers: headers, body: form);
+        if (fileName == null) {
+          if (form != null) {
+            response = await myClient.put(uri, headers: headers, body: form);
+          } else {
+            response = await myClient.put(uri, headers: headers, body: json);
+          }
         } else {
-          response = await myClient.put(uri, headers: headers, body: json);
+          // If file is given, we need to use MultiPart
+
+          final file = File(fileName);
+          if (!file.existsSync()) {
+            throw Exception('file does not exist: $fileName');
+          }
+          final request = http.MultipartRequest('PUT', uri)
+            ..headers.addAll(headers)
+            ..files.add(await http.MultipartFile.fromPath(
+              'media',
+              file.path,
+            ));
+          if (form != null) {
+            for (final item in form.entries) {
+              request.fields[item.key] = item.value.toString();
+            }
+          }
+          // json not supported ???
+          response = await myClient
+              .send(request)
+              .timeout(const Duration(seconds: timeout))
+              .then(http.Response.fromStream);
         }
+
       case 'get':
         response = await myClient.get(uri, headers: headers);
       case 'delete':
@@ -146,11 +198,14 @@ class RestApi {
     String? auth,
     String json = '',
     Map<String, dynamic>? form,
+    String? fileName,
   }) async {
     if (form != null) {
-      return (await call('post', endPoint, auth: auth, form: form)) as String;
+      return (await call('post', endPoint,
+          auth: auth, form: form, fileName: fileName)) as String;
     } else {
-      return (await call('post', endPoint, auth: auth, json: json)) as String;
+      return (await call('post', endPoint,
+          auth: auth, json: json, fileName: fileName)) as String;
     }
   }
 
@@ -159,11 +214,14 @@ class RestApi {
     String? auth,
     String json = '',
     Map<String, dynamic>? form,
+    String? fileName,
   }) async {
     if (form != null) {
-      return (await call('put', endPoint, auth: auth, form: form)) as String;
+      return (await call('put', endPoint,
+          auth: auth, form: form, fileName: fileName)) as String;
     } else {
-      return (await call('put', endPoint, auth: auth, json: json)) as String;
+      return (await call('put', endPoint,
+          auth: auth, json: json, fileName: fileName)) as String;
     }
   }
 
@@ -173,15 +231,6 @@ class RestApi {
 
   Future<String> delete(String endPoint, {String? auth}) async {
     return (await call('delete', endPoint, auth: auth)) as String;
-  }
-
-  Future<String?> upload(
-    String endPoint,
-    String fileName, {
-    String? auth,
-    Map<String, String>? fields,
-  }) async {
-    throw UnimplementedError();
   }
 
   Future<String?> download(
