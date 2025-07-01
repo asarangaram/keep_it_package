@@ -57,7 +57,7 @@ class CameraService extends ConsumerWidget {
                     return CLCameraService0(
                       onCancel: () => PageManager.of(context).pop(),
                       onNewMedia: (path, {required isVideo}) async {
-                        final mediaFile = await CLMediaFile.fromPath(path);
+                        final mediaFile = await CLMediaFileUtils.fromPath(path);
 
                         if (mediaFile != null) {
                           return (await theStore.createMedia(

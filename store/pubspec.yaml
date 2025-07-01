@@ -12,9 +12,6 @@ dependencies:
     path: ../cl_basic_types
   cl_entity_viewers:
     path: ../cl_entity_viewers
-
-  cl_media_tools:
-    path: ../cl_media_tools
   collection: ^1.19.0
   crypto: ^3.0.4
   heif_converter: ^1.0.1

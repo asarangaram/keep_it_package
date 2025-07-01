@@ -51,7 +51,7 @@ class IncomingMediaNotifier extends StateNotifier<List<CLMediaFileGroup>> {
     if (media == null) return;
     final attachements = [
       if (media.content != null && media.content!.isNotEmpty)
-        if (CLMediaContent.isURL(media.content!))
+        if (CLMediaFileUtils.isURL(media.content!))
           CLMediaURI(Uri.parse(media.content!))
         else
           CLMediaText(media.content!),

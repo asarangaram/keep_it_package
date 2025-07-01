@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:cl_entity_viewers/cl_entity_viewers.dart';
-import 'package:cl_media_tools/cl_media_tools.dart';
 import 'package:meta/meta.dart';
 
 import '../extensions/ext_file.dart';
@@ -429,14 +428,16 @@ class CLStore with CLLogger {
     );
   }
 
-  Stream<Progress> getValidMediaFiles({
-    required List<CLMediaContent> contentList,
-    void Function({
-      required ViewerEntities existingEntities,
-      required ViewerEntities newEntities,
-      required List<CLMediaContent> invalidContent,
-    })? onDone,
-  }) async* {
+  Stream<Progress> getValidMediaFiles(
+      {required List<CLMediaContent> contentList,
+      required Future<CLMediaFile?> Function(CLMediaContent mediaContent,
+              {required Directory downloadDirectory})
+          getValidMediaFile,
+      void Function({
+        required ViewerEntities existingEntities,
+        required ViewerEntities newEntities,
+        required List<CLMediaContent> invalidContent,
+      })? onDone}) async* {
     /// Valid Media can only be pushed into a local store
     /// Rationale:
     ///   handling the id for server and managing the network situation when
@@ -457,13 +458,8 @@ class CLStore with CLLogger {
           fractCompleted: (i + 1) / contentList.length,
         );
 
-        final item = switch (mediaFile) {
-          (final CLMediaFile e) => e,
-          (final CLMediaURI e) =>
-            await e.toMediaFile(downloadDirectory: Directory(tempFilePath)),
-          (final CLMediaUnknown e) => await CLMediaFile.fromPath(e.path),
-          _ => null
-        };
+        final item = await getValidMediaFile(mediaFile,
+            downloadDirectory: Directory(tempFilePath)); // May be wrong?
 
         if (item != null) {
           Future<bool> processSupportedMediaContent() async {

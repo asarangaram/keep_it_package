@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:cl_entity_viewers/cl_entity_viewers.dart';
 import 'package:cl_media_tools/cl_media_tools.dart';
 import 'package:colan_widgets/colan_widgets.dart';
@@ -34,6 +37,17 @@ class AnalysePage extends StatelessWidget {
         stream: () => store.getValidMediaFiles(
           contentList: incomingMedia.entries,
           onDone: onDone,
+          getValidMediaFile: (mediaContent,
+              {required Directory downloadDirectory}) async {
+            return switch (mediaContent) {
+              (final CLMediaFile e) => e,
+              (final CLMediaURI e) => await CLMediaFileUtils.uriToMediaFile(e,
+                  downloadDirectory: downloadDirectory),
+              (final CLMediaUnknown e) =>
+                await CLMediaFileUtils.fromPath(e.path),
+              _ => null
+            };
+          },
         ),
         onCancel: onCancel,
       ),

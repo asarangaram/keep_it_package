@@ -64,7 +64,7 @@ class MediaEditService extends ConsumerWidget {
                         PageManager.of(context).pop(media);
                       },
                       onSave: (file, {required overwrite}) async {
-                        final mediaFile = await CLMediaFile.fromPath(file);
+                        final mediaFile = await CLMediaFileUtils.fromPath(file);
                         if (mediaFile == null) {
                           throw Exception('failed process $file');
                         }
