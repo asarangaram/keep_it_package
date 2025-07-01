@@ -1,6 +1,7 @@
 import 'dart:convert';
 
-import 'data_types.dart';
+import 'package:cl_basic_types/cl_basic_types.dart';
+import 'package:meta/meta.dart';
 
 @immutable
 class ServerTimeStamps {

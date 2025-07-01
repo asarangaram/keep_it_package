@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:http/http.dart' as http;
+import 'package:meta/meta.dart';
 import 'package:store/store.dart';
 
 import 'cl_server_status.dart';
-import 'data_types.dart';
+
 import 'rest_api.dart';
 
 @immutable
