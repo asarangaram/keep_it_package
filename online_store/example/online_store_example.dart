@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:online_store/online_store.dart';
 import 'package:store/store.dart';
 
@@ -12,7 +14,7 @@ void main() async {
     'label': 'TestCollection',
     'description': 'test description',
   });
-  print(response);
+  log(response);
 
   final response2 = await server.post('/entity',
       fileName: 'assets/0e71e306fdd2435c494afa5f6ccd1e60.jpg',
@@ -21,5 +23,5 @@ void main() async {
         'label': 'TestMedia',
         'description': 'test description',
       });
-  print(response2);
+  log(response2);
 }

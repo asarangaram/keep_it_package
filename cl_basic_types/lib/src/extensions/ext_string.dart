@@ -3,7 +3,7 @@ import 'dart:math' as math;
 
 //import '../../app_logger.dart';
 
-extension StoreExtensionOnString on String {
+extension UtilExtensionOnString on String {
   bool isURL() {
     try {
       final uri = Uri.parse(this);

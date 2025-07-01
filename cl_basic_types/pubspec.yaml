@@ -8,6 +8,8 @@ environment:
 dependencies:
   meta: ^1.16.0
   collection: ^1.19.1
+  crypto: ^3.0.6
+  path: ^1.9.1
   
 dev_dependencies:
   lints: ^5.0.0

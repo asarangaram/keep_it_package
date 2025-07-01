@@ -1,6 +1,5 @@
 export 'app_logger.dart';
-export 'extensions.dart';
-export 'src/extensions/ext_list.dart';
+
 export 'src/models/cl_logger.dart' show CLLogger;
 export 'src/models/cl_store.dart' show CLStore;
 export 'src/models/data_types.dart' show UpdateStrategy;
@@ -10,4 +9,3 @@ export 'src/models/progress.dart' show Progress;
 export 'src/models/store_entity.dart' show StoreEntity;
 export 'src/models/store_query.dart' show NotNullValues, Shortcuts, StoreQuery;
 export 'src/models/store_url.dart' show StoreURL;
-export 'src/models/utils.dart' show Utils;

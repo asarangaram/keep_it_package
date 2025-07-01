@@ -3,9 +3,9 @@ import 'dart:io';
 import 'package:crypto/crypto.dart';
 import 'package:path/path.dart' as p;
 
-import '../models/utils.dart';
+import 'utils.dart';
 
-extension ExtFile on File {
+extension UtilExtensionOnFile on File {
   Future<void> deleteIfExists() async {
     if (await exists()) {
       await delete();

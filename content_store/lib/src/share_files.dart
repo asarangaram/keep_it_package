@@ -1,7 +1,7 @@
+import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:store/store.dart';
 
 class ShareManager {
   static Future<bool> onShareFiles(
