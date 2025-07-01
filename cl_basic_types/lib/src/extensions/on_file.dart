@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:cl_basic_types/src/extensions/utils.dart';
+import 'package:cl_basic_types/src/utils.dart';
 import 'package:crypto/crypto.dart';
 import 'package:path/path.dart' as p;
 

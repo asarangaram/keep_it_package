@@ -15,7 +15,7 @@ export 'src/viewer_entity_mixin.dart'
         UpdateStrategy;
 export 'src/viewer_entities.dart' show ViewerEntities;
 export 'src/cl_entity.dart' show CLEntity;
-export 'src/extensions/utils.dart' show Utils;
+export 'src/utils.dart' show Utils;
 export 'src/extensions/ext_string.dart' show UtilExtensionOnString;
 export 'src/extensions/on_file.dart' show UtilExtensionOnFile;
 export 'src/extensions/on_date_time_nullable.dart'
