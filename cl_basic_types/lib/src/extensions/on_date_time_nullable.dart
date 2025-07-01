@@ -1,4 +1,4 @@
-import 'package:cl_basic_types/src/extensions/on_date_time.dart';
+import 'on_date_time.dart';
 
 extension UtilExtensionOnDateTimeNullable on DateTime? {
   String? toDisplayFormat({bool dataOnly = false}) {
