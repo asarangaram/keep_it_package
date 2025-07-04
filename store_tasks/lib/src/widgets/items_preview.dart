@@ -29,42 +29,42 @@ class _WizardPreviewState extends ConsumerState<WizardPreview> {
       final media0 = activeTask.itemsConfirmed == null
           ? activeTask.items
           : activeTask.currEntities(selectionMode: selectionMode);
-      if (media0.isEmpty) {
-        throw Exception('Nothing to show');
-      }
+
       return ClipRRect(
         borderRadius: const BorderRadius.only(
             bottomLeft: Radius.circular(16), bottomRight: Radius.circular(16)),
-        child: CLEntitiesGridView(
-          incoming: ViewerEntities(media0),
-          filtersDisabled: true,
-          whenEmpty: const Text('Nothing to show here'),
+        child: media0.isEmpty
+            ? const Center(child: Text('Nothing to show'))
+            : CLEntitiesGridView(
+                incoming: ViewerEntities(media0),
+                filtersDisabled: true,
+                whenEmpty: const Text('Nothing to show here'),
 
-          // Wizard don't use context menu
-          contextMenuBuilder: null,
-          onSelectionChanged: (items) => ref
-              .read(activeTaskProvider.notifier)
-              .selectedMedia = items.entities,
-          itemBuilder: (context, item, entities) {
-            final Widget widget;
-            if (item.isCollection) {
-              widget = LayoutBuilder(
-                builder: (context, constrain) {
-                  return Image.asset(
-                    'assets/icon/icon.png',
-                    width: constrain.maxWidth,
-                    height: constrain.maxHeight,
-                  );
+                // Wizard don't use context menu
+                contextMenuBuilder: null,
+                onSelectionChanged: (items) => ref
+                    .read(activeTaskProvider.notifier)
+                    .selectedMedia = items.entities,
+                itemBuilder: (context, item, entities) {
+                  final Widget widget;
+                  if (item.isCollection) {
+                    widget = LayoutBuilder(
+                      builder: (context, constrain) {
+                        return Image.asset(
+                          'assets/icon/icon.png',
+                          width: constrain.maxWidth,
+                          height: constrain.maxHeight,
+                        );
+                      },
+                    );
+                  } else {
+                    widget = MediaThumbnail(
+                      media: item,
+                    );
+                  }
+                  return widget;
                 },
-              );
-            } else {
-              widget = MediaThumbnail(
-                media: item,
-              );
-            }
-            return widget;
-          },
-        ),
+              ),
       );
     });
   }
