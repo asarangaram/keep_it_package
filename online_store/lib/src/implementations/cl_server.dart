@@ -218,13 +218,51 @@ class CLServer {
 
   // Entity APIs
 
+  Future<StoreReply<Map<String, dynamic>?>> getEntity(String endPoint) async {
+    try {
+      final reply = await getEndpoint(endPoint);
+      return reply.when(
+          validResponse: (data) {
+            final map = jsonDecode(data);
+            final items =
+                ((map as Map<String, dynamic>)['items']) as List<dynamic>;
+
+            final mediaMapList = items.firstOrNull as Map<String, dynamic>?;
+
+            return StoreResult(mediaMapList);
+          },
+          errorResponse: (e, {st}) => StoreError(e, st: st));
+    } catch (e) {
+      return StoreError({'error': e.toString()});
+    }
+  }
+
+  Future<StoreReply<List<Map<String, dynamic>>>> getEntities(
+      String endPoint) async {
+    try {
+      final reply = await getEndpoint(endPoint);
+      return reply.when(validResponse: (response) {
+        final map = jsonDecode(response);
+        final items = ((map as Map<String, dynamic>)['items']) as List<dynamic>;
+
+        final mediaMapList =
+            items.map((e) => e as Map<String, dynamic>).toList();
+        return StoreResult(mediaMapList);
+      }, errorResponse: (e, {st}) {
+        return StoreError(e, st: st);
+      });
+    } catch (e, st) {
+      return StoreError<List<Map<String, dynamic>>>.fromString(e.toString(),
+          st: st);
+    }
+  }
+
   Future<StoreReply<Map<String, dynamic>>> createEntity(
       {required bool isCollection,
       String? fileName,
       String? label,
       String? description,
-      int? parentId,
-      int? id}) async {
+      int? parentId}) async {
     try {
       final form = {
         'isCollection': isCollection ? '1' : '0',
@@ -233,6 +271,31 @@ class CLServer {
         if (parentId != null) 'parentId': parentId.toString()
       };
       final response = await post('/entity', fileName: fileName, form: form);
+      return response.when(
+          validResponse: (data) =>
+              StoreResult(jsonDecode(data) as Map<String, dynamic>),
+          errorResponse: (e, {st}) {
+            return StoreError(e, st: st);
+          });
+    } catch (e) {
+      return StoreError(const {'error': 'exception when creating a media'});
+    }
+  }
+
+  Future<StoreReply<Map<String, dynamic>>> updateEntity(int id,
+      {required bool isCollection,
+      String? fileName,
+      String? label,
+      String? description,
+      int? parentId}) async {
+    try {
+      final form = {
+        'isCollection': isCollection ? '1' : '0',
+        if (label != null) 'label': label,
+        if (description != null) 'description': description,
+        if (parentId != null) 'parentId': parentId.toString()
+      };
+      final response = await put('/entity/$id', fileName: fileName, form: form);
       return response.when(
           validResponse: (data) =>
               StoreResult(jsonDecode(data) as Map<String, dynamic>),

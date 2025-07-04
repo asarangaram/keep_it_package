@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:meta/meta.dart';
 import 'package:online_store/src/implementations/cl_server.dart';
@@ -45,71 +43,38 @@ class OnlineEntityStore extends EntityStore {
 
   @override
   Future<CLEntity?> get([StoreQuery<CLEntity>? query]) async {
-    try {
-      final serverQuery =
-          ServerQuery.fromStoreQuery(path, validQueryKeys, query);
-      final reply = await server.getEndpoint(serverQuery.requestTarget);
-      return reply.when(
-          validResponse: (data) {
-            final map = jsonDecode(data);
-            final items =
-                ((map as Map<String, dynamic>)['items']) as List<dynamic>;
-
-            final mediaMapList = items
-                .map((e) => CLEntity.fromMap(e as Map<String, dynamic>))
-                .toList();
-            return mediaMapList.firstOrNull;
-          },
-          errorResponse: (e, {st}) => null);
-    } catch (e) {
+    if (query != null &&
+        query.map.keys.contains('isHidden') &&
+        query.map['isHidden'] == 1) {
+      // Servers don't support isHidden
       return null;
     }
+    final serverQuery = ServerQuery.fromStoreQuery(path, validQueryKeys, query);
+
+    final reply = await server.getEntity(serverQuery.requestTarget);
+    return reply.when(
+      validResponse: (result) {
+        return result == null ? null : CLEntity.fromMap(result);
+      },
+      errorResponse: (error, {st}) {
+        return null;
+      },
+    );
   }
 
   @override
   Future<List<CLEntity>> getAll([StoreQuery<CLEntity>? query]) async {
-    late StoreReply<List<CLEntity>> serverReply;
-    try {
-      if (query != null &&
-          query.map.keys.contains('isHidden') &&
-          query.map['isHidden'] == 1) {
-        // Servers don't support isHidden
-        serverReply = StoreResult(const []);
-      } else {
-        final serverQuery =
-            ServerQuery.fromStoreQuery(path, validQueryKeys, query);
-        final reply = await server.getEndpoint(serverQuery.requestTarget);
-        switch (reply) {
-          case (final StoreResult<String> response):
-            final map = jsonDecode(response.result);
-            final items =
-                ((map as Map<String, dynamic>)['items']) as List<dynamic>;
-
-            final mediaMapList = items
-                .map((e) => CLEntity.fromMap(e as Map<String, dynamic>))
-                .toList();
-            serverReply = StoreResult(mediaMapList);
-          case (final StoreError<String> e):
-            serverReply = StoreError(
-              e.errorResponse,
-              st: e.st,
-            );
-          default:
-            serverReply =
-                StoreError<List<CLEntity>>.fromString('Unknown Error');
-        }
-      }
-    } catch (e, st) {
-      serverReply = StoreError<List<CLEntity>>.fromString(e.toString(), st: st);
+    if (query != null &&
+        query.map.keys.contains('isHidden') &&
+        query.map['isHidden'] == 1) {
+      // Servers don't support isHidden
+      return [];
     }
-    switch (serverReply) {
-      case (final StoreResult<List<CLEntity>> response):
-        return response.result;
-      case (final StoreError<List<CLEntity>> e):
-        throw Exception(e);
-      default:
-        throw Exception('Unknown Error');
-    }
+    final serverQuery = ServerQuery.fromStoreQuery(path, validQueryKeys, query);
+    final reply = await server.getEntities(serverQuery.requestTarget);
+    return reply.when(
+        validResponse: (result) => result.map(CLEntity.fromMap).toList(),
+        errorResponse: (e, {st}) => throw Exception(e));
   }
 
   @override
