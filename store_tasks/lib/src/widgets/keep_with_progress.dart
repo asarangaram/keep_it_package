@@ -40,8 +40,18 @@ class KeepWithProgress extends StatelessWidget implements PreferredSizeWidget {
       required ViewerEntities mediaMultiple,
     }) onDone,
   }) async* {
-    final parentCollection = await newParent.dbSave();
-    if (parentCollection == null || parentCollection.id == null) {
+    final StoreEntity parentCollection;
+    if (newParent.id == null) {
+      final saved = await newParent.dbSave();
+      if (saved != null) {
+        parentCollection = saved;
+      } else {
+        throw Exception('failed to save parent collection');
+      }
+    } else {
+      parentCollection = newParent;
+    }
+    if (parentCollection.id == null) {
       throw Exception('failed to save parent collection');
     }
 
