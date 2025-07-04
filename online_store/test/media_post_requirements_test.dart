@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:online_store/online_store.dart';
+import 'package:online_store/src/implementations/store_reply.dart';
 import 'package:path/path.dart';
 import 'package:store/store.dart';
 import 'package:test/test.dart';
@@ -35,9 +36,16 @@ void main() async {
       }
 
       final result = await createCollection(server, label: 'Test Collection');
-      expect(result.containsKey('id'), true,
-          reason: "response doesn't contains id");
-      collectionId = result['id'] as int;
+      result.when(
+        validResponse: (result) {
+          expect(result.containsKey('id'), true,
+              reason: "response doesn't contains id");
+          collectionId = result['id'] as int;
+        },
+        errorResponse: (error, {st}) {
+          fail('$error');
+        },
+      );
     } catch (e) {
       fail('Failed: $e');
     }
@@ -53,8 +61,11 @@ void main() async {
       if (File(filename).existsSync()) {
         final result = await createMedia(server,
             label: randomString(8), parentId: collectionId, fileName: filename);
-        expect(result.containsKey('id'), true,
-            reason: 'Unable to create a media');
+        result.when(
+            validResponse: (data) => expect(data.containsKey('id'), true,
+                reason: 'Unable to create a media'),
+            errorResponse: (e, {st}) =>
+                fail('failed to create media, Error: $e'));
       } else {
         fail('Unable to generate image file');
       }
@@ -66,13 +77,21 @@ void main() async {
         label: randomString(8),
         parentId: collectionId,
       );
-      expect(result.containsKey('id'), true,
-          reason: 'Unable to create a media');
+      result.when(
+          validResponse: (data) =>
+              fail("valid Media can't be posted without a file."),
+          errorResponse: (e, {st}) {
+            if (e.containsKey('error') &&
+                (e['error'] as String).contains('Post media with a file')) {
+            } else {
+              fail('unexpected error $e');
+            }
+          });
     });
   });
 }
 
-Future<Map<String, dynamic>> createMedia(CLServer server,
+Future<StoreReply<Map<String, dynamic>>> createMedia(CLServer server,
     {required String label,
     String? description,
     String? fileName,
@@ -88,9 +107,10 @@ Future<Map<String, dynamic>> createMedia(CLServer server,
     final response =
         await server.post('/entity', fileName: fileName, form: form);
     return response.when(
-        validResponse: (data) => jsonDecode(data) as Map<String, dynamic>,
-        errorResponse: (e) {
-          return fail('exception when creating a collection');
+        validResponse: (data) =>
+            StoreResult(jsonDecode(data) as Map<String, dynamic>),
+        errorResponse: (e, {st}) {
+          return StoreError(e, st: st);
         });
   } catch (e) {
     fail('exception when creating a media');

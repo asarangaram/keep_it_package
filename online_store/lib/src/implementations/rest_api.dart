@@ -1,11 +1,11 @@
 import 'dart:async';
-import 'dart:convert' show jsonDecode;
+import 'dart:convert' show jsonDecode, jsonEncode;
 import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
 
-import 'api_response.dart';
+import 'store_reply.dart';
 
 class RestApi {
   RestApi(this._server, {this.connectViaMobile = true, this.client});
@@ -48,14 +48,14 @@ class RestApi {
           return StoreResult(info);
         }
         log("Error: ${info['name']}");
-        return StoreError('"Error: ${info['name']}"');
+        return StoreError.fromString(jsonEncode(response.body));
       } else {
         log('Error: ${response.statusCode} ${response.body}');
-        return StoreError(response.body, errorCode: response.statusCode);
+        return StoreError.fromString(response.body);
       }
     } catch (e, st) {
       log('Error: $e');
-      return StoreError(e.toString(), st: st);
+      return StoreError.fromString(e.toString(), st: st);
     }
   }
 
@@ -174,19 +174,21 @@ class RestApi {
             await file.writeAsBytes(response.bodyBytes);
             return StoreResult(null);
           } else {
-            return StoreError(response.body);
+            return StoreError.fromString(response.body);
           }
       }
       if (response != null) {
         if ([200, 201].contains(response.statusCode)) {
           return StoreResult(response.body);
         }
-        return StoreError(response.body, errorCode: response.statusCode);
+
+        return StoreError.fromString(response.body);
       }
-      return StoreError(
-          'Unknown http method $method expected get, post, put or delete');
+      return StoreError({
+        'error': 'Unknown http method $method expected get, post, put or delete'
+      });
     } catch (e, st) {
-      return StoreError(e.toString(), st: st);
+      return StoreError.fromString(e.toString(), st: st);
     }
   }
 

@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:meta/meta.dart';
-import 'package:online_store/src/implementations/api_response.dart';
+import 'package:online_store/src/implementations/store_reply.dart';
 import 'package:online_store/src/implementations/cl_server.dart';
 
 import 'package:store/store.dart';
@@ -61,7 +61,7 @@ class OnlineEntityStore extends EntityStore {
                 .toList();
             return mediaMapList.firstOrNull;
           },
-          errorResponse: (e) => null);
+          errorResponse: (e, {st}) => null);
     } catch (e) {
       return null;
     }
@@ -91,13 +91,17 @@ class OnlineEntityStore extends EntityStore {
                 .toList();
             serverReply = StoreResult(mediaMapList);
           case (final StoreError<String> e):
-            serverReply = StoreError(e.error, st: e.st, errorCode: e.errorCode);
+            serverReply = StoreError(
+              e.errorResponse,
+              st: e.st,
+            );
           default:
-            serverReply = StoreError<List<CLEntity>>('Unknown Error');
+            serverReply =
+                StoreError<List<CLEntity>>.fromString('Unknown Error');
         }
       }
     } catch (e, st) {
-      serverReply = StoreError<List<CLEntity>>(e.toString(), st: st);
+      serverReply = StoreError<List<CLEntity>>.fromString(e.toString(), st: st);
     }
     switch (serverReply) {
       case (final StoreResult<List<CLEntity>> response):
@@ -150,7 +154,7 @@ class OnlineEntityStore extends EntityStore {
       }
       return reply.when(
           validResponse: CLEntity.fromJson,
-          errorResponse: (e) => throw Exception(e));
+          errorResponse: (e, {st}) => throw Exception(e));
     } catch (e) {
       return null;
     }

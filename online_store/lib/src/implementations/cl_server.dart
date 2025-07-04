@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
-import 'package:online_store/src/implementations/api_response.dart';
+import 'package:online_store/src/implementations/store_reply.dart';
 import 'package:store/store.dart';
 
 import 'cl_server_status.dart';
