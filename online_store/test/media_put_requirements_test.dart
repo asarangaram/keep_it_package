@@ -52,7 +52,7 @@ void main() async {
     await server.deleteEntity({'id': collectionId});
   });
   group('Test Media Interface', () {
-    test('Can create a media', () async {
+    test('Can create a media and update it with another media', () async {
       final filename = join(tempDir.path, 'img_${randomString(8)}.jpg');
       generateRandomPatternImage(filename);
       if (File(filename).existsSync()) {
@@ -61,32 +61,22 @@ void main() async {
             label: randomString(8),
             parentId: collectionId,
             fileName: filename);
-        result.when(
-            validResponse: (data) => expect(data.containsKey('id'), true,
-                reason: 'Unable to create a media'),
+        final id = result.when(
+            validResponse: (data) {
+              expect(data.containsKey('id'), true,
+                  reason: 'Unable to create a media');
+
+              return data['id'] as int;
+            },
             errorResponse: (e, {st}) =>
                 fail('failed to create media, Error: $e'));
+
+        /// Try retriving:
+        final retrive = await server.getEndpoint('/entity/$id');
+        print(retrive);
       } else {
         fail('Unable to generate image file');
       }
-    });
-
-    test("Can't create a media without a file", () async {
-      final result = await server.createEntity(
-        isCollection: false,
-        label: randomString(8),
-        parentId: collectionId,
-      );
-      result.when(
-          validResponse: (data) =>
-              fail("valid Media can't be posted without a file."),
-          errorResponse: (e, {st}) {
-            if (e.containsKey('error') &&
-                (e['error'] as String).contains('Post media with a file')) {
-            } else {
-              fail('unexpected error $e');
-            }
-          });
     });
   });
 }

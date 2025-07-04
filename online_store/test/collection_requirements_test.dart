@@ -1,8 +1,6 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:online_store/online_store.dart';
-import 'package:online_store/src/implementations/store_reply.dart';
 import 'package:store/store.dart';
 import 'package:test/test.dart';
 
@@ -42,8 +40,8 @@ void main() async {
     test('Create Collection', () async {
       final label = randomString(8, prefix: 'test_');
       final desc = generateLoremIpsum();
-      final reply =
-          await createCollection(server, label: label, description: desc);
+      final reply = await server.createEntity(
+          isCollection: true, label: label, description: desc);
       final reference = reply.when(
         validResponse: (result) {
           expect(result.containsKey('id'), true,
@@ -61,15 +59,15 @@ void main() async {
           fail('$error');
         },
       );
-      await deleteCollection(reference);
+      await server.deleteEntity(reference);
     });
     test('try creating Collection: same label, same description', () async {
       final label = randomString(8, prefix: 'test_');
       final desc = generateLoremIpsum();
       final Map<String, dynamic> reference;
       {
-        final reply =
-            await createCollection(server, label: label, description: desc);
+        final reply = await server.createEntity(
+            isCollection: true, label: label, description: desc);
         reference = reply.when(
           validResponse: (result) {
             expect(result.containsKey('id'), true,
@@ -90,8 +88,8 @@ void main() async {
       }
       // Post again
       {
-        final reply =
-            await createCollection(server, label: label, description: desc);
+        final reply = await server.createEntity(
+            isCollection: true, label: label, description: desc);
         reply.when(
           validResponse: (result) {
             expect(result.containsKey('id'), true,
@@ -114,7 +112,7 @@ void main() async {
           },
         );
       }
-      await deleteCollection(reference);
+      await server.deleteEntity(reference);
     });
 
     test('try creating Collection: same label, different description',
@@ -124,8 +122,8 @@ void main() async {
       final Map<String, dynamic> reference;
       {
         final desc = generateLoremIpsum();
-        final reply =
-            await createCollection(server, label: label, description: desc);
+        final reply = await server.createEntity(
+            isCollection: true, label: label, description: desc);
 
         reference = reply.when(
           validResponse: (result) {
@@ -148,8 +146,8 @@ void main() async {
       // Post again
       {
         final desc = generateLoremIpsum();
-        final reply =
-            await createCollection(server, label: label, description: desc);
+        final reply = await server.createEntity(
+            isCollection: true, label: label, description: desc);
 
         reply.when(
           validResponse: (result) {
@@ -172,30 +170,7 @@ void main() async {
           },
         );
       }
-      await deleteCollection(reference);
+      await server.deleteEntity(reference);
     });
   });
-}
-
-Future<StoreReply<Map<String, dynamic>>> createCollection(CLServer server,
-    {required String label, String? description}) async {
-  try {
-    final response = await server.post('/entity', fileName: null, form: {
-      'isCollection': '1',
-      'label': label,
-      if (description != null) 'description': description,
-    });
-    return response.when(
-        validResponse: (data) =>
-            StoreResult(jsonDecode(data) as Map<String, dynamic>),
-        errorResponse: (e, {st}) {
-          return StoreError(e, st: st);
-        });
-  } catch (e) {
-    fail('Unexpected Exception from server.post');
-  }
-}
-
-Future<void> deleteCollection(Map<String, dynamic> map) async {
-  // TODO
 }

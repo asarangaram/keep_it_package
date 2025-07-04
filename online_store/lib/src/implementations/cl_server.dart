@@ -4,12 +4,12 @@ import 'dart:convert';
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
-import 'package:online_store/src/implementations/store_reply.dart';
 import 'package:store/store.dart';
 
 import 'cl_server_status.dart';
 
 import 'rest_api.dart';
+import 'store_reply.dart';
 
 @immutable
 class CLServer {
@@ -215,4 +215,36 @@ class CLServer {
   } */
 
   String get baseURL => '${storeURL.uri}';
+
+  // Entity APIs
+
+  Future<StoreReply<Map<String, dynamic>>> createEntity(
+      {required bool isCollection,
+      String? fileName,
+      String? label,
+      String? description,
+      int? parentId,
+      int? id}) async {
+    try {
+      final form = {
+        'isCollection': isCollection ? '1' : '0',
+        if (label != null) 'label': label,
+        if (description != null) 'description': description,
+        if (parentId != null) 'parentId': parentId.toString()
+      };
+      final response = await post('/entity', fileName: fileName, form: form);
+      return response.when(
+          validResponse: (data) =>
+              StoreResult(jsonDecode(data) as Map<String, dynamic>),
+          errorResponse: (e, {st}) {
+            return StoreError(e, st: st);
+          });
+    } catch (e) {
+      return StoreError(const {'error': 'exception when creating a media'});
+    }
+  }
+
+  Future<void> deleteEntity(Map<String, dynamic> map) async {
+    // FIXME: Implement delete entity
+  }
 }

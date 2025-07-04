@@ -2,9 +2,8 @@ import 'dart:convert';
 
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:meta/meta.dart';
-import 'package:online_store/src/implementations/store_reply.dart';
 import 'package:online_store/src/implementations/cl_server.dart';
-
+import 'package:online_store/src/implementations/store_reply.dart';
 import 'package:store/store.dart';
 
 import 'server_query.dart';
@@ -129,8 +128,7 @@ class OnlineEntityStore extends EntityStore {
     return Uri.parse('${server.baseURL}/entity/${media.id}/preview');
   }
 
-  @override
-  Future<CLEntity?> upsert(CLEntity curr, {String? path}) async {
+  Future<StoreReply<CLEntity?>> upsert0(CLEntity curr, {String? path}) async {
     try {
       final StoreReply<String> reply;
       if (curr.id == null) {
@@ -153,11 +151,20 @@ class OnlineEntityStore extends EntityStore {
         reply = await server.put('/${curr.id}', fileName: path, form: form);
       }
       return reply.when(
-          validResponse: CLEntity.fromJson,
-          errorResponse: (e, {st}) => throw Exception(e));
-    } catch (e) {
-      return null;
+          validResponse: (result) => StoreResult(CLEntity.fromJson(result)),
+          errorResponse: (e, {st}) => StoreError(e, st: st));
+    } catch (e, st) {
+      return StoreError({'error': e.toString()}, st: st);
     }
+  }
+
+  @override
+  Future<CLEntity?> upsert(CLEntity curr, {String? path}) async {
+    final response = await upsert0(curr, path: path);
+
+    return response.when(
+        validResponse: (result) => result,
+        errorResponse: (e, {st}) => throw Exception(e));
   }
 
   static Future<EntityStore> createStore(

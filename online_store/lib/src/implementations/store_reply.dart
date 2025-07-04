@@ -22,6 +22,9 @@ abstract class StoreReply<T> {
           {'error': "This can't occur as ServerReply is a abstract  class"}),
     };
   }
+
+  @override
+  String toString();
 }
 
 @immutable
