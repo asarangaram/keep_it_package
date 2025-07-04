@@ -115,12 +115,22 @@ class OnlineEntityStore extends EntityStore {
             await server.post('/entity', fileName: path, form: form);
 
         return CLEntity.fromJson(response);
+      } else {
+        final form = {
+          'isCollection': curr.isCollection ? '1' : '0',
+          if (curr.label != null) 'label': curr.label,
+          if (curr.description != null) 'description': curr.description,
+          if (curr.parentId != null) 'parentId': curr.parentId
+        };
+
+        final response =
+            await server.put('/${curr.id}', fileName: path, form: form);
+
+        return CLEntity.fromJson(response);
       }
     } catch (e) {
       return null;
     }
-    // Fix: Put
-    return curr;
   }
 
   static Future<EntityStore> createStore(

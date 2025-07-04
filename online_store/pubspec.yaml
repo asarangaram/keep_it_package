@@ -12,9 +12,12 @@ dependencies:
     path: ../cl_basic_types
   collection: ^1.19.0
   http: ^1.2.2
+  image: ^4.5.4
   meta: ^1.12.0
+  path: ^1.9.1
   store:
     path: ../store
+  test: ^1.26.2
 
 dev_dependencies:
   lints: ^3.0.0
