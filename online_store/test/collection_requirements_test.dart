@@ -150,11 +150,13 @@ Future<Map<String, dynamic>> createCollection(CLServer server,
       'label': label,
       if (description != null) 'description': description,
     });
-    final result = jsonDecode(response) as Map<String, dynamic>;
-
-    return result;
+    return response.when(
+        validResponse: (data) => jsonDecode(data) as Map<String, dynamic>,
+        errorResponse: (e) {
+          return fail('exception when creating a collection');
+        });
   } catch (e) {
-    fail('exception when creating a collection');
+    fail('Unexpected Exception from server.post');
   }
 }
 

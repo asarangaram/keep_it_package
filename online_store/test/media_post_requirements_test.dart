@@ -87,9 +87,11 @@ Future<Map<String, dynamic>> createMedia(CLServer server,
     };
     final response =
         await server.post('/entity', fileName: fileName, form: form);
-    final result = jsonDecode(response) as Map<String, dynamic>;
-
-    return result;
+    return response.when(
+        validResponse: (data) => jsonDecode(data) as Map<String, dynamic>,
+        errorResponse: (e) {
+          return fail('exception when creating a collection');
+        });
   } catch (e) {
     fail('exception when creating a media');
   }

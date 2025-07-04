@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
+import 'package:online_store/src/implementations/api_response.dart';
 import 'package:store/store.dart';
 
 import 'cl_server_status.dart';
@@ -100,10 +101,12 @@ class CLServer {
 
   Future<CLServer> withId({http.Client? client}) async {
     try {
-      final map = await RestApi(baseURL, client: client).getURLStatus();
-      final serverMap = toMap()..addAll(map);
-      final server = CLServer.fromMap(serverMap);
-      return server;
+      final reply = await RestApi(baseURL, client: client).getURLStatus();
+      return switch (reply) {
+        (final StoreResult<Map<String, dynamic>> map) =>
+          CLServer.fromMap(toMap()..addAll(map.result)),
+        _ => copyWith(id: () => null)
+      };
     } catch (e) {
       return copyWith(id: () => null);
     }
@@ -134,13 +137,13 @@ class CLServer {
     return Uri.parse('$baseURL$endPoint');
   }
 
-  Future<String> getEndpoint(
+  Future<StoreReply<String>> getEndpoint(
     String endPoint, {
     http.Client? client,
   }) async =>
       RestApi(baseURL, client: client).get(endPoint);
 
-  Future<String> post(
+  Future<StoreReply<String>> post(
     String endPoint, {
     required Map<String, dynamic>? form,
     required String? fileName,
@@ -150,7 +153,7 @@ class CLServer {
       RestApi(baseURL, client: client)
           .post(endPoint, json: json ?? '', form: form, fileName: fileName);
 
-  Future<String> put(
+  Future<StoreReply<String>> put(
     String endPoint, {
     http.Client? client,
     String? json,
@@ -160,13 +163,13 @@ class CLServer {
       RestApi(baseURL, client: client)
           .put(endPoint, json: json ?? '', form: form, fileName: fileName);
 
-  Future<String> delete(
+  Future<StoreReply<String>> delete(
     String endPoint, {
     http.Client? client,
   }) async =>
       RestApi(baseURL, client: client).delete(endPoint);
 
-  Future<String?> download(
+  Future<StoreReply<String?>> download(
     String endPoint,
     String targetFilePath, {
     http.Client? client,
@@ -174,37 +177,42 @@ class CLServer {
     return RestApi(baseURL, client: client).download(endPoint, targetFilePath);
   }
 
-  Future<List<Map<String, dynamic>>> downloadMediaInfo({
+  /* Future<List<Map<String, dynamic>>> downloadMediaInfo({
     http.Client? client,
     List<String>? types,
   }) async {
     try {
-      final mediaMapList = [
+      return [
         for (final mediaType in types ?? ['image', 'video'])
-          ...jsonDecode(
-            await getEndpoint('/media?type=$mediaType', client: client),
-          ) as List<dynamic>,
+          ...switch (
+              await getEndpoint('/media?type=$mediaType', client: client)) {
+            (final ServerResponse<String> reply) => [
+                ...(jsonDecode(reply.result) as List<dynamic>),
+              ].map((e) => e as Map<String, dynamic>).toList(),
+            _ => []
+          }
       ];
-      return mediaMapList.map((e) => e as Map<String, dynamic>).toList();
     } catch (e) {
       log('error when downloading $e');
+      return [];
     }
-    return [];
   }
 
   Future<List<Map<String, dynamic>>> downloadCollectionInfo({
     http.Client? client,
   }) async {
     try {
-      final mapList = jsonDecode(
-        await getEndpoint('/collection', client: client),
-      ) as List<dynamic>;
-      return mapList.map((e) => e as Map<String, dynamic>).toList();
+      return switch (await getEndpoint('/collection', client: client)) {
+        (final ServerResponse<String> reply) => [
+            ...(jsonDecode(reply.result) as List<dynamic>),
+          ].map((e) => e as Map<String, dynamic>).toList(),
+        _ => []
+      };
     } catch (e) {
       log('error when downloading $e');
+      return [];
     }
-    return [];
-  }
+  } */
 
   String get baseURL => '${storeURL.uri}';
 }

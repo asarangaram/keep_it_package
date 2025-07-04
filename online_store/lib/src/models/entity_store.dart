@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:cl_basic_types/cl_basic_types.dart';
 import 'package:meta/meta.dart';
+import 'package:online_store/src/implementations/api_response.dart';
 import 'package:online_store/src/implementations/cl_server.dart';
 
 import 'package:store/store.dart';
@@ -48,15 +49,19 @@ class OnlineEntityStore extends EntityStore {
     try {
       final serverQuery =
           ServerQuery.fromStoreQuery(path, validQueryKeys, query);
+      final reply = await server.getEndpoint(serverQuery.requestTarget);
+      return reply.when(
+          validResponse: (data) {
+            final map = jsonDecode(data);
+            final items =
+                ((map as Map<String, dynamic>)['items']) as List<dynamic>;
 
-      final map =
-          jsonDecode(await server.getEndpoint(serverQuery.requestTarget));
-      final items = ((map as Map<String, dynamic>)['items']) as List<dynamic>;
-
-      final mediaMapList = items
-          .map((e) => CLEntity.fromMap(e as Map<String, dynamic>))
-          .toList();
-      return mediaMapList.firstOrNull;
+            final mediaMapList = items
+                .map((e) => CLEntity.fromMap(e as Map<String, dynamic>))
+                .toList();
+            return mediaMapList.firstOrNull;
+          },
+          errorResponse: (e) => null);
     } catch (e) {
       return null;
     }
@@ -64,23 +69,43 @@ class OnlineEntityStore extends EntityStore {
 
   @override
   Future<List<CLEntity>> getAll([StoreQuery<CLEntity>? query]) async {
-    if (query != null) {
-      if (query.map.keys.contains('isHidden') && query.map['isHidden'] == 1) {
-        // Servers don't support isHidden
-        return [];
-      }
-    }
-    final serverQuery = ServerQuery.fromStoreQuery(path, validQueryKeys, query);
-    final map = jsonDecode(await server.getEndpoint(serverQuery.requestTarget));
+    late StoreReply<List<CLEntity>> serverReply;
     try {
-      final items = ((map as Map<String, dynamic>)['items']) as List<dynamic>;
+      if (query != null &&
+          query.map.keys.contains('isHidden') &&
+          query.map['isHidden'] == 1) {
+        // Servers don't support isHidden
+        serverReply = StoreResult(const []);
+      } else {
+        final serverQuery =
+            ServerQuery.fromStoreQuery(path, validQueryKeys, query);
+        final reply = await server.getEndpoint(serverQuery.requestTarget);
+        switch (reply) {
+          case (final StoreResult<String> response):
+            final map = jsonDecode(response.result);
+            final items =
+                ((map as Map<String, dynamic>)['items']) as List<dynamic>;
 
-      final mediaMapList = items
-          .map((e) => CLEntity.fromMap(e as Map<String, dynamic>))
-          .toList();
-      return mediaMapList;
-    } catch (e) {
-      throw Exception(e);
+            final mediaMapList = items
+                .map((e) => CLEntity.fromMap(e as Map<String, dynamic>))
+                .toList();
+            serverReply = StoreResult(mediaMapList);
+          case (final StoreError<String> e):
+            serverReply = StoreError(e.error, st: e.st, errorCode: e.errorCode);
+          default:
+            serverReply = StoreError<List<CLEntity>>('Unknown Error');
+        }
+      }
+    } catch (e, st) {
+      serverReply = StoreError<List<CLEntity>>(e.toString(), st: st);
+    }
+    switch (serverReply) {
+      case (final StoreResult<List<CLEntity>> response):
+        return response.result;
+      case (final StoreError<List<CLEntity>> e):
+        throw Exception(e);
+      default:
+        throw Exception('Unknown Error');
     }
   }
 
@@ -103,6 +128,7 @@ class OnlineEntityStore extends EntityStore {
   @override
   Future<CLEntity?> upsert(CLEntity curr, {String? path}) async {
     try {
+      final StoreReply<String> reply;
       if (curr.id == null) {
         final form = {
           'isCollection': curr.isCollection ? '1' : '0',
@@ -111,10 +137,7 @@ class OnlineEntityStore extends EntityStore {
           if (curr.parentId != null) 'parentId': curr.parentId
         };
 
-        final response =
-            await server.post('/entity', fileName: path, form: form);
-
-        return CLEntity.fromJson(response);
+        reply = await server.post('/entity', fileName: path, form: form);
       } else {
         final form = {
           'isCollection': curr.isCollection ? '1' : '0',
@@ -123,11 +146,11 @@ class OnlineEntityStore extends EntityStore {
           if (curr.parentId != null) 'parentId': curr.parentId
         };
 
-        final response =
-            await server.put('/${curr.id}', fileName: path, form: form);
-
-        return CLEntity.fromJson(response);
+        reply = await server.put('/${curr.id}', fileName: path, form: form);
       }
+      return reply.when(
+          validResponse: CLEntity.fromJson,
+          errorResponse: (e) => throw Exception(e));
     } catch (e) {
       return null;
     }
