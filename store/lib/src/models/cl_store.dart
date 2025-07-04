@@ -168,32 +168,29 @@ class CLStore with CLLogger {
           ?.dbSave();
     } else {
       final targetStore = targetCollection.store;
-      if (entity.store.store.isLocal) {
-        updated = await (await targetStore.createMedia(
-                label: () => entity.data.label,
-                description: () => entity.data.description,
-                parentCollection: targetCollection.data,
-                mediaFile: CLMediaFile(
-                    path: entity.mediaUri!.toFilePath(),
-                    md5: entity.data.md5!,
-                    fileSize: entity.data.fileSize!,
-                    mimeType: entity.data.mimeType!,
-                    type: CLMediaType.fromMIMEType(entity.data.type!),
-                    fileSuffix: entity.data.extension!,
-                    createDate: entity.data.createDate,
-                    height: entity.data.height,
-                    width: entity.data.width,
-                    duration: entity.data.duration),
-                strategy: UpdateStrategy.mergeAppend))
-            ?.dbSave(entity.mediaUri!.toFilePath());
-        if (updated != null) {
-          final filePath = entity.mediaUri!.toFilePath();
 
-          await entity.delete();
-          await File(filePath).deleteIfExists();
-        }
-      } else {
-        updated = null;
+      updated = await (await targetStore.createMedia(
+              label: () => entity.data.label,
+              description: () => entity.data.description,
+              parentCollection: targetCollection.data,
+              mediaFile: CLMediaFile(
+                  path: entity.mediaUri!.toFilePath(),
+                  md5: entity.data.md5!,
+                  fileSize: entity.data.fileSize!,
+                  mimeType: entity.data.mimeType!,
+                  type: CLMediaType.fromMIMEType(entity.data.type!),
+                  fileSuffix: entity.data.extension!,
+                  createDate: entity.data.createDate,
+                  height: entity.data.height,
+                  width: entity.data.width,
+                  duration: entity.data.duration),
+              strategy: UpdateStrategy.mergeAppend))
+          ?.dbSave(entity.mediaUri!.toFilePath());
+      if (updated != null) {
+        final filePath = entity.mediaUri!.toFilePath();
+
+        await entity.delete();
+        await File(filePath).deleteIfExists();
       }
     }
 
@@ -209,9 +206,9 @@ class CLStore with CLLogger {
       ValueGetter<String?>? description,
       UpdateStrategy strategy = UpdateStrategy.skip,
       CLEntity? parentCollection}) async {
-    if (!store.isLocal) {
+    /* if (!store.isLocal) {
       throw Exception("Can't directly push media files into non-local servers");
-    }
+    } */
     if (parentCollection != null) {
       if (!parentCollection.isCollection) {
         throw Exception('Parent entity must be a collection.');
