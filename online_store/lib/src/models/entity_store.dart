@@ -93,8 +93,24 @@ class OnlineEntityStore extends EntityStore {
   }
 
   @override
-  Future<CLEntity?> upsert(CLEntity curr, {String? path}) {
-    // TODO(anandas): implement upsert
+  Future<CLEntity?> upsert(CLEntity curr, {String? path}) async {
+    try {
+      if (curr.id == null) {
+        final form = {
+          'isCollection': curr.isCollection,
+          if (curr.label != null) 'label': curr.label,
+          if (curr.description != null) 'description': curr.description,
+          if (curr.parentId != null) 'parentId': curr.parentId
+        };
+
+        final response =
+            await server.post('/entity', fileName: path, form: form);
+
+        return CLEntity.fromJson(response);
+      }
+    } catch (e) {
+      return null;
+    }
     throw UnimplementedError();
   }
 
