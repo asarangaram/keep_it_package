@@ -45,13 +45,21 @@ class OnlineEntityStore extends EntityStore {
 
   @override
   Future<CLEntity?> get([StoreQuery<CLEntity>? query]) async {
-    final serverQuery = ServerQuery.fromStoreQuery(path, validQueryKeys, query);
-    final map = jsonDecode(await server.getEndpoint(serverQuery.requestTarget))
-        as List<dynamic>;
-    final mediaMapList =
-        map.map((e) => CLEntity.fromMap(e as Map<String, dynamic>)).firstOrNull;
+    try {
+      final serverQuery =
+          ServerQuery.fromStoreQuery(path, validQueryKeys, query);
 
-    return mediaMapList;
+      final map =
+          jsonDecode(await server.getEndpoint(serverQuery.requestTarget));
+      final items = ((map as Map<String, dynamic>)['items']) as List<dynamic>;
+
+      final mediaMapList = items
+          .map((e) => CLEntity.fromMap(e as Map<String, dynamic>))
+          .toList();
+      return mediaMapList.firstOrNull;
+    } catch (e) {
+      return null;
+    }
   }
 
   @override
@@ -97,7 +105,7 @@ class OnlineEntityStore extends EntityStore {
     try {
       if (curr.id == null) {
         final form = {
-          'isCollection': curr.isCollection,
+          'isCollection': curr.isCollection ? '1' : '0',
           if (curr.label != null) 'label': curr.label,
           if (curr.description != null) 'description': curr.description,
           if (curr.parentId != null) 'parentId': curr.parentId
@@ -111,7 +119,8 @@ class OnlineEntityStore extends EntityStore {
     } catch (e) {
       return null;
     }
-    throw UnimplementedError();
+    // Fix: Put
+    return curr;
   }
 
   static Future<EntityStore> createStore(
