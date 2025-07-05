@@ -33,8 +33,8 @@ void main() async {
 
       final result = await server.createEntity(
           isCollection: true, label: 'Test Collection');
-      result.when(
-        validResponse: (result) {
+      await result.when(
+        validResponse: (result) async {
           expect(result.containsKey('id'), true,
               reason: "response doesn't contains id");
           collectionId = result['id'] as int;
@@ -61,8 +61,8 @@ void main() async {
             label: randomString(8),
             parentId: collectionId,
             fileName: filename);
-        result.when(
-            validResponse: (data) => expect(data.containsKey('id'), true,
+        await result.when(
+            validResponse: (data) async => expect(data.containsKey('id'), true,
                 reason: 'Unable to create a media'),
             errorResponse: (e, {st}) =>
                 fail('failed to create media, Error: $e'));
@@ -77,10 +77,10 @@ void main() async {
         label: randomString(8),
         parentId: collectionId,
       );
-      result.when(
+      await result.when(
           validResponse: (data) =>
               fail("valid Media can't be posted without a file."),
-          errorResponse: (e, {st}) {
+          errorResponse: (e, {st}) async {
             if (e.containsKey('error') &&
                 (e['error'] as String).contains('Post media with a file')) {
             } else {

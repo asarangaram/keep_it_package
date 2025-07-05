@@ -10,9 +10,9 @@ abstract class StoreReply<T> {
   T? getResult() =>
       switch (this) { (final StoreResult<T> t) => t.result, _ => null };
 
-  M when<M>(
-      {required M Function(T response) validResponse,
-      required M Function(Map<String, dynamic> error, {StackTrace? st})
+  Future<M> when<M>(
+      {required Future<M> Function(T response) validResponse,
+      required Future<M> Function(Map<String, dynamic> error, {StackTrace? st})
           errorResponse}) {
     return switch (this) {
       (final StoreResult<T> response) => validResponse(response.result),

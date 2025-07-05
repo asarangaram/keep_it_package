@@ -222,16 +222,11 @@ class CLServer {
     try {
       final reply = await getEndpoint(endPoint);
       return reply.when(
-          validResponse: (data) {
-            final map = jsonDecode(data);
-            final items =
-                ((map as Map<String, dynamic>)['items']) as List<dynamic>;
-
-            final mediaMapList = items.firstOrNull as Map<String, dynamic>?;
-
-            return StoreResult(mediaMapList);
+          validResponse: (data) async {
+            final map = jsonDecode(data) as Map<String, dynamic>;
+            return StoreResult(map);
           },
-          errorResponse: (e, {st}) => StoreError(e, st: st));
+          errorResponse: (e, {st}) async => StoreError(e, st: st));
     } catch (e) {
       return StoreError({'error': e.toString()});
     }
@@ -241,14 +236,14 @@ class CLServer {
       String endPoint) async {
     try {
       final reply = await getEndpoint(endPoint);
-      return reply.when(validResponse: (response) {
+      return reply.when(validResponse: (response) async {
         final map = jsonDecode(response);
         final items = ((map as Map<String, dynamic>)['items']) as List<dynamic>;
 
         final mediaMapList =
             items.map((e) => e as Map<String, dynamic>).toList();
         return StoreResult(mediaMapList);
-      }, errorResponse: (e, {st}) {
+      }, errorResponse: (e, {st}) async {
         return StoreError(e, st: st);
       });
     } catch (e, st) {
@@ -272,9 +267,9 @@ class CLServer {
       };
       final response = await post('/entity', fileName: fileName, form: form);
       return response.when(
-          validResponse: (data) =>
+          validResponse: (data) async =>
               StoreResult(jsonDecode(data) as Map<String, dynamic>),
-          errorResponse: (e, {st}) {
+          errorResponse: (e, {st}) async {
             return StoreError(e, st: st);
           });
     } catch (e) {
@@ -297,9 +292,9 @@ class CLServer {
       };
       final response = await put('/entity/$id', fileName: fileName, form: form);
       return response.when(
-          validResponse: (data) =>
+          validResponse: (data) async =>
               StoreResult(jsonDecode(data) as Map<String, dynamic>),
-          errorResponse: (e, {st}) {
+          errorResponse: (e, {st}) async {
             return StoreError(e, st: st);
           });
     } catch (e) {

@@ -42,8 +42,8 @@ void main() async {
       final desc = generateLoremIpsum();
       final reply = await server.createEntity(
           isCollection: true, label: label, description: desc);
-      final reference = reply.when(
-        validResponse: (result) {
+      final reference = await reply.when(
+        validResponse: (result) async {
           expect(result.containsKey('id'), true,
               reason: "response doesn't contains id");
           expect(result.containsKey('label'), true,
@@ -55,7 +55,7 @@ void main() async {
               reason: 'description is not matching');
           return result;
         },
-        errorResponse: (error, {st}) {
+        errorResponse: (error, {st}) async {
           fail('$error');
         },
       );
@@ -68,8 +68,8 @@ void main() async {
       {
         final reply = await server.createEntity(
             isCollection: true, label: label, description: desc);
-        reference = reply.when(
-          validResponse: (result) {
+        reference = await reply.when(
+          validResponse: (result) async {
             expect(result.containsKey('id'), true,
                 reason: "response doesn't contains id");
             expect(result.containsKey('label'), true,
@@ -81,7 +81,7 @@ void main() async {
                 reason: 'description is not matching');
             return result;
           },
-          errorResponse: (error, {st}) {
+          errorResponse: (error, {st}) async {
             fail('$error');
           },
         );
@@ -90,8 +90,8 @@ void main() async {
       {
         final reply = await server.createEntity(
             isCollection: true, label: label, description: desc);
-        reply.when(
-          validResponse: (result) {
+        await reply.when(
+          validResponse: (result) async {
             expect(result.containsKey('id'), true,
                 reason: "response doesn't contains id");
             expect(result.containsKey('label'), true,
@@ -125,8 +125,8 @@ void main() async {
         final reply = await server.createEntity(
             isCollection: true, label: label, description: desc);
 
-        reference = reply.when(
-          validResponse: (result) {
+        reference = await reply.when(
+          validResponse: (result) async {
             expect(result.containsKey('id'), true,
                 reason: "response doesn't contains id");
             expect(result.containsKey('label'), true,
@@ -149,8 +149,8 @@ void main() async {
         final reply = await server.createEntity(
             isCollection: true, label: label, description: desc);
 
-        reply.when(
-          validResponse: (result) {
+        await reply.when(
+          validResponse: (result) async {
             expect(result.containsKey('id'), true,
                 reason: "response doesn't contains id");
             expect(result.containsKey('label'), true,

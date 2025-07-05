@@ -53,10 +53,10 @@ class OnlineEntityStore extends EntityStore {
 
     final reply = await server.getEntity(serverQuery.requestTarget);
     return reply.when(
-      validResponse: (result) {
+      validResponse: (result) async {
         return result == null ? null : CLEntity.fromMap(result);
       },
-      errorResponse: (error, {st}) {
+      errorResponse: (error, {st}) async {
         return null;
       },
     );
@@ -73,7 +73,7 @@ class OnlineEntityStore extends EntityStore {
     final serverQuery = ServerQuery.fromStoreQuery(path, validQueryKeys, query);
     final reply = await server.getEntities(serverQuery.requestTarget);
     return reply.when(
-        validResponse: (result) => result.map(CLEntity.fromMap).toList(),
+        validResponse: (result) async => result.map(CLEntity.fromMap).toList(),
         errorResponse: (e, {st}) => throw Exception(e));
   }
 
@@ -116,8 +116,9 @@ class OnlineEntityStore extends EntityStore {
         reply = await server.put('/${curr.id}', fileName: path, form: form);
       }
       return reply.when(
-          validResponse: (result) => StoreResult(CLEntity.fromJson(result)),
-          errorResponse: (e, {st}) => StoreError(e, st: st));
+          validResponse: (result) async =>
+              StoreResult(CLEntity.fromJson(result)),
+          errorResponse: (e, {st}) async => StoreError(e, st: st));
     } catch (e, st) {
       return StoreError({'error': e.toString()}, st: st);
     }
@@ -128,7 +129,7 @@ class OnlineEntityStore extends EntityStore {
     final response = await upsert0(curr, path: path);
 
     return response.when(
-        validResponse: (result) => result,
+        validResponse: (result) async => result,
         errorResponse: (e, {st}) => throw Exception(e));
   }
 
